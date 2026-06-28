@@ -75,12 +75,36 @@ jobs:
           RPT_REQUIRE_SANDBOX: "1"
         run: cargo test -p rpt-to-xml --test baseline
 
+  # Create the GitHub Release once, before the matrix upload jobs. The upload
+  # action only uploads assets to an existing release; if the per-target jobs
+  # each tried to create it they would race and fail with "release not found".
+  # Idempotent so re-running a tag (or re-running failed jobs) is safe.
+  create-release:
+    needs: [check, test, msrv, feature-matrix, baseline]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create release if it does not exist
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if ! gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$GITHUB_REF_NAME" \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "$GITHUB_REF_NAME" \
+              --generate-notes \
+              --verify-tag
+          fi
+
   # Release stage: only on a version tag (vX.Y.Z) and only after every CI job
-  # above has passed, so a failing commit can never be published. Publishes
-  # cross-platform binaries to a GitHub Release.
+  # above has passed, so a failing commit can never be published. Builds the
+  # cross-platform binaries and uploads them to the release created above.
   release:
     name: release (${{ matrix.target }})
-    needs: [check, test, msrv, feature-matrix, baseline]
+    needs: [create-release]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ${{ matrix.os }}
     permissions:
