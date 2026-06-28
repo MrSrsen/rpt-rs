@@ -1,0 +1,12 @@
+# Sensitive or work-in-progress staff that should not be committed
+/samples/
+/research/
+
+# Rust
+/target/
+**/*.rs.bk
+
+# Local AI assistant context — could reference sensitive research/schema; keep out of the repo.
+/CLAUDE.md
+/.claude/
+

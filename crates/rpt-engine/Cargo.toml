@@ -1,0 +1,18 @@
+[package]
+name = "rpt-engine"
+description = "Derived report analytics (UseCount, parameter usage) computed on top of the decoded rpt model"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+rpt = { workspace = true }
+
+[lints]
+workspace = true

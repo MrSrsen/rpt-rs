@@ -1,0 +1,20 @@
+# Build output and VCS.
+target/
+.git/
+.github/
+
+# Sensitive / local-only — must never enter the build context or image.
+samples/
+research/
+dump/
+caches/
+.claude/
+CLAUDE.md
+
+# Not needed to build the binaries.
+docs/
+*.md
+.gitignore
+.dockerignore
+Dockerfile
+LICENSE

@@ -1,0 +1,67 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Format
+        run: cargo fmt --all --check
+      - name: Clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+      - name: Build (all features)
+        run: cargo build --all-features
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      # Some tests depend on local-only fixtures that are absent in CI; they skip
+      # gracefully so the suite still runs green on a clean checkout.
+      - name: Test
+        run: cargo test --all-features
+
+  msrv:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Verify the crate still builds on its declared minimum supported Rust version.
+      - uses: dtolnay/rust-toolchain@1.85.0
+      - name: Build (MSRV)
+        run: cargo build --all-features
+
+  feature-matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build without default features
+        run: cargo build -p rpt --no-default-features
+      - name: Build with serde
+        run: cargo build -p rpt --no-default-features --features serde
+
+  baseline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install bubblewrap
+        run: sudo apt-get update && sudo apt-get install -y bubblewrap
+      # Build the exporter, dump each fixture's XML in a Bubblewrap sandbox (fixed filesystem
+      # path), and require an exact match against the committed baselines. RPT_REQUIRE_SANDBOX
+      # makes the test fail rather than skip if the sandbox is unavailable.
+      - name: XML baseline regression
+        env:
+          RPT_REQUIRE_SANDBOX: "1"
+        run: cargo test -p rpt-to-xml --test baseline

@@ -1,0 +1,177 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report Name="" FileName="/mnt/report.rpt" HasSavedData="True">
+  <Embedinfo>
+    <Embed Name="Ole" Size="20" MD5Hash="i4UWFmkip9ijTE4P2UVX3g==" />
+  </Embedinfo>
+  <Summaryinfo KeywordsinReport="" ReportAuthor="BW" ReportComments="" ReportSubject="Geography, USA" ReportTitle="U.S. States and Colonies, abbrev." />
+  <ReportOptions EnableSaveDataWithReport="True" EnableSavePreviewPicture="True" EnableSaveSummariesWithReport="True" EnableUseDummyData="False" initialDataContext="" initialReportPartName="" />
+  <PrintOptions PageContentHeight="15120" PageContentWidth="11520" PaperOrientation="Portrait" PaperSize="DefaultPaperSize" PaperSource="FormSource" PrinterDuplex="Default" PrinterName="">
+    <PageMargins bottomMargin="360" leftMargin="360" rightMargin="360" topMargin="360" />
+    <PageMarginConditionFormulas />
+  </PrintOptions>
+  <SubReports />
+  <Database>
+    <TableLinks />
+    <Tables>
+      <Table Alias="provinces_all" ClassName="CrystalReports.Table" Name="provinces_all">
+        <ConnectionInfo Database_DLL="crdb_odbc.dll" QE_DatabaseName="" QE_DatabaseType="ODBC (RDO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="BWPortfolio" QE_SQLDB="True" SSO_Enabled="False" UserName="" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{provinces_all.id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="provinces_all.id" Name="id" ShortName="id" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{provinces_all.name_short}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="provinces_all.name_short" Name="name_short" ShortName="name_short" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{provinces_all.name_long}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="provinces_all.name_long" Name="name_long" ShortName="name_long" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{provinces_all.country_id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="provinces_all.country_id" Name="country_id" ShortName="country_id" Type="crFieldValueTypeInt32sField" UseCount="1" />
+        </Fields>
+      </Table>
+    </Tables>
+  </Database>
+  <DataDefinition>
+    <GroupSelectionFormula />
+    <RecordSelectionFormula> (  {provinces_all.country_id} = 2  )  </RecordSelectionFormula>
+    <Groups />
+    <SortFields />
+    <FormulaFieldDefinitions>
+    </FormulaFieldDefinitions>
+    <GroupNameFieldDefinitions />
+    <ParameterFieldDefinitions>
+    </ParameterFieldDefinitions>
+    <RunningTotalFieldDefinitions />
+    <SQLExpressionFields />
+    <SummaryFields />
+  </DataDefinition>
+  <CustomFunctions />
+  <ReportDefinition>
+    <Areas>
+      <Area Kind="ReportHeader" Name="ReportHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="True" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="3550" Kind="ReportHeader" Name="ReportHeaderSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <TextObject Name="Text4" Kind="TextObject" Top="2280" Left="0" Width="11519" Height="1080" MaxNumberOfLines="0">
+                <Text>U.S. States and Colonies, abbrev.</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="42" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Bodoni MT Black" Size="26" SizeinPoints="26" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <PictureObject Name="Picture1" Kind="PictureObject" Top="360" Left="20" Width="3300" Height="1740">
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Silver" A="255" R="192" G="192" B="192" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </PictureObject>
+              <LineObject Name="Line1" Kind="LineObject" Top="3480" Left="0" Width="11519" Height="0" Bottom="3480" EnableExtendToBottomOfSection="False" EndSectionName="ReportHeaderSection1" LineStyle="DashLine" LineThickness="0" Right="11519">
+                <LineColor Name="Black" A="255" R="0" G="0" B="0" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="DashLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageHeader" Name="PageHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="442" Kind="PageHeader" Name="PageHeaderSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="Detail" Name="DetailArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="386" Kind="Detail" Name="DetailSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="nameshort1" Kind="FieldObject" Top="0" Left="120" Width="657" Height="281" DataSource="{provinces_all.name_short}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="20" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Bodoni MT Black" Size="12" SizeinPoints="12" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="True" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="namelong1" Kind="FieldObject" Top="0" Left="840" Width="2760" Height="281" DataSource="{provinces_all.name_long}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="20" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Bodoni MT Black" Size="12" SizeinPoints="12" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="True" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="ReportFooter" Name="ReportFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="220" Kind="ReportFooter" Name="ReportFooterSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageFooter" Name="PageFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="True" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="600" Kind="PageFooter" Name="PageFooterSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <LineObject Name="Line6" Kind="LineObject" Top="120" Left="0" Width="11519" Height="0" Bottom="120" EnableExtendToBottomOfSection="False" EndSectionName="PageFooterSection1" LineStyle="DashLine" LineThickness="0" Right="11519">
+                <LineColor Name="Black" A="255" R="0" G="0" B="0" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="DashLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+    </Areas>
+  </ReportDefinition>
+</Report>

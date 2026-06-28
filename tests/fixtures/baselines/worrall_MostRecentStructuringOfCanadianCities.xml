@@ -1,0 +1,402 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report Name="" FileName="/mnt/report.rpt" HasSavedData="True">
+  <Embedinfo />
+  <Summaryinfo KeywordsinReport="" ReportAuthor="BW" ReportComments="" ReportSubject="Geography, History, Canada" ReportTitle="Most Recent Structuring of Canadian Cities" />
+  <ReportOptions EnableSaveDataWithReport="True" EnableSavePreviewPicture="True" EnableSaveSummariesWithReport="True" EnableUseDummyData="False" initialDataContext="" initialReportPartName="" />
+  <PrintOptions PageContentHeight="15120" PageContentWidth="11520" PaperOrientation="Portrait" PaperSize="DefaultPaperSize" PaperSource="FormSource" PrinterDuplex="Default" PrinterName="">
+    <PageMargins bottomMargin="360" leftMargin="360" rightMargin="360" topMargin="360" />
+    <PageMarginConditionFormulas />
+  </PrintOptions>
+  <SubReports />
+  <Database>
+    <TableLinks />
+    <Tables>
+      <Table Alias="vw_major_cities_canada" ClassName="CrystalReports.Table" Name="vw_major_cities_canada">
+        <ConnectionInfo Database_DLL="crdb_odbc.dll" QE_DatabaseName="" QE_DatabaseType="ODBC (RDO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="BWPortfolio" QE_SQLDB="True" SSO_Enabled="False" UserName="" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{vw_major_cities_canada.id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="vw_major_cities_canada.id" Name="id" ShortName="id" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{vw_major_cities_canada.City_Name}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_major_cities_canada.City_Name" Name="City_Name" ShortName="City_Name" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{vw_major_cities_canada.Region}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_major_cities_canada.Region" Name="Region" ShortName="Region" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{vw_major_cities_canada.Province}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_major_cities_canada.Province" Name="Province" ShortName="Province" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{vw_major_cities_canada.Country}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_major_cities_canada.Country" Name="Country" ShortName="Country" Type="crFieldValueTypePersistentMemoField" UseCount="0" />
+          <Field Description="" FormulaForm="{vw_major_cities_canada.Most_Recent_Structuring}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="22" LongName="vw_major_cities_canada.Most_Recent_Structuring" Name="Most_Recent_Structuring" ShortName="Most_Recent_Structuring" Type="crFieldValueTypeStringField" UseCount="8" />
+        </Fields>
+      </Table>
+    </Tables>
+  </Database>
+  <DataDefinition>
+    <GroupSelectionFormula />
+    <RecordSelectionFormula />
+    <Groups>
+      <Group ConditionField="{vw_major_cities_canada.Most_Recent_Structuring}" />
+    </Groups>
+    <SortFields>
+      <SortField Field="{vw_major_cities_canada.Most_Recent_Structuring}" SortDirection="DescendingOrder" SortType="GroupSortField" />
+    </SortFields>
+    <FormulaFieldDefinitions>
+      <FormulaFieldDefinition FormulaName="{@GroupDateFormatted}" Kind="FormulaField" Name="GroupDateFormatted" NumberOfBytes="140" ValueType="StringField">ToText(CDate(GroupName({vw_major_cities_canada.Most_Recent_Structuring})), "yyyy, MMMM dd");</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@GroupDateFormatted2}" Kind="FormulaField" Name="GroupDateFormatted2" NumberOfBytes="140" ValueType="StringField">ToText(CDate(GroupName({vw_major_cities_canada.Most_Recent_Structuring})), "MMMM dd, yyyy");</FormulaFieldDefinition>
+    </FormulaFieldDefinitions>
+    <GroupNameFieldDefinitions>
+      <GroupNameFieldDefinition FormulaName="GroupName ({vw_major_cities_canada.Most_Recent_Structuring})" Group="CrystalDecisions.CrystalReports.Engine.Group" GroupNameFieldName="Group #1 Name: vw_major_cities_canada.Most_Recent_Structuring" Kind="GroupNameField" Name="GroupName ({vw_major_cities_canada.Most_Recent_Structuring})" NumberOfBytes="65534" ValueType="StringField" />
+    </GroupNameFieldDefinitions>
+    <ParameterFieldDefinitions>
+    </ParameterFieldDefinitions>
+    <RunningTotalFieldDefinitions>
+      <RunningTotalFieldDefinition EvaluationConditionType="NoCondition" FormulaName="{#DateGroupTotal}" Kind="RunningTotalField" Name="DateGroupTotal" NumberOfBytes="4" Operation="Count" OperationParameter="0" ResetConditionType="OnChangeOfGroup" SummarizedField="{vw_major_cities_canada.Most_Recent_Structuring}" ValueType="Int32sField" />
+    </RunningTotalFieldDefinitions>
+    <SQLExpressionFields />
+    <SummaryFields />
+  </DataDefinition>
+  <CustomFunctions />
+  <ReportDefinition>
+    <Areas>
+      <Area Kind="ReportHeader" Name="ReportHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="True" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="1690" Kind="ReportHeader" Name="TSection4">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <TextObject Name="Text2" Kind="TextObject" Top="240" Left="510" Width="10530" Height="840" MaxNumberOfLines="0">
+                <Text>Most Recent Structuring of Canadian Cities</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="33" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Rockwell Extra Bold" Size="20" SizeinPoints="20" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text3" Kind="TextObject" Top="1200" Left="720" Width="10320" Height="240" MaxNumberOfLines="0">
+                <Text>* March 25 2019 and Earlier</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+            </ReportObjects>
+          </Section>
+          <Section Height="2655" Kind="ReportHeader" Name="TSection5">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <LineObject Name="Line2" Kind="LineObject" Top="0" Left="570" Width="10335" Height="0" Bottom="0" EnableExtendToBottomOfSection="False" EndSectionName="TSection5" LineStyle="SingleLine" LineThickness="20" Right="10905">
+                <LineColor Name="Silver" A="255" R="192" G="192" B="192" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Silver" A="255" R="192" G="192" B="192" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <TextObject Name="Text7" Kind="TextObject" Top="480" Left="720" Width="10320" Height="1920" MaxNumberOfLines="0">
+                <Text>* Most recent structuring date is a general figure that implies when a place was last structured, for example:&#xA;&#xA;- Established&#xA;- Incorporated&#xA;- Restructured&#xA;- Promoted to City&#xA;- Demoted to Town&#xA;- Other</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <LineObject Name="Line3" Kind="LineObject" Top="2520" Left="600" Width="10320" Height="0" Bottom="2520" EnableExtendToBottomOfSection="False" EndSectionName="TSection5" LineStyle="SingleLine" LineThickness="20" Right="10920">
+                <LineColor Name="Silver" A="255" R="192" G="192" B="192" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Silver" A="255" R="192" G="192" B="192" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+            </ReportObjects>
+          </Section>
+          <Section Height="6018" Kind="ReportHeader" Name="TSection6">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <ChartObject Name="Graph1" Kind="ChartObject" Top="120" Left="240" Width="10920" Height="5160">
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </ChartObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageHeader" Name="PageHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="751" Kind="PageHeader" Name="TSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas EnableSuppress="pagenumber=1&#xD;&#xA;" />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="GroupHeader" Name="GroupHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False">
+          <GroupAreaFormat EnableKeepGroupTogether="True" EnableRepeatGroupHeader="False" VisibleGroupNumberPerPage="0" />
+        </AreaFormat>
+        <Sections>
+          <Section Height="662" Kind="GroupHeader" Name="TSection8">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldHeadingObject Name="Text5" Kind="FieldHeadingObject" Top="360" Left="9360" Width="1800" Height="221" FieldObjectName="TPhone1" MaxNumberOfLines="0">
+                <Text>Province</Text>
+                <Color Name="White" A="255" R="255" G="255" B="255" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Bold, Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Red" A="255" R="255" G="0" B="0" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldHeadingObject>
+              <FieldHeadingObject Name="Text6" Kind="FieldHeadingObject" Top="360" Left="506" Width="4174" Height="221" FieldObjectName="TLastYearsSales1" MaxNumberOfLines="0">
+                <Text>City</Text>
+                <Color Name="White" A="255" R="255" G="255" B="255" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Bold, Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Red" A="255" R="255" G="0" B="0" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldHeadingObject>
+              <FieldHeadingObject Name="Text8" Kind="FieldHeadingObject" Top="360" Left="4800" Width="4440" Height="221" FieldObjectName="TCity1" MaxNumberOfLines="0">
+                <Text>Region</Text>
+                <Color Name="White" A="255" R="255" G="255" B="255" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Bold, Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Red" A="255" R="255" G="0" B="0" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldHeadingObject>
+              <FieldObject Name="GroupDateFormatted1" Kind="FieldObject" Top="0" Left="506" Width="8734" Height="360" DataSource="{@GroupDateFormatted}">
+                <Color Name="ff5a79a5" A="255" R="90" G="121" B="165" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Blue" A="255" R="0" G="0" B="255" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="Detail" Name="DetailArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="720" Kind="Detail" Name="TSection3">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="TLastYearsSales1" Kind="FieldObject" Top="120" Left="506" Width="4174" Height="600" DataSource="{vw_major_cities_canada.City_Name}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="20" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="12" SizeinPoints="12" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TCity1" Kind="FieldObject" Top="120" Left="4800" Width="4440" Height="600" DataSource="{vw_major_cities_canada.Region}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="20" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="12" SizeinPoints="12" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TPhone1" Kind="FieldObject" Top="74" Left="9360" Width="1800" Height="646" DataSource="{vw_major_cities_canada.Province}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="20" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="12" SizeinPoints="12" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <LineObject Name="Line1" Kind="LineObject" Top="720" Left="506" Width="10656" Height="0" Bottom="720" EnableExtendToBottomOfSection="False" EndSectionName="TSection3" LineStyle="SingleLine" LineThickness="20" Right="11162">
+                <LineColor Name="ff5a79a5" A="255" R="90" G="121" B="165" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="ff5a79a5" A="255" R="90" G="121" B="165" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="GroupFooter" Name="GroupFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="360" Kind="GroupFooter" Name="TSection9">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <TextObject Name="Text4" Kind="TextObject" Top="0" Left="504" Width="5496" Height="328" MaxNumberOfLines="0">
+                <Text>Total for</Text>
+                <Color Name="Navy" A="255" R="0" G="0" B="128" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Bold, Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <FieldObject Name="GroupTotalBW1" Kind="FieldObject" Top="0" Left="10200" Width="960" Height="331" DataSource="{#DateGroupTotal}">
+                <Color Name="ff5a79a5" A="255" R="90" G="121" B="165" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Blue" A="255" R="0" G="0" B="255" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="GroupDateFormatted21" Kind="FieldObject" Top="0" Left="6090" Width="3030" Height="360" DataSource="{@GroupDateFormatted2}">
+                <Color Name="ff5a79a5" A="255" R="90" G="121" B="165" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Blue" A="255" R="0" G="0" B="255" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <TextObject Name="Text1" Kind="TextObject" Top="0" Left="9240" Width="360" Height="359" MaxNumberOfLines="0">
+                <Text>:</Text>
+                <Color Name="Navy" A="255" R="0" G="0" B="128" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="ReportFooter" Name="ReportFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="230" Kind="ReportFooter" Name="TSection7">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="True" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageFooter" Name="PageFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="600" Kind="PageFooter" Name="TSection2">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="Field2" Kind="FieldObject" Top="175" Left="9576" Width="1416" Height="290" DataSource="PageNofM">
+                <Color Name="Red" A="255" R="255" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <BoxObject Name="Box1" Kind="BoxObject" Top="72" Left="504" Width="10656" Height="396" Bottom="468" EnableExtendToBottomOfSection="False" EndSectionName="TSection2" LineStyle="SingleLine" LineThickness="30" Right="11160">
+                <LineColor Name="Red" A="255" R="255" G="0" B="0" />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Red" A="255" R="255" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </BoxObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+    </Areas>
+  </ReportDefinition>
+</Report>

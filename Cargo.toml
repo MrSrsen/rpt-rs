@@ -1,0 +1,40 @@
+[workspace]
+resolver = "2"
+members = ["crates/rpt", "crates/rpt-engine", "crates/rpt-to-xml", "crates/rpt-cli"]
+
+[workspace.package]
+version = "0.0.0"
+edition = "2021"
+license = "MPL-2.0"
+authors = ["Martin Srsen <martin@srsen.sk>"]
+repository = "https://github.com/MrSrsen/rpt-rs"
+readme = "README.md"
+keywords = ["crystal-reports", "rpt", "parser", "sap", "report"]
+categories = ["parser-implementations", "encoding"]
+rust-version = "1.85"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_debug_implementations = "warn"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+
+[workspace.dependencies]
+rpt = { path = "crates/rpt" }
+rpt-engine = { path = "crates/rpt-engine" }
+cfb = "0.10"
+miniz_oxide = "0.8"
+thiserror = "2"
+bitflags = "2"
+quick-xml = "0.37"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[profile.release]
+lto = "thin"
+# Keep line-table debug info (and the symbol table) in release so the panic backtrace from
+# `rpt::install_panic_hook` carries function names + source locations. Line tables only — no
+# runtime cost, just a larger binary on disk; `debug = true` (full DWARF) is not needed.
+debug = "line-tables-only"
+strip = false

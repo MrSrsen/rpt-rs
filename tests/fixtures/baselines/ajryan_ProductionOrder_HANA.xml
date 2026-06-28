@@ -1,0 +1,1117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report Name="" FileName="/mnt/report.rpt" HasSavedData="True">
+  <Embedinfo />
+  <Summaryinfo KeywordsinReport="" ReportAuthor="" ReportComments="" ReportSubject="" ReportTitle="Boyum Production Order Master (HANA)" />
+  <ReportOptions EnableSaveDataWithReport="True" EnableSavePreviewPicture="True" EnableSaveSummariesWithReport="True" EnableUseDummyData="False" initialDataContext="" initialReportPartName="" />
+  <PrintOptions PageContentHeight="16258" PageContentWidth="11328" PaperOrientation="Portrait" PaperSize="PaperA4" PaperSource="Auto" PrinterDuplex="Default" PrinterName="">
+    <PageMargins bottomMargin="288" leftMargin="288" rightMargin="288" topMargin="288" />
+    <PageMarginConditionFormulas />
+  </PrintOptions>
+  <SubReports />
+  <Database>
+    <TableLinks>
+      <TableLink JoinType="Equal">
+        <SourceFields>
+          <Field FormulaName="{Lines.DocEntry}" Kind="DatabaseField" Name="DocEntry" NumberOfBytes="4" ValueType="Int32sField" />
+        </SourceFields>
+        <DestinationFields>
+          <Field FormulaName="{Header.DocEntry}" Kind="DatabaseField" Name="DocEntry" NumberOfBytes="4" ValueType="Int32sField" />
+        </DestinationFields>
+      </TableLink>
+    </TableLinks>
+    <Tables>
+      <Table Alias="Header" ClassName="CrystalReports.CommandTable" Name="Command">
+        <ConnectionInfo Database_DLL="crdb_odbc.dll" QE_DatabaseName="SBODEMODK" QE_DatabaseType="ODBC (RDO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="192.168.25.39:30015" QE_SQLDB="True" SSO_Enabled="False" UserName="SYSTEM" Password="" />
+        <Command>SELECT&#xA;T0."DocEntry",&#xA;T0."DocNum",&#xA;T0."DueDate",&#xA;T0."Type",&#xA;T0."CardCode",&#xA;T1."CardName",&#xA;T0."OriginNum",&#xA;T0."Status",&#xA;T0."OriginType",&#xA;T0."ItemCode",&#xA;T2."ItemName",&#xA;T0."Warehouse",&#xA;T0."PlannedQty",&#xA;T0."CmpltQty" AS "CompletedQty",&#xA;T0."RjctQty" AS "RejectedQty",&#xA;T0."PlannedQty"-T0."CmpltQty"-T0."RjctQty" AS "OpenQty",&#xA;T0."Uom",&#xA;T0."Comments"&#xA;FROM "OWOR" T0&#xA;LEFT JOIN "OCRD" T1 ON T0."CardCode" = T1."CardCode"&#xA;JOIN "OITM" T2 ON T0."ItemCode" = T2."ItemCode"&#xA;WHERE T0."DocEntry" = {?DocKey@}&#xA;</Command>
+        <Fields>
+          <Field Description="" FormulaForm="{Header.DocEntry}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Header.DocEntry" Name="DocEntry" ShortName="DocEntry" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Header.DocNum}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Header.DocNum" Name="DocNum" ShortName="DocNum" Type="crFieldValueTypeInt32sField" UseCount="1" />
+          <Field Description="" FormulaForm="{Header.DueDate}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Header.DueDate" Name="DueDate" ShortName="DueDate" Type="crFieldValueTypeDateTimeField" UseCount="1" />
+          <Field Description="" FormulaForm="{Header.Type}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Header.Type" Name="Type" ShortName="Type" Type="crFieldValueTypeStringField" UseCount="1" />
+          <Field Description="" FormulaForm="{Header.CardCode}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="32" LongName="Header.CardCode" Name="CardCode" ShortName="CardCode" Type="crFieldValueTypeStringField" UseCount="1" />
+          <Field Description="" FormulaForm="{Header.CardName}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="202" LongName="Header.CardName" Name="CardName" ShortName="CardName" Type="crFieldValueTypeStringField" UseCount="1" />
+          <Field Description="" FormulaForm="{Header.OriginNum}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Header.OriginNum" Name="OriginNum" ShortName="OriginNum" Type="crFieldValueTypeInt32sField" UseCount="1" />
+          <Field Description="" FormulaForm="{Header.Status}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Header.Status" Name="Status" ShortName="Status" Type="crFieldValueTypeStringField" UseCount="1" />
+          <Field Description="" FormulaForm="{Header.OriginType}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Header.OriginType" Name="OriginType" ShortName="OriginType" Type="crFieldValueTypeStringField" UseCount="1" />
+          <Field Description="" FormulaForm="{Header.ItemCode}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="42" LongName="Header.ItemCode" Name="ItemCode" ShortName="ItemCode" Type="crFieldValueTypeStringField" UseCount="1" />
+          <Field Description="" FormulaForm="{Header.ItemName}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="202" LongName="Header.ItemName" Name="ItemName" ShortName="ItemName" Type="crFieldValueTypeStringField" UseCount="1" />
+          <Field Description="" FormulaForm="{Header.Warehouse}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="18" LongName="Header.Warehouse" Name="Warehouse" ShortName="Warehouse" Type="crFieldValueTypeStringField" UseCount="1" />
+          <Field Description="" FormulaForm="{Header.PlannedQty}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Header.PlannedQty" Name="PlannedQty" ShortName="PlannedQty" Type="crFieldValueTypeNumberField" UseCount="1" />
+          <Field Description="" FormulaForm="{Header.CompletedQty}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Header.CompletedQty" Name="CompletedQty" ShortName="CompletedQty" Type="crFieldValueTypeNumberField" UseCount="1" />
+          <Field Description="" FormulaForm="{Header.RejectedQty}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Header.RejectedQty" Name="RejectedQty" ShortName="RejectedQty" Type="crFieldValueTypeNumberField" UseCount="1" />
+          <Field Description="" FormulaForm="{Header.OpenQty}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Header.OpenQty" Name="OpenQty" ShortName="OpenQty" Type="crFieldValueTypeNumberField" UseCount="1" />
+          <Field Description="" FormulaForm="{Header.Uom}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="42" LongName="Header.Uom" Name="Uom" ShortName="Uom" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Header.Comments}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="510" LongName="Header.Comments" Name="Comments" ShortName="Comments" Type="crFieldValueTypeStringField" UseCount="1" />
+        </Fields>
+      </Table>
+      <Table Alias="Lines" ClassName="CrystalReports.CommandTable" Name="Command">
+        <ConnectionInfo Database_DLL="crdb_odbc.dll" QE_DatabaseName="SBODEMODK" QE_DatabaseType="ODBC (RDO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="192.168.25.39:30015" QE_SQLDB="True" SSO_Enabled="False" UserName="SYSTEM" Password="" />
+        <Command>SELECT&#xA;T0."DocEntry",&#xA;T0."ItemCode",&#xA;T1."ItemName",&#xA;T1."InvntryUom",&#xA;T0."PlannedQty",&#xA;T0."IssuedQty",&#xA;T0."wareHouse"&#xA;FROM "WOR1" T0 &#xA;JOIN "OITM" T1 ON T0."ItemCode" = T1."ItemCode"&#xA;WHERE T0."DocEntry" = {?DocKey@}</Command>
+        <Fields>
+          <Field Description="" FormulaForm="{Lines.DocEntry}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Lines.DocEntry" Name="DocEntry" ShortName="DocEntry" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Lines.ItemCode}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="42" LongName="Lines.ItemCode" Name="ItemCode" ShortName="ItemCode" Type="crFieldValueTypeStringField" UseCount="1" />
+          <Field Description="" FormulaForm="{Lines.ItemName}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="202" LongName="Lines.ItemName" Name="ItemName" ShortName="ItemName" Type="crFieldValueTypeStringField" UseCount="1" />
+          <Field Description="" FormulaForm="{Lines.InvntryUom}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="42" LongName="Lines.InvntryUom" Name="InvntryUom" ShortName="InvntryUom" Type="crFieldValueTypeStringField" UseCount="1" />
+          <Field Description="" FormulaForm="{Lines.PlannedQty}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Lines.PlannedQty" Name="PlannedQty" ShortName="PlannedQty" Type="crFieldValueTypeNumberField" UseCount="1" />
+          <Field Description="" FormulaForm="{Lines.IssuedQty}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Lines.IssuedQty" Name="IssuedQty" ShortName="IssuedQty" Type="crFieldValueTypeNumberField" UseCount="1" />
+          <Field Description="" FormulaForm="{Lines.wareHouse}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="18" LongName="Lines.wareHouse" Name="wareHouse" ShortName="wareHouse" Type="crFieldValueTypeStringField" UseCount="1" />
+        </Fields>
+      </Table>
+    </Tables>
+  </Database>
+  <DataDefinition>
+    <GroupSelectionFormula />
+    <RecordSelectionFormula />
+    <Groups />
+    <SortFields />
+    <FormulaFieldDefinitions>
+      <FormulaFieldDefinition FormulaName="{@Title}" Kind="FormulaField" Name="Title" NumberOfBytes="34" ValueType="StringField">'Production Order'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Date}" Kind="FormulaField" Name="Title_Date" NumberOfBytes="10" ValueType="StringField">'Date'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Time}" Kind="FormulaField" Name="Title_Time" NumberOfBytes="10" ValueType="StringField">'Time'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_OrderDetails}" Kind="FormulaField" Name="Title_OrderDetails" NumberOfBytes="30" ValueType="StringField">'Order Details:'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_DueDate}" Kind="FormulaField" Name="Title_DueDate" NumberOfBytes="18" ValueType="StringField">'Due Date'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Type}" Kind="FormulaField" Name="Title_Type" NumberOfBytes="10" ValueType="StringField">'Type'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_CustomerCode}" Kind="FormulaField" Name="Title_CustomerCode" NumberOfBytes="28" ValueType="StringField">'Customer Code'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_CustomerName}" Kind="FormulaField" Name="Title_CustomerName" NumberOfBytes="28" ValueType="StringField">'Customer Name'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_SalesOrder}" Kind="FormulaField" Name="Title_SalesOrder" NumberOfBytes="24" ValueType="StringField">'Sales Order'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_OrderStatus}" Kind="FormulaField" Name="Title_OrderStatus" NumberOfBytes="26" ValueType="StringField">'Order Status'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Released}" Kind="FormulaField" Name="Title_Released" NumberOfBytes="18" ValueType="StringField">'Released'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Planned}" Kind="FormulaField" Name="Title_Planned" NumberOfBytes="16" ValueType="StringField">'Planned'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Closed}" Kind="FormulaField" Name="Title_Closed" NumberOfBytes="14" ValueType="StringField">'Closed'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Cancelled}" Kind="FormulaField" Name="Title_Cancelled" NumberOfBytes="20" ValueType="StringField">'Cancelled'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Standard}" Kind="FormulaField" Name="Title_Standard" NumberOfBytes="18" ValueType="StringField">'Standard'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Special}" Kind="FormulaField" Name="Title_Special" NumberOfBytes="16" ValueType="StringField">'Special'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Disassembly}" Kind="FormulaField" Name="Title_Disassembly" NumberOfBytes="24" ValueType="StringField">'Disassembly'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Manual}" Kind="FormulaField" Name="Title_Manual" NumberOfBytes="14" ValueType="StringField">'Manual'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Mrp}" Kind="FormulaField" Name="Title_Mrp" NumberOfBytes="8" ValueType="StringField">'MRP'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Upgrade}" Kind="FormulaField" Name="Title_Upgrade" NumberOfBytes="16" ValueType="StringField">'Upgrade'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Origin}" Kind="FormulaField" Name="Title_Origin" NumberOfBytes="14" ValueType="StringField">'Origin'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_ItemDetails}" Kind="FormulaField" Name="Title_ItemDetails" NumberOfBytes="28" ValueType="StringField">'Item Details:'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_ItemNumber}" Kind="FormulaField" Name="Title_ItemNumber" NumberOfBytes="24" ValueType="StringField">'Item Number'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Titel_ItemDescription}" Kind="FormulaField" Name="Titel_ItemDescription" NumberOfBytes="34" ValueType="StringField">'Item Description'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_WhsCode}" Kind="FormulaField" Name="Title_WhsCode" NumberOfBytes="20" ValueType="StringField">'Whse Code'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_PlannedQuantity}" Kind="FormulaField" Name="Title_PlannedQuantity" NumberOfBytes="34" ValueType="StringField">'Planned Quantity'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_CompletedQuantity}" Kind="FormulaField" Name="Title_CompletedQuantity" NumberOfBytes="38" ValueType="StringField">'Completed Quantity'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_RejectedQuantity}" Kind="FormulaField" Name="Title_RejectedQuantity" NumberOfBytes="36" ValueType="StringField">'Rejected Quantity'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_OpenQuantity}" Kind="FormulaField" Name="Title_OpenQuantity" NumberOfBytes="28" ValueType="StringField">'Open Quantity'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Components}" Kind="FormulaField" Name="Title_Components" NumberOfBytes="24" ValueType="StringField">'Components:'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_OrderRemarks}" Kind="FormulaField" Name="Title_OrderRemarks" NumberOfBytes="28" ValueType="StringField">'Order Remarks'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Line_#}" Kind="FormulaField" Name="Title_Line_#" NumberOfBytes="4" ValueType="StringField">'#'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Line_ItemNo}" Kind="FormulaField" Name="Title_Line_ItemNo" NumberOfBytes="18" ValueType="StringField">'Item No.'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Line_Description}" Kind="FormulaField" Name="Title_Line_Description" NumberOfBytes="24" ValueType="StringField">'Description'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Line_UoM}" Kind="FormulaField" Name="Title_Line_UoM" NumberOfBytes="8" ValueType="StringField">'UoM'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Line_PlannedQty}" Kind="FormulaField" Name="Title_Line_PlannedQty" NumberOfBytes="16" ValueType="StringField">'Planned'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Line_IssuedQty}" Kind="FormulaField" Name="Title_Line_IssuedQty" NumberOfBytes="14" ValueType="StringField">'Issued'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Line_WhsCode}" Kind="FormulaField" Name="Title_Line_WhsCode" NumberOfBytes="20" ValueType="StringField">'Whse Code'</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Number}" Kind="FormulaField" Name="Number" NumberOfBytes="8" ValueType="NumberField">{Header.DocNum}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@DueDate}" Kind="FormulaField" Name="DueDate" NumberOfBytes="8" ValueType="DateTimeField">{Header.DueDate}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@CustomerCode}" Kind="FormulaField" Name="CustomerCode" NumberOfBytes="32" ValueType="StringField">{Header.CardCode}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@SalesOrder}" Kind="FormulaField" Name="SalesOrder" NumberOfBytes="8" ValueType="NumberField">{Header.OriginNum}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Type}" Kind="FormulaField" Name="Type" NumberOfBytes="26" ValueType="StringField">switch&#xA;(&#xA;    {Header.Type} = 'S', {@Title_Standard},&#xA;    {Header.Type} = 'P', {@Title_Special},&#xA;    {Header.Type} = 'D', {@Title_Disassembly},&#xA;    TRUE, 'UNKNOWN_TYPE'&#xA;)</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@CustomerName}" Kind="FormulaField" Name="CustomerName" NumberOfBytes="202" ValueType="StringField">{Header.CardName}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@OrderStatus}" Kind="FormulaField" Name="OrderStatus" NumberOfBytes="30" ValueType="StringField">switch&#xA;(&#xA;    {Header.Status} = 'P', {@Title_Planned},&#xA;    {Header.Status} = 'R', {@Title_Released},&#xA;    {Header.Status} = 'L', {@Title_Closed},&#xA;    {Header.Status} = 'C', {@Title_Cancelled},&#xA;    TRUE, 'UNKNOWN_STATUS'&#xA;)</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Origin}" Kind="FormulaField" Name="Origin" NumberOfBytes="24" ValueType="StringField">switch&#xA;(&#xA;    {Header.OriginType} = 'M', {@Title_Manual},&#xA;    {Header.OriginType} = 'R', {@Title_Mrp},&#xA;    {Header.OriginType} = 'S', {@Title_SalesOrder},&#xA;    {Header.OriginType} = 'U', {@Title_Upgrade}&#xA;)</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@ItemNumber}" Kind="FormulaField" Name="ItemNumber" NumberOfBytes="42" ValueType="StringField">{Header.ItemCode}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@ItemDescription}" Kind="FormulaField" Name="ItemDescription" NumberOfBytes="202" ValueType="StringField">{Header.ItemName}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@WhsCode}" Kind="FormulaField" Name="WhsCode" NumberOfBytes="18" ValueType="StringField">{Header.Warehouse}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@PlannedQuantity}" Kind="FormulaField" Name="PlannedQuantity" NumberOfBytes="8" ValueType="NumberField">{Header.PlannedQty}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@CompletedQuantity}" Kind="FormulaField" Name="CompletedQuantity" NumberOfBytes="8" ValueType="NumberField">{Header.CompletedQty}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@RejectedQuantity}" Kind="FormulaField" Name="RejectedQuantity" NumberOfBytes="8" ValueType="NumberField">{Header.RejectedQty}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@OpenQuantity}" Kind="FormulaField" Name="OpenQuantity" NumberOfBytes="8" ValueType="NumberField">{Header.OpenQty}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@OrderRemarks}" Kind="FormulaField" Name="OrderRemarks" NumberOfBytes="510" ValueType="StringField">{Header.Comments}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Line_#}" Kind="FormulaField" Name="Line_#" NumberOfBytes="8" ValueType="NumberField">whileprintingrecords;&#xA;global numberVar Number;&#xA;Number := Number+1</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Line_ItemNo}" Kind="FormulaField" Name="Line_ItemNo" NumberOfBytes="42" ValueType="StringField">{Lines.ItemCode}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Line_Description}" Kind="FormulaField" Name="Line_Description" NumberOfBytes="202" ValueType="StringField">{Lines.ItemName}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Line_UoM}" Kind="FormulaField" Name="Line_UoM" NumberOfBytes="42" ValueType="StringField">{Lines.InvntryUom}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Line_PlannedQty}" Kind="FormulaField" Name="Line_PlannedQty" NumberOfBytes="8" ValueType="NumberField">{Lines.PlannedQty}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Line_IssuedQty}" Kind="FormulaField" Name="Line_IssuedQty" NumberOfBytes="8" ValueType="NumberField">{Lines.IssuedQty}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Line_WhsCode}" Kind="FormulaField" Name="Line_WhsCode" NumberOfBytes="18" ValueType="StringField">{Lines.wareHouse}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@PageXofY}" Kind="FormulaField" Name="PageXofY" NumberOfBytes="208" ValueType="StringField">switch(&#xA;{@X_Language} = 'DK', 'Side: '+ ToText(PageNumber,'#') +' af '+Totext(TotalPageCount,'#'),&#xA;{@X_Language} = 'NO', 'Side: '+ ToText(PageNumber,'#') +' av '+Totext(TotalPageCount,'#'),&#xA;{@X_Language} = 'DE', 'Seite: '+ ToText(PageNumber,'#') +' von '+Totext(TotalPageCount,'#'),&#xA;{@X_Language} = 'ES', 'Página: '+ ToText(PageNumber,'#') +' de '+Totext(TotalPageCount,'#'),&#xA;{@X_Language} = 'NL', 'Pagina: '+ ToText(PageNumber,'#') +' van '+Totext(TotalPageCount,'#'),&#xA;{@X_Language} = 'FR', 'Page: '+ ToText(PageNumber,'#') +' de '+Totext(TotalPageCount,'#'),&#xA;TRUE, 'Page: '+ ToText(PageNumber,'#') +' of '+Totext(TotalPageCount,'#')&#xA;)</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@X_Language}" Kind="FormulaField" Name="X_Language" NumberOfBytes="6" ValueType="StringField">switch(&#xA;{?$[CURRENT_LANGUAGE]} = 1, 'HE', //Hebrew&#xA;{?$[CURRENT_LANGUAGE]} = 3, 'EN', //English&#xA;{?$[CURRENT_LANGUAGE]} = 5, 'PL', //Polish&#xA;{?$[CURRENT_LANGUAGE]} = 8, 'GB', //Englis (UK)&#xA;{?$[CURRENT_LANGUAGE]} = 9, 'DE', //German&#xA;{?$[CURRENT_LANGUAGE]} = 11, 'DK', //Danish&#xA;{?$[CURRENT_LANGUAGE]} = 12, 'NO', //Norwegian&#xA;{?$[CURRENT_LANGUAGE]} = 13, 'IT', //Italian&#xA;{?$[CURRENT_LANGUAGE]} = 14, 'HU', //Hungarian&#xA;{?$[CURRENT_LANGUAGE]} = 16, 'NL', //Dutch&#xA;{?$[CURRENT_LANGUAGE]} = 17, 'FI', //Finnish&#xA;{?$[CURRENT_LANGUAGE]} = 18, 'GR', //Greek&#xA;{?$[CURRENT_LANGUAGE]} = 19, 'PT', //Portuguese&#xA;{?$[CURRENT_LANGUAGE]} = 20, 'SE', //Swedish&#xA;{?$[CURRENT_LANGUAGE]} = 22, 'FR', //French&#xA;{?$[CURRENT_LANGUAGE]} = 23, 'ES', //Spanish&#xA;{?$[CURRENT_LANGUAGE]} = 24, 'RU', //Russian&#xA;{?$[CURRENT_LANGUAGE]} = 25, 'CO', //Spanish (LA)&#xA;{?$[CURRENT_LANGUAGE]} = 26, 'CZ', //Czech&#xA;{?$[CURRENT_LANGUAGE]} = 27, 'SK', //Slovak&#xA;True, 'EN' //Unknown (English)&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Page}" Kind="FormulaField" Name="Title_Page" NumberOfBytes="14" ValueType="StringField">switch(&#xA;    {@X_Language} = 'DK', 'Side',&#xA;    {@X_Language} = 'NO', 'Side',&#xA;    {@X_Language} = 'DE', 'Seite',&#xA;    {@X_Language} = 'ES', 'Página',&#xA;    {@X_Language} = 'NL', 'Pagina',&#xA;    {@X_Language} = 'FR', 'Page',&#xA;    TRUE, 'Page'&#xA;)</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Of}" Kind="FormulaField" Name="Title_Of" NumberOfBytes="8" ValueType="StringField">switch(&#xA;{@X_Language} = 'DK', 'af',&#xA;{@X_Language} = 'NO', 'av',&#xA;{@X_Language} = 'DE', 'von',&#xA;{@X_Language} = 'ES', 'de',&#xA;{@X_Language} = 'NL', 'van',&#xA;{@X_Language} = 'FR', 'de',&#xA;TRUE, 'of'&#xA;)</FormulaFieldDefinition>
+    </FormulaFieldDefinitions>
+    <GroupNameFieldDefinitions />
+    <ParameterFieldDefinitions>
+      <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?DocKey@}" HasCurrentValue="True" IsOptionalPrompt="False" Kind="ParameterField" Name="DocKey@" NumberOfBytes="8" ParameterFieldName="DocKey@" ParameterFieldUsage="InUse, DataFetching" ParameterType="StoreProcedureParameter" ParameterValueKind="NumberParameter" PromptText="DocEntry" ReportName="" ValueType="NumberField">
+        <ParameterDefaultValues />
+        <ParameterInitialValues />
+        <ParameterCurrentValues>
+          <ParameterCurrentValue Description="" Value="1" />
+        </ParameterCurrentValues>
+      </ParameterFieldDefinition>
+      <ParameterFieldDefinition AllowCustomCurrentValues="False" EditMask="" EnableAllowEditingDefaultValue="False" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?$[CURRENT_LANGUAGE]}" HasCurrentValue="True" IsOptionalPrompt="False" Kind="ParameterField" Name="$[CURRENT_LANGUAGE]" NumberOfBytes="8" ParameterFieldName="$[CURRENT_LANGUAGE]" ParameterFieldUsage="InUse, ShowOnPanel, EditableOnPanel" ParameterType="ReportParameter" ParameterValueKind="NumberParameter" PromptText="Enter Language:" ReportName="" ValueType="NumberField">
+        <ParameterDefaultValues>
+          <ParameterDefaultValue Description="Hebrew" Value="1" />
+          <ParameterDefaultValue Description="English" Value="3" />
+          <ParameterDefaultValue Description="Polish" Value="5" />
+          <ParameterDefaultValue Description="English (UK)" Value="8" />
+          <ParameterDefaultValue Description="German" Value="9" />
+          <ParameterDefaultValue Description="Danish" Value="11" />
+          <ParameterDefaultValue Description="Norwegian" Value="12" />
+          <ParameterDefaultValue Description="Italian" Value="13" />
+          <ParameterDefaultValue Description="Hungarian" Value="14" />
+          <ParameterDefaultValue Description="Dutch" Value="16" />
+          <ParameterDefaultValue Description="Finnish" Value="17" />
+          <ParameterDefaultValue Description="Greek" Value="18" />
+          <ParameterDefaultValue Description="Portuguese" Value="19" />
+          <ParameterDefaultValue Description="Swedish" Value="20" />
+          <ParameterDefaultValue Description="French" Value="22" />
+          <ParameterDefaultValue Description="Spanish" Value="23" />
+          <ParameterDefaultValue Description="Russian" Value="24" />
+          <ParameterDefaultValue Description="Spanish (LA)" Value="25" />
+          <ParameterDefaultValue Description="Czech" Value="26" />
+          <ParameterDefaultValue Description="Slovak" Value="27" />
+        </ParameterDefaultValues>
+        <ParameterInitialValues>
+          <ParameterInitialValue Value="3" />
+        </ParameterInitialValues>
+        <ParameterCurrentValues>
+          <ParameterCurrentValue Description="" Value="3" />
+        </ParameterCurrentValues>
+      </ParameterFieldDefinition>
+    </ParameterFieldDefinitions>
+    <RunningTotalFieldDefinitions />
+    <SQLExpressionFields />
+    <SummaryFields />
+  </DataDefinition>
+  <CustomFunctions />
+  <ReportDefinition>
+    <Areas>
+      <Area Kind="ReportHeader" Name="ReportHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="True" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="0" Kind="ReportHeader" Name="ReportHeaderSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageHeader" Name="PageHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="5810" Kind="PageHeader" Name="PageHeaderSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="CompletedQuantity1" Kind="FieldObject" Top="3794" Left="8580" Width="2445" Height="225" DataSource="{@CompletedQuantity}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="CustomerCode1" Kind="FieldObject" Top="1856" Left="2565" Width="3734" Height="221" DataSource="{@CustomerCode}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="CustomerName1" Kind="FieldObject" Top="2220" Left="2565" Width="3734" Height="221" DataSource="{@CustomerName}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="DueDate1" Kind="FieldObject" Top="1506" Left="2565" Width="3734" Height="225" DataSource="{@DueDate}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="ItemDescription1" Kind="FieldObject" Top="3794" Left="2565" Width="3734" Height="221" DataSource="{@ItemDescription}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="ItemNumber1" Kind="FieldObject" Top="3449" Left="2565" Width="3734" Height="221" DataSource="{@ItemNumber}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="OpenQuantity1" Kind="FieldObject" Top="4498" Left="8580" Width="2445" Height="225" DataSource="{@OpenQuantity}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="OrderStatus1" Kind="FieldObject" Top="1856" Left="8580" Width="2325" Height="221" DataSource="{@OrderStatus}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="Origin1" Kind="FieldObject" Top="2220" Left="8580" Width="2325" Height="221" DataSource="{@Origin}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="PlannedQuantity1" Kind="FieldObject" Top="3449" Left="8580" Width="2445" Height="225" DataSource="{@PlannedQuantity}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="RejectedQuantity1" Kind="FieldObject" Top="4139" Left="8580" Width="2445" Height="225" DataSource="{@RejectedQuantity}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="SalesOrder1" Kind="FieldObject" Top="2570" Left="2565" Width="3734" Height="225" DataSource="{@SalesOrder}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitelItemDescription1" Kind="FieldObject" Top="3794" Left="645" Width="1665" Height="221" DataSource="{@Titel_ItemDescription}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleCompletedQuantity1" Kind="FieldObject" Top="3794" Left="6358" Width="1967" Height="221" DataSource="{@Title_CompletedQuantity}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleComponents1" Kind="FieldObject" Top="5035" Left="645" Width="2745" Height="261" DataSource="{@Title_Components}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleCustomerCode1" Kind="FieldObject" Top="1856" Left="645" Width="1665" Height="221" DataSource="{@Title_CustomerCode}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="True" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas EnableSuppress="{@CustomerCode} = ''" />
+              </FieldObject>
+              <FieldObject Name="TitleCustomerName1" Kind="FieldObject" Top="2220" Left="645" Width="1665" Height="221" DataSource="{@Title_CustomerName}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="True" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas EnableSuppress="{@CustomerName} = ''" />
+              </FieldObject>
+              <FieldObject Name="TitleDueDate1" Kind="FieldObject" Top="1506" Left="645" Width="1665" Height="221" DataSource="{@Title_DueDate}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleItemDetails1" Kind="FieldObject" Top="3060" Left="645" Width="2745" Height="261" DataSource="{@Title_ItemDetails}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleItemNumber1" Kind="FieldObject" Top="3449" Left="645" Width="1665" Height="221" DataSource="{@Title_ItemNumber}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleLine1" Kind="FieldObject" Top="5474" Left="645" Width="374" Height="221" DataSource="{@Title_Line_#}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleLineDescription1" Kind="FieldObject" Top="5474" Left="2565" Width="4245" Height="221" DataSource="{@Title_Line_Description}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleLineIssuedQty1" Kind="FieldObject" Top="5474" Left="9034" Width="768" Height="221" DataSource="{@Title_Line_IssuedQty}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleLineItemNo1" Kind="FieldObject" Top="5474" Left="1050" Width="1455" Height="221" DataSource="{@Title_Line_ItemNo}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleLinePlannedQty1" Kind="FieldObject" Top="5474" Left="8097" Width="768" Height="221" DataSource="{@Title_Line_PlannedQty}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleLineUoM1" Kind="FieldObject" Top="5474" Left="6905" Width="1030" Height="221" DataSource="{@Title_Line_UoM}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleLineWhsCode1" Kind="FieldObject" Top="5474" Left="9950" Width="1075" Height="221" DataSource="{@Title_Line_WhsCode}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleOpenQuantity1" Kind="FieldObject" Top="4498" Left="6358" Width="1967" Height="221" DataSource="{@Title_OpenQuantity}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleOrderDetails1" Kind="FieldObject" Top="1095" Left="645" Width="2745" Height="261" DataSource="{@Title_OrderDetails}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleOrderStatus1" Kind="FieldObject" Top="1856" Left="6358" Width="1967" Height="221" DataSource="{@Title_OrderStatus}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleOrigin1" Kind="FieldObject" Top="2220" Left="6358" Width="1967" Height="221" DataSource="{@Title_Origin}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitlePlannedQuantity1" Kind="FieldObject" Top="3449" Left="6358" Width="1967" Height="221" DataSource="{@Title_PlannedQuantity}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleRejectedQuantity1" Kind="FieldObject" Top="4139" Left="6358" Width="1967" Height="221" DataSource="{@Title_RejectedQuantity}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleSalesOrder1" Kind="FieldObject" Top="2570" Left="645" Width="1665" Height="221" DataSource="{@Title_SalesOrder}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="True" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas EnableSuppress="{@SalesOrder} = 0" />
+              </FieldObject>
+              <FieldObject Name="TitleType1" Kind="FieldObject" Top="1506" Left="6358" Width="1967" Height="221" DataSource="{@Title_Type}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleWhsCode1" Kind="FieldObject" Top="4139" Left="645" Width="1665" Height="221" DataSource="{@Title_WhsCode}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="Type1" Kind="FieldObject" Top="1506" Left="8580" Width="2325" Height="221" DataSource="{@Type}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="WhsCode1" Kind="FieldObject" Top="4139" Left="2565" Width="3734" Height="221" DataSource="{@WhsCode}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <TextObject Name="Text1" Kind="TextObject" Top="330" Left="645" Width="5340" Height="510" MaxNumberOfLines="0">
+                <Text>{@Title} - {@Number}</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="26" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="16" SizeinPoints="16" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <FieldObject Name="TitleDate1" Kind="FieldObject" Top="255" Left="9255" Width="782" Height="221" DataSource="{@Title_Date}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleTime1" Kind="FieldObject" Top="566" Left="9255" Width="782" Height="221" DataSource="{@Title_Time}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="DataDate1" Kind="FieldObject" Top="255" Left="10110" Width="1000" Height="225" DataSource="DataDate">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="DataTime1" Kind="FieldObject" Top="566" Left="10110" Width="1000" Height="225" DataSource="DataTime">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <LineObject Name="Line4" Kind="LineObject" Top="975" Left="645" Width="10489" Height="0" Bottom="975" EnableExtendToBottomOfSection="False" EndSectionName="PageHeaderSection1" LineStyle="SingleLine" LineThickness="20" Right="11134">
+                <LineColor Name="Black" A="255" R="0" G="0" B="0" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <TextObject Name="Text5" Kind="TextObject" Top="1506" Left="2310" Width="132" Height="221" MaxNumberOfLines="0">
+                <Text>:</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text2" Kind="TextObject" Top="1856" Left="2310" Width="132" Height="221" MaxNumberOfLines="0">
+                <Text>:</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="True" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas EnableSuppress="{@CustomerCode} = ''" />
+              </TextObject>
+              <TextObject Name="Text3" Kind="TextObject" Top="2220" Left="2310" Width="132" Height="221" MaxNumberOfLines="0">
+                <Text>:</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="True" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas EnableSuppress="{@CustomerName} = ''" />
+              </TextObject>
+              <LineObject Name="Line5" Kind="LineObject" Top="2910" Left="645" Width="10489" Height="0" Bottom="2910" EnableExtendToBottomOfSection="False" EndSectionName="PageHeaderSection1" LineStyle="SingleLine" LineThickness="20" Right="11134">
+                <LineColor Name="Black" A="255" R="0" G="0" B="0" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <TextObject Name="Text4" Kind="TextObject" Top="1506" Left="8325" Width="132" Height="221" MaxNumberOfLines="0">
+                <Text>:</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text6" Kind="TextObject" Top="2570" Left="2310" Width="132" Height="221" MaxNumberOfLines="0">
+                <Text>:</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="True" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas EnableSuppress="{@SalesOrder} = 0" />
+              </TextObject>
+              <TextObject Name="Text7" Kind="TextObject" Top="1856" Left="8325" Width="132" Height="221" MaxNumberOfLines="0">
+                <Text>:</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text8" Kind="TextObject" Top="2220" Left="8325" Width="132" Height="221" MaxNumberOfLines="0">
+                <Text>:</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text9" Kind="TextObject" Top="3449" Left="8325" Width="132" Height="221" MaxNumberOfLines="0">
+                <Text>:</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text10" Kind="TextObject" Top="3809" Left="8325" Width="132" Height="221" MaxNumberOfLines="0">
+                <Text>:</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text11" Kind="TextObject" Top="4154" Left="8325" Width="132" Height="221" MaxNumberOfLines="0">
+                <Text>:</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text12" Kind="TextObject" Top="4498" Left="8325" Width="132" Height="221" MaxNumberOfLines="0">
+                <Text>:</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text13" Kind="TextObject" Top="3449" Left="2310" Width="132" Height="221" MaxNumberOfLines="0">
+                <Text>:</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text14" Kind="TextObject" Top="3794" Left="2310" Width="132" Height="221" MaxNumberOfLines="0">
+                <Text>:</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text15" Kind="TextObject" Top="4154" Left="2310" Width="132" Height="221" MaxNumberOfLines="0">
+                <Text>:</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <LineObject Name="Line6" Kind="LineObject" Top="4875" Left="645" Width="10489" Height="0" Bottom="4875" EnableExtendToBottomOfSection="False" EndSectionName="PageHeaderSection1" LineStyle="SingleLine" LineThickness="20" Right="11134">
+                <LineColor Name="Black" A="255" R="0" G="0" B="0" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <BoxObject Name="Box1" Kind="BoxObject" Top="5400" Left="435" Width="10770" Height="366" Bottom="5766" EnableExtendToBottomOfSection="False" EndSectionName="PageHeaderSection1" LineStyle="NoLine" LineThickness="20" Right="11205">
+                <LineColor Name="Black" A="255" R="0" G="0" B="0" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Silver" A="255" R="192" G="192" B="192" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </BoxObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="Detail" Name="DetailArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="275" Kind="Detail" Name="DetailSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas BackgroundColor="// This conditional formatting formula must return one of the following Color Constants:&#xD;&#xA;// &#xD;&#xA;// Color (red, green, blue)&#xD;&#xA;// crBlack&#xD;&#xA;// crMaroon&#xD;&#xA;// crGreen&#xD;&#xA;// crOlive&#xD;&#xA;// crNavy&#xD;&#xA;// crPurple&#xD;&#xA;// crTeal&#xD;&#xA;// crSilver&#xD;&#xA;// crRed&#xD;&#xA;// crLime&#xD;&#xA;// crYellow&#xD;&#xA;// crBlue&#xD;&#xA;// crFuchsia&#xD;&#xA;// crAqua&#xD;&#xA;// crWhite&#xD;&#xA;// crNoColor&#xD;&#xA;// &#xD;&#xA;//whileprintingrecords;&#xD;&#xA;//if({@Line_#} MOD 2 &lt;&gt; 0) then&#xD;&#xA;//crNoColor&#xD;&#xA;//else&#xD;&#xA;//crSilver" />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="LineWhsCode1" Kind="FieldObject" Top="48" Left="9950" Width="1075" Height="185" DataSource="{@Line_WhsCode}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="LineDescription1" Kind="FieldObject" Top="48" Left="2565" Width="4245" Height="185" DataSource="{@Line_Description}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="Line1" Kind="FieldObject" Top="48" Left="645" Width="374" Height="185" DataSource="{@Line_#}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="LineUoM1" Kind="FieldObject" Top="48" Left="6905" Width="1030" Height="185" DataSource="{@Line_UoM}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="LineItemNo1" Kind="FieldObject" Top="48" Left="1050" Width="1470" Height="185" DataSource="{@Line_ItemNo}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="LineIssuedQty1" Kind="FieldObject" Top="48" Left="9034" Width="768" Height="185" DataSource="{@Line_IssuedQty}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="LinePlannedQty1" Kind="FieldObject" Top="48" Left="8097" Width="768" Height="185" DataSource="{@Line_PlannedQty}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="ReportFooter" Name="ReportFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="468" Kind="ReportFooter" Name="ReportFooterSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="OrderRemarks1" Kind="FieldObject" Top="141" Left="2565" Width="7247" Height="225" DataSource="{@OrderRemarks}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="True" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleOrderRemarks1" Kind="FieldObject" Top="144" Left="645" Width="1747" Height="221" DataSource="{@Title_OrderRemarks}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="True" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas EnableSuppress="{@OrderRemarks} = ''" />
+              </FieldObject>
+              <LineObject Name="Line7" Kind="LineObject" Top="60" Left="645" Width="10489" Height="0" Bottom="60" EnableExtendToBottomOfSection="False" EndSectionName="ReportFooterSection1" LineStyle="SingleLine" LineThickness="20" Right="11134">
+                <LineColor Name="Black" A="255" R="0" G="0" B="0" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageFooter" Name="PageFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="True" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="360" Kind="PageFooter" Name="PageFooterSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="PageXofY1" Kind="FieldObject" Top="45" Left="9030" Width="1995" Height="240" DataSource="{@PageXofY}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+    </Areas>
+  </ReportDefinition>
+</Report>

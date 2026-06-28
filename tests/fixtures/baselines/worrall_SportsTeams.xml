@@ -1,0 +1,348 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report Name="" FileName="/mnt/report.rpt" HasSavedData="True">
+  <Embedinfo />
+  <Summaryinfo KeywordsinReport="" ReportAuthor="BW" ReportComments="" ReportSubject="Sports" ReportTitle="AHL, CFL, MLB, NBA, NFL, And NHL Sports Teams" />
+  <ReportOptions EnableSaveDataWithReport="True" EnableSavePreviewPicture="True" EnableSaveSummariesWithReport="True" EnableUseDummyData="False" initialDataContext="" initialReportPartName="" />
+  <PrintOptions PageContentHeight="15120" PageContentWidth="11520" PaperOrientation="Portrait" PaperSize="DefaultPaperSize" PaperSource="FormSource" PrinterDuplex="Default" PrinterName="">
+    <PageMargins bottomMargin="360" leftMargin="360" rightMargin="360" topMargin="360" />
+    <PageMarginConditionFormulas />
+  </PrintOptions>
+  <SubReports />
+  <Database>
+    <TableLinks />
+    <Tables>
+      <Table Alias="vw_sports_tabler_output" ClassName="CrystalReports.Table" Name="vw_sports_tabler_output">
+        <ConnectionInfo Database_DLL="crdb_odbc.dll" QE_DatabaseName="" QE_DatabaseType="ODBC (RDO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="BWPortfolio" QE_SQLDB="True" SSO_Enabled="False" UserName="" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{vw_sports_tabler_output.id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="vw_sports_tabler_output.id" Name="id" ShortName="id" Type="crFieldValueTypeInt32sField" UseCount="1" />
+          <Field Description="" FormulaForm="{vw_sports_tabler_output.team}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_sports_tabler_output.team" Name="team" ShortName="team" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{vw_sports_tabler_output.sport}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_sports_tabler_output.sport" Name="sport" ShortName="sport" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{vw_sports_tabler_output.league}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_sports_tabler_output.league" Name="league" ShortName="league" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{vw_sports_tabler_output.section}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_sports_tabler_output.section" Name="section" ShortName="section" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{vw_sports_tabler_output.division}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_sports_tabler_output.division" Name="division" ShortName="division" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{vw_sports_tabler_output.hometown}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_sports_tabler_output.hometown" Name="hometown" ShortName="hometown" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+        </Fields>
+      </Table>
+    </Tables>
+  </Database>
+  <DataDefinition>
+    <GroupSelectionFormula />
+    <RecordSelectionFormula />
+    <Groups />
+    <SortFields />
+    <FormulaFieldDefinitions>
+    </FormulaFieldDefinitions>
+    <GroupNameFieldDefinitions />
+    <ParameterFieldDefinitions>
+    </ParameterFieldDefinitions>
+    <RunningTotalFieldDefinitions />
+    <SQLExpressionFields />
+    <SummaryFields />
+  </DataDefinition>
+  <CustomFunctions />
+  <ReportDefinition>
+    <Areas>
+      <Area Kind="ReportHeader" Name="ReportHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="220" Kind="ReportHeader" Name="TSection6">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="True" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageHeader" Name="PageHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="690" Kind="PageHeader" Name="TSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <TextObject Name="Text1" Kind="TextObject" Top="120" Left="60" Width="10740" Height="480" MaxNumberOfLines="0">
+                <Text>AHL, CFL, MLB, NBA, NFL and NHL Sports Teams</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="33" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Cambria" Size="20" SizeinPoints="20" Strikeout="False" Style="Bold, Underline" SystemFontName="" Underline="True" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+            </ReportObjects>
+          </Section>
+          <Section Height="1316" Kind="PageHeader" Name="TSection2">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <TextObject Name="Text2" Kind="TextObject" Top="40" Left="60" Width="660" Height="240" MaxNumberOfLines="0">
+                <Text>ID</Text>
+                <Color Name="White" A="255" R="255" G="255" B="255" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Black" A="255" R="0" G="0" B="0" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <LineObject Name="Line2" Kind="LineObject" Top="1080" Left="60" Width="11459" Height="0" Bottom="1080" EnableExtendToBottomOfSection="False" EndSectionName="TSection2" LineStyle="SingleLine" LineThickness="20" Right="11519">
+                <LineColor Name="Black" A="255" R="0" G="0" B="0" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <TextObject Name="Text3" Kind="TextObject" Top="40" Left="796" Width="2804" Height="240" MaxNumberOfLines="0">
+                <Text>Team</Text>
+                <Color Name="White" A="255" R="255" G="255" B="255" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Black" A="255" R="0" G="0" B="0" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text4" Kind="TextObject" Top="40" Left="3720" Width="1440" Height="240" MaxNumberOfLines="0">
+                <Text>Sport</Text>
+                <Color Name="White" A="255" R="255" G="255" B="255" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Black" A="255" R="0" G="0" B="0" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text5" Kind="TextObject" Top="40" Left="5280" Width="847" Height="240" MaxNumberOfLines="0">
+                <Text>League</Text>
+                <Color Name="White" A="255" R="255" G="255" B="255" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Black" A="255" R="0" G="0" B="0" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text6" Kind="TextObject" Top="40" Left="6240" Width="2640" Height="240" MaxNumberOfLines="0">
+                <Text>Section</Text>
+                <Color Name="White" A="255" R="255" G="255" B="255" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Black" A="255" R="0" G="0" B="0" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text7" Kind="TextObject" Top="40" Left="9000" Width="2520" Height="240" MaxNumberOfLines="0">
+                <Text>Division</Text>
+                <Color Name="White" A="255" R="255" G="255" B="255" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Black" A="255" R="0" G="0" B="0" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text8" Kind="TextObject" Top="480" Left="60" Width="11460" Height="240" MaxNumberOfLines="0">
+                <Text>Hometown</Text>
+                <Color Name="White" A="255" R="255" G="255" B="255" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Black" A="255" R="0" G="0" B="0" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="Detail" Name="DetailArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="1005" Kind="Detail" Name="TSection4">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas BackgroundColor="select RecordNumber mod 2&#xD;&#xA;case 0: crWhite&#xD;&#xA;case 1: color(222,222,222)&#xD;&#xA;" />
+              <BackgroundColor Name="Silver" A="255" R="192" G="192" B="192" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="TOrderID1" Kind="FieldObject" Top="0" Left="250" Width="652" Height="254" DataSource="{vw_sports_tabler_output.id}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="18" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="11" SizeinPoints="11" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TShipVia1" Kind="FieldObject" Top="0" Left="5362" Width="765" Height="480" DataSource="{vw_sports_tabler_output.league}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="18" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="11" SizeinPoints="11" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TOrderAmount1" Kind="FieldObject" Top="0" Left="6360" Width="2520" Height="480" DataSource="{vw_sports_tabler_output.section}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="18" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="11" SizeinPoints="11" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TCustomerName1" Kind="FieldObject" Top="0" Left="960" Width="2640" Height="480" DataSource="{vw_sports_tabler_output.team}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="18" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="11" SizeinPoints="11" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TCity1" Kind="FieldObject" Top="0" Left="3840" Width="1200" Height="480" DataSource="{vw_sports_tabler_output.sport}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="18" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="11" SizeinPoints="11" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TShipped1" Kind="FieldObject" Top="0" Left="9135" Width="1658" Height="480" DataSource="{vw_sports_tabler_output.division}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="18" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="11" SizeinPoints="11" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="Extra1" Kind="FieldObject" Top="720" Left="240" Width="10560" Height="240" DataSource="{vw_sports_tabler_output.hometown}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Verdana" Size="10" SizeinPoints="10" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+            </ReportObjects>
+          </Section>
+          <Section Height="415" Kind="Detail" Name="TSection5">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <LineObject Name="Line1" Kind="LineObject" Top="255" Left="0" Width="11474" Height="0" Bottom="255" EnableExtendToBottomOfSection="False" EndSectionName="TSection5" LineStyle="SingleLine" LineThickness="20" Right="11474">
+                <LineColor Name="Black" A="255" R="0" G="0" B="0" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="ReportFooter" Name="ReportFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="220" Kind="ReportFooter" Name="TSection7">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="True" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageFooter" Name="PageFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="221" Kind="PageFooter" Name="TSection3">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="PageNofM1" Kind="FieldObject" Top="0" Left="9960" Width="1474" Height="221" DataSource="PageNofM">
+                <Color Name="White" A="255" R="255" G="255" B="255" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Black" A="255" R="0" G="0" B="0" />
+                  <BorderColor Name="Blue" A="255" R="0" G="0" B="255" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+    </Areas>
+  </ReportDefinition>
+</Report>

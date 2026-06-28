@@ -1,0 +1,297 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report Name="" FileName="/mnt/report.rpt" HasSavedData="True">
+  <Embedinfo />
+  <Summaryinfo KeywordsinReport="" ReportAuthor="BW" ReportComments="" ReportSubject="Geography, Internet CCTLD, Alpha Codes" ReportTitle="Alpha Codes and Internet CCTLDs by Country" />
+  <ReportOptions EnableSaveDataWithReport="True" EnableSavePreviewPicture="True" EnableSaveSummariesWithReport="True" EnableUseDummyData="False" initialDataContext="" initialReportPartName="" />
+  <PrintOptions PageContentHeight="15120" PageContentWidth="11520" PaperOrientation="Portrait" PaperSize="DefaultPaperSize" PaperSource="FormSource" PrinterDuplex="Default" PrinterName="">
+    <PageMargins bottomMargin="360" leftMargin="360" rightMargin="360" topMargin="360" />
+    <PageMarginConditionFormulas />
+  </PrintOptions>
+  <SubReports />
+  <Database>
+    <TableLinks />
+    <Tables>
+      <Table Alias="countries_all_iso" ClassName="CrystalReports.Table" Name="countries_all_iso">
+        <ConnectionInfo Database_DLL="crdb_odbc.dll" QE_DatabaseName="" QE_DatabaseType="ODBC (RDO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="BWPortfolio" QE_SQLDB="True" SSO_Enabled="False" UserName="" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{countries_all_iso.id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="countries_all_iso.id" Name="id" ShortName="id" Type="crFieldValueTypeInt32sField" UseCount="1" />
+          <Field Description="" FormulaForm="{countries_all_iso.name}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="countries_all_iso.name" Name="name" ShortName="name" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{countries_all_iso.alpha_2_code}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="countries_all_iso.alpha_2_code" Name="alpha_2_code" ShortName="alpha_2_code" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{countries_all_iso.alpha_3_code}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="countries_all_iso.alpha_3_code" Name="alpha_3_code" ShortName="alpha_3_code" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{countries_all_iso.numeric_code}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="countries_all_iso.numeric_code" Name="numeric_code" ShortName="numeric_code" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{countries_all_iso.internet_cctld}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="countries_all_iso.internet_cctld" Name="internet_cctld" ShortName="internet_cctld" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+        </Fields>
+      </Table>
+    </Tables>
+  </Database>
+  <DataDefinition>
+    <GroupSelectionFormula />
+    <RecordSelectionFormula />
+    <Groups />
+    <SortFields />
+    <FormulaFieldDefinitions>
+      <FormulaFieldDefinition FormulaName="{@CCTLD_formatted}" Kind="FormulaField" Name="CCTLD_formatted" NumberOfBytes="65534" ValueType="StringField">Local StringVar DotCode := {countries_all_iso.internet_cctld};&#xA;&#xA;If Length(DotCode) = 0&#xA;Then&#xA;"-"&#xA;Else&#xA;DotCode&#xA;;</FormulaFieldDefinition>
+    </FormulaFieldDefinitions>
+    <GroupNameFieldDefinitions />
+    <ParameterFieldDefinitions>
+    </ParameterFieldDefinitions>
+    <RunningTotalFieldDefinitions />
+    <SQLExpressionFields />
+    <SummaryFields />
+  </DataDefinition>
+  <CustomFunctions />
+  <ReportDefinition>
+    <Areas>
+      <Area Kind="ReportHeader" Name="ReportHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="True" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="760" Kind="ReportHeader" Name="ReportHeaderSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="ffff8000" A="255" R="255" G="128" B="0" />
+            </SectionFormat>
+            <ReportObjects>
+              <TextObject Name="Text7" Kind="TextObject" Top="80" Left="80" Width="11340" Height="600" MaxNumberOfLines="0">
+                <Text>Alpha Codes and Internet CCTLDs by Country</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="29" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Rubik" Size="18" SizeinPoints="18" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="DoubleLine" HasDropShadow="False" LeftLineStyle="DoubleLine" RightLineStyle="DoubleLine" TopLineStyle="DoubleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Aqua" A="255" R="0" G="255" B="255" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageHeader" Name="PageHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="819" Kind="PageHeader" Name="PageHeaderSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="Yellow" A="255" R="255" G="255" B="0" />
+            </SectionFormat>
+            <ReportObjects>
+              <TextObject Name="Text9" Kind="TextObject" Top="399" Left="60" Width="660" Height="240" MaxNumberOfLines="0">
+                <Text>ID</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Rubik" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text10" Kind="TextObject" Top="399" Left="1080" Width="6000" Height="240" MaxNumberOfLines="0">
+                <Text>Country</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Rubik" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text11" Kind="TextObject" Top="399" Left="7243" Width="915" Height="240" MaxNumberOfLines="0">
+                <Text>Alpha 2</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Rubik" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text12" Kind="TextObject" Top="399" Left="8280" Width="849" Height="240" MaxNumberOfLines="0">
+                <Text>Alpha 3</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Rubik" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text13" Kind="TextObject" Top="212" Left="9351" Width="1095" Height="420" MaxNumberOfLines="0">
+                <Text>Numeric&#xA;Code</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Rubik" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text14" Kind="TextObject" Top="178" Left="10560" Width="959" Height="467" MaxNumberOfLines="0">
+                <Text>Internet&#xA;CCTLD</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Rubik" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="Detail" Name="DetailArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="840" Kind="Detail" Name="DetailSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas BackgroundColor="select RecordNumber mod 2&#xD;&#xA;case 0: crYellow&#xD;&#xA;case 1: crLime&#xD;&#xA;" />
+              <BackgroundColor Name="Yellow" A="255" R="255" G="255" B="0" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="id1" Kind="FieldObject" Top="0" Left="60" Width="660" Height="840" DataSource="{countries_all_iso.id}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="20" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Rubik" Size="12" SizeinPoints="12" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="name1" Kind="FieldObject" Top="0" Left="1080" Width="6000" Height="840" DataSource="{countries_all_iso.name}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="20" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Rubik" Size="12" SizeinPoints="12" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="True" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="alpha2code1" Kind="FieldObject" Top="0" Left="7243" Width="917" Height="840" DataSource="{countries_all_iso.alpha_2_code}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="20" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Rubik" Size="12" SizeinPoints="12" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="True" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="alpha3code1" Kind="FieldObject" Top="0" Left="8280" Width="960" Height="840" DataSource="{countries_all_iso.alpha_3_code}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="20" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Rubik" Size="12" SizeinPoints="12" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="True" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="numericcode1" Kind="FieldObject" Top="0" Left="9351" Width="1089" Height="840" DataSource="{countries_all_iso.numeric_code}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="20" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Rubik" Size="12" SizeinPoints="12" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="True" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="CCTLDformatted1" Kind="FieldObject" Top="0" Left="10560" Width="960" Height="840" DataSource="{@CCTLD_formatted}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="20" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Rubik" Size="12" SizeinPoints="12" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Blue" A="255" R="0" G="0" B="255" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="ReportFooter" Name="ReportFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="220" Kind="ReportFooter" Name="ReportFooterSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="Yellow" A="255" R="255" G="255" B="0" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageFooter" Name="PageFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="True" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="840" Kind="PageFooter" Name="PageFooterSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="Aqua" A="255" R="0" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="PageNofM1" Kind="FieldObject" Top="240" Left="9823" Width="1474" Height="360" DataSource="PageNofM">
+                <Color Name="ffff8000" A="255" R="255" G="128" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="18" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Rubik" Size="11" SizeinPoints="11" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Blue" A="255" R="0" G="0" B="255" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <BoxObject Name="Box1" Kind="BoxObject" Top="120" Left="9721" Width="1679" Height="599" Bottom="719" EnableExtendToBottomOfSection="False" EndSectionName="PageFooterSection1" LineStyle="SingleLine" LineThickness="70" Right="11400">
+                <LineColor Name="ffff8000" A="255" R="255" G="128" B="0" />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Yellow" A="255" R="255" G="255" B="0" />
+                  <BorderColor Name="ffff8000" A="255" R="255" G="128" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </BoxObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+    </Areas>
+  </ReportDefinition>
+</Report>

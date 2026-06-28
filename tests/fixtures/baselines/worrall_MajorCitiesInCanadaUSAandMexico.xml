@@ -1,0 +1,460 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report Name="" FileName="/mnt/report.rpt" HasSavedData="True">
+  <Embedinfo />
+  <Summaryinfo KeywordsinReport="" ReportAuthor="BW" ReportComments="" ReportSubject="Geography, Canada, USA, Mexico" ReportTitle="Major Cities in Canada, USA, and Mexico" />
+  <ReportOptions EnableSaveDataWithReport="True" EnableSavePreviewPicture="True" EnableSaveSummariesWithReport="True" EnableUseDummyData="False" initialDataContext="" initialReportPartName="" />
+  <PrintOptions PageContentHeight="15120" PageContentWidth="11520" PaperOrientation="Portrait" PaperSize="DefaultPaperSize" PaperSource="FormSource" PrinterDuplex="Default" PrinterName="">
+    <PageMargins bottomMargin="360" leftMargin="360" rightMargin="360" topMargin="360" />
+    <PageMarginConditionFormulas />
+  </PrintOptions>
+  <SubReports />
+  <Database>
+    <TableLinks />
+    <Tables>
+      <Table Alias="vw_major_cities" ClassName="CrystalReports.Table" Name="vw_major_cities">
+        <ConnectionInfo Database_DLL="crdb_odbc.dll" QE_DatabaseName="" QE_DatabaseType="ODBC (RDO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="BWPortfolio" QE_SQLDB="True" SSO_Enabled="False" UserName="" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{vw_major_cities.id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="vw_major_cities.id" Name="id" ShortName="id" Type="crFieldValueTypeInt32sField" UseCount="1" />
+          <Field Description="" FormulaForm="{vw_major_cities.City}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_major_cities.City" Name="City" ShortName="City" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{vw_major_cities.Region}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_major_cities.Region" Name="Region" ShortName="Region" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{vw_major_cities.Province}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_major_cities.Province" Name="Province" ShortName="Province" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{vw_major_cities.Country}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_major_cities.Country" Name="Country" ShortName="Country" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+        </Fields>
+      </Table>
+    </Tables>
+  </Database>
+  <DataDefinition>
+    <GroupSelectionFormula />
+    <RecordSelectionFormula />
+    <Groups />
+    <SortFields />
+    <FormulaFieldDefinitions>
+    </FormulaFieldDefinitions>
+    <GroupNameFieldDefinitions />
+    <ParameterFieldDefinitions>
+    </ParameterFieldDefinitions>
+    <RunningTotalFieldDefinitions />
+    <SQLExpressionFields />
+    <SummaryFields />
+  </DataDefinition>
+  <CustomFunctions />
+  <ReportDefinition>
+    <Areas>
+      <Area Kind="ReportHeader" Name="ReportHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="True" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="970" Kind="ReportHeader" Name="ReportHeaderSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <TextObject Name="Text11" Kind="TextObject" Top="0" Left="60" Width="11340" Height="600" MaxNumberOfLines="0">
+                <Text>Major Cities in Canada, USA, and Mexico</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="36" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Impact" Size="22" SizeinPoints="22" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageHeader" Name="PageHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="442" Kind="PageHeader" Name="PageHeaderSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <BoxObject Name="Box8" Kind="BoxObject" Top="58" Left="0" Width="11519" Height="240" Bottom="298" EnableExtendToBottomOfSection="False" EndSectionName="PageHeaderSection1" LineStyle="SingleLine" LineThickness="10" Right="11519">
+                <LineColor Name="Black" A="255" R="0" G="0" B="0" />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Silver" A="255" R="192" G="192" B="192" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </BoxObject>
+              <LineObject Name="Line31" Kind="LineObject" Top="178" Left="60" Width="1038" Height="0" Bottom="178" EnableExtendToBottomOfSection="False" EndSectionName="PageHeaderSection1" LineStyle="SingleLine" LineThickness="40" Right="1098">
+                <LineColor Name="ffef3340" A="255" R="239" G="51" B="64" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="ffef3340" A="255" R="239" G="51" B="64" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <LineObject Name="Line32" Kind="LineObject" Top="178" Left="1098" Width="1035" Height="0" Bottom="178" EnableExtendToBottomOfSection="False" EndSectionName="PageHeaderSection1" LineStyle="SingleLine" LineThickness="40" Right="2133">
+                <LineColor Name="White" A="255" R="255" G="255" B="255" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="White" A="255" R="255" G="255" B="255" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <LineObject Name="Line33" Kind="LineObject" Top="178" Left="2040" Width="960" Height="0" Bottom="178" EnableExtendToBottomOfSection="False" EndSectionName="PageHeaderSection1" LineStyle="SingleLine" LineThickness="40" Right="3000">
+                <LineColor Name="ffef3340" A="255" R="239" G="51" B="64" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="ffef3340" A="255" R="239" G="51" B="64" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <LineObject Name="Line34" Kind="LineObject" Top="178" Left="4320" Width="1035" Height="0" Bottom="178" EnableExtendToBottomOfSection="False" EndSectionName="PageHeaderSection1" LineStyle="SingleLine" LineThickness="40" Right="5355">
+                <LineColor Name="ff3c3b6e" A="255" R="60" G="59" B="110" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="ff3c3b6e" A="255" R="60" G="59" B="110" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <LineObject Name="Line35" Kind="LineObject" Top="178" Left="5243" Width="1035" Height="0" Bottom="178" EnableExtendToBottomOfSection="False" EndSectionName="PageHeaderSection1" LineStyle="SingleLine" LineThickness="40" Right="6278">
+                <LineColor Name="White" A="255" R="255" G="255" B="255" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="White" A="255" R="255" G="255" B="255" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <LineObject Name="Line36" Kind="LineObject" Top="178" Left="6278" Width="1035" Height="0" Bottom="178" EnableExtendToBottomOfSection="False" EndSectionName="PageHeaderSection1" LineStyle="SingleLine" LineThickness="40" Right="7313">
+                <LineColor Name="ffb22234" A="255" R="178" G="34" B="52" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="ffb22234" A="255" R="178" G="34" B="52" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <LineObject Name="Line37" Kind="LineObject" Top="178" Left="8520" Width="1035" Height="0" Bottom="178" EnableExtendToBottomOfSection="False" EndSectionName="PageHeaderSection1" LineStyle="SingleLine" LineThickness="40" Right="9555">
+                <LineColor Name="ff006341" A="255" R="0" G="99" B="65" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="ff006341" A="255" R="0" G="99" B="65" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <LineObject Name="Line38" Kind="LineObject" Top="178" Left="9480" Width="1035" Height="0" Bottom="178" EnableExtendToBottomOfSection="False" EndSectionName="PageHeaderSection1" LineStyle="SingleLine" LineThickness="40" Right="10515">
+                <LineColor Name="White" A="255" R="255" G="255" B="255" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="White" A="255" R="255" G="255" B="255" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <LineObject Name="Line39" Kind="LineObject" Top="178" Left="10440" Width="915" Height="0" Bottom="178" EnableExtendToBottomOfSection="False" EndSectionName="PageHeaderSection1" LineStyle="SingleLine" LineThickness="40" Right="11355">
+                <LineColor Name="ffc8102e" A="255" R="200" G="16" B="46" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="ffc8102e" A="255" R="200" G="16" B="46" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="Detail" Name="DetailArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="3510" Kind="Detail" Name="DetailSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="id1" Kind="FieldObject" Top="0" Left="1098" Width="10422" Height="360" DataSource="{vw_major_cities.id}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="20" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="12" SizeinPoints="12" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="City1" Kind="FieldObject" Top="480" Left="1098" Width="10422" Height="596" DataSource="{vw_major_cities.City}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="21" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="13" SizeinPoints="13" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="True" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="Region1" Kind="FieldObject" Top="1200" Left="1098" Width="10422" Height="840" DataSource="{vw_major_cities.Region}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="20" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="12" SizeinPoints="12" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="True" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="Province1" Kind="FieldObject" Top="2160" Left="1098" Width="10422" Height="360" DataSource="{vw_major_cities.Province}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="20" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="12" SizeinPoints="12" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="True" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="Country1" Kind="FieldObject" Top="2640" Left="1098" Width="10422" Height="360" DataSource="{vw_major_cities.Country}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="20" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="12" SizeinPoints="12" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="True" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <LineObject Name="Line1" Kind="LineObject" Top="3240" Left="60" Width="1038" Height="0" Bottom="3240" EnableExtendToBottomOfSection="False" EndSectionName="DetailSection1" LineStyle="SingleLine" LineThickness="40" Right="1098">
+                <LineColor Name="ffef3340" A="255" R="239" G="51" B="64" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="ffef3340" A="255" R="239" G="51" B="64" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <TextObject Name="Text6" Kind="TextObject" Top="0" Left="0" Width="1020" Height="360" MaxNumberOfLines="0">
+                <Text>ID</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="18" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="11" SizeinPoints="11" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Maroon" A="255" R="128" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text7" Kind="TextObject" Top="480" Left="0" Width="1005" Height="600" MaxNumberOfLines="0">
+                <Text>City</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="18" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="11" SizeinPoints="11" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text8" Kind="TextObject" Top="1200" Left="0" Width="1050" Height="840" MaxNumberOfLines="0">
+                <Text>Region</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="18" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="11" SizeinPoints="11" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text9" Kind="TextObject" Top="2040" Left="0" Width="1050" Height="600" MaxNumberOfLines="0">
+                <Text>State /&#xA;Province</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="18" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="11" SizeinPoints="11" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text10" Kind="TextObject" Top="2640" Left="0" Width="1035" Height="360" MaxNumberOfLines="0">
+                <Text>Country</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="18" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="11" SizeinPoints="11" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <BoxObject Name="Box1" Kind="BoxObject" Top="3150" Left="0" Width="11625" Height="240" Bottom="3390" EnableExtendToBottomOfSection="False" EndSectionName="DetailSection1" LineStyle="SingleLine" LineThickness="10" Right="11625">
+                <LineColor Name="Black" A="255" R="0" G="0" B="0" />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Silver" A="255" R="192" G="192" B="192" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </BoxObject>
+              <LineObject Name="Line4" Kind="LineObject" Top="3240" Left="1098" Width="1035" Height="0" Bottom="3240" EnableExtendToBottomOfSection="False" EndSectionName="DetailSection1" LineStyle="SingleLine" LineThickness="40" Right="2133">
+                <LineColor Name="White" A="255" R="255" G="255" B="255" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="White" A="255" R="255" G="255" B="255" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <LineObject Name="Line6" Kind="LineObject" Top="3240" Left="2040" Width="1080" Height="0" Bottom="3240" EnableExtendToBottomOfSection="False" EndSectionName="DetailSection1" LineStyle="SingleLine" LineThickness="40" Right="3120">
+                <LineColor Name="ffef3340" A="255" R="239" G="51" B="64" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="ffef3340" A="255" R="239" G="51" B="64" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <LineObject Name="Line8" Kind="LineObject" Top="3240" Left="4320" Width="1035" Height="0" Bottom="3240" EnableExtendToBottomOfSection="False" EndSectionName="DetailSection1" LineStyle="SingleLine" LineThickness="40" Right="5355">
+                <LineColor Name="ff3c3b6e" A="255" R="60" G="59" B="110" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="ff3c3b6e" A="255" R="60" G="59" B="110" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <LineObject Name="Line11" Kind="LineObject" Top="3240" Left="5243" Width="1035" Height="0" Bottom="3240" EnableExtendToBottomOfSection="False" EndSectionName="DetailSection1" LineStyle="SingleLine" LineThickness="40" Right="6278">
+                <LineColor Name="White" A="255" R="255" G="255" B="255" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="White" A="255" R="255" G="255" B="255" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <LineObject Name="Line13" Kind="LineObject" Top="3240" Left="6278" Width="1035" Height="0" Bottom="3240" EnableExtendToBottomOfSection="False" EndSectionName="DetailSection1" LineStyle="SingleLine" LineThickness="40" Right="7313">
+                <LineColor Name="ffb22234" A="255" R="178" G="34" B="52" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="ffb22234" A="255" R="178" G="34" B="52" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <LineObject Name="Line15" Kind="LineObject" Top="3240" Left="8520" Width="1035" Height="0" Bottom="3240" EnableExtendToBottomOfSection="False" EndSectionName="DetailSection1" LineStyle="SingleLine" LineThickness="40" Right="9555">
+                <LineColor Name="ff006341" A="255" R="0" G="99" B="65" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="ff006341" A="255" R="0" G="99" B="65" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <LineObject Name="Line19" Kind="LineObject" Top="3240" Left="9480" Width="1035" Height="0" Bottom="3240" EnableExtendToBottomOfSection="False" EndSectionName="DetailSection1" LineStyle="SingleLine" LineThickness="40" Right="10515">
+                <LineColor Name="White" A="255" R="255" G="255" B="255" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="White" A="255" R="255" G="255" B="255" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <LineObject Name="Line21" Kind="LineObject" Top="3240" Left="10440" Width="1035" Height="0" Bottom="3240" EnableExtendToBottomOfSection="False" EndSectionName="DetailSection1" LineStyle="SingleLine" LineThickness="40" Right="11475">
+                <LineColor Name="ffc8102e" A="255" R="200" G="16" B="46" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="ffc8102e" A="255" R="200" G="16" B="46" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="ReportFooter" Name="ReportFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="220" Kind="ReportFooter" Name="ReportFooterSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageFooter" Name="PageFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="True" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="600" Kind="PageFooter" Name="PageFooterSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="PageNofM1" Kind="FieldObject" Top="120" Left="9360" Width="2062" Height="360" DataSource="PageNofM">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="SingleLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Silver" A="255" R="192" G="192" B="192" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+    </Areas>
+  </ReportDefinition>
+</Report>
