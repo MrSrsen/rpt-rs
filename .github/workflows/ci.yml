@@ -58,6 +58,11 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - name: Install bubblewrap
         run: sudo apt-get update && sudo apt-get install -y bubblewrap
+      # Ubuntu 24.04 (ubuntu-latest) ships an AppArmor profile that blocks unprivileged user
+      # namespaces, which Bubblewrap needs to set up its uid map ("setting up uid map:
+      # Permission denied"). Re-enable them so bwrap can run without privileges.
+      - name: Allow unprivileged user namespaces
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
       # Build the exporter, dump each fixture's XML in a Bubblewrap sandbox (fixed filesystem
       # path), and require an exact match against the committed baselines. RPT_REQUIRE_SANDBOX
       # makes the test fail rather than skip if the sandbox is unavailable.
