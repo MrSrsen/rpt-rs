@@ -361,11 +361,26 @@ pub fn summary_fields(report: &Report) -> Vec<SummaryFieldDef> {
                 "CrystalDecisions.CrystalReports.Engine.DatabaseFieldDefinition"
             }
             .to_string();
+            // The Operation is the base aggregation. A percentage summary leads with `PercentOf<Op>`
+            // but its Operation is the underlying op (`Sum`) — percentage is a display mode, not a
+            // distinct SummaryOperation.
+            let op_token = p.ds.split(" (").next().unwrap_or("").trim();
+            let operation = op_token
+                .strip_prefix("PercentOf")
+                .unwrap_or(op_token)
+                .to_string();
+            // Maximum / Minimum return the summarized field's own type (the result is one of the
+            // input values), unlike Sum/Average which coerce to Number/Currency. Use the summarized
+            // DB field's declared type (the placed object's value_type reports the coerced Number).
+            let vt = match operation.as_str() {
+                "Maximum" | "Minimum" => summarized_db_field_type(&groups, report).unwrap_or(p.vt),
+                _ => p.vt,
+            };
             SummaryFieldDef {
                 formula_name: p.ds.to_string(),
-                operation: p.ds.split(" (").next().unwrap_or("").trim().to_string(),
-                value_type: format!("{:?}Field", p.vt),
-                number_of_bytes: summary_number_of_bytes(p.vt, &groups, report),
+                operation,
+                value_type: format!("{vt:?}Field"),
+                number_of_bytes: summary_number_of_bytes(vt, &groups, report),
                 summarized_field_type,
                 grouped: !p.scope.is_empty(),
                 named: p.named,
@@ -391,6 +406,22 @@ fn brace_groups(s: &str) -> Vec<&str> {
         i += 1;
     }
     out
+}
+
+/// The declared type of the summary's summarized field (`groups[0]`, e.g. `{Command.days}`) when it
+/// is a database field; `None` for a formula operand or an unresolved field.
+fn summarized_db_field_type(groups: &[&str], report: &Report) -> Option<FieldValueType> {
+    let name = groups
+        .first()?
+        .trim_start_matches('{')
+        .trim_end_matches('}');
+    report
+        .database
+        .tables
+        .iter()
+        .flat_map(|t| &t.data_fields)
+        .find(|f| f.long_name.as_deref().unwrap_or(&f.name) == name)
+        .map(|f| f.value_type)
 }
 
 /// `NumberOfBytes` for a summary's result type: the intrinsic width, except a string result uses the
@@ -537,7 +568,55 @@ fn count_report(counts: &mut HashMap<String, i32>, field_refs: &[String], r: &Re
     for g in &r.data_definition.groups {
         let key = format!("{{{}}}", g.condition_field);
         if field_refs.contains(&key) {
-            *counts.entry(key).or_default() += 1;
+            // A group registers its DB condition field twice: as the group condition and as the
+            // group sort (both from the same `0xe5`). The sort is normally counted via `record_sorts`
+            // below. A Top N / Bottom N group sorts by a summary expression instead, so its
+            // `record_sorts` entry no longer names the field — count the sort reference here when the
+            // sort field differs.
+            *counts.entry(key.clone()).or_default() += 1;
+            // A summary-sorted group holds, on its condition field, the group-sort reference plus one
+            // reference per group-scoped construct: the group-name definition, each placed GroupName
+            // field object, and each group summary whose group-by (2nd) arg is this field. A plain
+            // group does not reach here.
+            if g.sort.field != g.condition_field {
+                // The group-sort reference held on the condition field (condition + sort).
+                *counts.entry(key.clone()).or_default() += 1;
+                *counts.entry(key.clone()).or_default() += 1; // GroupName definition
+                let gn_ds = format!("GroupName ({key})");
+                let placed_group_names = r
+                    .report_definition
+                    .areas
+                    .iter()
+                    .flat_map(|a| &a.sections)
+                    .flat_map(|s| &s.objects)
+                    .filter(
+                        |o| matches!(&o.kind, ReportObjectKind::Field(f) if f.data_source == gn_ds),
+                    )
+                    .count();
+                let summary_suffix = format!(", {key})");
+                let group_summaries = summary_fields(r)
+                    .iter()
+                    .filter(|s| s.formula_name.ends_with(&summary_suffix))
+                    .count();
+                *counts.entry(key).or_default() += (placed_group_names + group_summaries) as i32;
+
+                // The Top N sort basis is a summary (`g.sort.field`) referencing its summarized
+                // (1st-arg) field. If the group displays that same summary it is already counted via
+                // `summary_fields`; if it displays a different one (e.g. a percentage, while the sort
+                // basis stays a plain `Sum`), that sort-basis summary is a separate, otherwise
+                // uncounted reference → +1.
+                let sort_summary = g.sort.field.as_str();
+                let already_counted = summary_fields(r)
+                    .iter()
+                    .any(|s| s.formula_name == sort_summary);
+                if !already_counted {
+                    if let Some(first) = brace_groups(sort_summary).into_iter().next() {
+                        if let Some(fr) = field_refs.iter().find(|fr| fr.as_str() == first) {
+                            *counts.entry(fr.clone()).or_default() += 1;
+                        }
+                    }
+                }
+            }
         }
     }
     for s in &r.data_definition.record_sorts {
@@ -633,7 +712,14 @@ fn count_report(counts: &mut HashMap<String, i32>, field_refs: &[String], r: &Re
                     if let Some(g) = r.data_definition.groups.first() {
                         let key = format!("{{{}}}", g.condition_field);
                         if field_refs.contains(&key) {
-                            *counts.entry(key).or_default() += 1;
+                            // A reused-group chart adds +1 over a plain group. On a summary-sorted
+                            // group it instead binds a full category (condition + sort) → +2.
+                            let n = if g.sort.field != g.condition_field {
+                                2
+                            } else {
+                                1
+                            };
+                            *counts.entry(key).or_default() += n;
                         }
                     }
                 }

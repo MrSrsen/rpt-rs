@@ -74,6 +74,8 @@ pub(super) fn cond_attr(name: &str) -> Option<&'static str> {
         "Font_Style" => "Style",
         // Display-string format formula on a field/text object's `0xfd` condition slots.
         "Display_String" => "DisplayString",
+        // Dynamic-image location formula on a PictureObject's `0xfd` condition slots.
+        "Graphic_Location" => "GraphicLocation",
         // Border foreground colour condition formula (lives on the `0xed` border wrapper, alongside
         // `Back_Color` → BackgroundColor). The border's *foreground* is its line/border colour.
         "Fore_Color" => "BorderColor",
@@ -100,10 +102,13 @@ pub(super) fn condition_refs(node: &RecordNode, logical: &[u8]) -> Vec<(String, 
                     // the +2..+4 window (the small index value sits in the low byte regardless), then
                     // advance only past the string and let the byte-scan find the next `@`-name —
                     // never assume a trailer width, or a short index would skip the following slot.
-                    let fml_idx = bytes
-                        .get(i + consumed + 2..i + consumed + 4)
-                        .map(|b| usize::from(u16::from_le_bytes([b[0], b[1]])))
-                        .unwrap_or(0);
+                    // The index is a little-endian value at `+2` (low) / `+3` (high). Read it
+                    // byte-wise with missing bytes = 0, not as a fixed 2-byte slice: a slot that ends
+                    // the record (a 1-byte index as the leaf's last byte) has no `+3` byte, so a
+                    // slice read would fail out-of-bounds and default the index to 0.
+                    let lo = bytes.get(i + consumed + 2).copied().unwrap_or(0);
+                    let hi = bytes.get(i + consumed + 3).copied().unwrap_or(0);
+                    let fml_idx = usize::from(u16::from_le_bytes([lo, hi]));
                     refs.push((name.to_string(), fml_idx));
                     i += consumed;
                     continue;

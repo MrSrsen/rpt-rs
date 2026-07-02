@@ -6,6 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Added
+
+- **SQL-expression fields.** Decodes `{%name}` SQL-expression field references.
+- **Dynamic parameters.** Recognises dynamic (list-of-values) parameters and reports their editing flags accordingly.
+- **Top N / Bottom N group sorts.** Decodes group summary sorts and renders their summary sort expression and direction.
+- **Percentage summaries.** Decodes percentage summaries (`PercentOfSum (…)`, etc.).
+- **Running-total conditions.** Decodes running-total reset and evaluation conditions (`OnChangeOfField` / `OnFormula`).
+- **Cross-section boxes.** Resolves a box that spans into a later section, reporting its end section and bottom edge.
+- **Dynamic image locations.** Decodes a picture object's dynamic graphic-location formula, and its `EnableCanGrow` flag.
+- **Subreport on-demand flag.** Decodes a subreport's `EnableOnDemand` flag.
+
+### Fixed
+
+- **Table aliases with spaces.** Aliases whose table name contains spaces (which Crystal substitutes with underscores)
+  now match correctly, fixing the alias and the field long-names and formula forms derived from it.
+- **Range parameter current values.** A range (non-discrete) current value now sets `HasCurrentValue`.
+- **Summary result types.** `Maximum` / `Minimum` summaries report the summarized field's own type; a Currency running
+  total reports a Number result, matching the engine.
+- **Negative line heights.** A line drawn bottom-to-top reports its height as a magnitude.
+- **Cross-tab keep-together.** A cross-tab no longer inherits the object-level keep-together flag.
+- **Field use counts.** Corrects use-count totals for summary-sorted groups.
+
+## [0.0.0]
+
 The initial release: a pure-Rust reader for SAP Crystal Reports `.rpt` files, with no dependency on the SAP runtime, a
 database connection, or any Windows component.
 

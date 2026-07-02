@@ -71,6 +71,8 @@ pub enum FieldRefKind {
     RunningTotal,
     /// A parameter field — `{?name}`.
     Parameter,
+    /// A SQL expression field — `{%name}`.
+    SqlExpression,
     /// Anything else; the raw reference is used verbatim.
     Unknown,
 }
@@ -86,6 +88,7 @@ impl FieldRefKind {
             0x04 => Self::GroupName,
             0x06 => Self::Parameter,
             0x09 => Self::RunningTotal,
+            0x0a => Self::SqlExpression,
             _ => Self::Unknown,
         }
     }

@@ -51,12 +51,19 @@ pub(super) fn parse_param_leaf(leaf: &[u8]) -> Option<ParamRecord> {
     let allow_multiple = ff_end
         .and_then(|e| leaf.get(e + 6).copied())
         .is_some_and(|b| b == 1);
-    // Dynamic / list-of-values parameters (SAP Business One `$[…]` and `Object@` params) store a
-    // `0x01` at `ff_block_end + 4`; for those both AllowCustomCurrentValues and
-    // EnableAllowEditingDefaultValue are False. Static parameters store `0x00` (both True).
+    // Dynamic / list-of-values parameters disallow both AllowCustomCurrentValues and
+    // EnableAllowEditingDefaultValue (static parameters allow both). Two encodings mark this: a
+    // `0x01` at `ff_block_end + 4` (SAP Business One `$[…]`/`Object@` params), or a `0x01` 12 bytes
+    // before the `/crobj://{…}` GUID reference (Crystal LOV params).
     let dynamic = ff_end
         .and_then(|e| leaf.get(e + 4).copied())
-        .is_some_and(|b| b == 1);
+        .is_some_and(|b| b == 1)
+        || leaf
+            .windows(6)
+            .position(|w| w == b"/crobj")
+            .and_then(|p| p.checked_sub(12))
+            .and_then(|q| leaf.get(q).copied())
+            == Some(1);
     let allow_custom_values = !dynamic;
     let allow_editing_default = !dynamic;
     let guid = find_guid_lp(leaf)?;
@@ -340,6 +347,9 @@ pub(crate) fn parse_report_parameters(stream: &RecordStream) -> BTreeMap<u16, Ve
                 return;
             };
             let Some((raw_values, after)) = parse_value_entries(&leaf, 9, count, value_type) else {
+                // A range (non-discrete) current value: entries can't be recovered, but the record's
+                // presence means the parameter has a saved current value. Mark it with an empty entry.
+                out.entry(idx as u16).or_default();
                 return;
             };
             // Descriptions are LP-string(s) trailing the embedded `</CRMetaObjects>` (when the record
@@ -453,7 +463,9 @@ pub(super) fn raise_parameters(
                 show_on_panel,
                 editable_on_panel: show_on_panel,
                 optional_prompt: rec.is_some_and(|r| r.is_optional),
-                has_current_value: !current.is_empty(),
+                // Presence of a current-value record (discrete *or* range) sets HasCurrentValue;
+                // `current` may be empty for a range whose discrete entries we can't recover.
+                has_current_value: rec.and_then(|r| current_values.get(&r.index)).is_some(),
                 allow_multiple_values: rec.is_some_and(|r| r.allow_multiple),
                 // Default True when no detail record exists (e.g. auto-generated command params).
                 allow_custom_values: rec.is_none_or(|r| r.allow_custom_values),

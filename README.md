@@ -1,5 +1,9 @@
 # rpt-rs
 
+> ⚠️This entire project has unstable API and is very experimental! Expect major refactorings and breaking changes moving
+> forward. If you need stability - fork this project. There is even a chance that I will lost interest in this. You are
+> always welcome to fork this repo and work on it on your own.
+
 [![License: MPL-2.0](https://img.shields.io/badge/license-MPL--2.0-blue.svg)](LICENSE)
 ![Rust 1.85+](https://img.shields.io/badge/rust-1.85%2B-orange.svg)
 

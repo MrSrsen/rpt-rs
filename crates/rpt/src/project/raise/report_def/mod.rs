@@ -404,10 +404,13 @@ pub(super) fn raise_report_definition(
                     .and_then(|b| <[u8; 4]>::try_from(b).ok())
                     .map(u32::from_be_bytes)
                     .unwrap_or(0);
+                // Byte 7 of the opener is the EnableOnDemand flag (1 = on-demand, 0 = in-place).
+                let on_demand = node.leaf_bytes(logical).get(7).is_some_and(|&b| b != 0);
                 open_object(
                     &mut areas,
                     ReportObjectKind::Subreport(crate::model::SubreportObject {
                         subdoc_index,
+                        on_demand,
                         ..Default::default()
                     }),
                 );
@@ -442,8 +445,12 @@ pub(super) fn raise_report_definition(
                     obj.format.horizontal_alignment = Alignment::from_code(i32::from(align));
                     // Byte 1 is EnableSuppress, stored inverted (0 = suppressed, 1 = shown).
                     obj.format.suppress.value = lb.get(1).is_some_and(|&b| b == 0);
-                    // Byte 5 is EnableKeepTogether (1 = keep together), byte 9 EnableCanGrow.
-                    obj.format.keep_together = lb.get(5).is_none_or(|&b| b != 0);
+                    // Byte 5 is EnableKeepTogether (1 = keep together), byte 9 EnableCanGrow. A
+                    // cross-tab ignores the object-level flag (byte5=1 like others, yet the engine
+                    // reports False), so leave its keep-together at the default (false).
+                    if !matches!(obj.kind, ReportObjectKind::CrossTab(_)) {
+                        obj.format.keep_together = lb.get(5).is_none_or(|&b| b != 0);
+                    }
                     obj.format.can_grow = lb.get(9).is_some_and(|&b| b != 0);
                 }
             }
@@ -500,6 +507,12 @@ pub(super) fn raise_report_definition(
                 let shape_type = DrawingShapeKind::from_byte(lb.get(25).copied().unwrap_or(0));
                 let mut border = raise_border(node, logical);
                 border.condition_formulas = std::mem::take(&mut pending_border_conditions);
+                // The box's own section height (to detect a box that spans past it, below).
+                let section_height = areas
+                    .last()
+                    .and_then(|a| a.sections.last())
+                    .map(|s| s.height.0)
+                    .unwrap_or(0);
                 if let Some(obj) = current_object(&mut areas) {
                     // Reclassify a freshly-opened drawing object (always opened as a Line at `0xa9`)
                     // to a Box when byte 25 says so, carrying over its drawing properties. A box's
@@ -515,7 +528,17 @@ pub(super) fn raise_report_definition(
                             });
                             if shape.right.0 > 0 {
                                 obj.bounds.width = Twips(shape.right.0 - obj.bounds.left.0);
-                                obj.bounds.height = Twips(shape.bottom.0 - obj.bounds.top.0);
+                                // A cross-section box (spanning into a later section) keeps the
+                                // `0x9e` height (the true span); its end section is resolved in a
+                                // post-pass. Detected when the opener bottom is above the top, or the
+                                // box's bottom edge (top + span) extends past its own section. A box
+                                // that fits one section instead takes the opener span as its height.
+                                let top = obj.bounds.top.0;
+                                let spans = shape.bottom.0 < top
+                                    || top + obj.bounds.height.0 > section_height;
+                                if !spans {
+                                    obj.bounds.height = Twips(shape.bottom.0 - top);
+                                }
                             }
                         }
                     }
@@ -700,7 +723,39 @@ pub(super) fn raise_report_definition(
         }
     }
     sort_areas_canonical(&mut areas);
+    resolve_cross_section_boxes(&mut areas);
     ReportDefinition { areas }
+}
+
+/// Resolve the end section of every cross-section box. Walk the stacked sections (canonical layout
+/// order, across areas) from the box's section, accumulating each section's height from the box's
+/// top until the total reaches the box height — that section holds the box's bottom edge. Must run
+/// after `sort_areas_canonical` so the stacking order matches the rendered layout.
+fn resolve_cross_section_boxes(areas: &mut [Area]) {
+    let flat: Vec<(String, i32)> = areas
+        .iter()
+        .flat_map(|a| &a.sections)
+        .map(|s| (s.name.clone(), s.height.0))
+        .collect();
+    for (start, sec) in areas.iter_mut().flat_map(|a| &mut a.sections).enumerate() {
+        for obj in &mut sec.objects {
+            let top = obj.bounds.top.0;
+            let height = obj.bounds.height.0;
+            if let ReportObjectKind::Box(bx) = &mut obj.kind {
+                // Cross-section signature: the opener's (end-relative) bottom is above the top, or the
+                // box's bottom edge (top + the true span) extends past its own section.
+                if bx.shape.bottom.0 < top || top + height > flat[start].1 {
+                    let mut acc = flat[start].1 - top;
+                    let mut end = start;
+                    while acc < height && end + 1 < flat.len() {
+                        end += 1;
+                        acc += flat[end].1;
+                    }
+                    bx.end_section_name = flat[end].0.clone();
+                }
+            }
+        }
+    }
 }
 
 /// Collect each chart / cross-tab object's persistent field bindings from the report's binding

@@ -166,14 +166,20 @@ pub(super) fn raise_database(qe: &RecordStream) -> Database {
 /// decorates the alias (`Command_1` with alias `Command`). Anchored on the name so the qualified
 /// name / server / type word never match. Falls back to `name`.
 pub(super) fn table_alias(strings: &[String], name: &str) -> String {
+    // The alias is the table name — or its space-sanitized form (Crystal replaces spaces with
+    // underscores for a valid identifier: `Orders Detail` -> `Orders_Detail`) — optionally with an
+    // instance suffix of digits/underscores (`clients` -> `clients1`).
+    let sanitized = name.replace(' ', "_");
     let is_variant = |s: &str| {
-        let (short, long) = if name.len() <= s.len() {
-            (name, s)
-        } else {
-            (s, name)
-        };
-        long.strip_prefix(short)
-            .is_some_and(|rest| rest.chars().all(|c| c.is_ascii_digit() || c == '_'))
+        [name, sanitized.as_str()].iter().any(|base| {
+            let (short, long) = if base.len() <= s.len() {
+                (*base, s)
+            } else {
+                (s, *base)
+            };
+            long.strip_prefix(short)
+                .is_some_and(|rest| rest.chars().all(|c| c.is_ascii_digit() || c == '_'))
+        })
     };
     // A *command table* stores its strings as `[name, name, alias, command-text…]`: the name (always
     // `Command` / `Command_N`) is repeated, then the user-facing alias (index 2), then the command

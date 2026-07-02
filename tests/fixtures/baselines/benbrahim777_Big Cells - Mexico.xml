@@ -1,0 +1,298 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report Name="" FileName="/mnt/report.rpt" HasSavedData="True">
+  <Embedinfo />
+  <Summaryinfo KeywordsinReport="" ReportAuthor="" ReportComments="" ReportSubject="" ReportTitle="" />
+  <ReportOptions EnableSaveDataWithReport="True" EnableSavePreviewPicture="True" EnableSaveSummariesWithReport="True" EnableUseDummyData="False" initialDataContext="" initialReportPartName="" />
+  <PrintOptions PageContentHeight="15120" PageContentWidth="11520" PaperOrientation="Portrait" PaperSize="DefaultPaperSize" PaperSource="FormSource" PrinterDuplex="Default" PrinterName="">
+    <PageMargins bottomMargin="360" leftMargin="360" rightMargin="360" topMargin="360" />
+    <PageMarginConditionFormulas />
+  </PrintOptions>
+  <SubReports />
+  <Database>
+    <TableLinks>
+      <TableLink JoinType="Equal">
+        <SourceFields>
+          <Field FormulaName="{Orders_Detail.Order ID}" Kind="DatabaseField" Name="Order ID" NumberOfBytes="4" ValueType="Int32sField" />
+        </SourceFields>
+        <DestinationFields>
+          <Field FormulaName="{Orders.Order ID}" Kind="DatabaseField" Name="Order ID" NumberOfBytes="4" ValueType="Int32sField" />
+        </DestinationFields>
+      </TableLink>
+      <TableLink JoinType="Equal">
+        <SourceFields>
+          <Field FormulaName="{Orders_Detail.Product ID}" Kind="DatabaseField" Name="Product ID" NumberOfBytes="4" ValueType="Int32sField" />
+        </SourceFields>
+        <DestinationFields>
+          <Field FormulaName="{Product.Product ID}" Kind="DatabaseField" Name="Product ID" NumberOfBytes="4" ValueType="Int32sField" />
+        </DestinationFields>
+      </TableLink>
+      <TableLink JoinType="Equal">
+        <SourceFields>
+          <Field FormulaName="{Product.Product Type ID}" Kind="DatabaseField" Name="Product Type ID" NumberOfBytes="4" ValueType="Int32sField" />
+        </SourceFields>
+        <DestinationFields>
+          <Field FormulaName="{Product_Type.Product Type ID}" Kind="DatabaseField" Name="Product Type ID" NumberOfBytes="4" ValueType="Int32sField" />
+        </DestinationFields>
+      </TableLink>
+      <TableLink JoinType="Equal">
+        <SourceFields>
+          <Field FormulaName="{Orders.Customer ID}" Kind="DatabaseField" Name="Customer ID" NumberOfBytes="4" ValueType="Int32sField" />
+        </SourceFields>
+        <DestinationFields>
+          <Field FormulaName="{Customer.Customer ID}" Kind="DatabaseField" Name="Customer ID" NumberOfBytes="4" ValueType="Int32sField" />
+        </DestinationFields>
+      </TableLink>
+    </TableLinks>
+    <Tables>
+      <Table Alias="Customer" ClassName="CrystalReports.Table" Name="Customer">
+        <ConnectionInfo Database_DLL="crdb_dao.dll" QE_DatabaseName="" QE_DatabaseType="Access/Excel (DAO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="E:\Documents\Ed2Go\Crystal_Reports\xtreme.mdb" QE_SQLDB="True" SSO_Enabled="False" UserName="" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{Customer.Customer ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Customer.Customer ID" Name="Customer ID" ShortName="Customer ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Customer Credit ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Customer.Customer Credit ID" Name="Customer Credit ID" ShortName="Customer Credit ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Customer Name}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="82" LongName="Customer.Customer Name" Name="Customer Name" ShortName="Customer Name" Type="crFieldValueTypeStringField" UseCount="3" />
+          <Field Description="" FormulaForm="{Customer.Contact First Name}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="62" LongName="Customer.Contact First Name" Name="Contact First Name" ShortName="Contact First Name" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Contact Last Name}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="62" LongName="Customer.Contact Last Name" Name="Contact Last Name" ShortName="Contact Last Name" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Contact Title}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="12" LongName="Customer.Contact Title" Name="Contact Title" ShortName="Contact Title" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Contact Position}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="62" LongName="Customer.Contact Position" Name="Contact Position" ShortName="Contact Position" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Last Year's Sales}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Customer.Last Year's Sales" Name="Last Year's Sales" ShortName="Last Year's Sales" Type="crFieldValueTypeCurrencyField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Address1}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="122" LongName="Customer.Address1" Name="Address1" ShortName="Address1" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Address2}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="42" LongName="Customer.Address2" Name="Address2" ShortName="Address2" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.City}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="42" LongName="Customer.City" Name="City" ShortName="City" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Region}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="62" LongName="Customer.Region" Name="Region" ShortName="Region" Type="crFieldValueTypeStringField" UseCount="2" />
+          <Field Description="" FormulaForm="{Customer.Country}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="62" LongName="Customer.Country" Name="Country" ShortName="Country" Type="crFieldValueTypeStringField" UseCount="1" />
+          <Field Description="" FormulaForm="{Customer.Postal Code}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="22" LongName="Customer.Postal Code" Name="Postal Code" ShortName="Postal Code" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.E-mail}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="102" LongName="Customer.E-mail" Name="E-mail" ShortName="E-mail" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Web Site}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="102" LongName="Customer.Web Site" Name="Web Site" ShortName="Web Site" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Phone}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="42" LongName="Customer.Phone" Name="Phone" ShortName="Phone" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Fax}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="42" LongName="Customer.Fax" Name="Fax" ShortName="Fax" Type="crFieldValueTypeStringField" UseCount="0" />
+        </Fields>
+      </Table>
+      <Table Alias="Orders" ClassName="CrystalReports.Table" Name="Orders">
+        <ConnectionInfo Database_DLL="crdb_dao.dll" QE_DatabaseName="" QE_DatabaseType="Access/Excel (DAO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="E:\Documents\Ed2Go\Crystal_Reports\xtreme.mdb" QE_SQLDB="True" SSO_Enabled="False" UserName="" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{Orders.Order ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Orders.Order ID" Name="Order ID" ShortName="Order ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Order Amount}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Orders.Order Amount" Name="Order Amount" ShortName="Order Amount" Type="crFieldValueTypeCurrencyField" UseCount="1" />
+          <Field Description="" FormulaForm="{Orders.Customer ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Orders.Customer ID" Name="Customer ID" ShortName="Customer ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Employee ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Orders.Employee ID" Name="Employee ID" ShortName="Employee ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Order Date}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Orders.Order Date" Name="Order Date" ShortName="Order Date" Type="crFieldValueTypeDateTimeField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Required Date}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Orders.Required Date" Name="Required Date" ShortName="Required Date" Type="crFieldValueTypeDateTimeField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Ship Date}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Orders.Ship Date" Name="Ship Date" ShortName="Ship Date" Type="crFieldValueTypeDateTimeField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Courier Website}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="Orders.Courier Website" Name="Courier Website" ShortName="Courier Website" Type="crFieldValueTypePersistentMemoField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Ship Via}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="42" LongName="Orders.Ship Via" Name="Ship Via" ShortName="Ship Via" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Shipped}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="2" LongName="Orders.Shipped" Name="Shipped" ShortName="Shipped" Type="crFieldValueTypeBooleanField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.PO#}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="102" LongName="Orders.PO#" Name="PO#" ShortName="PO#" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Payment Received}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="2" LongName="Orders.Payment Received" Name="Payment Received" ShortName="Payment Received" Type="crFieldValueTypeBooleanField" UseCount="0" />
+        </Fields>
+      </Table>
+      <Table Alias="Orders_Detail" ClassName="CrystalReports.Table" Name="Orders Detail">
+        <ConnectionInfo Database_DLL="crdb_dao.dll" QE_DatabaseName="" QE_DatabaseType="Access/Excel (DAO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="E:\Documents\Ed2Go\Crystal_Reports\xtreme.mdb" QE_SQLDB="True" SSO_Enabled="False" UserName="" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{Orders_Detail.Order ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Orders_Detail.Order ID" Name="Order ID" ShortName="Order ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders_Detail.Product ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Orders_Detail.Product ID" Name="Product ID" ShortName="Product ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders_Detail.Unit Price}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Orders_Detail.Unit Price" Name="Unit Price" ShortName="Unit Price" Type="crFieldValueTypeCurrencyField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders_Detail.Quantity}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Orders_Detail.Quantity" Name="Quantity" ShortName="Quantity" Type="crFieldValueTypeInt32sField" UseCount="0" />
+        </Fields>
+      </Table>
+      <Table Alias="Product" ClassName="CrystalReports.Table" Name="Product">
+        <ConnectionInfo Database_DLL="crdb_dao.dll" QE_DatabaseName="" QE_DatabaseType="Access/Excel (DAO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="E:\Documents\Ed2Go\Crystal_Reports\xtreme.mdb" QE_SQLDB="True" SSO_Enabled="False" UserName="" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{Product.Product ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Product.Product ID" Name="Product ID" ShortName="Product ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Product.Product Name}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="102" LongName="Product.Product Name" Name="Product Name" ShortName="Product Name" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Product.Color}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="42" LongName="Product.Color" Name="Color" ShortName="Color" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Product.Size}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="22" LongName="Product.Size" Name="Size" ShortName="Size" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Product.M/F}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="22" LongName="Product.M/F" Name="M/F" ShortName="M/F" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Product.Price (SRP)}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Product.Price (SRP)" Name="Price (SRP)" ShortName="Price (SRP)" Type="crFieldValueTypeCurrencyField" UseCount="0" />
+          <Field Description="" FormulaForm="{Product.Product Type ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Product.Product Type ID" Name="Product Type ID" ShortName="Product Type ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Product.Product Class}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="102" LongName="Product.Product Class" Name="Product Class" ShortName="Product Class" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Product.Supplier ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Product.Supplier ID" Name="Supplier ID" ShortName="Supplier ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+        </Fields>
+      </Table>
+      <Table Alias="Product_Type" ClassName="CrystalReports.Table" Name="Product Type">
+        <ConnectionInfo Database_DLL="crdb_dao.dll" QE_DatabaseName="" QE_DatabaseType="Access/Excel (DAO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="E:\Documents\Ed2Go\Crystal_Reports\xtreme.mdb" QE_SQLDB="True" SSO_Enabled="False" UserName="" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{Product_Type.Product Type ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Product_Type.Product Type ID" Name="Product Type ID" ShortName="Product Type ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Product_Type.Product Type Name}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="102" LongName="Product_Type.Product Type Name" Name="Product Type Name" ShortName="Product Type Name" Type="crFieldValueTypeStringField" UseCount="3" />
+          <Field Description="" FormulaForm="{Product_Type.Description}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="Product_Type.Description" Name="Description" ShortName="Description" Type="crFieldValueTypePersistentMemoField" UseCount="0" />
+          <Field Description="" FormulaForm="{Product_Type.Picture}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="Product_Type.Picture" Name="Picture" ShortName="Picture" Type="crFieldValueTypeBlobField" UseCount="0" />
+        </Fields>
+      </Table>
+    </Tables>
+  </Database>
+  <DataDefinition>
+    <GroupSelectionFormula />
+    <RecordSelectionFormula> (  {Customer.Country} = "Mexico"  )  </RecordSelectionFormula>
+    <Groups>
+      <Group ConditionField="{Customer.Region}" />
+    </Groups>
+    <SortFields>
+      <SortField Field="{Customer.Region}" SortDirection="AscendingOrder" SortType="GroupSortField" />
+    </SortFields>
+    <FormulaFieldDefinitions>
+      <FormulaFieldDefinition FormulaName="{@No Summarized Field}" Kind="FormulaField" Name="No Summarized Field" NumberOfBytes="2" ValueType="BooleanField"></FormulaFieldDefinition>
+    </FormulaFieldDefinitions>
+    <GroupNameFieldDefinitions>
+      <GroupNameFieldDefinition FormulaName="GroupName ({Customer.Region})" Group="CrystalDecisions.CrystalReports.Engine.Group" GroupNameFieldName="Group #1 Name: Customer.Region" Kind="GroupNameField" Name="GroupName ({Customer.Region})" NumberOfBytes="65534" ValueType="StringField" />
+    </GroupNameFieldDefinitions>
+    <ParameterFieldDefinitions>
+    </ParameterFieldDefinitions>
+    <RunningTotalFieldDefinitions />
+    <SQLExpressionFields />
+    <SummaryFields />
+  </DataDefinition>
+  <CustomFunctions />
+  <ReportDefinition>
+    <Areas>
+      <Area Kind="ReportHeader" Name="ReportHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="True" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="1030" Kind="ReportHeader" Name="ReportHeaderSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <TextObject Name="Text1" Kind="TextObject" Top="240" Left="2040" Width="6960" Height="600" MaxNumberOfLines="0">
+                <Text>Mexican Sales by State and Type</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="29" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="18" SizeinPoints="18" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageHeader" Name="PageHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="697" Kind="PageHeader" Name="PageHeaderSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="PrintDate1" Kind="FieldObject" Top="221" Left="0" Width="994" Height="221" DataSource="PrintDate">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="GroupHeader" Name="GroupHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False">
+          <GroupAreaFormat EnableKeepGroupTogether="False" EnableRepeatGroupHeader="False" VisibleGroupNumberPerPage="0" />
+        </AreaFormat>
+        <Sections>
+          <Section Height="2665" Kind="GroupHeader" Name="GroupHeaderSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="GroupNameRegion1" Kind="FieldObject" Top="0" Left="0" Width="2554" Height="221" DataSource="GroupName ({Customer.Region})">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <CrossTabObject Name="CrossTab2" Kind="CrossTabObject" Top="240" Left="240" Width="7668" Height="1780">
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="True" EnableCloseAtPageBreak="True" EnableKeepTogether="False" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </CrossTabObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="Detail" Name="DetailArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="220" Kind="Detail" Name="DetailSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="True" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="GroupFooter" Name="GroupFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="310" Kind="GroupFooter" Name="GroupFooterSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="ReportFooter" Name="ReportFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="220" Kind="ReportFooter" Name="ReportFooterSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageFooter" Name="PageFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="True" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="663" Kind="PageFooter" Name="PageFooterSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="PageNumber1" Kind="FieldObject" Top="442" Left="0" Width="950" Height="221" DataSource="PageNumber">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+    </Areas>
+  </ReportDefinition>
+</Report>

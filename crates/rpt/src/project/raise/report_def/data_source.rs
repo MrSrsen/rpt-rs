@@ -52,7 +52,8 @@ pub(super) fn field_data_source(
         FieldRefKind::DatabaseField
         | FieldRefKind::Formula
         | FieldRefKind::RunningTotal
-        | FieldRefKind::Parameter => format!("{{{raw}}}"),
+        | FieldRefKind::Parameter
+        | FieldRefKind::SqlExpression => format!("{{{raw}}}"),
         // A special field renders as its canonical kind name, from the type code (its display
         // string is localized). Fall back to the spaceless display string for unmapped codes.
         FieldRefKind::Special => code
@@ -84,12 +85,26 @@ pub(super) fn field_data_source(
         // group owning the hosting section (`group_no`). Report/page-band summaries are grand totals
         // (one operand).
         FieldRefKind::Summary => match raw.split_once(" of ") {
-            Some((op, operand)) => {
-                let op = match op {
-                    "Max" => "Maximum",
-                    "Min" => "Minimum",
-                    other => other,
+            Some((op0, operand0)) => {
+                let remap = |o: &str| {
+                    match o {
+                        "Max" => "Maximum",
+                        "Min" => "Minimum",
+                        other => other,
+                    }
+                    .to_string()
                 };
+                // A percentage summary collapses `Percentage of <InnerOp> of {field}` to
+                // `PercentOf<InnerOp> ({field}, {group})` (e.g. `Percentage of Sum of X` →
+                // `PercentOfSum (…)`), dropping the inner `… of` level rather than nesting it.
+                let (op, operand) = match (op0, operand0.split_once(" of ")) {
+                    ("Percentage", Some((inner, field))) => {
+                        (format!("PercentOf{}", remap(inner)), field.to_string())
+                    }
+                    _ => (remap(op0), operand0.to_string()),
+                };
+                let op = op.as_str();
+                let operand = operand.as_str();
                 match group_no.and_then(|n| groups.get(n.wrapping_sub(1))) {
                     // A summary scoped to a date/time/boolean group gets the group's grouping
                     // condition as a (lowercase) third operand: `DistinctCount ({op}, {g}, "daily")`.

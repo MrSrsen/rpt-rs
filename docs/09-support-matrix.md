@@ -84,7 +84,7 @@ fully modelled.)
 | Parameters                                                  |   ✅   | definitions, types, default/current values                   |
 | Formulas                                                    |   ✅   | bodies and references                                        |
 | Record / group selection formulas                           |   ✅   |                                                              |
-| Groups & sorting                                            |   ◐    | groups and sort fields decoded; some group options pending   |
+| Groups & sorting                                            |   ◐    | groups, sort fields, and Top N / Bottom N summary sorts decoded; some group options pending |
 | Summaries & running totals                                  |   ✅   |                                                              |
 | Sections & areas                                            |   ✅   | with formatting and conditional formatting                   |
 | Report objects (field, text, line, box, picture, subreport) |   ✅   | placement, formatting, fonts, borders                        |

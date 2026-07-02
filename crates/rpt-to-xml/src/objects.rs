@@ -8,7 +8,7 @@ use crate::colors::{write_color, BLACK};
 use crate::util::{b, escape, escape_text};
 
 /// `<ObjectFormatConditionFormulas>` attribute order (subset of the SDK enum we decode).
-const OBJECT_COND_ORDER: &[&str] = &["EnableSuppress", "DisplayString"];
+const OBJECT_COND_ORDER: &[&str] = &["EnableSuppress", "DisplayString", "GraphicLocation"];
 /// `<SectionAreaConditionFormulas>` attribute order (SDK enum order).
 const SECTION_COND_ORDER: &[&str] = &["EnableSuppress", "EnableNewPageAfter", "BackgroundColor"];
 /// `<FontColorConditionFormulas>` attribute order (SDK enum order).
@@ -152,7 +152,9 @@ pub(crate) fn write_object(o: &mut String, obj: &ReportObject, section_name: &st
             r.top.0,
             r.left.0,
             r.width.0,
-            r.height.0
+            // A line drawn bottom-to-top stores a negative (signed `0x9e`) height; the engine reports
+            // the magnitude. Every other object has a non-negative height, so `abs` is a no-op there.
+            r.height.0.abs()
         )
     };
     // A plain text object's default alignment renders as LeftAlign; a field object keeps
@@ -228,8 +230,18 @@ pub(crate) fn write_object(o: &mut String, obj: &ReportObject, section_name: &st
             // same element shape: degenerate-rectangle attrs plus shape format children.
             let is_box = matches!(&obj.kind, ReportObjectKind::Box(_));
             let tag = if is_box { "BoxObject" } else { "LineObject" };
-            let bottom = r.top.0 + r.height.0;
             let right = r.left.0 + r.width.0;
+            // A cross-section box uses its resolved end section, and its Bottom is the opener's
+            // end-relative value (not top+height, which would span sections). A normal box/line ends
+            // in its own section with Bottom = top + height.
+            let (end_section, bottom) = match &obj.kind {
+                ReportObjectKind::Box(bx) if !bx.end_section_name.is_empty() => {
+                    (bx.end_section_name.as_str(), bx.shape.bottom.0)
+                }
+                // A bottom-to-top line (negative height) ends at its anchor top, so its Bottom is
+                // the top; `max(0)` keeps the normal `top + height` for non-negative heights.
+                _ => (section_name, r.top.0 + r.height.0.max(0)),
+            };
             // LineThickness (twips) is decoded from `0xec` byte 21; line and box are separate
             // model variants so the shape is read from whichever applies.
             let (line_thickness, extend_to_bottom) = match &obj.kind {
@@ -248,7 +260,7 @@ pub(crate) fn write_object(o: &mut String, obj: &ReportObject, section_name: &st
                 "{pad}<{tag} {} Bottom=\"{bottom}\" EnableExtendToBottomOfSection=\"{}\" EndSectionName=\"{}\" LineStyle=\"{}\" LineThickness=\"{line_thickness}\" Right=\"{right}\">",
                 head(tag),
                 b(extend_to_bottom),
-                escape(section_name),
+                escape(end_section),
                 shape_line_style(&obj.border),
             );
             if is_box {
@@ -358,11 +370,22 @@ fn write_plain_object(
     let pad = "  ".repeat(depth);
     let _ = writeln!(o, "{pad}<{tag} {head}>");
     write_border(o, &obj.border, depth + 1);
+    // EnableCanGrow is decoded (a dynamic/CanGrow picture sets it True); the rest stay at the
+    // plain-object defaults.
     let _ = writeln!(
         o,
-        "{pad}  <ObjectFormat CssClass=\"\" EnableCanGrow=\"False\" EnableCloseAtPageBreak=\"True\" EnableKeepTogether=\"True\" EnableSuppress=\"False\" HorizontalAlignment=\"{align}\" />"
+        "{pad}  <ObjectFormat CssClass=\"\" EnableCanGrow=\"{}\" EnableCloseAtPageBreak=\"True\" EnableKeepTogether=\"True\" EnableSuppress=\"False\" HorizontalAlignment=\"{align}\" />",
+        b(obj.format.can_grow)
     );
-    let _ = writeln!(o, "{pad}  <ObjectFormatConditionFormulas />");
+    // A PictureObject's dynamic graphic-location formula (and any other decoded object-format
+    // condition) is carried here; empty for plain pictures/charts.
+    write_condition_formulas(
+        o,
+        &format!("{pad}  "),
+        "ObjectFormatConditionFormulas",
+        OBJECT_COND_ORDER,
+        &obj.format.condition_formulas,
+    );
     let _ = writeln!(o, "{pad}</{tag}>");
 }
 

@@ -21,7 +21,8 @@ RPT_BLESS=1 cargo test -p rpt-to-xml --test baseline
 These are publicly available sample reports. All rights remain with their respective authors; they are included here
 only as test fixtures.
 
-| Prefix      | Source                                                                                   |
-| ----------- | ---------------------------------------------------------------------------------------- |
-| `ajryan_*`  | [ajryan/RptToXml](https://github.com/ajryan/RptToXml) — SAP Business One sample reports. |
-| `worrall_*` | [worrallbrian/crystal_reports](https://github.com/worrallbrian/crystal_reports)          |
+| Prefix           | Source                                                                                                   |
+| ---------------- | -------------------------------------------------------------------------------------------------------- |
+| `ajryan_*`       | [ajryan/RptToXml](https://github.com/ajryan/RptToXml) — SAP Business One sample reports.                 |
+| `worrall_*`      | [worrallbrian/crystal_reports](https://github.com/worrallbrian/crystal_reports)                          |
+| `benbrahim777_*` | [benbrahim777/Crystal-Reports](https://github.com/benbrahim777/Crystal-Reports) — Xtreme sample reports. |

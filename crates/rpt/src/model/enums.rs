@@ -39,8 +39,8 @@ sdk_enum!(
     }, Other);
 
 sdk_enum!(
-    /// SDK: `SortDirection`.
-    SortDirection { AscendingOrder, DescendingOrder, NoSortOrder }, Other);
+    /// SDK: `SortDirection`. `TopNOrder`/`BottomNOrder` are group Top N / Bottom N sort directions.
+    SortDirection { AscendingOrder, DescendingOrder, NoSortOrder, TopNOrder, BottomNOrder }, Other);
 
 sdk_enum!(
     /// XML `@SortType` — which collection a sort came from.

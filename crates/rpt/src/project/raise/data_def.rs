@@ -20,6 +20,10 @@ pub(super) fn raise_data_definition(
     // `0x0088` across the pre-order walk; the one in effect when a group appears (the immediately
     // preceding one) is that group's format.
     let mut pending_group_format: Option<crate::model::GroupAreaFormat> = None;
+    // Group summary sorts (a `0x29` record with a `0x02` marker) are emitted, in group order,
+    // before their groups' `0xe5` records — queue each and bind it to the next raised group (FIFO).
+    let mut pending_group_sorts: std::collections::VecDeque<(String, u8)> =
+        std::collections::VecDeque::new();
     for root in tree {
         root.walk(&mut |node| match node.rtype {
             FIELD_DEF => {
@@ -30,17 +34,27 @@ pub(super) fn raise_data_definition(
             GROUP => {
                 if let Some(mut g) = raise_group(node, logical, field_types) {
                     g.area_format = pending_group_format.take().unwrap_or_default();
+                    // A queued summary sort replaces the group's default field sort: the sort field
+                    // becomes the group-scoped summary expression, its direction resolved from the
+                    // group's Top N limit. It is not also emitted as a record sort.
+                    if let Some((operand, dir_byte)) = pending_group_sorts.pop_front() {
+                        g.sort.field = render_group_sort_summary(&operand, &g.condition_field);
+                        g.sort.direction =
+                            group_sort_direction(dir_byte, group_topn_limit(node, logical));
+                    }
                     groups.push(g);
                 }
             }
             GROUP_OPTIONS => {
                 pending_group_format = Some(decode_group_area_format(&node.leaf_bytes(logical)));
             }
-            RECORD_SORT_FIELD => {
-                if let Some(s) = raise_record_sort(node, logical) {
-                    record_sort_fields.push(s);
+            RECORD_SORT_FIELD => match raise_sort(node, logical) {
+                Some(SortRecord::GroupSummary { operand, dir_byte }) => {
+                    pending_group_sorts.push_back((operand, dir_byte));
                 }
-            }
+                Some(SortRecord::Record(s)) => record_sort_fields.push(s),
+                None => {}
+            },
             _ => {}
         });
     }
@@ -154,6 +168,9 @@ const SECTION_FORMULA_NAMES: &[&str] = &[
     // a user formula field cannot take; they attach to the object, not the formula list.
     "Display_String",
     "Fore_Color",
+    // A PictureObject's dynamic graphic-location formula; reserved, attaches to the object, not the
+    // formula list.
+    "Graphic_Location",
     "Record_Selection",
     "Group_Selection",
 ];
@@ -343,14 +360,40 @@ pub(super) fn raise_running_totals(tree: &[RecordNode], logical: &[u8]) -> Vec<F
             continue;
         };
         let value_type = FieldValueType::from_code(i32::from(cb.get(used).copied().unwrap_or(0)));
+        // A running total always reports its result as a plain number; the engine widens a Currency
+        // summarized field (the stored type byte is Currency) to NumberField.
+        let value_type = match value_type {
+            FieldValueType::Currency => FieldValueType::Number,
+            other => other,
+        };
         let length = i32::from(cb.get(used + 2).copied().unwrap_or(0));
         // `0x80`: byte 0 is the reset condition, byte 3 the evaluation condition (same coding).
         let reset_bytes = reset_node.leaf_bytes(logical);
         let reset =
             ResetConditionType::from_code(i32::from(reset_bytes.first().copied().unwrap_or(0)));
-        let evaluation = crate::model::EvaluationConditionType::from_code(i32::from(
-            reset_bytes.get(3).copied().unwrap_or(0),
-        ));
+        // A formula- or field-driven evaluation stores no code at byte 3: it embeds the driver as a
+        // length-prefixed reference at byte 2, whose length prefix overruns byte 3 (reading 0 =
+        // NoCondition). When reset is NoCondition and such a reference is present, its kind picks the
+        // condition: an `@`-prefixed formula → `OnFormula`; a `table.field` reference →
+        // `OnChangeOfField`. Otherwise byte 3 holds the code directly.
+        use crate::model::EvaluationConditionType as Eval;
+        let ref_at_2 = reset_bytes
+            .get(2..)
+            .and_then(read_lp_string)
+            .map(|(s, _)| s);
+        let evaluation = match ref_at_2 {
+            Some(s) if reset == ResetConditionType::NoCondition && s.starts_with('@') => {
+                Eval::OnFormula
+            }
+            Some(s)
+                if reset == ResetConditionType::NoCondition
+                    && s.contains('.')
+                    && !s.starts_with('@') =>
+            {
+                Eval::OnChangeOfField
+            }
+            _ => Eval::from_code(i32::from(reset_bytes.get(3).copied().unwrap_or(0))),
+        };
         // An `OnChangeOfField` evaluate/reset condition names the field whose change drives it in the
         // `0x80` record's own leaf (a field-shaped LP string, e.g. `table.field`). The engine holds it
         // as a persistent field reference (it counts toward that field's UseCount); an
@@ -426,21 +469,78 @@ pub(super) fn structural_formula_body(bytes: &[u8]) -> Option<String> {
 
 /// A group record (`0xe5`): its first length-prefixed string is the group's condition field
 /// (`Table.column`). Each group carries a group sort, ascending by default.
-/// Raise a record-level sort (`0x29`): a length-prefixed field reference followed by a trailing
-/// direction byte (`0` ascending, `1` descending). Emitted as a `RecordSortField`.
-pub(super) fn raise_record_sort(node: &RecordNode, logical: &[u8]) -> Option<Sort> {
+/// The two shapes a `0x29` sort record can take.
+pub(super) enum SortRecord {
+    /// A plain record-level sort (`RecordSortField`).
+    Record(Sort),
+    /// A group's summary-based sort: `operand` is the summary display form (`Sum of {field}`) bound
+    /// to the owning group. `dir_byte` is the raw direction byte; its meaning (TopN/BottomN vs
+    /// Descending/Ascending) depends on the group's Top N limit, resolved when bound to the group.
+    GroupSummary { operand: String, dir_byte: u8 },
+}
+
+/// Raise a `0x29` sort record: a length-prefixed field reference then a trailer whose first byte is
+/// a marker — `0x00` = plain record sort (dir 0 asc / 1 desc); `0x02` = group summary sort (its
+/// direction depends on the group's Top N limit, so it is resolved later, not here).
+pub(super) fn raise_sort(node: &RecordNode, logical: &[u8]) -> Option<SortRecord> {
     let bytes = node.leaf_bytes(logical);
-    let (field, _) = read_lp_string(&bytes)?;
+    let (field, consumed) = read_lp_string(&bytes)?;
     if field.is_empty() {
         return None;
     }
-    let direction =
-        crate::model::SortDirection::from_code(i32::from(bytes.last().copied().unwrap_or(0)));
-    Some(Sort {
+    let dir_byte = bytes.last().copied().unwrap_or(0);
+    if bytes.get(consumed).copied() == Some(0x02) {
+        return Some(SortRecord::GroupSummary {
+            operand: field,
+            dir_byte,
+        });
+    }
+    Some(SortRecord::Record(Sort {
         field,
-        direction,
+        direction: crate::model::SortDirection::from_code(i32::from(dir_byte)),
         kind: crate::model::SortKind::RecordSortField,
-    })
+    }))
+}
+
+/// A group's Top N / Bottom N limit `N`: a big-endian `u16` 11 bytes from the end of its `0xe5`
+/// record. `N > 0` = ordered Top N / Bottom N; `N == 0` = ordered by summary asc/desc (or by the
+/// group field). Returns 0 when the tail is too short.
+pub(super) fn group_topn_limit(node: &RecordNode, logical: &[u8]) -> u16 {
+    let bytes = node.leaf_bytes(logical);
+    let n = bytes.len();
+    match n.checked_sub(11).and_then(|i| bytes.get(i..i + 2)) {
+        Some(b) => u16::from_be_bytes([b[0], b[1]]),
+        None => 0,
+    }
+}
+
+/// Resolve a group summary sort's direction from its direction byte and Top N limit: limited
+/// (`N > 0`) → TopN (`1`) / BottomN (`0`); unlimited (`N == 0`) → Descending (`1`) / Ascending (`0`).
+fn group_sort_direction(dir_byte: u8, topn_limit: u16) -> crate::model::SortDirection {
+    use crate::model::SortDirection::*;
+    match (topn_limit > 0, dir_byte) {
+        (true, 0) => BottomNOrder,
+        (true, _) => TopNOrder,
+        (false, 0) => AscendingOrder,
+        (false, _) => DescendingOrder,
+    }
+}
+
+/// Render a group's Top N / Bottom N sort field: the display form `Op of {operand}` becomes the
+/// engine expression `Op ({operand}, {group field})` (e.g. `Sum of X` → `Sum ({X}, {group})`).
+/// `Max`/`Min` expand to `Maximum`/`Minimum`, matching `data_source::field_data_source`.
+fn render_group_sort_summary(operand: &str, group_field: &str) -> String {
+    match operand.split_once(" of ") {
+        Some((op, summed)) => {
+            let op = match op {
+                "Max" => "Maximum",
+                "Min" => "Minimum",
+                other => other,
+            };
+            format!("{op} ({{{summed}}}, {{{group_field}}})")
+        }
+        None => operand.to_string(),
+    }
 }
 
 /// Decode a `0x0088` GroupAreaFormat record (24 bytes; describes the *next* group): byte 1 is

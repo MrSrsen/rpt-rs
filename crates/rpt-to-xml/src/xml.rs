@@ -209,12 +209,18 @@ fn write_report_core(
     } else {
         o.push_str("    <SortFields>\n");
         for s in &dd.record_sorts {
+            // A plain field reference is brace-wrapped (`{Table.Field}`); a Top N / Bottom N group
+            // sort already holds a full summary expression (`Sum ({…}, {…})`) — detected by its
+            // parenthesis — and must not be re-wrapped.
+            let field = if s.field.contains('(') {
+                escape(&s.field)
+            } else {
+                format!("{{{}}}", escape(&s.field))
+            };
             let _ = writeln!(
                 o,
-                "      <SortField Field=\"{{{}}}\" SortDirection=\"{:?}\" SortType=\"{:?}\" />",
-                escape(&s.field),
-                s.direction,
-                s.kind
+                "      <SortField Field=\"{}\" SortDirection=\"{:?}\" SortType=\"{:?}\" />",
+                field, s.direction, s.kind
             );
         }
         o.push_str("    </SortFields>\n");

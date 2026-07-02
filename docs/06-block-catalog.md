@@ -245,6 +245,6 @@ types. The [support matrix](09-support-matrix.md) tracks which are decoded.
 
 Beyond individual record types, whole Crystal feature areas are not modelled because they introduce their own families
 of records: deep chart/graph models (axes, series, styling — only the placeholder object is modelled), cross-tabs and
-OLAP grids, maps, alerts, hierarchical grouping, typed field sub-formats (number/date/currency masks and rounding), and
-the full range of conditional formatting (rotation, tooltips, hyperlinks). See the
-[support matrix](09-support-matrix.md).
+OLAP grids, maps, alerts, hierarchical grouping, and typed field sub-formats (number/date/currency masks and rounding).
+Object-level conditional formatting flags (rotation, tooltips, hyperlinks) are stored in the model but not all
+sub-format condition formulas are decoded yet. See the [support matrix](09-support-matrix.md).
