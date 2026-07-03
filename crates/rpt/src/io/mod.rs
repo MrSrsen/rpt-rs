@@ -229,10 +229,9 @@ fn decode_saved_data(streams: &[RecordStream]) -> Option<crate::model::SavedData
     let find = |pred: fn(&StreamId) -> bool| streams.iter().find(|s| pred(s.id()));
     // The top-level `DataSourceManager` variant is inherently non-subdocument (nested streams stay
     // `StreamId::Other`), so no explicit Subdocument exclusion is needed.
-    let dsm = codec::decode_contents(
-        &find(|id| matches!(id, StreamId::DataSourceManager(_)))?.encode(),
-    )
-    .ok()?;
+    let dsm =
+        codec::decode_contents(&find(|id| matches!(id, StreamId::DataSourceManager(_)))?.encode())
+            .ok()?;
     let primary = codec::batch_directory(&dsm)
         .into_iter()
         .max_by_key(|b| b.count)
@@ -637,9 +636,10 @@ fn subreport_links(contents: &RecordStream) -> std::collections::BTreeMap<u32, V
             if let Some(idx) = *current {
                 let lb = n.leaf_bytes(logical);
                 let param_index = u16_be(&lb, 0);
-                if let (Some(param_index), Some(len)) =
-                    (param_index, crate::bytes::u32_be(&lb, 2).map(|n| n as usize))
-                {
+                if let (Some(param_index), Some(len)) = (
+                    param_index,
+                    crate::bytes::u32_be(&lb, 2).map(|n| n as usize),
+                ) {
                     if let Some(raw) = lb.get(6..6 + len) {
                         let end = raw.iter().position(|&b| b == 0).unwrap_or(raw.len());
                         if end > 0 {
