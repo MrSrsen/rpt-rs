@@ -124,6 +124,21 @@ pub(super) fn raise_print_options(tree: &[RecordNode], logical: &[u8]) -> PrintO
             }
         }
     }
+
+    // No page rectangle stored: a standard paper size implies the sheet, so the printable area is
+    // those dimensions (oriented by orientation) less the margins.
+    if opts.content_width.0 == 0 && opts.content_height.0 == 0 {
+        if let Some((short, long)) = opts.paper_size.std_dims() {
+            let landscape = opts.paper_orientation == crate::model::PaperOrientation::Landscape;
+            let (paper_w, paper_h) = if landscape { (long, short) } else { (short, long) };
+            let cw = paper_w - opts.margins.left.0 - opts.margins.right.0;
+            let ch = paper_h - opts.margins.top.0 - opts.margins.bottom.0;
+            if cw > 0 && ch > 0 {
+                opts.content_width = Twips(cw);
+                opts.content_height = Twips(ch);
+            }
+        }
+    }
     if let Some(node) = tree.iter().find(|n| n.rtype == PRINTER) {
         let strings = all_strings(node, logical);
         // Order: driver ("winspool"), printer name, port. The printer name is emitted empty (the

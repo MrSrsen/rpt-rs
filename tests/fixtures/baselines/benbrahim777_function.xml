@@ -42,8 +42,8 @@
     <Groups />
     <SortFields />
     <FormulaFieldDefinitions>
-      <FormulaFieldDefinition FormulaName="{@Concatenate Three Strings}" Kind="FormulaField" Name="Concatenate Three Strings" NumberOfBytes="136" ValueType="StringField">Concatenate3Strings ({Customer.Contact Title}, {Customer.Contact First Name}, {Customer.Contact Last Name})&#xA;</FormulaFieldDefinition>
-      <FormulaFieldDefinition FormulaName="{@Concatenate3Strings}" Kind="FormulaField" Name="Concatenate3Strings" NumberOfBytes="0" ValueType="Other(65408)Field">Function (StringVar x, StringVar y, StringVar z)&#xA;x + " " + y + " " + z</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Concatenate Three Strings}" Kind="FormulaField" Name="Concatenate Three Strings" NumberOfBytes="136" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">Concatenate3Strings ({Customer.Contact Title}, {Customer.Contact First Name}, {Customer.Contact Last Name})&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Concatenate3Strings}" Kind="FormulaField" Name="Concatenate3Strings" NumberOfBytes="0" ValueType="Other(65408)Field" Syntax="crFormulaSyntaxCrystal">Function (StringVar x, StringVar y, StringVar z)&#xA;x + " " + y + " " + z</FormulaFieldDefinition>
     </FormulaFieldDefinitions>
     <GroupNameFieldDefinitions />
     <ParameterFieldDefinitions>
@@ -172,4 +172,5 @@
       </Area>
     </Areas>
   </ReportDefinition>
+  <SavedData />
 </Report>

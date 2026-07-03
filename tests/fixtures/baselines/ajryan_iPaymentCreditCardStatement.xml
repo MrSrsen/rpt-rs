@@ -42,7 +42,7 @@
     <Groups />
     <SortFields />
     <FormulaFieldDefinitions>
-      <FormulaFieldDefinition FormulaName="{@DocumentTypeAndNumber}" Kind="FormulaField" Name="DocumentTypeAndNumber" NumberOfBytes="118" ValueType="StringField">if({Data.DocumentType}&lt;&gt; '') THEN {Data.DocumentType}+" "+TOText({Data.DocumentNo},'#')</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@DocumentTypeAndNumber}" Kind="FormulaField" Name="DocumentTypeAndNumber" NumberOfBytes="118" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">if({Data.DocumentType}&lt;&gt; '') THEN {Data.DocumentType}+" "+TOText({Data.DocumentNo},'#')</FormulaFieldDefinition>
     </FormulaFieldDefinitions>
     <GroupNameFieldDefinitions />
     <ParameterFieldDefinitions>
@@ -341,4 +341,5 @@
       </Area>
     </Areas>
   </ReportDefinition>
+  <SavedData />
 </Report>

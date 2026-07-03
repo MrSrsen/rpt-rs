@@ -14,6 +14,7 @@ order — each builds on the previous one.
    flat sequence of records.
 4. [The record tree](04-record-tree.md) — how records nest, the per-record masking, and the lossless record substrate.
 5. [The semantic model](05-semantic-model.md) — how the record tree is projected into the typed report model.
+6. [Saved data](10-saved-data.md) — how a report's cached rows (saved with data) are laid out and decoded.
 
 ## Reference
 

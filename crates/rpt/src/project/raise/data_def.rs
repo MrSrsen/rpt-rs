@@ -309,6 +309,7 @@ pub(super) fn raise_formulas(
                         text: Formula(body),
                         options: 0,
                         number_of_bytes,
+                        syntax: crate::model::FormulaSyntax::Crystal,
                     }),
                     ..Default::default()
                 });

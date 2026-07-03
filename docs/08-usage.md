@@ -82,6 +82,20 @@ for table in &report.database.tables {
 for param in report.data_definition.parameters() {
     println!("Parameter: {}", param.name);
 }
+
+// Saved data (cached rows), when the report was saved with data.
+// `columns` and each `rows` entry line up positionally, so it reads as a simple matrix.
+if let Some(saved) = &report.saved_data {
+    // Header: column names.
+    let header: Vec<&str> = saved.columns.iter().map(|c| c.name.as_str()).collect();
+    println!("{}", header.join("\t"));
+
+    // Rows: one cell per column (`None` is a null cell).
+    for row in &saved.rows {
+        let cells: Vec<&str> = row.iter().map(|c| c.as_deref().unwrap_or("")).collect();
+        println!("{}", cells.join("\t"));
+    }
+}
 # Ok::<(), rpt::Error>(())
 ```
 

@@ -21,14 +21,16 @@ Legend: ✅ decoded · ◐ partial · ○ recognized but not decoded (passed thr
 
 ## Streams
 
-| Stream                                   | Status | Notes                                           |
-| ---------------------------------------- | :----: | ----------------------------------------------- |
-| `Contents`                               |   ✅   | the report definition                           |
-| `QESession`                              |   ✅   | connections, tables, fields, joins, SQL         |
-| `SummaryInformation`                     |   ✅   | OLE property set (title/author/timestamps/app)  |
-| `PromptManager`                          |   ◐    | parameter prompting metadata used during decode |
-| `ReportInfo`                             |   ○    | fixed-size header, not modelled                 |
-| `Embedding N` / `CHART N` / `zlibBLOB N` |   ○    | embedded payloads, not modelled                 |
+| Stream                                    | Status | Notes                                                                                  |
+| ----------------------------------------- | :----: | -------------------------------------------------------------------------------------- |
+| `Contents`                                |   ✅   | the report definition                                                                  |
+| `QESession`                               |   ✅   | connections, tables, fields, joins, SQL                                                |
+| `SummaryInformation`                      |   ✅   | OLE property set (title/author/timestamps/app)                                         |
+| `PromptManager`                           |   ◐    | parameter prompting metadata used during decode                                        |
+| `DataSourceManager`                       |   ◐    | saved-data batch directory + field catalog                                             |
+| `SavedRecordsStream` / `MemoValuesStream` |   ◐    | stored rows (saved data); external-memo batch class only ([details](10-saved-data.md)) |
+| `ReportInfo`                              |   ○    | fixed-size header, not modelled                                                        |
+| `Embedding N` / `CHART N` / `zlibBLOB N`  |   ○    | embedded payloads, not modelled                                                        |
 
 ## Record types
 
@@ -78,23 +80,23 @@ fully modelled.)
 
 ## Feature areas
 
-| Feature                                                     | Status | Notes                                                        |
-| ----------------------------------------------------------- | :----: | ------------------------------------------------------------ |
-| Data sources / tables / fields                              |   ✅   | connections, tables, command (SQL) tables, joins             |
-| Parameters                                                  |   ✅   | definitions, types, default/current values                   |
-| Formulas                                                    |   ✅   | bodies and references                                        |
-| Record / group selection formulas                           |   ✅   |                                                              |
+| Feature                                                     | Status | Notes                                                                                       |
+| ----------------------------------------------------------- | :----: | ------------------------------------------------------------------------------------------- |
+| Data sources / tables / fields                              |   ✅   | connections, tables, command (SQL) tables, joins                                            |
+| Parameters                                                  |   ✅   | definitions, types, default/current values                                                  |
+| Formulas                                                    |   ✅   | bodies and references                                                                       |
+| Record / group selection formulas                           |   ✅   |                                                                                             |
 | Groups & sorting                                            |   ◐    | groups, sort fields, and Top N / Bottom N summary sorts decoded; some group options pending |
-| Summaries & running totals                                  |   ✅   |                                                              |
-| Sections & areas                                            |   ✅   | with formatting and conditional formatting                   |
-| Report objects (field, text, line, box, picture, subreport) |   ✅   | placement, formatting, fonts, borders                        |
-| Subreports & subreport links                                |   ✅   | including value passing between reports                      |
-| Page setup / print options                                  |   ✅   | paper size, orientation, margins, page rectangle             |
-| Charts / graphs                                             |   ◐    | placeholder object only; chart data model not decoded        |
-| Cross-tabs / OLAP grids                                     |   ○    | not modelled                                                 |
-| Maps, alerts, hierarchical grouping                         |   ○    | not modelled                                                 |
-| Typed field sub-formats (number/date/currency masks)        |   ○    | not modelled                                                 |
-| Writing / editing `.rpt` files                              |   ○    | the substrate round-trips; a public write API is future work |
+| Summaries & running totals                                  |   ✅   |                                                                                             |
+| Sections & areas                                            |   ✅   | with formatting and conditional formatting                                                  |
+| Report objects (field, text, line, box, picture, subreport) |   ✅   | placement, formatting, fonts, borders                                                       |
+| Subreports & subreport links                                |   ✅   | including value passing between reports                                                     |
+| Page setup / print options                                  |   ✅   | paper size, orientation, margins, page rectangle                                            |
+| Charts / graphs                                             |   ◐    | placeholder object only; chart data model not decoded                                       |
+| Cross-tabs / OLAP grids                                     |   ○    | not modelled                                                                                |
+| Maps, alerts, hierarchical grouping                         |   ○    | not modelled                                                                                |
+| Typed field sub-formats (number/date/currency masks)        |   ○    | not modelled                                                                                |
+| Writing / editing `.rpt` files                              |   ○    | the substrate round-trips; a public write API is future work                                |
 
 ## Lossless guarantee
 

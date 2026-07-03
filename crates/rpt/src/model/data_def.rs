@@ -147,6 +147,29 @@ pub struct FormulaField {
     /// The byte size of the formula's result (`NumberOfBytes`): the value type's intrinsic length
     /// for fixed types, or twice the maximum character count for a string result.
     pub number_of_bytes: i32,
+    /// SDK `IFormulaField.Syntax` — the formula's authoring dialect.
+    pub syntax: FormulaSyntax,
+}
+
+/// SDK: `CrFormulaSyntaxEnum` — a formula's authoring dialect.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub enum FormulaSyntax {
+    /// `crFormulaSyntaxCrystal`.
+    #[default]
+    Crystal,
+    /// `crFormulaSyntaxBasic`.
+    Basic,
+}
+
+impl FormulaSyntax {
+    /// The SDK `Syntax=` attribute string.
+    pub fn name(self) -> &'static str {
+        match self {
+            FormulaSyntax::Crystal => "crFormulaSyntaxCrystal",
+            FormulaSyntax::Basic => "crFormulaSyntaxBasic",
+        }
+    }
 }
 
 /// SDK: `IParameterField` (XML `<ParameterFieldDefinition>`).

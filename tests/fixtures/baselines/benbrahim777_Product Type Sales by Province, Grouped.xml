@@ -128,7 +128,7 @@
       <SortField Field="{Customer.Region}" SortDirection="AscendingOrder" SortType="GroupSortField" />
     </SortFields>
     <FormulaFieldDefinitions>
-      <FormulaFieldDefinition FormulaName="{@No Summarized Field}" Kind="FormulaField" Name="No Summarized Field" NumberOfBytes="2" ValueType="BooleanField"></FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@No Summarized Field}" Kind="FormulaField" Name="No Summarized Field" NumberOfBytes="2" ValueType="BooleanField" Syntax="crFormulaSyntaxCrystal"></FormulaFieldDefinition>
     </FormulaFieldDefinitions>
     <GroupNameFieldDefinitions>
       <GroupNameFieldDefinition FormulaName="GroupName ({Customer.Region})" Group="CrystalDecisions.CrystalReports.Engine.Group" GroupNameFieldName="Group #1 Name: Customer.Region" Kind="GroupNameField" Name="GroupName ({Customer.Region})" NumberOfBytes="65534" ValueType="StringField" />
@@ -295,4 +295,5 @@
       </Area>
     </Areas>
   </ReportDefinition>
+  <SavedData />
 </Report>

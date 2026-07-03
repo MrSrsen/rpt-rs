@@ -35,8 +35,8 @@
     <Groups />
     <SortFields />
     <FormulaFieldDefinitions>
-      <FormulaFieldDefinition FormulaName="{@Xcount}" Kind="FormulaField" Name="Xcount" NumberOfBytes="8" ValueType="NumberField">Local NumberVar Index;&#xA;Local NumberVar Xcount := 0;&#xA;Local NumberVar StringLength := Length ({Product.Size});&#xA;//Loop through the Size field, counting x's&#xA;For Index := 1 to StringLength Step 1 Do ( &#xA;    If ({Product.Size} [Index] = "x") &#xA;    Then &#xA;           (Xcount := Xcount + 1;) &#xA;    Else &#xA;           (Xcount := Xcount;) &#xA;);&#xA;Xcount</FormulaFieldDefinition>
-      <FormulaFieldDefinition FormulaName="{@Kpos}" Kind="FormulaField" Name="Kpos" NumberOfBytes="65534" ValueType="StringField"></FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Xcount}" Kind="FormulaField" Name="Xcount" NumberOfBytes="8" ValueType="NumberField" Syntax="crFormulaSyntaxCrystal">Local NumberVar Index;&#xA;Local NumberVar Xcount := 0;&#xA;Local NumberVar StringLength := Length ({Product.Size});&#xA;//Loop through the Size field, counting x's&#xA;For Index := 1 to StringLength Step 1 Do ( &#xA;    If ({Product.Size} [Index] = "x") &#xA;    Then &#xA;           (Xcount := Xcount + 1;) &#xA;    Else &#xA;           (Xcount := Xcount;) &#xA;);&#xA;Xcount</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Kpos}" Kind="FormulaField" Name="Kpos" NumberOfBytes="65534" ValueType="StringField" Syntax="crFormulaSyntaxCrystal"></FormulaFieldDefinition>
     </FormulaFieldDefinitions>
     <GroupNameFieldDefinitions />
     <ParameterFieldDefinitions>
@@ -313,4 +313,5 @@
       </Area>
     </Areas>
   </ReportDefinition>
+  <SavedData />
 </Report>

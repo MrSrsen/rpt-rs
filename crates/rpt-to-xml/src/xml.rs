@@ -110,6 +110,7 @@ pub(crate) fn to_xml(file: &str, report: &Report, full: bool) -> String {
     }
 
     write_report_core(&mut o, report, &[], false);
+    write_saved_data(&mut o, report);
 
     if full {
         o.push_str("  <Records>\n");
@@ -134,6 +135,40 @@ pub(crate) fn to_xml(file: &str, report: &Report, full: bool) -> String {
     }
     doc.push_str(rest);
     doc
+}
+
+/// Emit the report's stored saved data as `<SavedData>` (record count, columns, rows). Reports with
+/// no decodable saved data emit an empty `<SavedData />`.
+fn write_saved_data(o: &mut String, report: &Report) {
+    let Some(sd) = &report.saved_data else {
+        o.push_str("  <SavedData />\n");
+        return;
+    };
+    let _ = writeln!(o, "  <SavedData RecordCount=\"{}\">", sd.record_count);
+    o.push_str("    <Fields>\n");
+    for c in &sd.columns {
+        let _ = writeln!(
+            o,
+            "      <Field Name=\"{}\" Type=\"{}\" />",
+            escape(&c.name),
+            value_type_name(c.value_type),
+        );
+    }
+    o.push_str("    </Fields>\n");
+    o.push_str("    <Rows>\n");
+    for row in &sd.rows {
+        o.push_str("      <Row>\n");
+        for cell in row {
+            let _ = writeln!(
+                o,
+                "        <F>{}</F>",
+                escape_text(cell.as_deref().unwrap_or(""))
+            );
+        }
+        o.push_str("      </Row>\n");
+    }
+    o.push_str("    </Rows>\n");
+    o.push_str("  </SavedData>\n");
 }
 
 /// The shared body of a `<Report>` (main or subreport): Database, DataDefinition, ReportDefinition.
@@ -242,12 +277,13 @@ fn write_report_core(
             // preserved so multi-line formulas diff line-by-line).
             let _ = writeln!(
                 o,
-                "      <FormulaFieldDefinition FormulaName=\"{{@{}}}\" Kind=\"{}\" Name=\"{}\" NumberOfBytes=\"{}\" ValueType=\"{}\">{}</FormulaFieldDefinition>",
+                "      <FormulaFieldDefinition FormulaName=\"{{@{}}}\" Kind=\"{}\" Name=\"{}\" NumberOfBytes=\"{}\" ValueType=\"{}\" Syntax=\"{}\">{}</FormulaFieldDefinition>",
                 escape(&f.name),
                 f.kind.field_kind().name(),
                 escape(&f.name),
                 number_of_bytes,
                 value_type,
+                ff.syntax.name(),
                 escape_text(&ff.text.0)
             );
         }

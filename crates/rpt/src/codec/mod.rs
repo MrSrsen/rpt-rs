@@ -11,12 +11,17 @@ mod digest;
 mod header;
 mod mask;
 mod qe_crypto;
+mod saved_data;
 mod tile;
 mod tree;
 mod tslv;
 
 pub(crate) use archive::ReadArchive;
 pub(crate) use digest::md5_base64;
+pub(crate) use saved_data::{
+    batch_directory, decode_saved_batch, decode_worrall_rows, memo_batch_size, parse_memo_values,
+    saved_record_count, saved_schema, INDEX_BATCH_SIZE,
+};
 pub use header::StreamHeader;
 pub(crate) use tile::{tile, TiledRecord};
 pub use tree::RecordNode;

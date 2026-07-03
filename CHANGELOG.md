@@ -8,13 +8,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- **Saved data (stored rows).** Decodes the cached rows a report carries when saved with data (`SavedRecordsStream` +
+  `MemoValuesStream`) and exports them as a `<SavedData>` element. See [`docs/10-saved-data.md`](docs/10-saved-data.md).
+- **Formula syntax.** Reports each formula field's authoring dialect (`Syntax` — `crFormulaSyntaxCrystal` or
+  `crFormulaSyntaxBasic`).
 - **SQL-expression fields.** Decodes `{%name}` SQL-expression field references.
 - **Dynamic parameters.** Recognises dynamic (list-of-values) parameters and reports their editing flags accordingly.
 - **Top N / Bottom N group sorts.** Decodes group summary sorts and renders their summary sort expression and direction.
 - **Percentage summaries.** Decodes percentage summaries (`PercentOfSum (…)`, etc.).
 - **Running-total conditions.** Decodes running-total reset and evaluation conditions (`OnChangeOfField` / `OnFormula`).
 - **Cross-section boxes.** Resolves a box that spans into a later section, reporting its end section and bottom edge.
-- **Dynamic image locations.** Decodes a picture object's dynamic graphic-location formula, and its `EnableCanGrow` flag.
+- **Dynamic image locations.** Decodes a picture object's dynamic graphic-location formula, and its `EnableCanGrow`
+  flag.
 - **Subreport on-demand flag.** Decodes a subreport's `EnableOnDemand` flag.
 
 ### Fixed
@@ -56,5 +61,6 @@ database connection, or any Windows component.
   `--json` flag for machine-readable output.
 - **Docker image.** A multistage build producing a minimal (~14 MB) image containing only the statically linked
   binaries.
-- **Release workflow.** On a version tag, publishes cross-platform binaries (Linux, macOS, Windows) to a GitHub Release and pushes the Docker image to the GitHub Container Registry.
+- **Release workflow.** On a version tag, publishes cross-platform binaries (Linux, macOS, Windows) to a GitHub Release
+  and pushes the Docker image to the GitHub Container Registry.
 - **Documentation.** A guide to the `.rpt` format and the library under [`docs/`](docs/).

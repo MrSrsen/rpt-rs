@@ -73,7 +73,7 @@ fn tables() -> &'static Tables {
 }
 
 /// The modified-AES-128 block **encryption** (used by CFB to make the keystream).
-fn encrypt_block(input: &[u8; 16]) -> [u8; 16] {
+pub(crate) fn encrypt_block(input: &[u8; 16]) -> [u8; 16] {
     let t = tables();
     let (te0, te1, te2, te3) = (&t.te[0], &t.te[1], &t.te[2], &t.te[3]);
     let mut a = u32::from_le_bytes([input[0], input[1], input[2], input[3]]) ^ RK[0];

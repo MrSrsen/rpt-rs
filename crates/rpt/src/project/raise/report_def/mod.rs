@@ -745,9 +745,14 @@ fn resolve_cross_section_boxes(areas: &mut [Area]) {
                 // Cross-section signature: the opener's (end-relative) bottom is above the top, or the
                 // box's bottom edge (top + the true span) extends past its own section.
                 if bx.shape.bottom.0 < top || top + height > flat[start].1 {
+                    // The bottom edge sits `bx.shape.bottom` twips into the end section, so the end
+                    // section's top lies `height - bottom` below the box top. Walk stacked sections
+                    // (from the box top) until the cumulative height reaches that point; that section
+                    // holds the bottom edge.
+                    let target = (height - bx.shape.bottom.0).max(0);
                     let mut acc = flat[start].1 - top;
                     let mut end = start;
-                    while acc < height && end + 1 < flat.len() {
+                    while acc < target && end + 1 < flat.len() {
                         end += 1;
                         acc += flat[end].1;
                     }

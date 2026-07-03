@@ -32,8 +32,8 @@
       <SortField Field="{@CountryCustom}" SortDirection="AscendingOrder" SortType="RecordSortField" />
     </SortFields>
     <FormulaFieldDefinitions>
-      <FormulaFieldDefinition FormulaName="{@CapitolsFixed}" Kind="FormulaField" Name="CapitolsFixed" NumberOfBytes="65534" ValueType="StringField">Local StringVar capi := {vw_all_countries_with_capitals.capitals};&#xA;&#xA;If capi = 'Chi?inau'&#xA;Then&#xA;"Chișinău"&#xA;Else If capi = 'Nuku?alofa'&#xA;Then&#xA;"Nuku'alofa"&#xA;Else&#xA;capi&#xA;;</FormulaFieldDefinition>
-      <FormulaFieldDefinition FormulaName="{@CountryCustom}" Kind="FormulaField" Name="CountryCustom" NumberOfBytes="65534" ValueType="StringField">{vw_all_countries_with_capitals.name};</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@CapitolsFixed}" Kind="FormulaField" Name="CapitolsFixed" NumberOfBytes="65534" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">Local StringVar capi := {vw_all_countries_with_capitals.capitals};&#xA;&#xA;If capi = 'Chi?inau'&#xA;Then&#xA;"Chișinău"&#xA;Else If capi = 'Nuku?alofa'&#xA;Then&#xA;"Nuku'alofa"&#xA;Else&#xA;capi&#xA;;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@CountryCustom}" Kind="FormulaField" Name="CountryCustom" NumberOfBytes="65534" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">{vw_all_countries_with_capitals.name};</FormulaFieldDefinition>
     </FormulaFieldDefinitions>
     <GroupNameFieldDefinitions />
     <ParameterFieldDefinitions>
@@ -209,4 +209,5 @@
       </Area>
     </Areas>
   </ReportDefinition>
+  <SavedData />
 </Report>

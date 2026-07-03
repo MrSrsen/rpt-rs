@@ -93,8 +93,8 @@
     <Groups />
     <SortFields />
     <FormulaFieldDefinitions>
-      <FormulaFieldDefinition FormulaName="{@TenPct}" Kind="FormulaField" Name="TenPct" NumberOfBytes="8" ValueType="CurrencyField">CCur(CDbl({Product.Price (SRP)}) * 0.90)</FormulaFieldDefinition>
-      <FormulaFieldDefinition FormulaName="{@allca}" Kind="FormulaField" Name="allca" NumberOfBytes="65534" ValueType="StringField"></FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@TenPct}" Kind="FormulaField" Name="TenPct" NumberOfBytes="8" ValueType="CurrencyField" Syntax="crFormulaSyntaxCrystal">CCur(CDbl({Product.Price (SRP)}) * 0.90)</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@allca}" Kind="FormulaField" Name="allca" NumberOfBytes="65534" ValueType="StringField" Syntax="crFormulaSyntaxCrystal"></FormulaFieldDefinition>
     </FormulaFieldDefinitions>
     <GroupNameFieldDefinitions />
     <ParameterFieldDefinitions>
@@ -286,4 +286,5 @@
       </Area>
     </Areas>
   </ReportDefinition>
+  <SavedData />
 </Report>

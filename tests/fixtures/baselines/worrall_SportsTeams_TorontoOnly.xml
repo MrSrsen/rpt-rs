@@ -33,7 +33,7 @@
       <SortField Field="{@TeamCustom}" SortDirection="AscendingOrder" SortType="RecordSortField" />
     </SortFields>
     <FormulaFieldDefinitions>
-      <FormulaFieldDefinition FormulaName="{@TeamCustom}" Kind="FormulaField" Name="TeamCustom" NumberOfBytes="65534" ValueType="StringField">{vw_sports_tabler_output.team};</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@TeamCustom}" Kind="FormulaField" Name="TeamCustom" NumberOfBytes="65534" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">{vw_sports_tabler_output.team};</FormulaFieldDefinition>
     </FormulaFieldDefinitions>
     <GroupNameFieldDefinitions />
     <ParameterFieldDefinitions>
@@ -346,4 +346,5 @@
       </Area>
     </Areas>
   </ReportDefinition>
+  <SavedData />
 </Report>

@@ -66,6 +66,7 @@ impl Rpt {
             raise_subreports(&container, &current_values);
         report.subreports = subreports;
         report.embeds = raise_embeds(&container);
+        report.saved_data = decode_saved_data(&streams);
         // Resolve each SubreportObject's name from its backing subdocument (linked by index).
         for area in &mut report.report_definition.areas {
             for section in &mut area.sections {
@@ -169,6 +170,111 @@ impl Rpt {
     pub fn original_bytes(&self) -> &[u8] {
         &self.original
     }
+
+    /// The top-level `DataSourceManager` stream's decoded (decrypted + inflated) logical bytes, which
+    /// carry the saved-data batch directory. `None` when absent or undecodable.
+    fn data_source_manager_logical(&self) -> Option<Vec<u8>> {
+        let s = self.streams.iter().find(|s| {
+            let n = format!("{:?}", s.id());
+            n.contains("DataSourceManager") && !n.contains("Subdocument")
+        })?;
+        crate::codec::decode_contents(&s.encode()).ok()
+    }
+
+    fn saved_stream(&self, name: &str) -> Option<Vec<u8>> {
+        self.streams
+            .iter()
+            .find(|s| format!("{:?}", s.id()).contains(name))
+            .map(|s| s.encode())
+    }
+
+    /// The report's saved record count (the SDK's saved `RecordCount`), from the `DataSourceManager`
+    /// batch directory. `None` when the report carries no saved data.
+    pub fn saved_record_count(&self) -> Option<u32> {
+        crate::codec::saved_record_count(&self.data_source_manager_logical()?)
+    }
+
+    /// Decode the saved record index (`SavedRecordsStream`) to its inflated record bytes, using the
+    /// item count and width from the primary `DataSourceManager` batch header. `None` when there is no
+    /// saved data or the index cannot be decoded.
+    pub fn saved_index(&self) -> Option<Vec<u8>> {
+        let dsm = self.data_source_manager_logical()?;
+        // The record-index batch is the directory's primary (largest-count) batch.
+        let primary = crate::codec::batch_directory(&dsm)
+            .into_iter()
+            .max_by_key(|b| b.count)?;
+        let srs = self.saved_stream("SavedRecordsStream")?;
+        crate::codec::decode_saved_batch(
+            &srs,
+            crate::codec::INDEX_BATCH_SIZE,
+            primary.count,
+            primary.item_size,
+        )
+    }
+
+
+    /// The report's decoded stored saved data (cached rows). See [`crate::model::SavedData`]. `None`
+    /// when there is no saved data or the batch class is not decodable.
+    pub fn saved_data(&self) -> Option<crate::model::SavedData> {
+        decode_saved_data(&self.streams)
+    }
+}
+
+/// Decode a report's stored saved data from its `SavedRecordsStream` (record index) and
+/// `MemoValuesStream` (variable-length values). Returns the stored records — not the engine's
+/// result rowset, which projects/reorders/groups/formats them. `None` when there is no saved data,
+/// no `MemoValuesStream`, or the streams do not decode.
+fn decode_saved_data(streams: &[RecordStream]) -> Option<crate::model::SavedData> {
+    use crate::codec;
+    use crate::model::{FieldValueType, SavedColumn, SavedData};
+
+    let find = |needle: &str, excl: Option<&str>| {
+        streams.iter().find(|s| {
+            let n = format!("{:?}", s.id());
+            n.contains(needle) && excl.is_none_or(|e| !n.contains(e))
+        })
+    };
+    let dsm = codec::decode_contents(&find("DataSourceManager", Some("Subdocument"))?.encode()).ok()?;
+    let primary = codec::batch_directory(&dsm)
+        .into_iter()
+        .max_by_key(|b| b.count)
+        .filter(|b| b.count > 0)?;
+
+    // Decodable only when the field values are in an external MemoValuesStream.
+    let memo_raw = find("MemoValuesStream", None)?.encode();
+    let srs_raw = find("SavedRecordsStream", None)?.encode();
+
+    let index_plain =
+        codec::decode_saved_batch(&srs_raw, codec::INDEX_BATCH_SIZE, primary.count, primary.item_size)?;
+    let bs = codec::memo_batch_size(&dsm)?;
+    let memo_plain = codec::decode_saved_batch(&memo_raw, bs, bs.checked_mul(12)?, 12)?;
+    let memos = codec::parse_memo_values(&memo_plain);
+
+    let schema = codec::saved_schema(&dsm);
+    if schema.is_empty() {
+        return None;
+    }
+    let rows =
+        codec::decode_worrall_rows(&index_plain, &memos, &schema, primary.count, primary.item_size);
+    if rows.is_empty() {
+        return None;
+    }
+    let columns = schema
+        .iter()
+        .map(|f| SavedColumn {
+            name: f.name.clone(),
+            value_type: if f.is_memo {
+                FieldValueType::PersistentMemo
+            } else {
+                FieldValueType::Int32s
+            },
+        })
+        .collect();
+    Some(SavedData {
+        record_count: primary.count,
+        columns,
+        rows,
+    })
 }
 
 /// Summarise embedded OLE objects: for each top-level `Embedding N` storage, hash its `\x01Ole`

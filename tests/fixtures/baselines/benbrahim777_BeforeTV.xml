@@ -68,7 +68,7 @@
     <Groups />
     <SortFields />
     <FormulaFieldDefinitions>
-      <FormulaFieldDefinition FormulaName="{@Sum Orders}" Kind="FormulaField" Name="Sum Orders" NumberOfBytes="8" ValueType="CurrencyField">Sum ({Orders.Order Amount})</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Sum Orders}" Kind="FormulaField" Name="Sum Orders" NumberOfBytes="8" ValueType="CurrencyField" Syntax="crFormulaSyntaxCrystal">Sum ({Orders.Order Amount})</FormulaFieldDefinition>
     </FormulaFieldDefinitions>
     <GroupNameFieldDefinitions />
     <ParameterFieldDefinitions>
@@ -800,4 +800,5 @@
       </Area>
     </Areas>
   </ReportDefinition>
+  <SavedData />
 </Report>

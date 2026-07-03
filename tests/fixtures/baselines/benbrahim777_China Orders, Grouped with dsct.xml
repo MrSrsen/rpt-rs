@@ -72,7 +72,7 @@
       <SortField Field="{Customer.Region}" SortDirection="AscendingOrder" SortType="GroupSortField" />
     </SortFields>
     <FormulaFieldDefinitions>
-      <FormulaFieldDefinition FormulaName="{@Discount}" Kind="FormulaField" Name="Discount" NumberOfBytes="38" ValueType="StringField">&#xA;//Give bigger discounts for bigger orders &#xA;Select {Orders.Order Amount}&#xA;   Case 15000. To 1000000.:&#xA;     "Apply 7% discount."&#xA;   Case 10000. To 14999.99:&#xA;     "Apply 6% discount."&#xA;   Case 5000. To 9999.99:&#xA;     "Apply 5% discount."&#xA;   Default:&#xA;     "No discount."; </FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Discount}" Kind="FormulaField" Name="Discount" NumberOfBytes="38" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">&#xA;//Give bigger discounts for bigger orders &#xA;Select {Orders.Order Amount}&#xA;   Case 15000. To 1000000.:&#xA;     "Apply 7% discount."&#xA;   Case 10000. To 14999.99:&#xA;     "Apply 6% discount."&#xA;   Case 5000. To 9999.99:&#xA;     "Apply 5% discount."&#xA;   Default:&#xA;     "No discount."; </FormulaFieldDefinition>
     </FormulaFieldDefinitions>
     <GroupNameFieldDefinitions>
       <GroupNameFieldDefinition FormulaName="GroupName ({Customer.Region})" Group="CrystalDecisions.CrystalReports.Engine.Group" GroupNameFieldName="Group #1 Name: Customer.Region" Kind="GroupNameField" Name="GroupName ({Customer.Region})" NumberOfBytes="65534" ValueType="StringField" />
@@ -345,4 +345,5 @@
       </Area>
     </Areas>
   </ReportDefinition>
+  <SavedData />
 </Report>

@@ -15,9 +15,10 @@ mod format;
 mod objects;
 mod primitives;
 mod report_def;
+mod saved;
 
 pub use data_def::{
-    DataDefinition, DbField, FieldDef, FieldKind, FieldKindData, FormulaField, Group,
+    DataDefinition, DbField, FieldDef, FieldKind, FieldKindData, FormulaField, FormulaSyntax, Group,
     GroupNameField, GroupOptions, ParameterField, ParameterValue, RunningTotalField, Sort,
     SpecialField, SqlExpressionField, SummaryField,
 };
@@ -37,6 +38,7 @@ pub use objects::{
     SubreportObject, TextObject,
 };
 pub use primitives::{Color, Conditioned, Formula, RecordRef, Rect, Twips, Version};
+pub use saved::{SavedColumn, SavedData};
 pub use report_def::{
     Area, AreaFormat, GroupAreaFormat, ReportDefinition, Section, SectionAreaFormatBase,
     SectionFormat,
@@ -76,6 +78,9 @@ pub struct Report {
     pub records: Vec<Node>,
     /// A structural summary of the decoded record stream: how many records of each type.
     pub record_inventory: Vec<RecordTypeCount>,
+    /// The report's stored saved data (cached rows), decoded when present and decodable; `None`
+    /// otherwise. The stored records, not the engine's result rowset — see [`SavedData`].
+    pub saved_data: Option<SavedData>,
 }
 
 /// An embedded OLE object, summarised by the `Ole` stream's name, byte size, and the Base64 of

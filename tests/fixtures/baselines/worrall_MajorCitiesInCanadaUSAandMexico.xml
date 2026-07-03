@@ -457,4 +457,764 @@
       </Area>
     </Areas>
   </ReportDefinition>
+  <SavedData RecordCount="1000">
+    <Fields>
+      <Field Name="vw_major_cities.id" Type="Int32sField" />
+      <Field Name="vw_major_cities.City" Type="PersistentMemoField" />
+      <Field Name="vw_major_cities.Region" Type="PersistentMemoField" />
+      <Field Name="vw_major_cities.Province" Type="PersistentMemoField" />
+      <Field Name="vw_major_cities.Country" Type="PersistentMemoField" />
+    </Fields>
+    <Rows>
+      <Row>
+        <F>1</F>
+        <F>Airdrie</F>
+        <F>Calgary Metropolitan Region</F>
+        <F>Alberta</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>2</F>
+        <F>Beaumont</F>
+        <F>Edmonton Metropolitan Region</F>
+        <F>Brooks</F>
+        <F>Southern Alberta</F>
+      </Row>
+      <Row>
+        <F>3</F>
+        <F>Calgary</F>
+        <F>Calgary Metropolitan Region</F>
+        <F>Camrose</F>
+        <F>Central Alberta</F>
+      </Row>
+      <Row>
+        <F>4</F>
+        <F>Chestermere</F>
+        <F>Calgary Metropolitan Region</F>
+        <F>Cold Lake</F>
+        <F>Central Alberta</F>
+      </Row>
+      <Row>
+        <F>5</F>
+        <F>Edmonton</F>
+        <F>Edmonton Metropolitan Region</F>
+        <F>Fort Saskatchewan</F>
+        <F>Grande Prairie</F>
+      </Row>
+      <Row>
+        <F>6</F>
+        <F>Northern Alberta</F>
+        <F>Lacombe</F>
+        <F>Central Alberta</F>
+        <F>Leduc</F>
+      </Row>
+      <Row>
+        <F>7</F>
+        <F>Edmonton Metropolitan Region</F>
+        <F>Lethbridge</F>
+        <F>Southern Alberta</F>
+        <F>Lloydminster</F>
+      </Row>
+      <Row>
+        <F>8</F>
+        <F>Central Alberta</F>
+        <F>Medicine Hat</F>
+        <F>Southern Alberta</F>
+        <F>Red Deer</F>
+      </Row>
+      <Row>
+        <F>9</F>
+        <F>Central Alberta</F>
+        <F>Spruce Grove</F>
+        <F>Edmonton Metropolitan Region</F>
+        <F>St. Albert</F>
+      </Row>
+      <Row>
+        <F>10</F>
+        <F>Wetaskiwin</F>
+        <F>Central Alberta</F>
+        <F>Abbotsford</F>
+        <F>Fraser Valley</F>
+      </Row>
+      <Row>
+        <F>11</F>
+        <F>British Columbia</F>
+        <F>Armstrong</F>
+        <F>North Okanagan</F>
+        <F>Burnaby</F>
+      </Row>
+      <Row>
+        <F>12</F>
+        <F>Metro Vancouver</F>
+        <F>Campbell River</F>
+        <F>Strathcona</F>
+        <F>Castlegar</F>
+      </Row>
+      <Row>
+        <F>13</F>
+        <F>Central Kootenay</F>
+        <F>Chilliwack</F>
+        <F>Fraser Valley</F>
+        <F>Colwood</F>
+      </Row>
+      <Row>
+        <F>14</F>
+        <F>Capital</F>
+        <F>Coquitlam</F>
+        <F>Metro Vancouver</F>
+        <F>Courtenay</F>
+      </Row>
+      <Row>
+        <F>15</F>
+        <F>Comox Valley</F>
+        <F>Cranbrook</F>
+        <F>East Kootenay</F>
+        <F>Dawson Creek</F>
+      </Row>
+      <Row>
+        <F>16</F>
+        <F>Peace River</F>
+        <F>Delta</F>
+        <F>Greater Vancouver</F>
+        <F>Duncan</F>
+      </Row>
+      <Row>
+        <F>17</F>
+        <F>Cowichan Valley</F>
+        <F>Enderby</F>
+        <F>North Okanagan</F>
+        <F>Fernie</F>
+      </Row>
+      <Row>
+        <F>18</F>
+        <F>East Kootenay</F>
+        <F>Fort St. John</F>
+        <F>Peace River</F>
+        <F>Grand Forks</F>
+      </Row>
+      <Row>
+        <F>19</F>
+        <F>Kootenay Boundary</F>
+        <F>Greenwood</F>
+        <F>Kamloops</F>
+        <F>Thompson-Nicola</F>
+      </Row>
+      <Row>
+        <F>20</F>
+        <F>Kelowna</F>
+        <F>Central Okanagan</F>
+        <F>Kimberley</F>
+        <F>East Kootenay</F>
+      </Row>
+      <Row>
+        <F>21</F>
+        <F>Langford</F>
+        <F>Capital</F>
+        <F>Langley</F>
+        <F>Metro Vancouver</F>
+      </Row>
+      <Row>
+        <F>22</F>
+        <F>Maple Ridge</F>
+        <F>Merritt</F>
+        <F>Thompson-Nicola</F>
+        <F>Nanaimo</F>
+      </Row>
+      <Row>
+        <F>23</F>
+        <F>Nanaimo</F>
+        <F>Nelson</F>
+        <F>Central Kootenay</F>
+        <F>New Westminster</F>
+      </Row>
+      <Row>
+        <F>24</F>
+        <F>Metro Vancouver</F>
+        <F>North Vancouver</F>
+        <F>Parksville</F>
+        <F>Nanaimo</F>
+      </Row>
+      <Row>
+        <F>25</F>
+        <F>Penticton</F>
+        <F>Okanagan-Similkameen</F>
+        <F>Pitt Meadows</F>
+        <F>Metro Vancouver</F>
+      </Row>
+      <Row>
+        <F>26</F>
+        <F>Port Alberni</F>
+        <F>Alberni-Clayoquot</F>
+        <F>Port Coquitlam</F>
+        <F>Metro Vancouver</F>
+      </Row>
+      <Row>
+        <F>27</F>
+        <F>Port Moody</F>
+        <F>Powell River</F>
+        <F>Powell River</F>
+        <F>Prince George</F>
+      </Row>
+      <Row>
+        <F>28</F>
+        <F>Fraser-Fort George</F>
+        <F>Prince Rupert</F>
+        <F>Skeena-Queen Charlotte</F>
+        <F>Quesnel</F>
+      </Row>
+      <Row>
+        <F>29</F>
+        <F>Cariboo</F>
+        <F>Revelstoke</F>
+        <F>Columbia Shuswap</F>
+        <F>Richmond</F>
+      </Row>
+      <Row>
+        <F>30</F>
+        <F>Metro Vancouver</F>
+        <F>Rossland</F>
+        <F>Kootenay Boundary</F>
+        <F>Salmon Arm</F>
+      </Row>
+      <Row>
+        <F>31</F>
+        <F>Columbia Shuswap</F>
+        <F>Surrey</F>
+        <F>Metro Vancouver</F>
+        <F>Terrace</F>
+      </Row>
+      <Row>
+        <F>32</F>
+        <F>Kitimat-Stikine</F>
+        <F>Trail</F>
+        <F>Kootenay Boundary</F>
+        <F>Vancouver</F>
+      </Row>
+      <Row>
+        <F>33</F>
+        <F>Metro Vancouver</F>
+        <F>Vernon</F>
+        <F>North Okanagan</F>
+        <F>Victoria</F>
+      </Row>
+      <Row>
+        <F>34</F>
+        <F>Capital</F>
+        <F>West Kelowna</F>
+        <F>Central Okanagan</F>
+        <F>White Rock</F>
+      </Row>
+      <Row>
+        <F>35</F>
+        <F>Metro Vancouver</F>
+        <F>Williams Lake</F>
+        <F>Cariboo</F>
+        <F>Brandon</F>
+      </Row>
+      <Row>
+        <F>36</F>
+        <F>Westman</F>
+        <F>Manitoba</F>
+        <F>Dauphin</F>
+        <F>Parkland</F>
+      </Row>
+      <Row>
+        <F>37</F>
+        <F>Flin Flon</F>
+        <F>Manitoba / Saskatchewan</F>
+        <F>Morden</F>
+        <F>Pembina Valley</F>
+      </Row>
+      <Row>
+        <F>38</F>
+        <F>Portage la Prairie</F>
+        <F>Central Plains</F>
+        <F>Selkirk</F>
+        <F>Interlake</F>
+      </Row>
+      <Row>
+        <F>39</F>
+        <F>Steinbach</F>
+        <F>Eastman</F>
+        <F>Thompson</F>
+        <F>Northern Region</F>
+      </Row>
+      <Row>
+        <F>40</F>
+        <F>Winkler</F>
+        <F>Pembina Valley</F>
+        <F>Winnipeg</F>
+        <F>Winnipeg Capital</F>
+      </Row>
+      <Row>
+        <F>41</F>
+        <F>Bathurst</F>
+        <F>Gloucester</F>
+        <F>New Brunswick</F>
+        <F>Campbellton</F>
+      </Row>
+      <Row>
+        <F>42</F>
+        <F>Restigouche</F>
+        <F>Dieppe</F>
+        <F>Westmorland</F>
+        <F>Edmundston</F>
+      </Row>
+      <Row>
+        <F>43</F>
+        <F>Madawaska</F>
+        <F>Fredericton</F>
+        <F>Greater Fredericton</F>
+        <F>Miramichi</F>
+      </Row>
+      <Row>
+        <F>44</F>
+        <F>Northumberland</F>
+        <F>Moncton</F>
+        <F>Westmorland</F>
+        <F>Saint John</F>
+      </Row>
+      <Row>
+        <F>45</F>
+        <F>Saint John County</F>
+        <F>Corner Brook</F>
+        <F>5</F>
+        <F>Newfoundland and Labrador</F>
+      </Row>
+      <Row>
+        <F>46</F>
+        <F>Mount Pearl</F>
+        <F>1</F>
+        <F>St. John's</F>
+        <F>Cape Breton</F>
+      </Row>
+      <Row>
+        <F>47</F>
+        <F>Cape Breton</F>
+        <F>Nova Scotia</F>
+        <F>Halifax</F>
+        <F>Halifax</F>
+      </Row>
+      <Row>
+        <F>48</F>
+        <F>Queens</F>
+        <F>Queens</F>
+        <F>Annapolis</F>
+        <F>Annapolis</F>
+      </Row>
+      <Row>
+        <F>49</F>
+        <F>Antigonish</F>
+        <F>Antigonish</F>
+        <F>Colchester</F>
+        <F>Colchester</F>
+      </Row>
+      <Row>
+        <F>50</F>
+        <F>Cumberland</F>
+        <F>Cumberland</F>
+        <F>Inverness</F>
+        <F>Inverness</F>
+      </Row>
+      <Row>
+        <F>51</F>
+        <F>Kings</F>
+        <F>Kings</F>
+        <F>Pictou</F>
+        <F>Pictou</F>
+      </Row>
+      <Row>
+        <F>52</F>
+        <F>Richmond</F>
+        <F>Richmond</F>
+        <F>Victoria</F>
+        <F>Victoria</F>
+      </Row>
+      <Row>
+        <F>53</F>
+        <F>Argyle</F>
+        <F>Argyle</F>
+        <F>Barrington</F>
+        <F>Barrington</F>
+      </Row>
+      <Row>
+        <F>54</F>
+        <F>Chester</F>
+        <F>Chester</F>
+        <F>Clare</F>
+        <F>Clare</F>
+      </Row>
+      <Row>
+        <F>55</F>
+        <F>Digby</F>
+        <F>Digby</F>
+        <F>East Hants</F>
+        <F>East Hants</F>
+      </Row>
+      <Row>
+        <F>56</F>
+        <F>Guysborough</F>
+        <F>Guysborough</F>
+        <F>Lunenburg</F>
+        <F>Lunenburg</F>
+      </Row>
+      <Row>
+        <F>57</F>
+        <F>Shelburne</F>
+        <F>Shelburne</F>
+        <F>St. Mary's</F>
+        <F>St. Mary's</F>
+      </Row>
+      <Row>
+        <F>58</F>
+        <F>West Hants</F>
+        <F>West Hants</F>
+        <F>Yarmouth</F>
+        <F>Yarmouth</F>
+      </Row>
+      <Row>
+        <F>59</F>
+        <F>Yellowknife</F>
+        <F>North Slave Region</F>
+        <F>Northwest Territories</F>
+        <F>Iqaluit</F>
+      </Row>
+      <Row>
+        <F>60</F>
+        <F>Qikiqtaaluk</F>
+        <F>Nunavut</F>
+        <F>Barrie</F>
+        <F>Simcoe</F>
+      </Row>
+      <Row>
+        <F>61</F>
+        <F>Ontario</F>
+        <F>Belleville</F>
+        <F>Hastings</F>
+        <F>Brampton</F>
+      </Row>
+      <Row>
+        <F>62</F>
+        <F>Peel Region</F>
+        <F>Brant</F>
+        <F>Brant</F>
+        <F>Brantford</F>
+      </Row>
+      <Row>
+        <F>63</F>
+        <F>Brockville</F>
+        <F>Leeds and Grenville</F>
+        <F>Burlington</F>
+        <F>Halton</F>
+      </Row>
+      <Row>
+        <F>64</F>
+        <F>Cambridge</F>
+        <F>Waterloo</F>
+        <F>Clarence-Rockland</F>
+        <F>Prescott and Russell</F>
+      </Row>
+      <Row>
+        <F>65</F>
+        <F>Cornwall</F>
+        <F>Stormont, Dundas and Glengarry</F>
+        <F>Dryden</F>
+        <F>Kenora</F>
+      </Row>
+      <Row>
+        <F>66</F>
+        <F>Elliot Lake</F>
+        <F>Algoma</F>
+        <F>Greater Sudbury</F>
+        <F>Sudbury</F>
+      </Row>
+      <Row>
+        <F>67</F>
+        <F>Guelph</F>
+        <F>Wellington</F>
+        <F>Haldimand County</F>
+        <F>Haldimand</F>
+      </Row>
+      <Row>
+        <F>68</F>
+        <F>Hamilton</F>
+        <F>Hamilton</F>
+        <F>Kawartha Lakes</F>
+        <F>Kawartha Lakes</F>
+      </Row>
+      <Row>
+        <F>69</F>
+        <F>Kenora</F>
+        <F>Kenora</F>
+        <F>Kingston</F>
+        <F>Frontenac</F>
+      </Row>
+      <Row>
+        <F>70</F>
+        <F>Kitchener</F>
+        <F>Waterloo</F>
+        <F>London</F>
+        <F>Middlesex</F>
+      </Row>
+      <Row>
+        <F>71</F>
+        <F>Markham</F>
+        <F>York</F>
+        <F>Mississauga</F>
+        <F>Peel</F>
+      </Row>
+      <Row>
+        <F>72</F>
+        <F>Niagara Falls</F>
+        <F>Niagara</F>
+        <F>Norfolk County</F>
+        <F>Norfolk</F>
+      </Row>
+      <Row>
+        <F>73</F>
+        <F>North Bay</F>
+        <F>Nipissing</F>
+        <F>Orillia</F>
+        <F>Simcoe</F>
+      </Row>
+      <Row>
+        <F>74</F>
+        <F>Oshawa</F>
+        <F>Durham</F>
+        <F>Ottawa</F>
+        <F>Ottawa</F>
+      </Row>
+      <Row>
+        <F>75</F>
+        <F>Owen Sound</F>
+        <F>Grey</F>
+        <F>Pembroke</F>
+        <F>Renfrew</F>
+      </Row>
+      <Row>
+        <F>76</F>
+        <F>Peterborough</F>
+        <F>Peterborough</F>
+        <F>Pickering</F>
+        <F>Durham</F>
+      </Row>
+      <Row>
+        <F>77</F>
+        <F>Port Colborne</F>
+        <F>Niagara</F>
+        <F>Prince Edward County</F>
+        <F>Prince Edward</F>
+      </Row>
+      <Row>
+        <F>78</F>
+        <F>Quinte West</F>
+        <F>Hastings</F>
+        <F>Richmond Hill</F>
+        <F>York</F>
+      </Row>
+      <Row>
+        <F>79</F>
+        <F>Sarnia</F>
+        <F>Lambton</F>
+        <F>Sault Ste. Marie</F>
+        <F>Algoma</F>
+      </Row>
+      <Row>
+        <F>80</F>
+        <F>St. Catharines</F>
+        <F>Niagara</F>
+        <F>St. Thomas</F>
+        <F>Elgin</F>
+      </Row>
+      <Row>
+        <F>81</F>
+        <F>Stratford</F>
+        <F>Perth</F>
+        <F>Temiskaming Shores</F>
+        <F>Timiskaming</F>
+      </Row>
+      <Row>
+        <F>82</F>
+        <F>Thorold</F>
+        <F>Niagara</F>
+        <F>Thunder Bay</F>
+        <F>Thunder Bay</F>
+      </Row>
+      <Row>
+        <F>83</F>
+        <F>Timmins</F>
+        <F>Cochrane</F>
+        <F>Toronto</F>
+        <F>Toronto</F>
+      </Row>
+      <Row>
+        <F>84</F>
+        <F>Vaughan</F>
+        <F>York</F>
+        <F>Waterloo</F>
+        <F>Waterloo</F>
+      </Row>
+      <Row>
+        <F>85</F>
+        <F>Welland</F>
+        <F>Niagara</F>
+        <F>Windsor</F>
+        <F>Essex</F>
+      </Row>
+      <Row>
+        <F>86</F>
+        <F>Woodstock</F>
+        <F>Oxford</F>
+        <F>Charlottetown</F>
+        <F>Queens</F>
+      </Row>
+      <Row>
+        <F>87</F>
+        <F>Prince Edward Island</F>
+        <F>Summerside</F>
+        <F>Prince</F>
+        <F>Montreal</F>
+      </Row>
+      <Row>
+        <F>88</F>
+        <F>Montréal</F>
+        <F>Quebec</F>
+        <F>Québec City</F>
+        <F>Capitale-Nationale</F>
+      </Row>
+      <Row>
+        <F>89</F>
+        <F>Laval</F>
+        <F>Laval</F>
+        <F>Gatineau</F>
+        <F>Outaouais</F>
+      </Row>
+      <Row>
+        <F>90</F>
+        <F>Longueuil</F>
+        <F>Montérégie</F>
+        <F>Sherbrooke</F>
+        <F>Estrie</F>
+      </Row>
+      <Row>
+        <F>91</F>
+        <F>Saguenay</F>
+        <F>Saguenay–Lac-Saint-Jean</F>
+        <F>Lévis</F>
+        <F>Chaudière-Appalaches</F>
+      </Row>
+      <Row>
+        <F>92</F>
+        <F>Trois-Rivières</F>
+        <F>Mauricie</F>
+        <F>Terrebonne</F>
+        <F>Lanaudière</F>
+      </Row>
+      <Row>
+        <F>93</F>
+        <F>Saint-Jean-sur-Richelieu</F>
+        <F>Montérégie</F>
+        <F>Repentigny</F>
+        <F>Lanaudière</F>
+      </Row>
+      <Row>
+        <F>94</F>
+        <F>Brossard</F>
+        <F>Montérégie</F>
+        <F>Drummondville</F>
+        <F>Centre-du-Québec</F>
+      </Row>
+      <Row>
+        <F>95</F>
+        <F>Saint-Jérôme</F>
+        <F>Laurentides</F>
+        <F>Granby</F>
+        <F>Montérégie</F>
+      </Row>
+      <Row>
+        <F>96</F>
+        <F>Shawinigan</F>
+        <F>Mauricie</F>
+        <F>Saint-Hyacinthe</F>
+        <F>Montérégie</F>
+      </Row>
+      <Row>
+        <F>97</F>
+        <F>Dollard-des-Ormeaux</F>
+        <F>Montréal</F>
+        <F>Blainville</F>
+        <F>Laurentides</F>
+      </Row>
+      <Row>
+        <F>98</F>
+        <F>Rimouski</F>
+        <F>Bas-Saint-Laurent</F>
+        <F>Châteauguay</F>
+        <F>Montérégie</F>
+      </Row>
+      <Row>
+        <F>99</F>
+        <F>Saint-Eustache</F>
+        <F>Laurentides</F>
+        <F>Victoriaville</F>
+        <F>Centre-du-Québec</F>
+      </Row>
+      <Row>
+        <F>100</F>
+        <F>Rouyn-Noranda</F>
+        <F>Abitibi-Témiscamingue</F>
+        <F>Salaberry-de-Valleyfield</F>
+        <F>Montérégie</F>
+      </Row>
+      <Row>
+        <F>101</F>
+        <F>Boucherville</F>
+        <F>Mirabel</F>
+        <F>Laurentides</F>
+        <F>Sorel-Tracy</F>
+      </Row>
+      <Row>
+        <F>102</F>
+        <F>Montérégie</F>
+        <F>Mascouche</F>
+        <F>Lanaudière</F>
+        <F>Côte Saint-Luc</F>
+      </Row>
+      <Row>
+        <F>103</F>
+        <F>Montréal</F>
+        <F>Val-d'Or</F>
+        <F>Abitibi-Témiscamingue</F>
+        <F>Pointe-Claire</F>
+      </Row>
+      <Row>
+        <F>104</F>
+        <F>Montréal</F>
+        <F>Alma</F>
+        <F>Saguenay–Lac-Saint-Jean</F>
+        <F>Saint-Georges</F>
+      </Row>
+      <Row>
+        <F>105</F>
+        <F>Chaudière-Appalaches</F>
+        <F>Sainte-Julie</F>
+        <F>Montérégie</F>
+        <F>Boisbriand</F>
+      </Row>
+      <Row>
+        <F>106</F>
+        <F>Laurentides</F>
+        <F>Vaudreuil-Dorion</F>
+        <F>Montérégie</F>
+        <F>Thetford Mines</F>
+      </Row>
+      <Row>
+        <F>107</F>
+        <F>Chaudière-Appalaches</F>
+        <F>Sept-Îles</F>
+        <F>Côte-Nord</F>
+        <F>Sainte-Thérèse</F>
+      </Row>
+    </Rows>
+  </SavedData>
 </Report>
