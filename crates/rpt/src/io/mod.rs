@@ -283,10 +283,14 @@ fn decode_saved_data(streams: &[RecordStream]) -> Option<crate::model::SavedData
     })
 }
 
-/// Summarise embedded OLE objects: for each top-level `Embedding N` storage, hash its `\x01Ole`
-/// stream into an [`Embed`] (Name `Ole`, byte size, Base64-MD5), in directory order. Only the
-/// `Ole` stream is listed (not `CompObj` / `CONTENTS`).
+/// Summarise embedded OLE objects: for each top-level `Embedding N` storage, hash each of its
+/// OLE data streams into an [`Embed`] (Name, byte size, Base64-MD5), in directory order. The
+/// engine emits the OLE data streams — `Ole`, `OlePres000`, `Ole10Native` — but not the
+/// `CompObj` (OLE class descriptor) or a `CONTENTS` sub-storage, so those are skipped.
 fn raise_embeds(container: &Container) -> Vec<crate::model::Embed> {
+    // Streams present under an `Embedding N` storage that the oracle does NOT list. `CompObj` is
+    // the OLE1 class-moniker blob; `CONTENTS` (when present) is a nested storage, not object data.
+    const SKIP: [&str; 2] = ["CompObj", "CONTENTS"];
     let mut out = Vec::new();
     for s in container.streams() {
         // Path components below the root, e.g. `["Embedding 2", "\x01Ole"]`. Only top-level
@@ -300,9 +304,9 @@ fn raise_embeds(container: &Container) -> Vec<crate::model::Embed> {
         let [storage, stream] = parts.as_slice() else {
             continue;
         };
-        // The stream name carries a `\x01` (OLE control) prefix; strip control chars for the Name.
+        // The stream name carries a `\x01`/`\x02` (OLE control) prefix; strip control chars for the Name.
         let name: String = stream.chars().filter(|c| !c.is_control()).collect();
-        if storage.starts_with("Embedding ") && name == "Ole" {
+        if storage.starts_with("Embedding ") && !SKIP.contains(&name.as_str()) {
             out.push(crate::model::Embed {
                 name,
                 size: s.bytes.len() as u64,

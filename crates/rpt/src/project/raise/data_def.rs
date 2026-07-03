@@ -586,8 +586,11 @@ pub(super) fn raise_group(
     use crate::model::FieldValueType::*;
     // The longer date-grouping periods are selected by the byte after the report-group order marker
     // (`@Group #N Order`), where the trailing structure is `01 00 <code> ff ff`: 0x03 = monthly,
-    // 0x06 = weekly. (Daily is instead flagged at `used + 4 == 0x02`; discrete date grouping leaves
-    // both clear.) Unmapped codes are left undecoded rather than guessed.
+    // 0x06 / 0x08 = weekly (the engine emits two week codes — e.g. week-of-year vs a week starting
+    // on a fixed weekday — that both render as "Weekly"). Daily is 0x01, or via the older
+    // `used + 4 == 0x02` flag (with the selector left 0); discrete date grouping leaves both clear.
+    // Quarterly/yearly codes are not present in the corpus, so they are left undecoded rather than
+    // guessed.
     let period_code = lp_scan(&bytes, Scan::Consume)
         .find(|(_, s, _)| s.starts_with("@Group #") && s.ends_with(" Order"))
         .and_then(|(i, _, consumed)| bytes.get(i + consumed + 2).copied());
@@ -595,11 +598,9 @@ pub(super) fn raise_group(
         .get(&field.to_lowercase())
         .filter(|t| matches!(t, Date | Time | DateTime | Boolean))
         .and_then(|_| match period_code {
-            // The period selector after the order marker; daily also appears via the older
-            // `used + 4 == 0x02` flag (with the selector left 0).
             Some(0x01) => Some("daily".to_string()),
             Some(0x03) => Some("monthly".to_string()),
-            Some(0x06) => Some("weekly".to_string()),
+            Some(0x06) | Some(0x08) => Some("weekly".to_string()),
             _ if bytes.get(used + 4).copied() == Some(0x02) => Some("daily".to_string()),
             _ => None,
         });
