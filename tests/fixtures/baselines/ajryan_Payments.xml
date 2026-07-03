@@ -50,17 +50,17 @@
         </FormulaFieldDefinitions>
         <GroupNameFieldDefinitions />
         <ParameterFieldDefinitions>
-          <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?ChecksSubDocKey@}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="ChecksSubDocKey@" NumberOfBytes="8" ParameterFieldName="ChecksSubDocKey@" ParameterFieldUsage="InUse, DataFetching" ParameterType="StoreProcedureParameter" ParameterValueKind="NumberParameter" PromptText="ChecksSubDocKey@" ReportName="" ValueType="NumberField">
+          <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?ChecksSubDocKey@}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="ChecksSubDocKey@" NumberOfBytes="8" ParameterFieldName="ChecksSubDocKey@" ParameterFieldUsage="InUse, DataFetching" ParameterType="StoreProcedureParameter" ParameterValueKind="NumberParameter" PromptText="ChecksSubDocKey@" ReportName="Checks" ValueType="NumberField">
             <ParameterDefaultValues />
             <ParameterInitialValues />
             <ParameterCurrentValues />
           </ParameterFieldDefinition>
-          <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?CheckSubObjectId@}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="CheckSubObjectId@" NumberOfBytes="65534" ParameterFieldName="CheckSubObjectId@" ParameterFieldUsage="InUse, DataFetching" ParameterType="StoreProcedureParameter" ParameterValueKind="StringParameter" PromptText="CheckSubObjectId@" ReportName="" ValueType="StringField">
+          <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?CheckSubObjectId@}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="CheckSubObjectId@" NumberOfBytes="65534" ParameterFieldName="CheckSubObjectId@" ParameterFieldUsage="InUse, DataFetching" ParameterType="StoreProcedureParameter" ParameterValueKind="StringParameter" PromptText="CheckSubObjectId@" ReportName="Checks" ValueType="StringField">
             <ParameterDefaultValues />
             <ParameterInitialValues />
             <ParameterCurrentValues />
           </ParameterFieldDefinition>
-          <ParameterFieldDefinition AllowCustomCurrentValues="False" EditMask="" EnableAllowEditingDefaultValue="False" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?$[CURRENT_LANGUAGE_CHECK_SUB]}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="$[CURRENT_LANGUAGE_CHECK_SUB]" NumberOfBytes="8" ParameterFieldName="$[CURRENT_LANGUAGE_CHECK_SUB]" ParameterFieldUsage="InUse, ShowOnPanel, EditableOnPanel" ParameterType="ReportParameter" ParameterValueKind="NumberParameter" PromptText="Enter Language:" ReportName="" ValueType="NumberField">
+          <ParameterFieldDefinition AllowCustomCurrentValues="False" EditMask="" EnableAllowEditingDefaultValue="False" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?$[CURRENT_LANGUAGE_CHECK_SUB]}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="$[CURRENT_LANGUAGE_CHECK_SUB]" NumberOfBytes="8" ParameterFieldName="$[CURRENT_LANGUAGE_CHECK_SUB]" ParameterFieldUsage="InUse, ShowOnPanel, EditableOnPanel" ParameterType="ReportParameter" ParameterValueKind="NumberParameter" PromptText="Enter Language:" ReportName="Checks" ValueType="NumberField">
             <ParameterDefaultValues>
               <ParameterDefaultValue Description="Hebrew" Value="1" />
               <ParameterDefaultValue Description="English" Value="3" />
@@ -340,17 +340,17 @@
         </FormulaFieldDefinitions>
         <GroupNameFieldDefinitions />
         <ParameterFieldDefinitions>
-          <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?CreditSubDocKey@}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="CreditSubDocKey@" NumberOfBytes="8" ParameterFieldName="CreditSubDocKey@" ParameterFieldUsage="InUse, DataFetching" ParameterType="StoreProcedureParameter" ParameterValueKind="NumberParameter" PromptText="CreditSubDocKey@" ReportName="" ValueType="NumberField">
+          <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?CreditSubDocKey@}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="CreditSubDocKey@" NumberOfBytes="8" ParameterFieldName="CreditSubDocKey@" ParameterFieldUsage="InUse, DataFetching" ParameterType="StoreProcedureParameter" ParameterValueKind="NumberParameter" PromptText="CreditSubDocKey@" ReportName="CreditCards" ValueType="NumberField">
             <ParameterDefaultValues />
             <ParameterInitialValues />
             <ParameterCurrentValues />
           </ParameterFieldDefinition>
-          <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?CreditSubObjectId@}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="CreditSubObjectId@" NumberOfBytes="65534" ParameterFieldName="CreditSubObjectId@" ParameterFieldUsage="InUse, DataFetching" ParameterType="StoreProcedureParameter" ParameterValueKind="StringParameter" PromptText="CreditSubObjectId@" ReportName="" ValueType="StringField">
+          <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?CreditSubObjectId@}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="CreditSubObjectId@" NumberOfBytes="65534" ParameterFieldName="CreditSubObjectId@" ParameterFieldUsage="InUse, DataFetching" ParameterType="StoreProcedureParameter" ParameterValueKind="StringParameter" PromptText="CreditSubObjectId@" ReportName="CreditCards" ValueType="StringField">
             <ParameterDefaultValues />
             <ParameterInitialValues />
             <ParameterCurrentValues />
           </ParameterFieldDefinition>
-          <ParameterFieldDefinition AllowCustomCurrentValues="False" EditMask="" EnableAllowEditingDefaultValue="False" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?$[CURRENT_LANGUAGE_CREDIT_SUB]}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="$[CURRENT_LANGUAGE_CREDIT_SUB]" NumberOfBytes="8" ParameterFieldName="$[CURRENT_LANGUAGE_CREDIT_SUB]" ParameterFieldUsage="InUse, ShowOnPanel, EditableOnPanel" ParameterType="ReportParameter" ParameterValueKind="NumberParameter" PromptText="Enter Language:" ReportName="" ValueType="NumberField">
+          <ParameterFieldDefinition AllowCustomCurrentValues="False" EditMask="" EnableAllowEditingDefaultValue="False" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?$[CURRENT_LANGUAGE_CREDIT_SUB]}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="$[CURRENT_LANGUAGE_CREDIT_SUB]" NumberOfBytes="8" ParameterFieldName="$[CURRENT_LANGUAGE_CREDIT_SUB]" ParameterFieldUsage="InUse, ShowOnPanel, EditableOnPanel" ParameterType="ReportParameter" ParameterValueKind="NumberParameter" PromptText="Enter Language:" ReportName="CreditCards" ValueType="NumberField">
             <ParameterDefaultValues>
               <ParameterDefaultValue Description="Hebrew" Value="1" />
               <ParameterDefaultValue Description="English" Value="3" />

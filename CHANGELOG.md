@@ -24,6 +24,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
+- **Subreport parameter report name.** A parameter defined inside a subreport now reports that subreport's name as its
+  `ReportName` (previously always empty); main-report parameters remain empty, as the engine emits.
+- **Basic-syntax formulas.** A formula authored in Basic syntax now reports `Syntax="crFormulaSyntaxBasic"` (read from
+  the formula record's stored dialect flag) instead of defaulting every formula to Crystal syntax.
 - **Table aliases with spaces.** Aliases whose table name contains spaces (which Crystal substitutes with underscores)
   now match correctly, fixing the alias and the field long-names and formula forms derived from it.
 - **Range parameter current values.** A range (non-discrete) current value now sets `HasCurrentValue`.

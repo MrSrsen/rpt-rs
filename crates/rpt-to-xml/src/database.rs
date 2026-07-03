@@ -180,6 +180,7 @@ pub(crate) fn write_parameter(
     p: &rpt::model::ParameterField,
     in_use: bool,
     data_fetching: bool,
+    report_name: &str,
 ) {
     use rpt::model::ParameterValueKind as Vk;
     // ValueType as the engine's CrFieldValueType name (e.g. StringField / NumberField).
@@ -213,9 +214,10 @@ pub(crate) fn write_parameter(
     let usage = usage.join(", ");
     let _ = writeln!(
         o,
-        "      <ParameterFieldDefinition AllowCustomCurrentValues=\"{accv}\" EditMask=\"\" EnableAllowEditingDefaultValue=\"{eaedv}\" EnableAllowMultipleValue=\"{eamv}\" EnableNullValue=\"False\" FormulaName=\"{{?{n}}}\" HasCurrentValue=\"{hcv}\" IsOptionalPrompt=\"{opt}\" Kind=\"{kind}\" Name=\"{n}\" NumberOfBytes=\"{nb}\" ParameterFieldName=\"{n}\" ParameterFieldUsage=\"{usage}\" ParameterType=\"{pt:?}\" ParameterValueKind=\"{vk:?}\" PromptText=\"{prompt}\" ReportName=\"\" ValueType=\"{vt}\">",
+        "      <ParameterFieldDefinition AllowCustomCurrentValues=\"{accv}\" EditMask=\"\" EnableAllowEditingDefaultValue=\"{eaedv}\" EnableAllowMultipleValue=\"{eamv}\" EnableNullValue=\"False\" FormulaName=\"{{?{n}}}\" HasCurrentValue=\"{hcv}\" IsOptionalPrompt=\"{opt}\" Kind=\"{kind}\" Name=\"{n}\" NumberOfBytes=\"{nb}\" ParameterFieldName=\"{n}\" ParameterFieldUsage=\"{usage}\" ParameterType=\"{pt:?}\" ParameterValueKind=\"{vk:?}\" PromptText=\"{prompt}\" ReportName=\"{rn}\" ValueType=\"{vt}\">",
         kind = FieldKind::ParameterField.name(),
         n = escape(name),
+        rn = escape(report_name),
         nb = number_of_bytes,
         accv = b(p.allow_custom_values),
         hcv = b(p.has_current_value),

@@ -70,7 +70,7 @@
       <FormulaFieldDefinition FormulaName="{@Number}" Kind="FormulaField" Name="Number" NumberOfBytes="8" ValueType="NumberField" Syntax="crFormulaSyntaxCrystal">{Header.DocNum}</FormulaFieldDefinition>
       <FormulaFieldDefinition FormulaName="{@Line_Total}" Kind="FormulaField" Name="Line_Total" NumberOfBytes="8" ValueType="NumberField" Syntax="crFormulaSyntaxCrystal">{Lines.LineTotal}</FormulaFieldDefinition>
       <FormulaFieldDefinition FormulaName="{@Title_Remarks}" Kind="FormulaField" Name="Title_Remarks" NumberOfBytes="26" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', 'Kommentarer:',&#xA;    {@X_Language} = 'DE', 'Bemerkungen:',&#xA;    True, 'Remarks:' //Default English&#xA;)</FormulaFieldDefinition>
-      <FormulaFieldDefinition FormulaName="{@Line_OrderNo}" Kind="FormulaField" Name="Line_OrderNo" NumberOfBytes="34" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">formula = {Lines.BaseRef}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Line_OrderNo}" Kind="FormulaField" Name="Line_OrderNo" NumberOfBytes="34" ValueType="StringField" Syntax="crFormulaSyntaxBasic">formula = {Lines.BaseRef}</FormulaFieldDefinition>
       <FormulaFieldDefinition FormulaName="{@Title_Line_OrderNo}" Kind="FormulaField" Name="Title_Line_OrderNo" NumberOfBytes="24" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;{@X_Language}="DK","Order Nr.",&#xA;{@X_Language}="DE","Ordernummer",&#xA;True,"Order No." //Default English&#xA;)</FormulaFieldDefinition>
     </FormulaFieldDefinitions>
     <GroupNameFieldDefinitions />

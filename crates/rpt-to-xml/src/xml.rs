@@ -96,7 +96,7 @@ pub(crate) fn to_xml(file: &str, report: &Report, full: bool) -> String {
             // The shared body is written at the top-level (2-space) indent; a subreport sits two
             // levels deeper (inside <SubReports><Report>), so re-indent its lines by 4 spaces.
             let mut body = String::new();
-            write_report_core(&mut body, &sub.report, &sub.links, true);
+            write_report_core(&mut body, &sub.report, &sub.links, true, &sub.name);
             for line in body.lines() {
                 if line.is_empty() {
                     o.push('\n');
@@ -109,7 +109,7 @@ pub(crate) fn to_xml(file: &str, report: &Report, full: bool) -> String {
         o.push_str("  </SubReports>\n");
     }
 
-    write_report_core(&mut o, report, &[], false);
+    write_report_core(&mut o, report, &[], false, "");
     write_saved_data(&mut o, report);
 
     if full {
@@ -177,6 +177,7 @@ fn write_report_core(
     report: &Report,
     incoming_links: &[rpt::model::SubreportLink],
     is_subreport: bool,
+    report_name: &str,
 ) {
     // Derived analytics (field UseCount + parameter usage flags) come from the engine layer,
     // computed once per report level and threaded into the pure-formatting writers below.
@@ -333,7 +334,14 @@ fn write_report_core(
                 .get(&f.name)
                 .copied()
                 .unwrap_or_default();
-            write_parameter(o, &f.name, p, usage.in_use, usage.data_fetching);
+            write_parameter(
+                o,
+                &f.name,
+                p,
+                usage.in_use,
+                usage.data_fetching,
+                report_name,
+            );
         }
     }
     // Subreport-link stubs. Linking a main-report field into a subreport auto-creates a parameter on

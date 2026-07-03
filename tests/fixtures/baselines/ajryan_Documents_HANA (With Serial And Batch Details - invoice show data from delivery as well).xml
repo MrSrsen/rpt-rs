@@ -37,22 +37,22 @@
         </FormulaFieldDefinitions>
         <GroupNameFieldDefinitions />
         <ParameterFieldDefinitions>
-          <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?SupSerialNumberBaseEntry}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="SupSerialNumberBaseEntry" NumberOfBytes="8" ParameterFieldName="SupSerialNumberBaseEntry" ParameterFieldUsage="InUse, DataFetching" ParameterType="StoreProcedureParameter" ParameterValueKind="NumberParameter" PromptText="" ReportName="" ValueType="NumberField">
+          <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?SupSerialNumberBaseEntry}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="SupSerialNumberBaseEntry" NumberOfBytes="8" ParameterFieldName="SupSerialNumberBaseEntry" ParameterFieldUsage="InUse, DataFetching" ParameterType="StoreProcedureParameter" ParameterValueKind="NumberParameter" PromptText="" ReportName="SerialNumbers" ValueType="NumberField">
             <ParameterDefaultValues />
             <ParameterInitialValues />
             <ParameterCurrentValues />
           </ParameterFieldDefinition>
-          <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?SupSerialNumberBaseLine}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="SupSerialNumberBaseLine" NumberOfBytes="8" ParameterFieldName="SupSerialNumberBaseLine" ParameterFieldUsage="InUse, DataFetching" ParameterType="StoreProcedureParameter" ParameterValueKind="NumberParameter" PromptText="" ReportName="" ValueType="NumberField">
+          <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?SupSerialNumberBaseLine}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="SupSerialNumberBaseLine" NumberOfBytes="8" ParameterFieldName="SupSerialNumberBaseLine" ParameterFieldUsage="InUse, DataFetching" ParameterType="StoreProcedureParameter" ParameterValueKind="NumberParameter" PromptText="" ReportName="SerialNumbers" ValueType="NumberField">
             <ParameterDefaultValues />
             <ParameterInitialValues />
             <ParameterCurrentValues />
           </ParameterFieldDefinition>
-          <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?SupSerialNumberBaseType}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="SupSerialNumberBaseType" NumberOfBytes="8" ParameterFieldName="SupSerialNumberBaseType" ParameterFieldUsage="InUse, DataFetching" ParameterType="StoreProcedureParameter" ParameterValueKind="NumberParameter" PromptText="" ReportName="" ValueType="NumberField">
+          <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?SupSerialNumberBaseType}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="SupSerialNumberBaseType" NumberOfBytes="8" ParameterFieldName="SupSerialNumberBaseType" ParameterFieldUsage="InUse, DataFetching" ParameterType="StoreProcedureParameter" ParameterValueKind="NumberParameter" PromptText="" ReportName="SerialNumbers" ValueType="NumberField">
             <ParameterDefaultValues />
             <ParameterInitialValues />
             <ParameterCurrentValues />
           </ParameterFieldDefinition>
-          <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?SupSerialNumberLanguage}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="SupSerialNumberLanguage" NumberOfBytes="65534" ParameterFieldName="SupSerialNumberLanguage" ParameterFieldUsage="InUse, ShowOnPanel, EditableOnPanel" ParameterType="ReportParameter" ParameterValueKind="StringParameter" PromptText="Enter SupSerialNumberLanguage:" ReportName="" ValueType="StringField">
+          <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?SupSerialNumberLanguage}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="SupSerialNumberLanguage" NumberOfBytes="65534" ParameterFieldName="SupSerialNumberLanguage" ParameterFieldUsage="InUse, ShowOnPanel, EditableOnPanel" ParameterType="ReportParameter" ParameterValueKind="StringParameter" PromptText="Enter SupSerialNumberLanguage:" ReportName="SerialNumbers" ValueType="StringField">
             <ParameterDefaultValues />
             <ParameterInitialValues />
             <ParameterCurrentValues />
@@ -212,22 +212,22 @@
         </FormulaFieldDefinitions>
         <GroupNameFieldDefinitions />
         <ParameterFieldDefinitions>
-          <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?SupBatchLanguage}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="SupBatchLanguage" NumberOfBytes="65534" ParameterFieldName="SupBatchLanguage" ParameterFieldUsage="InUse, ShowOnPanel, EditableOnPanel" ParameterType="ReportParameter" ParameterValueKind="StringParameter" PromptText="Enter SupBatchLanguage:" ReportName="" ValueType="StringField">
+          <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?SupBatchLanguage}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="SupBatchLanguage" NumberOfBytes="65534" ParameterFieldName="SupBatchLanguage" ParameterFieldUsage="InUse, ShowOnPanel, EditableOnPanel" ParameterType="ReportParameter" ParameterValueKind="StringParameter" PromptText="Enter SupBatchLanguage:" ReportName="BatchNumbers" ValueType="StringField">
             <ParameterDefaultValues />
             <ParameterInitialValues />
             <ParameterCurrentValues />
           </ParameterFieldDefinition>
-          <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?SupBatchBaseEntry}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="SupBatchBaseEntry" NumberOfBytes="8" ParameterFieldName="SupBatchBaseEntry" ParameterFieldUsage="InUse, DataFetching" ParameterType="StoreProcedureParameter" ParameterValueKind="NumberParameter" PromptText="" ReportName="" ValueType="NumberField">
+          <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?SupBatchBaseEntry}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="SupBatchBaseEntry" NumberOfBytes="8" ParameterFieldName="SupBatchBaseEntry" ParameterFieldUsage="InUse, DataFetching" ParameterType="StoreProcedureParameter" ParameterValueKind="NumberParameter" PromptText="" ReportName="BatchNumbers" ValueType="NumberField">
             <ParameterDefaultValues />
             <ParameterInitialValues />
             <ParameterCurrentValues />
           </ParameterFieldDefinition>
-          <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?SupBatchBaseLine}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="SupBatchBaseLine" NumberOfBytes="8" ParameterFieldName="SupBatchBaseLine" ParameterFieldUsage="InUse, DataFetching" ParameterType="StoreProcedureParameter" ParameterValueKind="NumberParameter" PromptText="" ReportName="" ValueType="NumberField">
+          <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?SupBatchBaseLine}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="SupBatchBaseLine" NumberOfBytes="8" ParameterFieldName="SupBatchBaseLine" ParameterFieldUsage="InUse, DataFetching" ParameterType="StoreProcedureParameter" ParameterValueKind="NumberParameter" PromptText="" ReportName="BatchNumbers" ValueType="NumberField">
             <ParameterDefaultValues />
             <ParameterInitialValues />
             <ParameterCurrentValues />
           </ParameterFieldDefinition>
-          <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?SupBatchBaseType}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="SupBatchBaseType" NumberOfBytes="8" ParameterFieldName="SupBatchBaseType" ParameterFieldUsage="InUse, DataFetching" ParameterType="StoreProcedureParameter" ParameterValueKind="NumberParameter" PromptText="" ReportName="" ValueType="NumberField">
+          <ParameterFieldDefinition AllowCustomCurrentValues="True" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?SupBatchBaseType}" HasCurrentValue="False" IsOptionalPrompt="False" Kind="ParameterField" Name="SupBatchBaseType" NumberOfBytes="8" ParameterFieldName="SupBatchBaseType" ParameterFieldUsage="InUse, DataFetching" ParameterType="StoreProcedureParameter" ParameterValueKind="NumberParameter" PromptText="" ReportName="BatchNumbers" ValueType="NumberField">
             <ParameterDefaultValues />
             <ParameterInitialValues />
             <ParameterCurrentValues />

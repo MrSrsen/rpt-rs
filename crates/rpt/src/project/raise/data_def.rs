@@ -235,14 +235,15 @@ pub(super) fn raise_formulas(
     }
 
     let mut out = Formulas::default();
-    let mut pending: Option<String> = None;
+    let mut pending: Option<(String, crate::model::FormulaSyntax)> = None;
     for n in nodes {
         if n.rtype == FORMULA {
-            pending = Some(formula_body(n, logical));
+            let leaf = n.leaf_bytes(logical);
+            pending = Some((formula_body(n, logical), formula_syntax(&leaf)));
             continue;
         }
         // NAMED_VALUE: names the pending body, if any (db-field/parameter names have none).
-        let Some(body) = pending.take() else {
+        let Some((body, syntax)) = pending.take() else {
             continue;
         };
         let Some((name, after)) = read_lp_string(&n.leaf_bytes(logical)) else {
@@ -309,7 +310,7 @@ pub(super) fn raise_formulas(
                         text: Formula(body),
                         options: 0,
                         number_of_bytes,
-                        syntax: crate::model::FormulaSyntax::Crystal,
+                        syntax,
                     }),
                     ..Default::default()
                 });
@@ -466,6 +467,36 @@ pub(super) fn structural_formula_body(bytes: &[u8]) -> Option<String> {
         pos += consumed + 3; // 3-byte inter-reference separator
     }
     read_lp_string(bytes.get(pos..)?).map(|(body, _)| body)
+}
+
+/// The formula's authoring dialect. In a `0x76` record, byte 16 of the trailer (after the dependency
+/// list and body string) is `1` for Basic, else Crystal. Defaults to Crystal if the layout doesn't parse.
+pub(super) fn formula_syntax(bytes: &[u8]) -> crate::model::FormulaSyntax {
+    use crate::model::FormulaSyntax;
+    let Some(n) = bytes
+        .get(0..2)
+        .map(|b| u16::from_be_bytes([b[0], b[1]]) as usize)
+    else {
+        return FormulaSyntax::Crystal;
+    };
+    if n > bytes.len() / 5 {
+        return FormulaSyntax::Crystal;
+    }
+    let mut pos = 2;
+    for _ in 0..n {
+        let Some((_, consumed)) = bytes.get(pos..).and_then(read_lp_string) else {
+            return FormulaSyntax::Crystal;
+        };
+        pos += consumed + 3;
+    }
+    let Some((_, consumed)) = bytes.get(pos..).and_then(read_lp_string) else {
+        return FormulaSyntax::Crystal;
+    };
+    let trailer_start = pos + consumed;
+    match bytes.get(trailer_start + 16) {
+        Some(1) => FormulaSyntax::Basic,
+        _ => FormulaSyntax::Crystal,
+    }
 }
 
 /// A group record (`0xe5`): its first length-prefixed string is the group's condition field
