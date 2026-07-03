@@ -102,9 +102,7 @@ pub(crate) fn is_qe(bytes: &[u8]) -> bool {
 /// CRMetaObjects documents. Returns the first document — the parameter definitions
 /// — as a UTF-8 string. (A multi-record prompt manager keeps subsequent prompt-group records in
 /// later blocks; the parameter objects we need are in the first.)
-// TODO: temporarily `pub`; revert to `pub(crate)` once the PromptManager parameter schema is
-// fully mapped.
-pub fn decode_prompt_manager(bytes: &[u8]) -> Option<String> {
+pub(crate) fn decode_prompt_manager(bytes: &[u8]) -> Option<String> {
     let plain = crypto::cfb_decrypt(&[0u8; 16], bytes);
     let inflated = miniz_oxide::inflate::decompress_to_vec_zlib(&plain).ok()?;
     let xml = String::from_utf8_lossy(&inflated).into_owned();

@@ -35,6 +35,14 @@ pub enum StreamId {
     ExportFormatOptions(String),
     /// A zlib-compressed BLOB (`zlibBLOB …`). Full name kept.
     ZlibBlob(String),
+    /// The saved-data batch directory (`DataSourceManager …`). Full name kept.
+    DataSourceManager(String),
+    /// The saved-record index (`SavedRecordsStream …`). Full name kept.
+    SavedRecordsStream(String),
+    /// Saved variable-length field values (`MemoValuesStream …`). Full name kept.
+    MemoValuesStream(String),
+    /// Saved parameter current values (`ReportParametersStream …`). Full name kept.
+    ReportParametersStream(String),
     /// Any stream we do not (yet) classify — carries the full OLE path verbatim.
     Other(String),
 }
@@ -73,8 +81,10 @@ impl StreamId {
 
     /// True for the TSLV streams the codec layer decodes (currently just `Contents`).
     pub(crate) fn is_tslv(&self) -> bool {
-        matches!(self, StreamId::Contents)
-            || matches!(self, StreamId::Other(n) if n.starts_with("ReportParametersStream"))
+        matches!(
+            self,
+            StreamId::Contents | StreamId::ReportParametersStream(_)
+        )
     }
 }
 
@@ -84,17 +94,21 @@ fn classify_indexed(name: &str) -> StreamId {
             return StreamId::Subdocument(idx);
         }
     }
-    if name.starts_with("Embedding") {
-        return StreamId::Embedding(name.to_owned());
-    }
-    if name.starts_with("CHART") {
-        return StreamId::Chart(name.to_owned());
-    }
-    if name.starts_with("ExportFormatOptionsStream") {
-        return StreamId::ExportFormatOptions(name.to_owned());
-    }
-    if name.starts_with("zlibBLOB") {
-        return StreamId::ZlibBlob(name.to_owned());
+    // Streams whose OLE name is `<prefix> <index>l`, classified by prefix; the full name is kept
+    // (the trailing index is part of the stored name and never re-derived).
+    for (prefix, ctor) in [
+        ("Embedding", StreamId::Embedding as fn(String) -> StreamId),
+        ("CHART", StreamId::Chart),
+        ("ExportFormatOptionsStream", StreamId::ExportFormatOptions),
+        ("zlibBLOB", StreamId::ZlibBlob),
+        ("DataSourceManager", StreamId::DataSourceManager),
+        ("SavedRecordsStream", StreamId::SavedRecordsStream),
+        ("MemoValuesStream", StreamId::MemoValuesStream),
+        ("ReportParametersStream", StreamId::ReportParametersStream),
+    ] {
+        if name.starts_with(prefix) {
+            return ctor(name.to_owned());
+        }
     }
     StreamId::Other(name.to_owned())
 }

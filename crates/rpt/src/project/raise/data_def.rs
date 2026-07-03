@@ -534,11 +534,7 @@ fn group_sort_direction(dir_byte: u8, topn_limit: u16) -> crate::model::SortDire
 fn render_group_sort_summary(operand: &str, group_field: &str) -> String {
     match operand.split_once(" of ") {
         Some((op, summed)) => {
-            let op = match op {
-                "Max" => "Maximum",
-                "Min" => "Minimum",
-                other => other,
-            };
+            let op = summary_op_full(op);
             format!("{op} ({{{summed}}}, {{{group_field}}})")
         }
         None => operand.to_string(),

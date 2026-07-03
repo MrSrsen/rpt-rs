@@ -15,6 +15,7 @@ pub use stream_id::StreamId;
 use std::io::{Cursor, Read};
 use std::path::PathBuf;
 
+use crate::bytes::{u16_le, u32_le};
 use crate::error::{Error, Result};
 
 /// One loaded stream: its symbolic id, original OLE path, and raw bytes.
@@ -124,22 +125,22 @@ impl SummaryInformation {
     fn parse(data: &[u8]) -> Option<SummaryInformation> {
         // Property set header: byte-order(2)=FFFE, version(2), sysid(4), clsid(16),
         // num property sets(4), then [FMTID(16) + offset(4)] per set.
-        if data.len() < 48 || rd_u16(data, 0)? != 0xFFFE {
+        if data.len() < 48 || u16_le(data, 0)? != 0xFFFE {
             return None;
         }
-        if rd_u32(data, 24)? < 1 {
+        if u32_le(data, 24)? < 1 {
             return None; // num property sets
         }
-        let first_set_off = rd_u32(data, 28 + 16)? as usize; // skip FMTID(16) of set 0
+        let first_set_off = u32_le(data, 28 + 16)? as usize; // skip FMTID(16) of set 0
         let sect = data.get(first_set_off..)?;
 
         // Section: size(4), count(4), then count × (propid(4), value-offset(4)).
-        let count = rd_u32(sect, 4)? as usize;
+        let count = u32_le(sect, 4)? as usize;
         let mut info = SummaryInformation::default();
         for i in 0..count {
             let entry = 8 + i * 8;
-            let pid = rd_u32(sect, entry)?;
-            let voff = rd_u32(sect, entry + 4)? as usize;
+            let pid = u32_le(sect, entry)?;
+            let voff = u32_le(sect, entry + 4)? as usize;
             // The thumbnail is a (non-string) clipboard blob; only its presence matters.
             if pid == PID_THUMBNAIL {
                 info.has_thumbnail = true;
@@ -164,8 +165,8 @@ impl SummaryInformation {
 
 /// Read a VT_LPSTR / VT_LPWSTR property at `off` within a section.
 fn read_string_property(sect: &[u8], off: usize) -> Option<String> {
-    let vt = rd_u32(sect, off)?;
-    let len = rd_u32(sect, off + 4)? as usize;
+    let vt = u32_le(sect, off)?;
+    let len = u32_le(sect, off + 4)? as usize;
     let body = sect.get(off + 8..)?;
     match vt {
         VT_LPSTR => {
@@ -185,14 +186,4 @@ fn read_string_property(sect: &[u8], off: usize) -> Option<String> {
         }
         _ => None,
     }
-}
-
-fn rd_u16(d: &[u8], off: usize) -> Option<u16> {
-    d.get(off..off + 2)
-        .map(|b| u16::from_le_bytes([b[0], b[1]]))
-}
-
-fn rd_u32(d: &[u8], off: usize) -> Option<u32> {
-    d.get(off..off + 4)
-        .map(|b| u32::from_le_bytes([b[0], b[1], b[2], b[3]]))
 }

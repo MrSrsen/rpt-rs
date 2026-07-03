@@ -3,20 +3,21 @@
 //!
 //! # Architecture
 //!
-//! The library is a stack of *invertible* layers, so reading and writing are the same code
-//! run in reverse. From the bytes up:
+//! The library is a stack of layers. From the bytes up:
 //!
 //! ```text
 //! L0   container   CFB/OLE2 compound file (the `cfb` crate)
 //! L0.5 codec       stream header (type 0xffff): isEnc, version, IV
 //! L1   codec+records  TSLV record framing + running XOR mask → the lossless substrate
-//! L2   project     raise/lower between records and the semantic model
+//! L2   project     raise records → the semantic model
 //! L3   model        the object graph (the DOM)
 //! ```
 //!
-//! Layers L0–L1 form a lossless substrate: every record round-trips byte-identically,
-//! including record types that are not yet modelled. The semantic model is a projection on
-//! top.
+//! Layers L0–L1 form a lossless substrate: every stream retains its original bytes, so
+//! [`Rpt::save`] is byte-identical to the input, including record types that are not yet
+//! modelled. The semantic model is a read-only projection on top; there is no lower (model →
+//! bytes) path yet — the layers are *designed* to be invertible, but only the read direction
+//! ships today.
 
 #![forbid(unsafe_code)]
 
@@ -37,8 +38,6 @@ pub use io::Rpt;
 pub use model::Report;
 
 pub use codec::{RecordNode, StreamHeader};
-// TODO: temporary public re-export; make `pub(crate)` once the PromptManager schema is mapped.
-pub use codec::decode_prompt_manager;
 pub use container::{StreamId, SummaryInformation};
 pub use records::{Origin, RawRecord, Record, RecordStream, RecordTag};
 
@@ -50,3 +49,5 @@ pub mod prelude {
         Record, RecordStream, RecordTag, Rpt, StreamHeader, StreamId, SummaryInformation,
     };
 }
+
+pub(crate) mod bytes;

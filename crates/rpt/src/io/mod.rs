@@ -54,9 +54,9 @@ impl Rpt {
         // Saved current parameter values live in the single top-level `ReportParametersStream`,
         // keyed by the engine's global parameter index (shared across the main report and every
         // subreport), so it is decoded once and threaded into all raise() calls.
-        let report_params = streams.iter().find(
-            |s| matches!(s.id(), StreamId::Other(n) if n.starts_with("ReportParametersStream")),
-        );
+        let report_params = streams
+            .iter()
+            .find(|s| matches!(s.id(), StreamId::ReportParametersStream(_)));
         let current_values = report_params
             .map(crate::project::parse_report_parameters)
             .unwrap_or_default();
@@ -171,21 +171,18 @@ impl Rpt {
         &self.original
     }
 
+    /// The bytes of the first top-level stream matching `pred` (a `StreamId` variant test). Nested
+    /// `Subdocument N/…` streams are classified as `StreamId::Other`, so a variant match is
+    /// inherently top-level only.
+    fn stream_by(&self, pred: impl Fn(&StreamId) -> bool) -> Option<&RecordStream> {
+        self.streams.iter().find(|s| pred(s.id()))
+    }
+
     /// The top-level `DataSourceManager` stream's decoded (decrypted + inflated) logical bytes, which
     /// carry the saved-data batch directory. `None` when absent or undecodable.
     fn data_source_manager_logical(&self) -> Option<Vec<u8>> {
-        let s = self.streams.iter().find(|s| {
-            let n = format!("{:?}", s.id());
-            n.contains("DataSourceManager") && !n.contains("Subdocument")
-        })?;
+        let s = self.stream_by(|id| matches!(id, StreamId::DataSourceManager(_)))?;
         crate::codec::decode_contents(&s.encode()).ok()
-    }
-
-    fn saved_stream(&self, name: &str) -> Option<Vec<u8>> {
-        self.streams
-            .iter()
-            .find(|s| format!("{:?}", s.id()).contains(name))
-            .map(|s| s.encode())
     }
 
     /// The report's saved record count (the SDK's saved `RecordCount`), from the `DataSourceManager`
@@ -203,7 +200,9 @@ impl Rpt {
         let primary = crate::codec::batch_directory(&dsm)
             .into_iter()
             .max_by_key(|b| b.count)?;
-        let srs = self.saved_stream("SavedRecordsStream")?;
+        let srs = self
+            .stream_by(|id| matches!(id, StreamId::SavedRecordsStream(_)))?
+            .encode();
         crate::codec::decode_saved_batch(
             &srs,
             crate::codec::INDEX_BATCH_SIZE,
@@ -227,22 +226,21 @@ fn decode_saved_data(streams: &[RecordStream]) -> Option<crate::model::SavedData
     use crate::codec;
     use crate::model::{FieldValueType, SavedColumn, SavedData};
 
-    let find = |needle: &str, excl: Option<&str>| {
-        streams.iter().find(|s| {
-            let n = format!("{:?}", s.id());
-            n.contains(needle) && excl.is_none_or(|e| !n.contains(e))
-        })
-    };
-    let dsm =
-        codec::decode_contents(&find("DataSourceManager", Some("Subdocument"))?.encode()).ok()?;
+    let find = |pred: fn(&StreamId) -> bool| streams.iter().find(|s| pred(s.id()));
+    // The top-level `DataSourceManager` variant is inherently non-subdocument (nested streams stay
+    // `StreamId::Other`), so no explicit Subdocument exclusion is needed.
+    let dsm = codec::decode_contents(
+        &find(|id| matches!(id, StreamId::DataSourceManager(_)))?.encode(),
+    )
+    .ok()?;
     let primary = codec::batch_directory(&dsm)
         .into_iter()
         .max_by_key(|b| b.count)
         .filter(|b| b.count > 0)?;
 
     // Decodable only when the field values are in an external MemoValuesStream.
-    let memo_raw = find("MemoValuesStream", None)?.encode();
-    let srs_raw = find("SavedRecordsStream", None)?.encode();
+    let memo_raw = find(|id| matches!(id, StreamId::MemoValuesStream(_)))?.encode();
+    let srs_raw = find(|id| matches!(id, StreamId::SavedRecordsStream(_)))?.encode();
 
     let index_plain = codec::decode_saved_batch(
         &srs_raw,
@@ -450,11 +448,7 @@ fn subreport_param_index_names(
             return;
         }
         let leaf = n.leaf_bytes(logical);
-        let Some(index) = leaf
-            .get(0..2)
-            .and_then(|b| <[u8; 2]>::try_from(b).ok())
-            .map(u16::from_be_bytes)
-        else {
+        let Some(index) = crate::bytes::u16_be(&leaf, 0) else {
             return;
         };
         // Extract the `crobj://{…}` GUID body (the text after `crobj://`, up to NUL).
@@ -636,25 +630,16 @@ fn subreport_links(contents: &RecordStream) -> std::collections::BTreeMap<u32, V
         current: &mut Option<u32>,
         map: &mut BTreeMap<u32, Vec<LinkRecord>>,
     ) {
+        use crate::bytes::u16_be;
         if n.rtype == SUBREPORT_OBJECT {
-            *current = n
-                .leaf_bytes(logical)
-                .get(0..4)
-                .and_then(|b| <[u8; 4]>::try_from(b).ok())
-                .map(u32::from_be_bytes);
+            *current = crate::bytes::u32_be(&n.leaf_bytes(logical), 0);
         } else if n.rtype == SUBREPORT_LINK {
             if let Some(idx) = *current {
                 let lb = n.leaf_bytes(logical);
-                let param_index = lb
-                    .get(0..2)
-                    .and_then(|b| <[u8; 2]>::try_from(b).ok())
-                    .map(u16::from_be_bytes);
-                if let (Some(param_index), Some(len)) = (
-                    param_index,
-                    lb.get(2..6)
-                        .and_then(|b| <[u8; 4]>::try_from(b).ok())
-                        .map(|b| u32::from_be_bytes(b) as usize),
-                ) {
+                let param_index = u16_be(&lb, 0);
+                if let (Some(param_index), Some(len)) =
+                    (param_index, crate::bytes::u32_be(&lb, 2).map(|n| n as usize))
+                {
                     if let Some(raw) = lb.get(6..6 + len) {
                         let end = raw.iter().position(|&b| b == 0).unwrap_or(raw.len());
                         if end > 0 {
@@ -663,8 +648,8 @@ fn subreport_links(contents: &RecordStream) -> std::collections::BTreeMap<u32, V
                             // Absent (short trailing) or `0xffff` → no distinct subreport field.
                             let trailing = &lb[6 + len..];
                             let sf_handle = if trailing.len() >= 8 {
-                                let kind = u16::from_be_bytes([trailing[4], trailing[5]]);
-                                let index = u16::from_be_bytes([trailing[6], trailing[7]]);
+                                let kind = u16_be(trailing, 4).unwrap_or(0);
+                                let index = u16_be(trailing, 6).unwrap_or(0);
                                 (kind != 0xffff).then_some((kind, index))
                             } else {
                                 None
@@ -752,11 +737,7 @@ fn subreport_name_from_contents(contents: &RecordStream) -> String {
     for root in contents.record_tree() {
         if root.rtype == REPORT_HEADER {
             let lb = root.leaf_bytes(logical);
-            if let Some(len) = lb
-                .get(7..11)
-                .and_then(|b| <[u8; 4]>::try_from(b).ok())
-                .map(u32::from_be_bytes)
-            {
+            if let Some(len) = crate::bytes::u32_be(&lb, 7) {
                 let len = len as usize;
                 if (1..=4096).contains(&len) {
                     if let Some(raw) = lb.get(11..11 + len) {

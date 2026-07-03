@@ -78,14 +78,7 @@ pub(super) fn field_data_source(
         // (one operand).
         FieldRefKind::Summary => match raw.split_once(" of ") {
             Some((op0, operand0)) => {
-                let remap = |o: &str| {
-                    match o {
-                        "Max" => "Maximum",
-                        "Min" => "Minimum",
-                        other => other,
-                    }
-                    .to_string()
-                };
+                let remap = |o: &str| summary_op_full(o).to_string();
                 // A percentage summary collapses `Percentage of <InnerOp> of {field}` to
                 // `PercentOf<InnerOp> ({field}, {group})` (e.g. `Percentage of Sum of X` →
                 // `PercentOfSum (…)`), dropping the inner `… of` level rather than nesting it.
