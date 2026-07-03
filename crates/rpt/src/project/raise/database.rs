@@ -14,14 +14,7 @@ pub(super) fn raise_database(qe: &RecordStream) -> Database {
     // report may have several connections (e.g. two Command tables under two distinct connections
     // with different databases), so each table takes the connection of its owning 0x02 — not one
     // shared connection.
-    let mut conn_nodes: Vec<&RecordNode> = Vec::new();
-    for root in &tree {
-        root.walk(&mut |n| {
-            if n.rtype == QE_CONNECTION {
-                conn_nodes.push(n);
-            }
-        });
-    }
+    let conn_nodes = nodes_where(&tree, |n| n.rtype == QE_CONNECTION);
     let mut tables_with_conn: Vec<(&RecordNode, ConnectionInfo)> = Vec::new();
     for cn in &conn_nodes {
         let conn = raise_connection(cn, logical);
@@ -41,11 +34,7 @@ pub(super) fn raise_database(qe: &RecordStream) -> Database {
     // emitted order matches the engine.
     let mut table_list: Vec<(u32, Table)> = Vec::new();
     for (n, connection) in &tables_with_conn {
-        let order_id = n
-            .leaf_bytes(logical)
-            .get(0..4)
-            .map(|b| u32::from_be_bytes([b[0], b[1], b[2], b[3]]))
-            .unwrap_or(0);
+        let order_id = u32_be(&n.leaf_bytes(logical), 0).unwrap_or(0);
         let strings = own_lp_strings(n, logical);
         let name = strings.first().cloned().unwrap_or_default();
         if name.is_empty() {
@@ -109,10 +98,7 @@ pub(super) fn raise_database(qe: &RecordStream) -> Database {
                 return;
             }
             let b = n.leaf_bytes(logical);
-            let be = |i: usize| -> Option<i32> {
-                b.get(i * 4..i * 4 + 4)
-                    .map(|w| i32::from_be_bytes([w[0], w[1], w[2], w[3]]))
-            };
+            let be = |i: usize| i32_be(&b, i * 4);
             let (Some(link_id), Some(src_id), Some(dst_id), Some(join)) =
                 (be(0), be(1), be(2), be(4))
             else {
@@ -159,7 +145,6 @@ pub(super) fn raise_database(qe: &RecordStream) -> Database {
     db
 }
 
-/// Length-prefixed strings in a record's **own** leaf bytes (not its children).
 /// The table's stored alias among its own strings: the last string that is an instance-suffix
 /// variant of the table name — one of the two is the other followed by a run of digits/underscores.
 /// A base table's alias decorates the name (`clients` -> `clients1`); a SQL command table's name
@@ -236,22 +221,11 @@ pub(super) fn xor7_value(blob: &[u8]) -> String {
 /// leaf. Structurally the command is the table's last own string (`[name, name, alias, SQL]`) and is
 /// far longer than the name/alias/qualified-name, so selecting by length is **content-agnostic** —
 /// any SQL works (CTEs that start with `WITH`, bodies that begin with a `--`/`/* */` comment, stored
-/// procedure calls). Every offset is scanned, not advanced by string length, because the command's
-/// framing can be shadowed by a one-byte-early false match (when the command length's high bytes are
-/// zero) or enveloped by an earlier mis-framed run — either of which would otherwise hide it.
+/// procedure calls). [`longest_lp`]'s sliding scan matters here: the command's framing can be
+/// shadowed by a one-byte-early false match (when the command length's high bytes are zero) or
+/// enveloped by an earlier mis-framed run — either of which would otherwise hide it.
 pub(super) fn command_sql(node: &RecordNode, logical: &[u8]) -> Option<String> {
-    let bytes = node.leaf_bytes(logical);
-    let mut best: Option<String> = None;
-    let mut i = 0;
-    while i + 4 <= bytes.len() {
-        if let Some((s, _)) = read_lp_string(&bytes[i..]) {
-            if best.as_ref().is_none_or(|b| s.len() > b.len()) {
-                best = Some(s);
-            }
-        }
-        i += 1;
-    }
-    best
+    longest_lp(&node.leaf_bytes(logical))
 }
 
 /// Read one connection slot (a length-prefixed string) at `off`, **keeping empty slots** (a
@@ -259,7 +233,7 @@ pub(super) fn command_sql(node: &RecordNode, logical: &[u8]) -> Option<String> {
 /// slot is a valid value here, not a skip — the connection record's `[DLL, type, server]` slots are
 /// positional and the type slot is often empty.
 fn read_conn_slot(b: &[u8], off: usize) -> Option<(String, usize)> {
-    let len = u32::from_be_bytes(b.get(off..off + 4)?.try_into().ok()?) as usize;
+    let len = u32_be(b, off)? as usize;
     if len > 0x4000 {
         return None;
     }
@@ -380,8 +354,9 @@ pub(super) fn raise_connection(n: &RecordNode, logical: &[u8]) -> ConnectionInfo
     let (mut initial_catalog, mut server_prop) = (String::new(), String::new());
     for child in &n.children {
         let cb = child.leaf_bytes(logical);
-        if let Some((key, used)) = cb.get(4..).and_then(read_lp_string) {
-            let val = &cb[4 + used..];
+        let mut c = Cursor::at(&cb, 4);
+        if let Some(key) = c.lp_string() {
+            let val = &cb[c.pos()..];
             match key.as_str() {
                 "Database" => db_name = xor7_value(val),
                 "Initial Catalog" => initial_catalog = xor7_value(val),
@@ -425,36 +400,32 @@ pub(super) fn raise_connection(n: &RecordNode, logical: &[u8]) -> ConnectionInfo
 /// the field's global id alongside the field.
 pub(super) fn raise_db_field(node: &RecordNode, logical: &[u8]) -> Option<(i32, DbFieldDef)> {
     let bytes = node.leaf_bytes(logical);
-    let id = i32::from_be_bytes(bytes.get(0..4)?.try_into().ok()?);
-    // Skip the leading 4-byte id, then read the length-prefixed field name.
-    let (name, consumed) = read_lp_string(bytes.get(4..)?)?;
-    let p = 4 + consumed;
+    let mut c = Cursor::new(&bytes);
+    let id = c.u32_be()? as i32;
+    let name = c.lp_string()?;
     // After the name comes a description slot (a length-prefixed string), then 3 zero padding
     // bytes, then the 1-byte value-type code and the field's byte length as a big-endian u32.
     // The slot is *always present*: when the field has no description it is a 5-byte null
-    // placeholder (`00 00 00 01 00`) whose single NUL content byte makes `read_lp_string` return
-    // `None` — so `desc_skip` falls back to 5, giving the `p+8` type offset. A real description is a
-    // normal printable lp-string and shifts the offset accordingly.
-    let desc = bytes.get(p..).and_then(read_lp_string);
-    let description = desc.as_ref().map(|(s, _)| s.clone());
-    let desc_skip = desc.map(|(_, n)| n).unwrap_or(5);
-    let type_off = p + desc_skip + 3;
-    let value_type = bytes
-        .get(type_off)
-        .map(|c| FieldValueType::from_code(i32::from(*c)))
+    // placeholder (`00 00 00 01 00`) whose single NUL content byte fails `lp_string`'s
+    // validation — so the fallback skips those fixed 5 bytes. A real description is a normal
+    // printable lp-string and advances the cursor accordingly.
+    let description = c.lp_string();
+    if description.is_none() {
+        c.skip(5);
+    }
+    c.skip(3);
+    let value_type = c
+        .u8()
+        .map(|v| FieldValueType::from_code(i32::from(v)))
         .unwrap_or_default();
     // The field's byte length is a big-endian u32 immediately after the value-type code. An
     // "unlimited"/MAX string column (HANA NVARCHAR(MAX)) instead stores a 4-byte sentinel whose
     // high word is 0xFFFF here — the SQL VARCHAR(MAX) convention — and the real length follows it.
     // The high word 0xFFFF can never be a valid byte count, so it unambiguously flags the variant.
-    let mut len_off = type_off + 1;
-    if bytes.get(len_off..len_off + 2) == Some(&[0xff, 0xff][..]) {
-        len_off += 4;
+    if u16_be(&bytes, c.pos()) == Some(0xffff) {
+        c.skip(4);
     }
-    let stored_length = bytes
-        .get(len_off..len_off + 4)
-        .map(|b| i32::from_be_bytes([b[0], b[1], b[2], b[3]]))
-        .unwrap_or_default();
+    let stored_length = c.u32_be().map(|v| v as i32).unwrap_or_default();
     // An `nvarchar` string column is marked by an empty `0x0000` child record: its stored value is
     // the wide character count + 1, so the byte length is `(stored - 1) * 2` rather than `stored`.
     let stored_length =

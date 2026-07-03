@@ -6,15 +6,7 @@ use super::*;
 /// object — read from the object record's **own** leaf bytes (its `ObjectName` child holds the
 /// object name, not the data, so it must be excluded).
 pub(super) fn object_data_string(node: &RecordNode, logical: &[u8]) -> Option<String> {
-    let bytes = node.leaf_bytes(logical);
-    let mut i = 0;
-    while i + 4 <= bytes.len() {
-        if let Some((s, _)) = read_lp_string(&bytes[i..]) {
-            return Some(s);
-        }
-        i += 1;
-    }
-    None
+    first_lp(&node.leaf_bytes(logical))
 }
 
 /// Render a field object's `DataSource` the way the engine does, from its kind and raw reference.

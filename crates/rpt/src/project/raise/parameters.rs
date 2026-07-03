@@ -67,7 +67,7 @@ pub(super) fn parse_param_leaf(leaf: &[u8]) -> Option<ParamRecord> {
     let allow_custom_values = !dynamic;
     let allow_editing_default = !dynamic;
     let guid = find_guid_lp(leaf)?;
-    let index = u16::from_be_bytes([*leaf.first()?, *leaf.get(1)?]);
+    let index = u16_be(leaf, 0)?;
     let default_values = parse_default_value_list(leaf, p).unwrap_or_default();
     Some(ParamRecord {
         guid,
@@ -98,7 +98,7 @@ pub(super) fn parse_param_leaf(leaf: &[u8]) -> Option<ParamRecord> {
 fn parse_default_value_list(leaf: &[u8], prompt_end: usize) -> Option<Vec<ParameterValue>> {
     let m = find_value_marker(leaf, prompt_end)?;
     let value_type = *leaf.get(m + 2)?;
-    let count = u16::from_be_bytes([*leaf.get(m + 3)?, *leaf.get(m + 4)?]) as usize;
+    let count = u16_be(leaf, m + 3)? as usize;
     if count == 0 {
         return Some(Vec::new());
     }
@@ -125,43 +125,32 @@ fn parse_default_value_list(leaf: &[u8], prompt_end: usize) -> Option<Vec<Parame
 /// (rather than guess a wrong value).
 fn parse_value_entries(
     leaf: &[u8],
-    mut p: usize,
+    p: usize,
     count: usize,
     value_type: u8,
 ) -> Option<(Vec<String>, usize)> {
+    let mut c = Cursor::at(leaf, p);
     let mut values: Vec<String> = Vec::with_capacity(count);
     for _ in 0..count {
         // Every entry is length-prefixed by a u32 BE byte count.
-        let len = u32::from_be_bytes(leaf.get(p..p + 4)?.try_into().ok()?) as usize;
-        p += 4;
+        let _len = c.u32_be()?;
         match value_type {
             // Number (6) / Currency (7): an 8-byte BE double, scaled ×100.
-            6 | 7 => {
-                let f = f64::from_be_bytes(leaf.get(p..p + 8)?.try_into().ok()?) / 100.0;
-                values.push(format_number(f));
-                p += 8;
-            }
+            6 | 7 => values.push(format_number(c.f64_be()? / 100.0)),
             // Date (9): a 4-byte BE Julian Day Number.
-            9 => {
-                let jdn = u32::from_be_bytes(leaf.get(p..p + 4)?.try_into().ok()?);
-                values.push(format_date(jdn));
-                p += 4;
-            }
+            9 => values.push(format_date(c.u32_be()?)),
             // String (11): a redundant second length word, then the NUL-terminated bytes.
             11 => {
-                let slen = u32::from_be_bytes(leaf.get(p..p + 4)?.try_into().ok()?) as usize;
-                p += 4;
-                let raw = leaf.get(p..p + slen)?;
+                let slen = c.u32_be()? as usize;
+                let raw = c.bytes(slen)?;
                 let end = raw.iter().position(|&b| b == 0).unwrap_or(raw.len());
                 values.push(String::from_utf8_lossy(&raw[..end]).into_owned());
-                p += slen;
             }
             // Unknown value type — don't guess (would risk wrong values).
             _ => return None,
         }
-        let _ = len;
     }
-    Some((values, p))
+    Some((values, c.pos()))
 }
 
 /// The index of the 2-byte `ff ff` value-list marker at/after `from`: the first `0xff 0xff` pair
@@ -192,35 +181,16 @@ fn read_descriptions(leaf: &[u8], marker: usize, count: usize) -> Vec<String> {
         .position(|w| w == b"crobj://")
         .map(|pos| pos.saturating_sub(1))
         .unwrap_or(leaf.len());
-    let mut out = Vec::new();
-    let mut p = start;
-    // Collect the printable, non-empty LP-strings (first is the parameter name, dropped; the rest
-    // are the descriptions). Padding and stray short markers (e.g. `01 00`) between them are not
-    // valid LP-strings, so on a non-match advance one byte rather than stopping.
-    while p < limit && out.len() <= count {
-        let len = leaf[p] as usize;
-        if len == 0 || len > 64 || p + 1 + len > limit {
-            p += 1;
-            continue;
-        }
-        let raw = &leaf[p + 1..p + 1 + len];
-        let end = raw.iter().position(|&b| b == 0).unwrap_or(raw.len());
-        // A description LP-string is non-empty printable text terminated within its length.
-        if end == 0 || !raw[..end].iter().all(|&b| (0x20..0x7f).contains(&b)) {
-            p += 1;
-            continue;
-        }
-        out.push(String::from_utf8_lossy(&raw[..end]).into_owned());
-        p += 1 + len;
-    }
-    // Drop the leading parameter-name LP-string.
+    // The first LP-string is the parameter name; drop it, keeping the descriptions.
+    let mut out = read_lp_strings(&leaf[start.min(limit)..limit], count + 1);
     if !out.is_empty() {
         out.remove(0);
     }
     out
 }
 
-/// Collect up to `max` non-empty printable NUL-terminated LP-strings from `bytes`, skipping any
+/// Collect up to `max` non-empty printable NUL-terminated **byte-length-prefixed** strings from
+/// `bytes` (a `u8` length ≤ 64, unlike the u32-prefixed [`read_lp_string`] flavor), skipping any
 /// non-conforming padding/marker bytes between them (advance one byte on a non-match).
 fn read_lp_strings(bytes: &[u8], max: usize) -> Vec<String> {
     let mut out = Vec::new();
@@ -329,21 +299,13 @@ pub(crate) fn parse_report_parameters(stream: &RecordStream) -> BTreeMap<u16, Ve
             // Header: u32 BE index, value-type byte, u32 BE value count, then the binary value
             // entries (same encoding as the `0x007a` pick-list — Number doubles are ×100-scaled, so
             // the binary form is authoritative and avoids the embedded XML's value entirely).
-            let Some(idx) = leaf
-                .get(0..4)
-                .and_then(|b| <[u8; 4]>::try_from(b).ok())
-                .map(u32::from_be_bytes)
-            else {
+            let Some(idx) = u32_be(&leaf, 0) else {
                 return;
             };
             let Some(&value_type) = leaf.get(4) else {
                 return;
             };
-            let Some(count) = leaf
-                .get(5..9)
-                .and_then(|b| <[u8; 4]>::try_from(b).ok())
-                .map(|b| u32::from_be_bytes(b) as usize)
-            else {
+            let Some(count) = u32_be(&leaf, 5).map(|n| n as usize) else {
                 return;
             };
             let Some((raw_values, after)) = parse_value_entries(&leaf, 9, count, value_type) else {

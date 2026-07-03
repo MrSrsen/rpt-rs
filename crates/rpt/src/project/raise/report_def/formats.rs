@@ -70,21 +70,8 @@ pub(super) fn font_color_mut(obj: &mut ReportObject) -> Option<&mut FontColor> {
 /// length-prefixed object Name.
 pub(super) fn raise_object_name(node: &RecordNode, logical: &[u8]) -> (String, i32, i32) {
     let b = node.leaf_bytes(logical);
-    let rd = |o: usize| -> i32 {
-        b.get(o..o + 4)
-            .map(|x| i32::from_be_bytes([x[0], x[1], x[2], x[3]]))
-            .unwrap_or(0)
-    };
-    let mut name = String::new();
-    let mut i = 8;
-    while i + 4 <= b.len() {
-        if let Some((n, _)) = read_lp_string(&b[i..]) {
-            name = n;
-            break;
-        }
-        i += 1;
-    }
-    (name, rd(0), rd(4))
+    let name = b.get(8..).and_then(first_lp).unwrap_or_default();
+    (name, i32_be(&b, 0).unwrap_or(0), i32_be(&b, 4).unwrap_or(0))
 }
 
 /// Decode an object border record (`0xec`): bytes 0-3 are the four line styles in the order
@@ -119,7 +106,8 @@ pub(super) fn raise_border(node: &RecordNode, logical: &[u8]) -> crate::model::B
     }
 }
 
-/// An object-position record (`0xbe`): `[Left: u16 BE][Top: u16 BE]` (twips).
+/// An object-position record (`0xbe`): Left then Top (twips), each in the variable-width
+/// [`read_coord`] encoding (2 bytes, or 4 with the high-bit escape).
 pub(super) fn raise_object_pos(node: &RecordNode, logical: &[u8]) -> Option<(i32, i32)> {
     let b = node.leaf_bytes(logical);
     let (left, next) = read_coord(&b, 0)?;
@@ -137,10 +125,7 @@ pub(super) fn raise_font(node: &RecordNode, logical: &[u8]) -> Option<Font> {
     let size = i32::from(*attr.get(4)?);
     let italic = attr.get(6).is_some_and(|&b| b != 0);
     let underline = attr.get(8).is_some_and(|&b| b != 0);
-    let weight = attr
-        .get(11..13)
-        .map(|b| i32::from(u16::from_be_bytes([b[0], b[1]])))
-        .unwrap_or(400);
+    let weight = u16_be(attr, 11).map_or(400, i32::from);
     Some(Font {
         name,
         size_pt: size as f32,

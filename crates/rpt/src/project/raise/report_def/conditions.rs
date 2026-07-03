@@ -10,14 +10,7 @@ pub(in crate::project::raise) fn condition_formula_bodies(
     tree: &[RecordNode],
     logical: &[u8],
 ) -> BTreeMap<usize, (String, String)> {
-    let mut nodes: Vec<&RecordNode> = Vec::new();
-    for root in tree {
-        root.walk(&mut |n| {
-            if n.rtype == FORMULA || n.rtype == NAMED_VALUE {
-                nodes.push(n);
-            }
-        });
-    }
+    let nodes = nodes_where(tree, |n| n.rtype == FORMULA || n.rtype == NAMED_VALUE);
     let mut map: BTreeMap<usize, (String, String)> = BTreeMap::new();
     let mut formula_idx = 0usize; // counts every `0x76` body, matching the slot's global index
     let mut pending: Option<(usize, String)> = None;
@@ -42,24 +35,10 @@ pub(in crate::project::raise) fn condition_formula_bodies(
 /// The formula text of a `0x76` record for use as a conditional-format formula: the longest
 /// non-empty length-prefixed string in the leaf (a plain Crystal expression such as
 /// `DrillDownGroupLevel > 0` carries none of the markers `formula_body`'s `is_expr` filter wants,
-/// so that filter cannot be used here).
+/// so that filter cannot be used here). [`longest_lp`]'s sliding scan matters: a spurious short
+/// match near the start would otherwise jump the scan past the real body's length prefix.
 pub(super) fn cond_formula_body(node: &RecordNode, logical: &[u8]) -> String {
-    let bytes = node.leaf_bytes(logical);
-    let mut best = String::new();
-    let mut i = 0;
-    // Scan EVERY offset (advance by 1, not by the consumed length): a spurious short length-prefixed
-    // string near the start (e.g. a stray `00 00 00 01 60` decoding to "`") would otherwise let the
-    // cursor jump past the real body's length prefix a byte or two later. The real body is the
-    // longest valid LP-string regardless of where it begins.
-    while i + 4 <= bytes.len() {
-        if let Some((s, _)) = read_lp_string(&bytes[i..]) {
-            if s.len() > best.len() {
-                best = s;
-            }
-        }
-        i += 1;
-    }
-    best
+    longest_lp(&node.leaf_bytes(logical)).unwrap_or_default()
 }
 
 /// Map a reserved conditional-format formula name to the XML attribute emitted for it (on the

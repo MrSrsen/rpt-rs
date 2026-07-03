@@ -205,14 +205,10 @@ pub(crate) fn raise(
         report.report_definition =
             raise_report_definition(&tree, logical, &report.data_definition.groups);
         report.print_options = raise_print_options(&tree, logical);
-        for root in &tree {
-            root.walk(&mut |n| {
-                if n.rtype == PARAM_RECORD {
-                    if let Some(r) = parse_param_leaf(&n.leaf_bytes(logical)) {
-                        param_records.insert(r.guid.clone(), r);
-                    }
-                }
-            });
+        for n in nodes_where(&tree, |n| n.rtype == PARAM_RECORD) {
+            if let Some(r) = parse_param_leaf(&n.leaf_bytes(logical)) {
+                param_records.insert(r.guid.clone(), r);
+            }
         }
     }
 

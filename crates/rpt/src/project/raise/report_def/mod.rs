@@ -398,12 +398,7 @@ pub(super) fn raise_report_definition(
             // (its report-header record), not here; the opener's leaf bytes `[0..4]` (big-endian)
             // give that index `N`, which `io` uses to resolve the name after subreports are decoded.
             RdRecord::OpenSubreport => {
-                let subdoc_index = node
-                    .leaf_bytes(logical)
-                    .get(0..4)
-                    .and_then(|b| <[u8; 4]>::try_from(b).ok())
-                    .map(u32::from_be_bytes)
-                    .unwrap_or(0);
+                let subdoc_index = u32_be(&node.leaf_bytes(logical), 0).unwrap_or(0);
                 // Byte 7 of the opener is the EnableOnDemand flag (1 = on-demand, 0 = in-place).
                 let on_demand = node.leaf_bytes(logical).get(7).is_some_and(|&b| b != 0);
                 open_object(
@@ -1008,19 +1003,8 @@ pub(super) fn open_area(areas: &mut Vec<Area>, node: &RecordNode, logical: &[u8]
 /// Open a section (`0x8c`) in the current area, reading its Height (u32 BE twips) + Name.
 pub(super) fn open_section(areas: &mut [Area], node: &RecordNode, logical: &[u8]) {
     let b = node.leaf_bytes(logical);
-    let height = b
-        .get(0..4)
-        .map(|x| i32::from_be_bytes([x[0], x[1], x[2], x[3]]))
-        .unwrap_or(0);
-    let mut name = String::new();
-    let mut i = 4;
-    while i + 4 <= b.len() {
-        if let Some((n, _)) = read_lp_string(&b[i..]) {
-            name = n;
-            break;
-        }
-        i += 1;
-    }
+    let height = i32_be(&b, 0).unwrap_or(0);
+    let name = b.get(4..).and_then(first_lp).unwrap_or_default();
     if let Some(area) = areas.last_mut() {
         let kind = area.kind;
         area.sections.push(Section {

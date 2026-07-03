@@ -14,22 +14,6 @@ pub(super) fn raise_print_options(tree: &[RecordNode], logical: &[u8]) -> PrintO
         ..Default::default()
     };
 
-    // Every record of a type, located anywhere in the tree (more than one record can share a type).
-    let all = |ty: u16| -> Vec<Vec<u8>> {
-        let mut out = Vec::new();
-        for r in tree {
-            r.walk(&mut |n| {
-                if n.rtype == ty {
-                    out.push(n.leaf_bytes(logical));
-                }
-            });
-        }
-        out
-    };
-    let be32 = |b: &[u8], off: usize| -> Option<i32> {
-        b.get(off..off + 4)
-            .map(|s| i32::from_be_bytes([s[0], s[1], s[2], s[3]]))
-    };
     // A plausible page dimension (positive twips). The upper bound is generous — custom/driver
     // "paper" can be very wide (e.g. a 150-inch data-export page) — and only guards against a
     // mis-read leaf; the dedicated `0x18e` record makes a false positive unlikely.
@@ -38,8 +22,9 @@ pub(super) fn raise_print_options(tree: &[RecordNode], logical: &[u8]) -> PrintO
     // The page-setup record (0x66): the four margins as big-endian u32 twips — Left, Right, Top,
     // Bottom, after a 3-byte header. A margin stored as i32::MIN (`0x80000000`) is the engine's
     // "use default" sentinel and resolves to 360 twips (¼ inch, Crystal's default).
-    if let Some(b) = all(PAGE_SETUP).into_iter().next() {
-        let margin = |off: usize| be32(&b, off).map(|v| Twips(if v == i32::MIN { 360 } else { v }));
+    if let Some(b) = leaves_of(tree, logical, PAGE_SETUP).into_iter().next() {
+        let margin =
+            |off: usize| i32_be(&b, off).map(|v| Twips(if v == i32::MIN { 360 } else { v }));
         if let (Some(l), Some(r), Some(t), Some(bm)) =
             (margin(3), margin(7), margin(11), margin(15))
         {
@@ -57,18 +42,15 @@ pub(super) fn raise_print_options(tree: &[RecordNode], logical: &[u8]) -> PrintO
     // followed by a variable section: each Windows `dmFields` bit that is set contributes one
     // big-endian u16, in bit order — so the paper source (bit 9) and duplex (bit 12) sit at offsets
     // that shift with the earlier present fields.
-    if let Some(b) = all(PAPER_DEVMODE).into_iter().next() {
-        let u16be = |off: usize| {
-            b.get(off..off + 2)
-                .map(|s| i32::from(u16::from_be_bytes([s[0], s[1]])))
-        };
+    if let Some(b) = leaves_of(tree, logical, PAPER_DEVMODE).into_iter().next() {
+        let u16be = |off: usize| u16_be(&b, off).map(i32::from);
         if let Some(c) = u16be(4) {
             opts.paper_orientation = crate::model::PaperOrientation::from_code(c);
         }
         if let Some(c) = u16be(6) {
             opts.paper_size = crate::model::PaperSize::from_code(c);
         }
-        let dm_fields = b.get(2..4).map_or(0, |s| u16::from_be_bytes([s[0], s[1]]));
+        let dm_fields = u16_be(&b, 2).unwrap_or(0);
         let mut off = 8;
         // Conditional fields up to the source (bit 9): paper length/width (2/3), scale (4),
         // copies (8). Each present field is one u16.
@@ -102,8 +84,8 @@ pub(super) fn raise_print_options(tree: &[RecordNode], logical: &[u8]) -> PrintO
     // `PaperSize`), the dimensions are oriented to `PaperOrientation` — so a standard sheet saved in
     // the wrong order (e.g. a Legal sheet stored landscape but flagged Portrait) is re-oriented here.
     // A rect that is NOT a standard sheet is a genuine custom page and is kept exactly as stored.
-    if let Some(b) = all(PAPER_RECT).into_iter().next() {
-        if let (Some(pw), Some(ph)) = (sane(be32(&b, 0)), sane(be32(&b, 4))) {
+    if let Some(b) = leaves_of(tree, logical, PAPER_RECT).into_iter().next() {
+        if let (Some(pw), Some(ph)) = (sane(i32_be(&b, 0)), sane(i32_be(&b, 4))) {
             let (mut paper_w, mut paper_h) = (pw, ph);
             if let Some((short, long)) = opts.paper_size.std_dims() {
                 // Recognise the stored rect as this standard sheet (edge order ignored, small

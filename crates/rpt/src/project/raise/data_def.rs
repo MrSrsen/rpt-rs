@@ -225,15 +225,7 @@ pub(super) fn raise_formulas(
     known_db_fields: &std::collections::HashSet<String>,
     groups: &[Group],
 ) -> Formulas {
-    let mut nodes: Vec<&RecordNode> = Vec::new();
-    for root in tree {
-        root.walk(&mut |n| {
-            if n.rtype == FORMULA || n.rtype == NAMED_VALUE {
-                nodes.push(n);
-            }
-        });
-    }
-
+    let nodes = nodes_where(tree, |n| n.rtype == FORMULA || n.rtype == NAMED_VALUE);
     let mut out = Formulas::default();
     let mut pending: Option<(String, crate::model::FormulaSyntax)> = None;
     for n in nodes {
@@ -278,12 +270,9 @@ pub(super) fn raise_formulas(
                         (FieldValueType::Unknown, 0)
                     } else {
                         let leaf = n.leaf_bytes(logical);
-                        // Value type is the u16 right after the name.
-                        let value_type = leaf
-                            .get(after..after + 2)
-                            .map(|b| {
-                                FieldValueType::from_code(u16::from_le_bytes([b[0], b[1]]) as i32)
-                            })
+                        // Value type is the u16 (LE) right after the name.
+                        let value_type = u16_le(&leaf, after)
+                            .map(|v| FieldValueType::from_code(i32::from(v)))
                             .unwrap_or_default();
                         // NumberOfBytes is the engine-persisted `IField.Length` (RAS DispId 7): a fixed
                         // type uses its intrinsic size; a `String` result uses the record's **stored**
@@ -296,10 +285,7 @@ pub(super) fn raise_formulas(
                         let number_of_bytes = if let Some(n) = value_type.byte_length() {
                             n
                         } else {
-                            leaf.get(after + 8..after + 12)
-                                .map(|b| i32::from_be_bytes([b[0], b[1], b[2], b[3]]))
-                                .unwrap_or(0)
-                                .min(MAX_STRING_BYTES)
+                            i32_be(&leaf, after + 8).unwrap_or(0).min(MAX_STRING_BYTES)
                         };
                         (value_type, number_of_bytes)
                     };
@@ -428,13 +414,12 @@ pub(super) fn raise_running_totals(tree: &[RecordNode], logical: &[u8]) -> Vec<F
     out
 }
 
-/// The body text of a formula record (`0x76`). The record is laid out as
-/// `[u16-BE ref-count N][N × (LP field-ref + 3-byte separator)][LP body]`, so the body is read
-/// structurally past the dependency list. Falls back to the longest expression-like string when the
+/// The body text of a formula record (`0x76`), read structurally past the dependency list (see
+/// [`parse_formula_record`]). Falls back to the longest expression-like string when the
 /// structure does not parse (older/atypical records). Empty when the slot has no formula.
 pub(super) fn formula_body(node: &RecordNode, logical: &[u8]) -> String {
     let bytes = node.leaf_bytes(logical);
-    if let Some(body) = structural_formula_body(&bytes) {
+    if let Some((body, _)) = parse_formula_record(&bytes) {
         return body;
     }
     let strings = all_strings(node, logical);
@@ -453,48 +438,33 @@ pub(super) fn formula_body(node: &RecordNode, logical: &[u8]) -> String {
         .unwrap_or_default()
 }
 
-/// Parse a `0x76` formula record structurally: `[u16-BE N][N × (LP ref + 3-byte sep)][LP body]`.
-/// Returns the body, or `None` when the layout is implausible (so the caller can fall back).
-pub(super) fn structural_formula_body(bytes: &[u8]) -> Option<String> {
-    let n = u16::from_be_bytes([*bytes.first()?, *bytes.get(1)?]) as usize;
+/// Parse a `0x76` formula record structurally:
+/// `[u16-BE ref-count N][N × (LP field-ref + 3-byte separator)][LP body][trailer]`.
+/// Returns the body and the trailer offset, or `None` when the layout is implausible (so
+/// callers can fall back).
+pub(super) fn parse_formula_record(bytes: &[u8]) -> Option<(String, usize)> {
+    let mut c = Cursor::new(bytes);
+    let n = c.u16_be()? as usize;
     // A real dependency list cannot exceed the record; reject absurd counts (mis-parse / not 0x76).
     if n > bytes.len() / 5 {
         return None;
     }
-    let mut pos = 2;
     for _ in 0..n {
-        let (_, consumed) = read_lp_string(bytes.get(pos..)?)?;
-        pos += consumed + 3; // 3-byte inter-reference separator
+        c.lp_string()?;
+        c.skip(3); // 3-byte inter-reference separator
     }
-    read_lp_string(bytes.get(pos..)?).map(|(body, _)| body)
+    let body = c.lp_string()?;
+    Some((body, c.pos()))
 }
 
 /// The formula's authoring dialect. In a `0x76` record, byte 16 of the trailer (after the dependency
 /// list and body string) is `1` for Basic, else Crystal. Defaults to Crystal if the layout doesn't parse.
 pub(super) fn formula_syntax(bytes: &[u8]) -> crate::model::FormulaSyntax {
     use crate::model::FormulaSyntax;
-    let Some(n) = bytes
-        .get(0..2)
-        .map(|b| u16::from_be_bytes([b[0], b[1]]) as usize)
-    else {
-        return FormulaSyntax::Crystal;
-    };
-    if n > bytes.len() / 5 {
-        return FormulaSyntax::Crystal;
-    }
-    let mut pos = 2;
-    for _ in 0..n {
-        let Some((_, consumed)) = bytes.get(pos..).and_then(read_lp_string) else {
-            return FormulaSyntax::Crystal;
-        };
-        pos += consumed + 3;
-    }
-    let Some((_, consumed)) = bytes.get(pos..).and_then(read_lp_string) else {
-        return FormulaSyntax::Crystal;
-    };
-    let trailer_start = pos + consumed;
-    match bytes.get(trailer_start + 16) {
-        Some(1) => FormulaSyntax::Basic,
+    match parse_formula_record(bytes) {
+        Some((_, trailer_start)) if bytes.get(trailer_start + 16) == Some(&1) => {
+            FormulaSyntax::Basic
+        }
         _ => FormulaSyntax::Crystal,
     }
 }
@@ -539,11 +509,11 @@ pub(super) fn raise_sort(node: &RecordNode, logical: &[u8]) -> Option<SortRecord
 /// group field). Returns 0 when the tail is too short.
 pub(super) fn group_topn_limit(node: &RecordNode, logical: &[u8]) -> u16 {
     let bytes = node.leaf_bytes(logical);
-    let n = bytes.len();
-    match n.checked_sub(11).and_then(|i| bytes.get(i..i + 2)) {
-        Some(b) => u16::from_be_bytes([b[0], b[1]]),
-        None => 0,
-    }
+    bytes
+        .len()
+        .checked_sub(11)
+        .and_then(|i| u16_be(&bytes, i))
+        .unwrap_or(0)
 }
 
 /// Resolve a group summary sort's direction from its direction byte and Top N limit: limited
@@ -622,22 +592,9 @@ pub(super) fn raise_group(
     // (`@Group #N Order`), where the trailing structure is `01 00 <code> ff ff`: 0x03 = monthly,
     // 0x06 = weekly. (Daily is instead flagged at `used + 4 == 0x02`; discrete date grouping leaves
     // both clear.) Unmapped codes are left undecoded rather than guessed.
-    let period_code = {
-        let mut code = None;
-        let mut i = 0;
-        while i + 4 <= bytes.len() {
-            if let Some((s, consumed)) = read_lp_string(&bytes[i..]) {
-                if s.starts_with("@Group #") && s.ends_with(" Order") {
-                    code = bytes.get(i + consumed + 2).copied();
-                    break;
-                }
-                i += consumed;
-            } else {
-                i += 1;
-            }
-        }
-        code
-    };
+    let period_code = lp_scan(&bytes, Scan::Consume)
+        .find(|(_, s, _)| s.starts_with("@Group #") && s.ends_with(" Order"))
+        .and_then(|(i, _, consumed)| bytes.get(i + consumed + 2).copied());
     let date_condition = field_types
         .get(&field.to_lowercase())
         .filter(|t| matches!(t, Date | Time | DateTime | Boolean))
@@ -682,13 +639,11 @@ pub(super) fn raise_field(node: &RecordNode, logical: &[u8]) -> Option<FieldDef>
 
     // Trailing attributes: value_type (u16 LE) at the start, byte length (u16 BE) at the end.
     let attrs = &bytes[after..];
-    let value_type = attrs
-        .get(0..2)
-        .map(|b| FieldValueType::from_code(u16::from_le_bytes([b[0], b[1]]) as i32))
+    let value_type = u16_le(attrs, 0)
+        .map(|v| FieldValueType::from_code(i32::from(v)))
         .unwrap_or_default();
     let length = if attrs.len() >= 12 {
-        let n = attrs.len();
-        i32::from(u16::from_be_bytes([attrs[n - 2], attrs[n - 1]]))
+        u16_be(attrs, attrs.len() - 2).map_or(0, i32::from)
     } else {
         0
     };
