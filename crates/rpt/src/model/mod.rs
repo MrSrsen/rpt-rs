@@ -18,8 +18,8 @@ mod report_def;
 mod saved;
 
 pub use data_def::{
-    DataDefinition, DbField, FieldDef, FieldKind, FieldKindData, FormulaField, FormulaSyntax, Group,
-    GroupNameField, GroupOptions, ParameterField, ParameterValue, RunningTotalField, Sort,
+    DataDefinition, DbField, FieldDef, FieldKind, FieldKindData, FormulaField, FormulaSyntax,
+    Group, GroupNameField, GroupOptions, ParameterField, ParameterValue, RunningTotalField, Sort,
     SpecialField, SqlExpressionField, SummaryField,
 };
 pub use database::{ConnectionInfo, Database, DbFieldDef, Table, TableLink};
@@ -38,11 +38,11 @@ pub use objects::{
     SubreportObject, TextObject,
 };
 pub use primitives::{Color, Conditioned, Formula, RecordRef, Rect, Twips, Version};
-pub use saved::{SavedColumn, SavedData};
 pub use report_def::{
     Area, AreaFormat, GroupAreaFormat, ReportDefinition, Section, SectionAreaFormatBase,
     SectionFormat,
 };
+pub use saved::{SavedColumn, SavedData};
 
 use crate::records::RecordTag;
 

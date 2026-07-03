@@ -212,7 +212,6 @@ impl Rpt {
         )
     }
 
-
     /// The report's decoded stored saved data (cached rows). See [`crate::model::SavedData`]. `None`
     /// when there is no saved data or the batch class is not decodable.
     pub fn saved_data(&self) -> Option<crate::model::SavedData> {
@@ -234,7 +233,8 @@ fn decode_saved_data(streams: &[RecordStream]) -> Option<crate::model::SavedData
             n.contains(needle) && excl.is_none_or(|e| !n.contains(e))
         })
     };
-    let dsm = codec::decode_contents(&find("DataSourceManager", Some("Subdocument"))?.encode()).ok()?;
+    let dsm =
+        codec::decode_contents(&find("DataSourceManager", Some("Subdocument"))?.encode()).ok()?;
     let primary = codec::batch_directory(&dsm)
         .into_iter()
         .max_by_key(|b| b.count)
@@ -244,8 +244,12 @@ fn decode_saved_data(streams: &[RecordStream]) -> Option<crate::model::SavedData
     let memo_raw = find("MemoValuesStream", None)?.encode();
     let srs_raw = find("SavedRecordsStream", None)?.encode();
 
-    let index_plain =
-        codec::decode_saved_batch(&srs_raw, codec::INDEX_BATCH_SIZE, primary.count, primary.item_size)?;
+    let index_plain = codec::decode_saved_batch(
+        &srs_raw,
+        codec::INDEX_BATCH_SIZE,
+        primary.count,
+        primary.item_size,
+    )?;
     let bs = codec::memo_batch_size(&dsm)?;
     let memo_plain = codec::decode_saved_batch(&memo_raw, bs, bs.checked_mul(12)?, 12)?;
     let memos = codec::parse_memo_values(&memo_plain);
@@ -254,8 +258,13 @@ fn decode_saved_data(streams: &[RecordStream]) -> Option<crate::model::SavedData
     if schema.is_empty() {
         return None;
     }
-    let rows =
-        codec::decode_worrall_rows(&index_plain, &memos, &schema, primary.count, primary.item_size);
+    let rows = codec::decode_worrall_rows(
+        &index_plain,
+        &memos,
+        &schema,
+        primary.count,
+        primary.item_size,
+    );
     if rows.is_empty() {
         return None;
     }

@@ -130,7 +130,11 @@ pub(super) fn raise_print_options(tree: &[RecordNode], logical: &[u8]) -> PrintO
     if opts.content_width.0 == 0 && opts.content_height.0 == 0 {
         if let Some((short, long)) = opts.paper_size.std_dims() {
             let landscape = opts.paper_orientation == crate::model::PaperOrientation::Landscape;
-            let (paper_w, paper_h) = if landscape { (long, short) } else { (short, long) };
+            let (paper_w, paper_h) = if landscape {
+                (long, short)
+            } else {
+                (short, long)
+            };
             let cw = paper_w - opts.margins.left.0 - opts.margins.right.0;
             let ch = paper_h - opts.margins.top.0 - opts.margins.bottom.0;
             if cw > 0 && ch > 0 {

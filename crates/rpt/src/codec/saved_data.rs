@@ -135,7 +135,11 @@ pub(crate) fn saved_schema(dsm_logical: &[u8]) -> Vec<SavedFieldDesc> {
                                 .to_owned();
                             let trailer = &leaf[4 + nl..];
                             let is_memo = trailer.windows(2).any(|w| w == [0xff, 0xff]);
-                            out.push(SavedFieldDesc { rec_offset, name, is_memo });
+                            out.push(SavedFieldDesc {
+                                rec_offset,
+                                name,
+                                is_memo,
+                            });
                         }
                     }
                 }
@@ -262,7 +266,9 @@ mod tests {
 
     #[test]
     fn decodes_a_batch_with_known_metadata() {
-        let original: Vec<u8> = (0..2000u32).flat_map(|i| (i as u16).to_le_bytes()).collect();
+        let original: Vec<u8> = (0..2000u32)
+            .flat_map(|i| (i as u16).to_le_bytes())
+            .collect();
         let z = miniz_oxide::deflate::compress_to_vec_zlib(&original, 6);
         let ct = cfb_encrypt(&batch_iv(1000, 249, 30), &z);
         let decoded = decode_saved_batch(&ct, 1000, 249, 30).expect("decode");
