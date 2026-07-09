@@ -1,0 +1,1916 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report Name="" FileName="/mnt/report.rpt" HasSavedData="True">
+  <Embedinfo />
+  <Summaryinfo KeywordsinReport="" ReportAuthor="BW" ReportComments="" ReportSubject="Sports" ReportTitle="AHL, CFL, MLB, NBA, NFL, And NHL Sports Teams" />
+  <ReportOptions EnableSaveDataWithReport="True" EnableSavePreviewPicture="True" EnableSaveSummariesWithReport="True" EnableUseDummyData="False" initialDataContext="" initialReportPartName="" />
+  <PrintOptions PageContentHeight="15120" PageContentWidth="11520" PaperOrientation="Portrait" PaperSize="DefaultPaperSize" PaperSource="FormSource" PrinterDuplex="Default" PrinterName="">
+    <PageMargins bottomMargin="360" leftMargin="360" rightMargin="360" topMargin="360" />
+    <PageMarginConditionFormulas />
+  </PrintOptions>
+  <SubReports />
+  <Database>
+    <TableLinks />
+    <Tables>
+      <Table Alias="vw_sports_tabler_output" ClassName="CrystalReports.Table" Name="vw_sports_tabler_output">
+        <ConnectionInfo Database_DLL="crdb_odbc.dll" QE_DatabaseName="" QE_DatabaseType="ODBC (RDO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="BWPortfolio" QE_SQLDB="True" SSO_Enabled="False" UserName="" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{vw_sports_tabler_output.id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="vw_sports_tabler_output.id" Name="id" ShortName="id" Type="crFieldValueTypeInt32sField" UseCount="1" />
+          <Field Description="" FormulaForm="{vw_sports_tabler_output.team}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_sports_tabler_output.team" Name="team" ShortName="team" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{vw_sports_tabler_output.sport}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_sports_tabler_output.sport" Name="sport" ShortName="sport" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{vw_sports_tabler_output.league}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_sports_tabler_output.league" Name="league" ShortName="league" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{vw_sports_tabler_output.section}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_sports_tabler_output.section" Name="section" ShortName="section" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{vw_sports_tabler_output.division}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_sports_tabler_output.division" Name="division" ShortName="division" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{vw_sports_tabler_output.hometown}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_sports_tabler_output.hometown" Name="hometown" ShortName="hometown" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+        </Fields>
+      </Table>
+    </Tables>
+  </Database>
+  <DataDefinition>
+    <GroupSelectionFormula />
+    <RecordSelectionFormula />
+    <Groups />
+    <SortFields />
+    <FormulaFieldDefinitions>
+    </FormulaFieldDefinitions>
+    <GroupNameFieldDefinitions />
+    <ParameterFieldDefinitions>
+    </ParameterFieldDefinitions>
+    <RunningTotalFieldDefinitions />
+    <SQLExpressionFields />
+    <SummaryFields />
+  </DataDefinition>
+  <CustomFunctions />
+  <ReportDefinition>
+    <Areas>
+      <Area Kind="ReportHeader" Name="ReportHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="220" Kind="ReportHeader" Name="TSection6">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="True" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageHeader" Name="PageHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="690" Kind="PageHeader" Name="TSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <TextObject Name="Text1" Kind="TextObject" Top="120" Left="60" Width="10740" Height="480" MaxNumberOfLines="0">
+                <Text>AHL, CFL, MLB, NBA, NFL and NHL Sports Teams</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="33" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Cambria" Size="20" SizeinPoints="20" Strikeout="False" Style="Bold, Underline" SystemFontName="" Underline="True" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+            </ReportObjects>
+          </Section>
+          <Section Height="1316" Kind="PageHeader" Name="TSection2">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <TextObject Name="Text2" Kind="TextObject" Top="40" Left="60" Width="660" Height="240" MaxNumberOfLines="0">
+                <Text>ID</Text>
+                <Color Name="White" A="255" R="255" G="255" B="255" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Black" A="255" R="0" G="0" B="0" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <LineObject Name="Line2" Kind="LineObject" Top="1080" Left="60" Width="11459" Height="0" Bottom="1080" EnableExtendToBottomOfSection="False" EndSectionName="TSection2" LineStyle="SingleLine" LineThickness="20" Right="11519">
+                <LineColor Name="Black" A="255" R="0" G="0" B="0" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <TextObject Name="Text3" Kind="TextObject" Top="40" Left="796" Width="2804" Height="240" MaxNumberOfLines="0">
+                <Text>Team</Text>
+                <Color Name="White" A="255" R="255" G="255" B="255" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Black" A="255" R="0" G="0" B="0" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text4" Kind="TextObject" Top="40" Left="3720" Width="1440" Height="240" MaxNumberOfLines="0">
+                <Text>Sport</Text>
+                <Color Name="White" A="255" R="255" G="255" B="255" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Black" A="255" R="0" G="0" B="0" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text5" Kind="TextObject" Top="40" Left="5280" Width="847" Height="240" MaxNumberOfLines="0">
+                <Text>League</Text>
+                <Color Name="White" A="255" R="255" G="255" B="255" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Black" A="255" R="0" G="0" B="0" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text6" Kind="TextObject" Top="40" Left="6240" Width="2640" Height="240" MaxNumberOfLines="0">
+                <Text>Section</Text>
+                <Color Name="White" A="255" R="255" G="255" B="255" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Black" A="255" R="0" G="0" B="0" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text7" Kind="TextObject" Top="40" Left="9000" Width="2520" Height="240" MaxNumberOfLines="0">
+                <Text>Division</Text>
+                <Color Name="White" A="255" R="255" G="255" B="255" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Black" A="255" R="0" G="0" B="0" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text8" Kind="TextObject" Top="480" Left="60" Width="11460" Height="240" MaxNumberOfLines="0">
+                <Text>Hometown</Text>
+                <Color Name="White" A="255" R="255" G="255" B="255" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Black" A="255" R="0" G="0" B="0" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="Detail" Name="DetailArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="1005" Kind="Detail" Name="TSection4">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas BackgroundColor="select RecordNumber mod 2&#xD;&#xA;case 0: crWhite&#xD;&#xA;case 1: color(222,222,222)&#xD;&#xA;" />
+              <BackgroundColor Name="Silver" A="255" R="192" G="192" B="192" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="TOrderID1" Kind="FieldObject" Top="0" Left="250" Width="652" Height="254" DataSource="{vw_sports_tabler_output.id}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="18" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="11" SizeinPoints="11" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="False" />
+                  <NumericFieldFormat DecimalPlaces="0" RoundingFormat="RoundToUnit" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="True" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TShipVia1" Kind="FieldObject" Top="0" Left="5362" Width="765" Height="480" DataSource="{vw_sports_tabler_output.league}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="18" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="11" SizeinPoints="11" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TOrderAmount1" Kind="FieldObject" Top="0" Left="6360" Width="2520" Height="480" DataSource="{vw_sports_tabler_output.section}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="18" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="11" SizeinPoints="11" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TCustomerName1" Kind="FieldObject" Top="0" Left="960" Width="2640" Height="480" DataSource="{vw_sports_tabler_output.team}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="18" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="11" SizeinPoints="11" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TCity1" Kind="FieldObject" Top="0" Left="3840" Width="1200" Height="480" DataSource="{vw_sports_tabler_output.sport}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="18" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="11" SizeinPoints="11" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TShipped1" Kind="FieldObject" Top="0" Left="9135" Width="1658" Height="480" DataSource="{vw_sports_tabler_output.division}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="18" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="11" SizeinPoints="11" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="Extra1" Kind="FieldObject" Top="720" Left="240" Width="10560" Height="240" DataSource="{vw_sports_tabler_output.hometown}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Verdana" Size="10" SizeinPoints="10" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+            </ReportObjects>
+          </Section>
+          <Section Height="415" Kind="Detail" Name="TSection5">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <LineObject Name="Line1" Kind="LineObject" Top="255" Left="0" Width="11474" Height="0" Bottom="255" EnableExtendToBottomOfSection="False" EndSectionName="TSection5" LineStyle="SingleLine" LineThickness="20" Right="11474">
+                <LineColor Name="Black" A="255" R="0" G="0" B="0" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="ReportFooter" Name="ReportFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="220" Kind="ReportFooter" Name="TSection7">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="True" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageFooter" Name="PageFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="221" Kind="PageFooter" Name="TSection3">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="PageNofM1" Kind="FieldObject" Top="0" Left="9960" Width="1474" Height="221" DataSource="PageNofM">
+                <Color Name="White" A="255" R="255" G="255" B="255" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Black" A="255" R="0" G="0" B="0" />
+                  <BorderColor Name="Blue" A="255" R="0" G="0" B="255" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+    </Areas>
+  </ReportDefinition>
+  <SavedData RecordCount="163">
+    <Fields>
+      <Field Name="vw_sports_tabler_output.id" Type="Int32sField" />
+      <Field Name="vw_sports_tabler_output.league" Type="PersistentMemoField" />
+      <Field Name="vw_sports_tabler_output.section" Type="PersistentMemoField" />
+      <Field Name="vw_sports_tabler_output.team" Type="PersistentMemoField" />
+      <Field Name="vw_sports_tabler_output.sport" Type="PersistentMemoField" />
+      <Field Name="vw_sports_tabler_output.division" Type="PersistentMemoField" />
+      <Field Name="vw_sports_tabler_output.hometown" Type="PersistentMemoField" />
+    </Fields>
+    <Rows>
+      <Row>
+        <F>1</F>
+        <F>MLB</F>
+        <F>American League</F>
+        <F>Baltimore Orioles</F>
+        <F>Baseball</F>
+        <F>East</F>
+        <F>Baltimore, Maryland, United States</F>
+      </Row>
+      <Row>
+        <F>2</F>
+        <F>MLB</F>
+        <F>American League</F>
+        <F>Boston Red Sox</F>
+        <F>Baseball</F>
+        <F>East</F>
+        <F>Boston, Massachusetts, United States</F>
+      </Row>
+      <Row>
+        <F>3</F>
+        <F>MLB</F>
+        <F>American League</F>
+        <F>New York Yankees</F>
+        <F>Baseball</F>
+        <F>East</F>
+        <F>New York City, New York, United States</F>
+      </Row>
+      <Row>
+        <F>4</F>
+        <F>MLB</F>
+        <F>American League</F>
+        <F>Tampa Bay Rays</F>
+        <F>Baseball</F>
+        <F>East</F>
+        <F>St. Petersburg, Florida, United States</F>
+      </Row>
+      <Row>
+        <F>5</F>
+        <F>MLB</F>
+        <F>American League</F>
+        <F>Toronto Blue Jays</F>
+        <F>Baseball</F>
+        <F>East</F>
+        <F>Toronto, Ontario, Canada</F>
+      </Row>
+      <Row>
+        <F>6</F>
+        <F>MLB</F>
+        <F>American League</F>
+        <F>Chicago White Sox</F>
+        <F>Baseball</F>
+        <F>Central</F>
+        <F>Chicago, Illinois, United States</F>
+      </Row>
+      <Row>
+        <F>7</F>
+        <F>MLB</F>
+        <F>American League</F>
+        <F>Cleveland Indians</F>
+        <F>Baseball</F>
+        <F>Central</F>
+        <F>Cleveland, Ohio, United States</F>
+      </Row>
+      <Row>
+        <F>8</F>
+        <F>MLB</F>
+        <F>American League</F>
+        <F>Detroit Tigers</F>
+        <F>Baseball</F>
+        <F>Central</F>
+        <F>Detroit, Michigan, United States</F>
+      </Row>
+      <Row>
+        <F>9</F>
+        <F>MLB</F>
+        <F>American League</F>
+        <F>Kansas City Royals</F>
+        <F>Baseball</F>
+        <F>Central</F>
+        <F>Kansas City, Missouri, United States</F>
+      </Row>
+      <Row>
+        <F>10</F>
+        <F>MLB</F>
+        <F>American League</F>
+        <F>Minnesota Twins</F>
+        <F>Baseball</F>
+        <F>Central</F>
+        <F>Minneapolis, Minnesota, United States</F>
+      </Row>
+      <Row>
+        <F>11</F>
+        <F>MLB</F>
+        <F>American League</F>
+        <F>Houston Astros</F>
+        <F>Baseball</F>
+        <F>West</F>
+        <F>Houston, Texas, United States</F>
+      </Row>
+      <Row>
+        <F>12</F>
+        <F>MLB</F>
+        <F>American League</F>
+        <F>Los Angeles Angels</F>
+        <F>Baseball</F>
+        <F>West</F>
+        <F>Anaheim, California, United States</F>
+      </Row>
+      <Row>
+        <F>13</F>
+        <F>MLB</F>
+        <F>American League</F>
+        <F>Oakland Athletics</F>
+        <F>Baseball</F>
+        <F>West</F>
+        <F>Oakland, California, United States</F>
+      </Row>
+      <Row>
+        <F>14</F>
+        <F>MLB</F>
+        <F>American League</F>
+        <F>Seattle Mariners</F>
+        <F>Baseball</F>
+        <F>West</F>
+        <F>Seattle, Washington, United States</F>
+      </Row>
+      <Row>
+        <F>15</F>
+        <F>MLB</F>
+        <F>American League</F>
+        <F>Texas Rangers</F>
+        <F>Baseball</F>
+        <F>West</F>
+        <F>Arlington, Texas, United States</F>
+      </Row>
+      <Row>
+        <F>16</F>
+        <F>MLB</F>
+        <F>National League</F>
+        <F>Atlanta Braves</F>
+        <F>Baseball</F>
+        <F>East</F>
+        <F>Atlanta, Georgia, United States</F>
+      </Row>
+      <Row>
+        <F>17</F>
+        <F>MLB</F>
+        <F>National League</F>
+        <F>Miami Marlins</F>
+        <F>Baseball</F>
+        <F>East</F>
+        <F>Miami, Florida, United States</F>
+      </Row>
+      <Row>
+        <F>18</F>
+        <F>MLB</F>
+        <F>National League</F>
+        <F>New York Mets</F>
+        <F>Baseball</F>
+        <F>East</F>
+        <F>New York City, New York, United States</F>
+      </Row>
+      <Row>
+        <F>19</F>
+        <F>MLB</F>
+        <F>National League</F>
+        <F>Philadelphia Phillies</F>
+        <F>Baseball</F>
+        <F>East</F>
+        <F>Philadelphia, Pennsylvania, United States</F>
+      </Row>
+      <Row>
+        <F>20</F>
+        <F>MLB</F>
+        <F>National League</F>
+        <F>Washington Nationals</F>
+        <F>Baseball</F>
+        <F>East</F>
+        <F>Washington, District of Columbia, United States</F>
+      </Row>
+      <Row>
+        <F>21</F>
+        <F>MLB</F>
+        <F>National League</F>
+        <F>Chicago Cubs</F>
+        <F>Baseball</F>
+        <F>Central</F>
+        <F>Chicago, Illinois, United States</F>
+      </Row>
+      <Row>
+        <F>22</F>
+        <F>MLB</F>
+        <F>National League</F>
+        <F>Cincinnati Reds</F>
+        <F>Baseball</F>
+        <F>Central</F>
+        <F>Cincinnati, Ohio, United States</F>
+      </Row>
+      <Row>
+        <F>23</F>
+        <F>MLB</F>
+        <F>National League</F>
+        <F>Milwaukee Brewers</F>
+        <F>Baseball</F>
+        <F>Central</F>
+        <F>Milwaukee, Wisconsin, United States</F>
+      </Row>
+      <Row>
+        <F>24</F>
+        <F>MLB</F>
+        <F>National League</F>
+        <F>Pittsburgh Pirates</F>
+        <F>Baseball</F>
+        <F>Central</F>
+        <F>Pittsburgh, Pennsylvania, United States</F>
+      </Row>
+      <Row>
+        <F>25</F>
+        <F>MLB</F>
+        <F>National League</F>
+        <F>St. Louis Cardinals</F>
+        <F>Baseball</F>
+        <F>Central</F>
+        <F>St. Louis, Missouri, United States</F>
+      </Row>
+      <Row>
+        <F>26</F>
+        <F>MLB</F>
+        <F>National League</F>
+        <F>Arizona Diamondbacks</F>
+        <F>Baseball</F>
+        <F>West</F>
+        <F>Phoenix, Arizona, United States</F>
+      </Row>
+      <Row>
+        <F>27</F>
+        <F>MLB</F>
+        <F>National League</F>
+        <F>Colorado Rockies</F>
+        <F>Baseball</F>
+        <F>West</F>
+        <F>Denver, Colorado, United States</F>
+      </Row>
+      <Row>
+        <F>28</F>
+        <F>MLB</F>
+        <F>National League</F>
+        <F>Los Angeles Dodgers</F>
+        <F>Baseball</F>
+        <F>West</F>
+        <F>Los Angeles, California, United States</F>
+      </Row>
+      <Row>
+        <F>29</F>
+        <F>MLB</F>
+        <F>National League</F>
+        <F>San Diego Padres</F>
+        <F>Baseball</F>
+        <F>West</F>
+        <F>San Diego, California, United States</F>
+      </Row>
+      <Row>
+        <F>30</F>
+        <F>MLB</F>
+        <F>National League</F>
+        <F>San Francisco Giants</F>
+        <F>Baseball</F>
+        <F>West</F>
+        <F>San Francisco, California, United States</F>
+      </Row>
+      <Row>
+        <F>31</F>
+        <F>NHL</F>
+        <F>Eastern Conference</F>
+        <F>Boston Bruins</F>
+        <F>Hockey</F>
+        <F>Atlantic</F>
+        <F>Boston, Massachusetts, United States</F>
+      </Row>
+      <Row>
+        <F>32</F>
+        <F>NHL</F>
+        <F>Eastern Conference</F>
+        <F>Buffalo Sabres</F>
+        <F>Hockey</F>
+        <F>Atlantic</F>
+        <F>Buffalo, New York, United States</F>
+      </Row>
+      <Row>
+        <F>33</F>
+        <F>NHL</F>
+        <F>Eastern Conference</F>
+        <F>Detroit Red Wings</F>
+        <F>Hockey</F>
+        <F>Atlantic</F>
+        <F>Detroit, Michigan, United States</F>
+      </Row>
+      <Row>
+        <F>34</F>
+        <F>NHL</F>
+        <F>Eastern Conference</F>
+        <F>Florida Panthers</F>
+        <F>Hockey</F>
+        <F>Atlantic</F>
+        <F>Sunrise, Florida, United States</F>
+      </Row>
+      <Row>
+        <F>35</F>
+        <F>NHL</F>
+        <F>Eastern Conference</F>
+        <F>Montreal Canadiens</F>
+        <F>Hockey</F>
+        <F>Atlantic</F>
+        <F>Montreal, Quebec, Canada</F>
+      </Row>
+      <Row>
+        <F>36</F>
+        <F>NHL</F>
+        <F>Eastern Conference</F>
+        <F>Ottawa Senators</F>
+        <F>Hockey</F>
+        <F>Atlantic</F>
+        <F>Ottawa, Ontario, Canada</F>
+      </Row>
+      <Row>
+        <F>37</F>
+        <F>NHL</F>
+        <F>Eastern Conference</F>
+        <F>Tampa Bay Lightning</F>
+        <F>Hockey</F>
+        <F>Atlantic</F>
+        <F>Tampa, Florida, United States</F>
+      </Row>
+      <Row>
+        <F>38</F>
+        <F>NHL</F>
+        <F>Eastern Conference</F>
+        <F>Toronto Maple Leafs</F>
+        <F>Hockey</F>
+        <F>Atlantic</F>
+        <F>Toronto, Ontario, Canada</F>
+      </Row>
+      <Row>
+        <F>39</F>
+        <F>NHL</F>
+        <F>Eastern Conference</F>
+        <F>Carolina Hurricanes</F>
+        <F>Hockey</F>
+        <F>Metropolitan</F>
+        <F>Raleigh, North Carolina, United States</F>
+      </Row>
+      <Row>
+        <F>40</F>
+        <F>NHL</F>
+        <F>Eastern Conference</F>
+        <F>Columbus Blue Jackets</F>
+        <F>Hockey</F>
+        <F>Metropolitan</F>
+        <F>Columbus, Ohio, United States</F>
+      </Row>
+      <Row>
+        <F>41</F>
+        <F>NHL</F>
+        <F>Eastern Conference</F>
+        <F>New Jersey Devils</F>
+        <F>Hockey</F>
+        <F>Metropolitan</F>
+        <F>Newark, New Jersey, United States</F>
+      </Row>
+      <Row>
+        <F>42</F>
+        <F>NHL</F>
+        <F>Eastern Conference</F>
+        <F>New York Islanders</F>
+        <F>Hockey</F>
+        <F>Metropolitan</F>
+        <F>New York City, New York, United States</F>
+      </Row>
+      <Row>
+        <F>43</F>
+        <F>NHL</F>
+        <F>Eastern Conference</F>
+        <F>New York Rangers</F>
+        <F>Hockey</F>
+        <F>Metropolitan</F>
+        <F>New York City, New York, United States</F>
+      </Row>
+      <Row>
+        <F>44</F>
+        <F>NHL</F>
+        <F>Eastern Conference</F>
+        <F>Philadelphia Flyers</F>
+        <F>Hockey</F>
+        <F>Metropolitan</F>
+        <F>Philadelphia, Pennsylvania, United States</F>
+      </Row>
+      <Row>
+        <F>45</F>
+        <F>NHL</F>
+        <F>Eastern Conference</F>
+        <F>Pittsburgh Penguins</F>
+        <F>Hockey</F>
+        <F>Metropolitan</F>
+        <F>Pittsburgh, Pennsylvania, United States</F>
+      </Row>
+      <Row>
+        <F>46</F>
+        <F>NHL</F>
+        <F>Eastern Conference</F>
+        <F>Washington Capitals</F>
+        <F>Hockey</F>
+        <F>Metropolitan</F>
+        <F>Washington, District of Columbia, United States</F>
+      </Row>
+      <Row>
+        <F>47</F>
+        <F>NHL</F>
+        <F>Western Conference</F>
+        <F>Chicago Blackhawks</F>
+        <F>Hockey</F>
+        <F>Central</F>
+        <F>Chicago, Illinois, United States</F>
+      </Row>
+      <Row>
+        <F>48</F>
+        <F>NHL</F>
+        <F>Western Conference</F>
+        <F>Colorado Avalanche</F>
+        <F>Hockey</F>
+        <F>Central</F>
+        <F>Denver, Colorado, United States</F>
+      </Row>
+      <Row>
+        <F>49</F>
+        <F>NHL</F>
+        <F>Western Conference</F>
+        <F>Dallas Stars</F>
+        <F>Hockey</F>
+        <F>Central</F>
+        <F>Dallas, Texas, United States</F>
+      </Row>
+      <Row>
+        <F>50</F>
+        <F>NHL</F>
+        <F>Western Conference</F>
+        <F>Minnesota Wild</F>
+        <F>Hockey</F>
+        <F>Central</F>
+        <F>Saint Paul, Minnesota, United States</F>
+      </Row>
+      <Row>
+        <F>51</F>
+        <F>NHL</F>
+        <F>Western Conference</F>
+        <F>Nashville Predators</F>
+        <F>Hockey</F>
+        <F>Central</F>
+        <F>Nashville, Tennessee, United States</F>
+      </Row>
+      <Row>
+        <F>52</F>
+        <F>NHL</F>
+        <F>Western Conference</F>
+        <F>St. Louis Blues</F>
+        <F>Hockey</F>
+        <F>Central</F>
+        <F>St. Louis, Missouri, United States</F>
+      </Row>
+      <Row>
+        <F>53</F>
+        <F>NHL</F>
+        <F>Western Conference</F>
+        <F>Winnipeg Jets</F>
+        <F>Hockey</F>
+        <F>Central</F>
+        <F>Winnipeg, Manitoba, Canada</F>
+      </Row>
+      <Row>
+        <F>54</F>
+        <F>NHL</F>
+        <F>Western Conference</F>
+        <F>Anaheim Ducks</F>
+        <F>Hockey</F>
+        <F>Pacific</F>
+        <F>Anaheim, California, United States</F>
+      </Row>
+      <Row>
+        <F>55</F>
+        <F>NHL</F>
+        <F>Western Conference</F>
+        <F>Arizona Coyotes</F>
+        <F>Hockey</F>
+        <F>Pacific</F>
+        <F>Glendale, Arizona, United States</F>
+      </Row>
+      <Row>
+        <F>56</F>
+        <F>NHL</F>
+        <F>Western Conference</F>
+        <F>Calgary Flames</F>
+        <F>Hockey</F>
+        <F>Pacific</F>
+        <F>Calgary, Alberta, Canada</F>
+      </Row>
+      <Row>
+        <F>57</F>
+        <F>NHL</F>
+        <F>Western Conference</F>
+        <F>Edmonton Oilers</F>
+        <F>Hockey</F>
+        <F>Pacific</F>
+        <F>Edmonton, Alberta, Canada</F>
+      </Row>
+      <Row>
+        <F>58</F>
+        <F>NHL</F>
+        <F>Western Conference</F>
+        <F>Los Angeles Kings</F>
+        <F>Hockey</F>
+        <F>Pacific</F>
+        <F>Los Angeles, California, United States</F>
+      </Row>
+      <Row>
+        <F>59</F>
+        <F>NHL</F>
+        <F>Western Conference</F>
+        <F>San Jose Sharks</F>
+        <F>Hockey</F>
+        <F>Pacific</F>
+        <F>San Jose, California, United States</F>
+      </Row>
+      <Row>
+        <F>60</F>
+        <F>NHL</F>
+        <F>Western Conference</F>
+        <F>Vancouver Canucks</F>
+        <F>Hockey</F>
+        <F>Pacific</F>
+        <F>Vancouver, British Columbia, Canada</F>
+      </Row>
+      <Row>
+        <F>61</F>
+        <F>NHL</F>
+        <F>Western Conference</F>
+        <F>Vegas Golden Knights</F>
+        <F>Hockey</F>
+        <F>Pacific</F>
+        <F>Paradise, Nevada, United States</F>
+      </Row>
+      <Row>
+        <F>62</F>
+        <F>NFL</F>
+        <F>American Football Conference</F>
+        <F>Buffalo Bills</F>
+        <F>Football</F>
+        <F>East</F>
+        <F>Orchard Park, New York, United States</F>
+      </Row>
+      <Row>
+        <F>63</F>
+        <F>NFL</F>
+        <F>American Football Conference</F>
+        <F>Miami Dolphins</F>
+        <F>Football</F>
+        <F>East</F>
+        <F>Miami Gardens, Florida, United States</F>
+      </Row>
+      <Row>
+        <F>64</F>
+        <F>NFL</F>
+        <F>American Football Conference</F>
+        <F>New England Patriots</F>
+        <F>Football</F>
+        <F>East</F>
+        <F>Foxborough, Massachusetts, United States</F>
+      </Row>
+      <Row>
+        <F>65</F>
+        <F>NFL</F>
+        <F>American Football Conference</F>
+        <F>New York Jets</F>
+        <F>Football</F>
+        <F>East</F>
+        <F>East Rutherford, New Jersey, United States</F>
+      </Row>
+      <Row>
+        <F>66</F>
+        <F>NFL</F>
+        <F>American Football Conference</F>
+        <F>Baltimore Ravens</F>
+        <F>Football</F>
+        <F>North</F>
+        <F>Baltimore, Maryland, United States</F>
+      </Row>
+      <Row>
+        <F>67</F>
+        <F>NFL</F>
+        <F>American Football Conference</F>
+        <F>Cincinnati Bengals</F>
+        <F>Football</F>
+        <F>North</F>
+        <F>Cincinnati, Ohio, United States</F>
+      </Row>
+      <Row>
+        <F>68</F>
+        <F>NFL</F>
+        <F>American Football Conference</F>
+        <F>Cleveland Browns</F>
+        <F>Football</F>
+        <F>North</F>
+        <F>Cleveland, Ohio, United States</F>
+      </Row>
+      <Row>
+        <F>69</F>
+        <F>NFL</F>
+        <F>American Football Conference</F>
+        <F>Pittsburgh Steelers</F>
+        <F>Football</F>
+        <F>North</F>
+        <F>Pittsburgh, Pennsylvania, United States</F>
+      </Row>
+      <Row>
+        <F>70</F>
+        <F>NFL</F>
+        <F>American Football Conference</F>
+        <F>Houston Texans</F>
+        <F>Football</F>
+        <F>South</F>
+        <F>Houston, Texas, United States</F>
+      </Row>
+      <Row>
+        <F>71</F>
+        <F>NFL</F>
+        <F>American Football Conference</F>
+        <F>Indianapolis Colts</F>
+        <F>Football</F>
+        <F>South</F>
+        <F>Indianapolis, Indiana, United States</F>
+      </Row>
+      <Row>
+        <F>72</F>
+        <F>NFL</F>
+        <F>American Football Conference</F>
+        <F>Jacksonville Jaguars</F>
+        <F>Football</F>
+        <F>South</F>
+        <F>Jacksonville, Florida, United States</F>
+      </Row>
+      <Row>
+        <F>73</F>
+        <F>NFL</F>
+        <F>American Football Conference</F>
+        <F>Tennessee Titans</F>
+        <F>Football</F>
+        <F>South</F>
+        <F>Nashville, Tennessee, United States</F>
+      </Row>
+      <Row>
+        <F>74</F>
+        <F>NFL</F>
+        <F>American Football Conference</F>
+        <F>Denver Broncos</F>
+        <F>Football</F>
+        <F>West</F>
+        <F>Denver, Colorado, United States</F>
+      </Row>
+      <Row>
+        <F>75</F>
+        <F>NFL</F>
+        <F>American Football Conference</F>
+        <F>Kansas City Chiefs</F>
+        <F>Football</F>
+        <F>West</F>
+        <F>Kansas City, Missouri, United States</F>
+      </Row>
+      <Row>
+        <F>76</F>
+        <F>NFL</F>
+        <F>American Football Conference</F>
+        <F>Los Angeles Chargers</F>
+        <F>Football</F>
+        <F>West</F>
+        <F>Carson, California, United States</F>
+      </Row>
+      <Row>
+        <F>77</F>
+        <F>NFL</F>
+        <F>American Football Conference</F>
+        <F>Las Vegas Raiders</F>
+        <F>Football</F>
+        <F>West</F>
+        <F>Paradise, Nevada, United States</F>
+      </Row>
+      <Row>
+        <F>78</F>
+        <F>NFL</F>
+        <F>National Football Conference</F>
+        <F>Dallas Cowboys</F>
+        <F>Football</F>
+        <F>East</F>
+        <F>Arlington, Texas, United States</F>
+      </Row>
+      <Row>
+        <F>79</F>
+        <F>NFL</F>
+        <F>National Football Conference</F>
+        <F>New York Giants</F>
+        <F>Football</F>
+        <F>East</F>
+        <F>East Rutherford, New Jersey, United States</F>
+      </Row>
+      <Row>
+        <F>80</F>
+        <F>NFL</F>
+        <F>National Football Conference</F>
+        <F>Philadelphia Eagles</F>
+        <F>Football</F>
+        <F>East</F>
+        <F>Philadelphia, Pennsylvania, United States</F>
+      </Row>
+      <Row>
+        <F>81</F>
+        <F>NFL</F>
+        <F>National Football Conference</F>
+        <F>Washington Football Team</F>
+        <F>Football</F>
+        <F>East</F>
+        <F>Landover, Maryland, United States</F>
+      </Row>
+      <Row>
+        <F>82</F>
+        <F>NFL</F>
+        <F>National Football Conference</F>
+        <F>Chicago Bears</F>
+        <F>Football</F>
+        <F>North</F>
+        <F>Chicago, Illinois, United States</F>
+      </Row>
+      <Row>
+        <F>83</F>
+        <F>NFL</F>
+        <F>National Football Conference</F>
+        <F>Detroit Lions</F>
+        <F>Football</F>
+        <F>North</F>
+        <F>Detroit, Michigan, United States</F>
+      </Row>
+      <Row>
+        <F>84</F>
+        <F>NFL</F>
+        <F>National Football Conference</F>
+        <F>Green Bay Packers</F>
+        <F>Football</F>
+        <F>North</F>
+        <F>Green Bay, Wisconsin, United States</F>
+      </Row>
+      <Row>
+        <F>85</F>
+        <F>NFL</F>
+        <F>National Football Conference</F>
+        <F>Minnesota Vikings</F>
+        <F>Football</F>
+        <F>North</F>
+        <F>Minneapolis, Minnesota, United States</F>
+      </Row>
+      <Row>
+        <F>86</F>
+        <F>NFL</F>
+        <F>National Football Conference</F>
+        <F>Atlanta Falcons</F>
+        <F>Football</F>
+        <F>South</F>
+        <F>Atlanta, Georgia, United States</F>
+      </Row>
+      <Row>
+        <F>87</F>
+        <F>NFL</F>
+        <F>National Football Conference</F>
+        <F>Carolina Panthers</F>
+        <F>Football</F>
+        <F>South</F>
+        <F>Charlotte, North Carolina, United States</F>
+      </Row>
+      <Row>
+        <F>88</F>
+        <F>NFL</F>
+        <F>National Football Conference</F>
+        <F>New Orleans Saints</F>
+        <F>Football</F>
+        <F>South</F>
+        <F>New Orleans, Louisiana, United States</F>
+      </Row>
+      <Row>
+        <F>89</F>
+        <F>NFL</F>
+        <F>National Football Conference</F>
+        <F>Tampa Bay Buccaneers</F>
+        <F>Football</F>
+        <F>South</F>
+        <F>Tampa, Florida, United States</F>
+      </Row>
+      <Row>
+        <F>90</F>
+        <F>NFL</F>
+        <F>National Football Conference</F>
+        <F>Arizona Cardinals</F>
+        <F>Football</F>
+        <F>West</F>
+        <F>Glendale, Arizona, United States</F>
+      </Row>
+      <Row>
+        <F>91</F>
+        <F>NFL</F>
+        <F>National Football Conference</F>
+        <F>Los Angeles Rams</F>
+        <F>Football</F>
+        <F>West</F>
+        <F>Los Angeles, California, United States</F>
+      </Row>
+      <Row>
+        <F>92</F>
+        <F>NFL</F>
+        <F>National Football Conference</F>
+        <F>San Francisco 49ers</F>
+        <F>Football</F>
+        <F>West</F>
+        <F>Santa Clara, California, United States</F>
+      </Row>
+      <Row>
+        <F>93</F>
+        <F>NFL</F>
+        <F>National Football Conference</F>
+        <F>Seattle Seahawks</F>
+        <F>Football</F>
+        <F>West</F>
+        <F>Seattle, Washington, United States</F>
+      </Row>
+      <Row>
+        <F>94</F>
+        <F>CFL</F>
+        <F></F>
+        <F>Hamilton Tiger-Cats</F>
+        <F>Football</F>
+        <F>East</F>
+        <F>Hamilton, Ontario, Canada</F>
+      </Row>
+      <Row>
+        <F>95</F>
+        <F>CFL</F>
+        <F></F>
+        <F>Montreal Alouettes</F>
+        <F>Football</F>
+        <F>East</F>
+        <F>Montreal, Quebec, Canada</F>
+      </Row>
+      <Row>
+        <F>96</F>
+        <F>CFL</F>
+        <F></F>
+        <F>Ottawa Redblacks</F>
+        <F>Football</F>
+        <F>East</F>
+        <F>Ottawa, Ontario, Canada</F>
+      </Row>
+      <Row>
+        <F>97</F>
+        <F>CFL</F>
+        <F></F>
+        <F>Toronto Argonauts</F>
+        <F>Football</F>
+        <F>East</F>
+        <F>Toronto, Ontario, Canada</F>
+      </Row>
+      <Row>
+        <F>98</F>
+        <F>CFL</F>
+        <F></F>
+        <F>BC Lions</F>
+        <F>Football</F>
+        <F>West</F>
+        <F>Vancouver, British Columbia, Canada</F>
+      </Row>
+      <Row>
+        <F>99</F>
+        <F>CFL</F>
+        <F></F>
+        <F>Calgary Stampeders</F>
+        <F>Football</F>
+        <F>West</F>
+        <F>Calgary, Alberta, Canada</F>
+      </Row>
+      <Row>
+        <F>100</F>
+        <F>CFL</F>
+        <F></F>
+        <F>Edmonton Eskimos</F>
+        <F>Football</F>
+        <F>West</F>
+        <F>Edmonton, Alberta, Canada</F>
+      </Row>
+      <Row>
+        <F>101</F>
+        <F>CFL</F>
+        <F></F>
+        <F>Saskatchewan Roughriders</F>
+        <F>Football</F>
+        <F>West</F>
+        <F>Regina, Saskatchewan, Canada</F>
+      </Row>
+      <Row>
+        <F>102</F>
+        <F>CFL</F>
+        <F></F>
+        <F>Winnipeg Blue Bombers</F>
+        <F>Football</F>
+        <F>West</F>
+        <F>Winnipeg, Manitoba, Canada</F>
+      </Row>
+      <Row>
+        <F>103</F>
+        <F>NBA</F>
+        <F>Eastern Conference</F>
+        <F>Boston Celtics</F>
+        <F>Basketball</F>
+        <F>Atlantic</F>
+        <F>Boston, Massachusetts, United States</F>
+      </Row>
+      <Row>
+        <F>104</F>
+        <F>NBA</F>
+        <F>Eastern Conference</F>
+        <F>Brooklyn Nets</F>
+        <F>Basketball</F>
+        <F>Atlantic</F>
+        <F>New York City, New York, United States</F>
+      </Row>
+      <Row>
+        <F>105</F>
+        <F>NBA</F>
+        <F>Eastern Conference</F>
+        <F>New York Knicks</F>
+        <F>Basketball</F>
+        <F>Atlantic</F>
+        <F>New York City, New York, United States</F>
+      </Row>
+      <Row>
+        <F>106</F>
+        <F>NBA</F>
+        <F>Eastern Conference</F>
+        <F>Philadelphia 76ers</F>
+        <F>Basketball</F>
+        <F>Atlantic</F>
+        <F>Philadelphia, Pennsylvania, United States</F>
+      </Row>
+      <Row>
+        <F>107</F>
+        <F>NBA</F>
+        <F>Eastern Conference</F>
+        <F>Toronto Raptors</F>
+        <F>Basketball</F>
+        <F>Atlantic</F>
+        <F>Toronto, Ontario, Canada</F>
+      </Row>
+      <Row>
+        <F>108</F>
+        <F>NBA</F>
+        <F>Eastern Conference</F>
+        <F>Chicago Bulls</F>
+        <F>Basketball</F>
+        <F>Central</F>
+        <F>Chicago, Illinois, United States</F>
+      </Row>
+      <Row>
+        <F>109</F>
+        <F>NBA</F>
+        <F>Eastern Conference</F>
+        <F>Cleveland Cavaliers</F>
+        <F>Basketball</F>
+        <F>Central</F>
+        <F>Cleveland, Ohio, United States</F>
+      </Row>
+      <Row>
+        <F>110</F>
+        <F>NBA</F>
+        <F>Eastern Conference</F>
+        <F>Detroit Pistons</F>
+        <F>Basketball</F>
+        <F>Central</F>
+        <F>Detroit, Michigan, United States</F>
+      </Row>
+      <Row>
+        <F>111</F>
+        <F>NBA</F>
+        <F>Eastern Conference</F>
+        <F>Indiana Pacers</F>
+        <F>Basketball</F>
+        <F>Central</F>
+        <F>Indianapolis, Indiana, United States</F>
+      </Row>
+      <Row>
+        <F>112</F>
+        <F>NBA</F>
+        <F>Eastern Conference</F>
+        <F>Milwaukee Bucks</F>
+        <F>Basketball</F>
+        <F>Central</F>
+        <F>Milwaukee, Wisconsin, United States</F>
+      </Row>
+      <Row>
+        <F>113</F>
+        <F>NBA</F>
+        <F>Eastern Conference</F>
+        <F>Atlanta Hawks</F>
+        <F>Basketball</F>
+        <F>Southeast</F>
+        <F>Atlanta, Georgia, United States</F>
+      </Row>
+      <Row>
+        <F>114</F>
+        <F>NBA</F>
+        <F>Eastern Conference</F>
+        <F>Charlotte Hornets</F>
+        <F>Basketball</F>
+        <F>Southeast</F>
+        <F>Charlotte, North Carolina, United States</F>
+      </Row>
+      <Row>
+        <F>115</F>
+        <F>NBA</F>
+        <F>Eastern Conference</F>
+        <F>Miami Heat</F>
+        <F>Basketball</F>
+        <F>Southeast</F>
+        <F>Miami, Florida, United States</F>
+      </Row>
+      <Row>
+        <F>116</F>
+        <F>NBA</F>
+        <F>Eastern Conference</F>
+        <F>Orlando Magic</F>
+        <F>Basketball</F>
+        <F>Southeast</F>
+        <F>Orlando, Florida, United States</F>
+      </Row>
+      <Row>
+        <F>117</F>
+        <F>NBA</F>
+        <F>Eastern Conference</F>
+        <F>Washington Wizards</F>
+        <F>Basketball</F>
+        <F>Southeast</F>
+        <F>Washington, District of Columbia, United States</F>
+      </Row>
+      <Row>
+        <F>118</F>
+        <F>NBA</F>
+        <F>Western Conference</F>
+        <F>Denver Nuggets</F>
+        <F>Basketball</F>
+        <F>Northwest</F>
+        <F>Denver, Colorado, United States</F>
+      </Row>
+      <Row>
+        <F>119</F>
+        <F>NBA</F>
+        <F>Western Conference</F>
+        <F>Minnesota Timberwolves</F>
+        <F>Basketball</F>
+        <F>Northwest</F>
+        <F>Minneapolis, Minnesota, United States</F>
+      </Row>
+      <Row>
+        <F>120</F>
+        <F>NBA</F>
+        <F>Western Conference</F>
+        <F>Oklahoma City Thunder</F>
+        <F>Basketball</F>
+        <F>Northwest</F>
+        <F>Oklahoma City, Oklahoma, United States</F>
+      </Row>
+      <Row>
+        <F>121</F>
+        <F>NBA</F>
+        <F>Western Conference</F>
+        <F>Portland Trail Blazers</F>
+        <F>Basketball</F>
+        <F>Northwest</F>
+        <F>Portland, Oregon, United States</F>
+      </Row>
+      <Row>
+        <F>122</F>
+        <F>NBA</F>
+        <F>Western Conference</F>
+        <F>Utah Jazz</F>
+        <F>Basketball</F>
+        <F>Northwest</F>
+        <F>Salt Lake City, Utah, United States</F>
+      </Row>
+      <Row>
+        <F>123</F>
+        <F>NBA</F>
+        <F>Western Conference</F>
+        <F>Golden State Warriors</F>
+        <F>Basketball</F>
+        <F>Pacific</F>
+        <F>Oakland, California, United States</F>
+      </Row>
+      <Row>
+        <F>124</F>
+        <F>NBA</F>
+        <F>Western Conference</F>
+        <F>Los Angeles Clippers</F>
+        <F>Basketball</F>
+        <F>Pacific</F>
+        <F>Los Angeles, California, United States</F>
+      </Row>
+      <Row>
+        <F>125</F>
+        <F>NBA</F>
+        <F>Western Conference</F>
+        <F>Los Angeles Lakers</F>
+        <F>Basketball</F>
+        <F>Pacific</F>
+        <F>Los Angeles, California, United States</F>
+      </Row>
+      <Row>
+        <F>126</F>
+        <F>NBA</F>
+        <F>Western Conference</F>
+        <F>Phoenix Suns</F>
+        <F>Basketball</F>
+        <F>Pacific</F>
+        <F>Phoenix, Arizona, United States</F>
+      </Row>
+      <Row>
+        <F>127</F>
+        <F>NBA</F>
+        <F>Western Conference</F>
+        <F>Sacramento Kings</F>
+        <F>Basketball</F>
+        <F>Pacific</F>
+        <F>Sacramento, California, United States</F>
+      </Row>
+      <Row>
+        <F>128</F>
+        <F>NBA</F>
+        <F>Western Conference</F>
+        <F>Dallas Mavericks</F>
+        <F>Basketball</F>
+        <F>Southwest</F>
+        <F>Dallas, Texas, United States</F>
+      </Row>
+      <Row>
+        <F>129</F>
+        <F>NBA</F>
+        <F>Western Conference</F>
+        <F>Houston Rockets</F>
+        <F>Basketball</F>
+        <F>Southwest</F>
+        <F>Houston, Texas, United States</F>
+      </Row>
+      <Row>
+        <F>130</F>
+        <F>NBA</F>
+        <F>Western Conference</F>
+        <F>Memphis Grizzlies</F>
+        <F>Basketball</F>
+        <F>Southwest</F>
+        <F>Memphis, Tennessee, United States</F>
+      </Row>
+      <Row>
+        <F>131</F>
+        <F>NBA</F>
+        <F>Western Conference</F>
+        <F>New Orleans Pelicans</F>
+        <F>Basketball</F>
+        <F>Southwest</F>
+        <F>New Orleans, Louisiana, United States</F>
+      </Row>
+      <Row>
+        <F>132</F>
+        <F>NBA</F>
+        <F>Western Conference</F>
+        <F>San Antonio Spurs</F>
+        <F>Basketball</F>
+        <F>Southwest</F>
+        <F>San Antonio, Texas, United States</F>
+      </Row>
+      <Row>
+        <F>133</F>
+        <F>AHL</F>
+        <F>Eastern Conference</F>
+        <F>Bridgeport Sound Tigers</F>
+        <F>Hockey</F>
+        <F>Atlantic</F>
+        <F>Bridgeport, Connecticut, United States</F>
+      </Row>
+      <Row>
+        <F>134</F>
+        <F>AHL</F>
+        <F>Eastern Conference</F>
+        <F>Charlotte Checkers</F>
+        <F>Hockey</F>
+        <F>Atlantic</F>
+        <F>Charlotte, North Carolina, United States</F>
+      </Row>
+      <Row>
+        <F>135</F>
+        <F>AHL</F>
+        <F>Eastern Conference</F>
+        <F>Hartford Wolf Pack</F>
+        <F>Hockey</F>
+        <F>Atlantic</F>
+        <F>Hartford, Connecticut, United States</F>
+      </Row>
+      <Row>
+        <F>136</F>
+        <F>AHL</F>
+        <F>Eastern Conference</F>
+        <F>Hershey Bears</F>
+        <F>Hockey</F>
+        <F>Atlantic</F>
+        <F>Hershey, Pennsylvania, United States</F>
+      </Row>
+      <Row>
+        <F>137</F>
+        <F>AHL</F>
+        <F>Eastern Conference</F>
+        <F>Lehigh Valley Phantoms</F>
+        <F>Hockey</F>
+        <F>Atlantic</F>
+        <F>Allentown, Pennsylvania, United States</F>
+      </Row>
+      <Row>
+        <F>138</F>
+        <F>AHL</F>
+        <F>Eastern Conference</F>
+        <F>Providence Bruins</F>
+        <F>Hockey</F>
+        <F>Atlantic</F>
+        <F>Providence, Rhode Island, United States</F>
+      </Row>
+      <Row>
+        <F>139</F>
+        <F>AHL</F>
+        <F>Eastern Conference</F>
+        <F>Springfield Thunderbirds</F>
+        <F>Hockey</F>
+        <F>Atlantic</F>
+        <F>Springfield, Massachusetts, United States</F>
+      </Row>
+      <Row>
+        <F>140</F>
+        <F>AHL</F>
+        <F>Eastern Conference</F>
+        <F>Wilkes-Barre / Scranton Penguins</F>
+        <F>Hockey</F>
+        <F>Atlantic</F>
+        <F>Wilkes-Barre, Pennsylvania, United States</F>
+      </Row>
+      <Row>
+        <F>141</F>
+        <F>AHL</F>
+        <F>Eastern Conference</F>
+        <F>Belleville Senators</F>
+        <F>Hockey</F>
+        <F>North</F>
+        <F>Belleville, Ontario, Canada</F>
+      </Row>
+      <Row>
+        <F>142</F>
+        <F>AHL</F>
+        <F>Eastern Conference</F>
+        <F>Binghamton Devils</F>
+        <F>Hockey</F>
+        <F>North</F>
+        <F>Binghamton, New York, United States</F>
+      </Row>
+      <Row>
+        <F>143</F>
+        <F>AHL</F>
+        <F>Eastern Conference</F>
+        <F>Cleveland Monsters</F>
+        <F>Hockey</F>
+        <F>North</F>
+        <F>Cleveland, Ohio, United States</F>
+      </Row>
+      <Row>
+        <F>144</F>
+        <F>AHL</F>
+        <F>Eastern Conference</F>
+        <F>Laval Rocket</F>
+        <F>Hockey</F>
+        <F>North</F>
+        <F>Laval, Quebec, Canada</F>
+      </Row>
+      <Row>
+        <F>145</F>
+        <F>AHL</F>
+        <F>Eastern Conference</F>
+        <F>Rochester Americans</F>
+        <F>Hockey</F>
+        <F>North</F>
+        <F>Rochester, New York, United States</F>
+      </Row>
+      <Row>
+        <F>146</F>
+        <F>AHL</F>
+        <F>Eastern Conference</F>
+        <F>Syracuse Crunch</F>
+        <F>Hockey</F>
+        <F>North</F>
+        <F>Syracuse, New York, United States</F>
+      </Row>
+      <Row>
+        <F>147</F>
+        <F>AHL</F>
+        <F>Eastern Conference</F>
+        <F>Toronto Marlies</F>
+        <F>Hockey</F>
+        <F>North</F>
+        <F>Toronto, Ontario, Canada</F>
+      </Row>
+      <Row>
+        <F>148</F>
+        <F>AHL</F>
+        <F>Eastern Conference</F>
+        <F>Utica Comets</F>
+        <F>Hockey</F>
+        <F>North</F>
+        <F>Utica, New York, United States</F>
+      </Row>
+      <Row>
+        <F>149</F>
+        <F>AHL</F>
+        <F>Western Conference</F>
+        <F>Chicago Wolves</F>
+        <F>Hockey</F>
+        <F>Central</F>
+        <F>Rosemont, Illinois, United States</F>
+      </Row>
+      <Row>
+        <F>150</F>
+        <F>AHL</F>
+        <F>Western Conference</F>
+        <F>Grand Rapids Griffins</F>
+        <F>Hockey</F>
+        <F>Central</F>
+        <F>Grand Rapids, Michigan, United States</F>
+      </Row>
+      <Row>
+        <F>151</F>
+        <F>AHL</F>
+        <F>Western Conference</F>
+        <F>Iowa Wild</F>
+        <F>Hockey</F>
+        <F>Central</F>
+        <F>Des Moines, Iowa, United States</F>
+      </Row>
+      <Row>
+        <F>152</F>
+        <F>AHL</F>
+        <F>Western Conference</F>
+        <F>Manitoba Moose</F>
+        <F>Hockey</F>
+        <F>Central</F>
+        <F>Winnipeg, Manitoba, Canada</F>
+      </Row>
+      <Row>
+        <F>153</F>
+        <F>AHL</F>
+        <F>Western Conference</F>
+        <F>Milwaukee Admirals</F>
+        <F>Hockey</F>
+        <F>Central</F>
+        <F>Milwaukee, Wisconsin, United States</F>
+      </Row>
+      <Row>
+        <F>154</F>
+        <F>AHL</F>
+        <F>Western Conference</F>
+        <F>Rockford IceHogs</F>
+        <F>Hockey</F>
+        <F>Central</F>
+        <F>Rockford, Illinois, United States</F>
+      </Row>
+      <Row>
+        <F>155</F>
+        <F>AHL</F>
+        <F>Western Conference</F>
+        <F>San Antonio Rampage</F>
+        <F>Hockey</F>
+        <F>Central</F>
+        <F>San Antonio, Texas, United States</F>
+      </Row>
+      <Row>
+        <F>156</F>
+        <F>AHL</F>
+        <F>Western Conference</F>
+        <F>Texas Stars</F>
+        <F>Hockey</F>
+        <F>Central</F>
+        <F>Cedar Park, Texas, United States</F>
+      </Row>
+      <Row>
+        <F>157</F>
+        <F>AHL</F>
+        <F>Western Conference</F>
+        <F>Bakersfield Condors</F>
+        <F>Hockey</F>
+        <F>Pacific</F>
+        <F>Bakersfield, California, United States</F>
+      </Row>
+      <Row>
+        <F>158</F>
+        <F>AHL</F>
+        <F>Western Conference</F>
+        <F>Colorado Eagles</F>
+        <F>Hockey</F>
+        <F>Pacific</F>
+        <F>Loveland, Colorado, United States</F>
+      </Row>
+      <Row>
+        <F>159</F>
+        <F>AHL</F>
+        <F>Western Conference</F>
+        <F>Ontario Reign</F>
+        <F>Hockey</F>
+        <F>Pacific</F>
+        <F>Ontario, California, United States</F>
+      </Row>
+      <Row>
+        <F>160</F>
+        <F>AHL</F>
+        <F>Western Conference</F>
+        <F>San Diego Gulls</F>
+        <F>Hockey</F>
+        <F>Pacific</F>
+        <F>San Diego, California, United States</F>
+      </Row>
+      <Row>
+        <F>161</F>
+        <F>AHL</F>
+        <F>Western Conference</F>
+        <F>San Jose Barracuda</F>
+        <F>Hockey</F>
+        <F>Pacific</F>
+        <F>San Jose, California, United States</F>
+      </Row>
+      <Row>
+        <F>162</F>
+        <F>AHL</F>
+        <F>Western Conference</F>
+        <F>Stockton Heat</F>
+        <F>Hockey</F>
+        <F>Pacific</F>
+        <F>Stockton, California, United States</F>
+      </Row>
+      <Row>
+        <F>163</F>
+        <F>AHL</F>
+        <F>Western Conference</F>
+        <F>Tucson Roadrunners</F>
+        <F>Hockey</F>
+        <F>Pacific</F>
+        <F>Tucson, Arizona, United States</F>
+      </Row>
+    </Rows>
+  </SavedData>
+</Report>

@@ -1,0 +1,26 @@
+[package]
+name = "rpt-db-postgres"
+description = "Live PostgreSQL RowSource for the rpt-data pipeline — generates SQL from a report's table schema and executes it (native-only)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+rpt-model = { workspace = true, features = ["serde"] }
+rpt-data = { workspace = true }
+rpt-query = { workspace = true }
+postgres = "0.19"
+thiserror = { workspace = true }
+
+[dev-dependencies]
+rpt-render = { workspace = true }
+rpt-render-html = { workspace = true }
+
+[lints]
+workspace = true

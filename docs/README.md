@@ -27,4 +27,20 @@ order — each builds on the previous one.
 
 - [The codebase](07-codebase.md) — the crates and modules, what each contains, and why the boundaries are where they
   are.
+- [Rendering](11-rendering.md) — the render pipeline (data → layout → Page IR → backends), the public API for driving
+  a render, the coordinate model, locale/format resolution, and the `rpt-render` CLI.
+- [Render examples](12-render-examples.md) — copy-paste recipes for driving the renderer: saved data, live DB, a
+  custom `RowSource`, and WASM.
 - [Usage](08-usage.md) — the CLI tools and the library API, with examples.
+
+## The formula engine
+
+The `crystal-formula` crate — the Crystal/Basic formula language (lexer, parser, AST, type system, bytecode VM) —
+is documented in [`formula-engine/`](formula-engine/):
+
+- [Architecture & VM](formula-engine/01-architecture.md) — the pipeline, the value model, variables/scopes, references,
+  the per-record cache, and error handling.
+- [Language reference](formula-engine/02-language.md) — both dialects (Crystal & Basic): lexis, operators, expressions,
+  statement bodies, with an EBNF sketch.
+- [Builtin functions](formula-engine/03-builtins.md) — the builtin library by family, with signatures and semantics.
+- [Validation](formula-engine/04-validation.md) — the semantic diagnostics pass behind the Crystal LSP.

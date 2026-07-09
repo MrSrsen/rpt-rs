@@ -1,0 +1,26 @@
+[package]
+name = "rpt-render-html"
+description = "HTML output backend for the rpt-pages Page IR — absolutely-positioned page divs, self-contained"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+rpt-model = { workspace = true }
+rpt-pages = { workspace = true }
+rpt-render-util = { workspace = true }
+# Reused to render non-axis-aligned chart geometry (polygons / diagonal lines) that the positioned-div
+# model can't express, as an inline <svg> island. Both are pure Page-IR consumers (no platform deps).
+rpt-render-svg = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }
+
+[lints]
+workspace = true

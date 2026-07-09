@@ -16,7 +16,7 @@ use std::io::{Cursor, Read};
 use std::path::PathBuf;
 
 use crate::bytes::{u16_le, u32_le};
-use crate::error::{Error, Result};
+use crate::error::{ContainerError, Result};
 
 /// One loaded stream: its symbolic id, original OLE path, and raw bytes.
 #[derive(Clone)]
@@ -46,7 +46,7 @@ impl Container {
     /// Open a compound file from raw bytes, enumerate every stream, and load it into memory.
     pub(crate) fn from_bytes(data: &[u8]) -> Result<Container> {
         let mut comp = cfb::CompoundFile::open(Cursor::new(data))
-            .map_err(|e| Error::container(format!("open compound file: {e}")))?;
+            .map_err(|e| ContainerError::new("open compound file", e.to_string()))?;
 
         // Collect stream paths first (walk borrows immutably; open_stream needs &mut).
         let paths: Vec<PathBuf> = comp
@@ -59,9 +59,13 @@ impl Container {
         for path in paths {
             let mut bytes = Vec::new();
             comp.open_stream(&path)
-                .map_err(|e| Error::container(format!("open stream {path:?}: {e}")))?
+                .map_err(|e| {
+                    ContainerError::new("open stream", e.to_string()).stream(path.display())
+                })?
                 .read_to_end(&mut bytes)
-                .map_err(|e| Error::container(format!("read stream {path:?}: {e}")))?;
+                .map_err(|e| {
+                    ContainerError::new("read stream", e.to_string()).stream(path.display())
+                })?;
             let id = StreamId::classify(&path);
             streams.push(LoadedStream { id, path, bytes });
         }
@@ -89,6 +93,52 @@ impl Container {
     }
 }
 
+/// Rewrite one stream of a compound file, copying every other stream verbatim. Opens `original`
+/// (the whole `.rpt`), replaces the bytes of the first stream classifying as `target`, and returns
+/// the re-written container. Used by the writer to splice a re-encoded `Contents` back into the
+/// file. Errors if `original` is not a compound file or carries no stream matching `target`.
+pub(crate) fn rewrite_stream(
+    original: &[u8],
+    target: &StreamId,
+    new_bytes: &[u8],
+) -> Result<Vec<u8>> {
+    use std::io::{Seek, SeekFrom, Write};
+
+    let mut comp = cfb::CompoundFile::open(Cursor::new(original.to_vec()))
+        .map_err(|e| ContainerError::new("open compound file", e.to_string()))?;
+
+    let path = comp
+        .walk()
+        .filter(|e| e.is_stream())
+        .map(|e| e.path().to_path_buf())
+        .find(|p| &StreamId::classify(p) == target)
+        .ok_or_else(|| {
+            ContainerError::new("find stream", "no matching stream in container")
+                .stream(format!("{target:?}"))
+        })?;
+
+    {
+        let mut stream = comp.open_stream(&path).map_err(|e| {
+            ContainerError::new("open stream", e.to_string()).stream(path.display())
+        })?;
+        stream.set_len(new_bytes.len() as u64).map_err(|e| {
+            ContainerError::new("resize stream", e.to_string()).stream(path.display())
+        })?;
+        stream.seek(SeekFrom::Start(0)).map_err(|e| {
+            ContainerError::new("seek stream", e.to_string()).stream(path.display())
+        })?;
+        stream.write_all(new_bytes).map_err(|e| {
+            ContainerError::new("write stream", e.to_string()).stream(path.display())
+        })?;
+        stream.flush().map_err(|e| {
+            ContainerError::new("flush stream", e.to_string()).stream(path.display())
+        })?;
+    }
+    comp.flush()
+        .map_err(|e| ContainerError::new("flush compound file", e.to_string()))?;
+    Ok(comp.into_inner().into_inner())
+}
+
 /// The common, human-meaningful fields of the MS-OLEPS `SummaryInformation` property set.
 ///
 /// Only the string properties relevant to a report are extracted; the full property set is
@@ -96,11 +146,17 @@ impl Container {
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 #[non_exhaustive]
 pub struct SummaryInformation {
+    /// The report title (`PID_TITLE`).
     pub title: Option<String>,
+    /// The report subject (`PID_SUBJECT`).
     pub subject: Option<String>,
+    /// The report author (`PID_AUTHOR`).
     pub author: Option<String>,
+    /// Keywords associated with the report (`PID_KEYWORDS`).
     pub keywords: Option<String>,
+    /// Free-form comments (`PID_COMMENTS`).
     pub comments: Option<String>,
+    /// The last author to save the report (`PID_LAST_AUTHOR`).
     pub last_author: Option<String>,
     /// Whether a preview thumbnail (`PID_THUMBNAIL`) is stored — the engine's
     /// `SummaryInfo.IsSavingWithPreview` (XML `EnableSavePreviewPicture`).

@@ -1,0 +1,1116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report Name="" FileName="/mnt/report.rpt" HasSavedData="True">
+  <Embedinfo />
+  <Summaryinfo KeywordsinReport="" ReportAuthor="" ReportComments="" ReportSubject="" ReportTitle="Top 5 Canadian Customers" />
+  <ReportOptions EnableSaveDataWithReport="True" EnableSavePreviewPicture="True" EnableSaveSummariesWithReport="True" EnableUseDummyData="False" initialDataContext="" initialReportPartName="" />
+  <PrintOptions PageContentHeight="15120" PageContentWidth="11520" PaperOrientation="Portrait" PaperSize="DefaultPaperSize" PaperSource="FormSource" PrinterDuplex="Default" PrinterName="">
+    <PageMargins bottomMargin="360" leftMargin="360" rightMargin="360" topMargin="360" />
+    <PageMarginConditionFormulas />
+  </PrintOptions>
+  <SubReports />
+  <Database>
+    <TableLinks>
+      <TableLink JoinType="Equal">
+        <SourceFields>
+          <Field FormulaName="{Orders.Customer ID}" Kind="DatabaseField" Name="Customer ID" NumberOfBytes="4" ValueType="Int32sField" />
+        </SourceFields>
+        <DestinationFields>
+          <Field FormulaName="{Customer.Customer ID}" Kind="DatabaseField" Name="Customer ID" NumberOfBytes="4" ValueType="Int32sField" />
+        </DestinationFields>
+      </TableLink>
+    </TableLinks>
+    <Tables>
+      <Table Alias="Customer" ClassName="CrystalReports.Table" Name="Customer">
+        <ConnectionInfo Database_DLL="crdb_dao.dll" QE_DatabaseName="" QE_DatabaseType="Access/Excel (DAO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="E:\Documents\Ed2Go\Crystal_Reports\xtreme.mdb" QE_SQLDB="True" SSO_Enabled="False" UserName="" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{Customer.Customer ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Customer.Customer ID" Name="Customer ID" ShortName="Customer ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Customer Credit ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Customer.Customer Credit ID" Name="Customer Credit ID" ShortName="Customer Credit ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Customer Name}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="82" LongName="Customer.Customer Name" Name="Customer Name" ShortName="Customer Name" Type="crFieldValueTypeStringField" UseCount="8" />
+          <Field Description="" FormulaForm="{Customer.Contact First Name}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="62" LongName="Customer.Contact First Name" Name="Contact First Name" ShortName="Contact First Name" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Contact Last Name}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="62" LongName="Customer.Contact Last Name" Name="Contact Last Name" ShortName="Contact Last Name" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Contact Title}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="12" LongName="Customer.Contact Title" Name="Contact Title" ShortName="Contact Title" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Contact Position}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="62" LongName="Customer.Contact Position" Name="Contact Position" ShortName="Contact Position" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Last Year's Sales}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Customer.Last Year's Sales" Name="Last Year's Sales" ShortName="Last Year's Sales" Type="crFieldValueTypeCurrencyField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Address1}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="122" LongName="Customer.Address1" Name="Address1" ShortName="Address1" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Address2}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="42" LongName="Customer.Address2" Name="Address2" ShortName="Address2" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.City}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="42" LongName="Customer.City" Name="City" ShortName="City" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Region}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="62" LongName="Customer.Region" Name="Region" ShortName="Region" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Country}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="62" LongName="Customer.Country" Name="Country" ShortName="Country" Type="crFieldValueTypeStringField" UseCount="1" />
+          <Field Description="" FormulaForm="{Customer.Postal Code}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="22" LongName="Customer.Postal Code" Name="Postal Code" ShortName="Postal Code" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.E-mail}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="102" LongName="Customer.E-mail" Name="E-mail" ShortName="E-mail" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Web Site}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="102" LongName="Customer.Web Site" Name="Web Site" ShortName="Web Site" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Phone}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="42" LongName="Customer.Phone" Name="Phone" ShortName="Phone" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Fax}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="42" LongName="Customer.Fax" Name="Fax" ShortName="Fax" Type="crFieldValueTypeStringField" UseCount="0" />
+        </Fields>
+      </Table>
+      <Table Alias="Orders" ClassName="CrystalReports.Table" Name="Orders">
+        <ConnectionInfo Database_DLL="crdb_dao.dll" QE_DatabaseName="" QE_DatabaseType="Access/Excel (DAO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="E:\Documents\Ed2Go\Crystal_Reports\xtreme.mdb" QE_SQLDB="True" SSO_Enabled="False" UserName="" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{Orders.Order ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Orders.Order ID" Name="Order ID" ShortName="Order ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Order Amount}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Orders.Order Amount" Name="Order Amount" ShortName="Order Amount" Type="crFieldValueTypeCurrencyField" UseCount="2" />
+          <Field Description="" FormulaForm="{Orders.Customer ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Orders.Customer ID" Name="Customer ID" ShortName="Customer ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Employee ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Orders.Employee ID" Name="Employee ID" ShortName="Employee ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Order Date}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Orders.Order Date" Name="Order Date" ShortName="Order Date" Type="crFieldValueTypeDateTimeField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Required Date}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Orders.Required Date" Name="Required Date" ShortName="Required Date" Type="crFieldValueTypeDateTimeField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Ship Date}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Orders.Ship Date" Name="Ship Date" ShortName="Ship Date" Type="crFieldValueTypeDateTimeField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Courier Website}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="Orders.Courier Website" Name="Courier Website" ShortName="Courier Website" Type="crFieldValueTypePersistentMemoField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Ship Via}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="42" LongName="Orders.Ship Via" Name="Ship Via" ShortName="Ship Via" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Shipped}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="2" LongName="Orders.Shipped" Name="Shipped" ShortName="Shipped" Type="crFieldValueTypeBooleanField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.PO#}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="102" LongName="Orders.PO#" Name="PO#" ShortName="PO#" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Payment Received}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="2" LongName="Orders.Payment Received" Name="Payment Received" ShortName="Payment Received" Type="crFieldValueTypeBooleanField" UseCount="0" />
+        </Fields>
+      </Table>
+    </Tables>
+  </Database>
+  <DataDefinition>
+    <GroupSelectionFormula />
+    <RecordSelectionFormula> (  {Customer.Country} = "Canada"  )  </RecordSelectionFormula>
+    <Groups>
+      <Group ConditionField="{Customer.Customer Name}" />
+    </Groups>
+    <SortFields>
+      <SortField Field="Sum ({Orders.Order Amount}, {Customer.Customer Name})" SortDirection="TopNOrder" SortType="GroupSortField" NumberOfTopOrBottomNGroups="5" EnableDiscardOtherGroups="False" NotInTopBottomNName="Others" />
+    </SortFields>
+    <FormulaFieldDefinitions>
+    </FormulaFieldDefinitions>
+    <GroupNameFieldDefinitions>
+      <GroupNameFieldDefinition FormulaName="GroupName ({Customer.Customer Name})" Group="CrystalDecisions.CrystalReports.Engine.Group" GroupNameFieldName="Group #1 Name: Customer.Customer Name" Kind="GroupNameField" Name="GroupName ({Customer.Customer Name})" NumberOfBytes="65534" ValueType="StringField" />
+    </GroupNameFieldDefinitions>
+    <ParameterFieldDefinitions>
+    </ParameterFieldDefinitions>
+    <RunningTotalFieldDefinitions />
+    <SQLExpressionFields />
+    <SummaryFields>
+      <SummaryFieldDefinition FormulaName="Sum ({Orders.Order Amount}, {Customer.Customer Name})" Group="CrystalDecisions.CrystalReports.Engine.Group" Kind="SummaryField" Name="Sum ({Orders.Order Amount}, {Customer.Customer Name})" NumberOfBytes="8" Operation="Sum" OperationParameter="0" SummarizedField="CrystalDecisions.CrystalReports.Engine.DatabaseFieldDefinition" ValueType="CurrencyField" />
+    </SummaryFields>
+  </DataDefinition>
+  <CustomFunctions />
+  <ReportDefinition>
+    <Areas>
+      <Area Kind="ReportHeader" Name="ReportHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="True" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="1630" Kind="ReportHeader" Name="TSection4">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <TextObject Name="Text2" Kind="TextObject" Top="1375" Left="624" Width="10296" Height="255" MaxNumberOfLines="0">
+                <Text>Printed Date:  PrintDate&#x9;&#x9;Last modified:  ModificationDate</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="True" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <FieldObject Name="Field3" Kind="FieldObject" Top="710" Left="504" Width="10656" Height="480" DataSource="ReportTitle">
+                <Color Name="Navy" A="255" R="0" G="0" B="128" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="33" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="20" SizeinPoints="20" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <BoxObject Name="Box2" Kind="BoxObject" Top="1320" Left="480" Width="10680" Height="1047" Bottom="72" EnableExtendToBottomOfSection="False" EndSectionName="TSection6" LineStyle="SingleLine" LineThickness="20" Right="11160">
+                <LineColor Name="ff5a79a5" A="255" R="90" G="121" B="165" />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="ffeeeeee" A="255" R="238" G="238" B="238" />
+                  <BorderColor Name="ff5a79a5" A="255" R="90" G="121" B="165" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </BoxObject>
+            </ReportObjects>
+          </Section>
+          <Section Height="540" Kind="ReportHeader" Name="TSection5">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <TextObject Name="Text3" Kind="TextObject" Top="120" Left="624" Width="2040" Height="255" MaxNumberOfLines="0">
+                <Text>Report Description:</Text>
+                <Color Name="ff5a79a5" A="255" R="90" G="121" B="165" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <LineObject Name="Line2" Kind="LineObject" Top="0" Left="570" Width="10335" Height="0" Bottom="0" EnableExtendToBottomOfSection="False" EndSectionName="TSection5" LineStyle="SingleLine" LineThickness="20" Right="10905">
+                <LineColor Name="Silver" A="255" R="192" G="192" B="192" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Silver" A="255" R="192" G="192" B="192" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <TextObject Name="Text7" Kind="TextObject" Top="120" Left="2880" Width="8160" Height="360" MaxNumberOfLines="0">
+                <Text>This report lists the top five Canadian customers, ordered by the sum of all of their orders.</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+            </ReportObjects>
+          </Section>
+          <Section Height="5583" Kind="ReportHeader" Name="TSection6">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <BlobFieldObject Name="Chart1" Kind="BlobFieldObject" Top="360" Left="504" Width="10656" Height="5040">
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="ff5a79a5" A="255" R="90" G="121" B="165" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </BlobFieldObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageHeader" Name="PageHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="751" Kind="PageHeader" Name="TSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas EnableSuppress="pagenumber=1&#xD;&#xA;" />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="Field1" Kind="FieldObject" Top="72" Left="504" Width="10656" Height="226" DataSource="ReportTitle">
+                <Color Name="Navy" A="255" R="0" G="0" B="128" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Navy" A="255" R="0" G="0" B="128" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <TextObject Name="Text1" Kind="TextObject" Top="360" Left="504" Width="8928" Height="228" MaxNumberOfLines="0">
+                <Text>Printed Date:  PrintDate&#x9;&#x9;Last modified: ModificationDate</Text>
+                <Color Name="ff5a79a5" A="255" R="90" G="121" B="165" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="True" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="GroupHeader" Name="GroupHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False">
+          <GroupAreaFormat EnableKeepGroupTogether="True" EnableRepeatGroupHeader="False" VisibleGroupNumberPerPage="0" />
+        </AreaFormat>
+        <Sections>
+          <Section Height="407" Kind="GroupHeader" Name="TSection8">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="Field5" Kind="FieldObject" Top="0" Left="523" Width="8496" Height="331" DataSource="GroupName ({Customer.Customer Name})">
+                <Color Name="Navy" A="255" R="0" G="0" B="128" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="SumofOrderAmountCustomerName1" Kind="FieldObject" Top="0" Left="9045" Width="2160" Height="331" DataSource="Sum ({Orders.Order Amount}, {Customer.Customer Name})">
+                <Color Name="Navy" A="255" R="0" G="0" B="128" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="True" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="Detail" Name="DetailArea1">
+        <AreaFormat EnableHideForDrillDown="True" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="312" Kind="Detail" Name="TSection3">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="TCustomerName1" Kind="FieldObject" Top="74" Left="523" Width="3437" Height="221" DataSource="{Customer.Customer Name}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TLastYearsSales1" Kind="FieldObject" Top="74" Left="3960" Width="1800" Height="221" DataSource="{Orders.Order Amount}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="True" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <LineObject Name="Line1" Kind="LineObject" Top="288" Left="504" Width="10656" Height="0" Bottom="288" EnableExtendToBottomOfSection="False" EndSectionName="TSection3" LineStyle="SingleLine" LineThickness="20" Right="11160">
+                <LineColor Name="ff5a79a5" A="255" R="90" G="121" B="165" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="ff5a79a5" A="255" R="90" G="121" B="165" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="GroupFooter" Name="GroupFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="331" Kind="GroupFooter" Name="TSection9">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="True" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="ReportFooter" Name="ReportFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="4320" Kind="ReportFooter" Name="TSection7">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <ChartObject Name="Graph1" Kind="ChartObject" Top="0" Left="2160" Width="7200" Height="4320">
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </ChartObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageFooter" Name="PageFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="600" Kind="PageFooter" Name="TSection2">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="True" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="Field2" Kind="FieldObject" Top="175" Left="9576" Width="1416" Height="290" DataSource="PageNofM">
+                <Color Name="ff5a79a5" A="255" R="90" G="121" B="165" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <BoxObject Name="Box1" Kind="BoxObject" Top="72" Left="504" Width="10656" Height="396" Bottom="468" EnableExtendToBottomOfSection="False" EndSectionName="TSection2" LineStyle="SingleLine" LineThickness="20" Right="11160">
+                <LineColor Name="ff5a79a5" A="255" R="90" G="121" B="165" />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="ffeeeeee" A="255" R="238" G="238" B="238" />
+                  <BorderColor Name="ff5a79a5" A="255" R="90" G="121" B="165" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </BoxObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+    </Areas>
+  </ReportDefinition>
+  <SavedData RecordCount="127">
+    <Fields>
+      <Field Name="Customer.Customer Name" Type="StringField" />
+      <Field Name="Customer.Country" Type="StringField" />
+      <Field Name="Orders.Order Amount" Type="CurrencyField" />
+    </Fields>
+    <Rows>
+      <Row>
+        <F>Bikes for Tykes</F>
+        <F>Canada</F>
+        <F>398259</F>
+      </Row>
+      <Row>
+        <F>Bikes for Tykes</F>
+        <F>Canada</F>
+        <F>29662</F>
+      </Row>
+      <Row>
+        <F>Bikes for Tykes</F>
+        <F>Canada</F>
+        <F>1650</F>
+      </Row>
+      <Row>
+        <F>Bikes for Tykes</F>
+        <F>Canada</F>
+        <F>257925</F>
+      </Row>
+      <Row>
+        <F>Bikes for Tykes</F>
+        <F>Canada</F>
+        <F>900</F>
+      </Row>
+      <Row>
+        <F>Bikes for Tykes</F>
+        <F>Canada</F>
+        <F>98955</F>
+      </Row>
+      <Row>
+        <F>Bikes for Tykes</F>
+        <F>Canada</F>
+        <F>7200</F>
+      </Row>
+      <Row>
+        <F>Bikes for Tykes</F>
+        <F>Canada</F>
+        <F>152970</F>
+      </Row>
+      <Row>
+        <F>Bikes for Tykes</F>
+        <F>Canada</F>
+        <F>112140</F>
+      </Row>
+      <Row>
+        <F>Bikes for Tykes</F>
+        <F>Canada</F>
+        <F>161955</F>
+      </Row>
+      <Row>
+        <F>Bikes for Tykes</F>
+        <F>Canada</F>
+        <F>323691</F>
+      </Row>
+      <Row>
+        <F>Bikes for Tykes</F>
+        <F>Canada</F>
+        <F>229455</F>
+      </Row>
+      <Row>
+        <F>Bikes for Tykes</F>
+        <F>Canada</F>
+        <F>153042</F>
+      </Row>
+      <Row>
+        <F>Bikes for Tykes</F>
+        <F>Canada</F>
+        <F>13470</F>
+      </Row>
+      <Row>
+        <F>Bikes for Tykes</F>
+        <F>Canada</F>
+        <F>162514</F>
+      </Row>
+      <Row>
+        <F>Bikes for Tykes</F>
+        <F>Canada</F>
+        <F>2400</F>
+      </Row>
+      <Row>
+        <F>Bikes for Tykes</F>
+        <F>Canada</F>
+        <F>900</F>
+      </Row>
+      <Row>
+        <F>Bikes for Tykes</F>
+        <F>Canada</F>
+        <F>65970</F>
+      </Row>
+      <Row>
+        <F>Bikes for Tykes</F>
+        <F>Canada</F>
+        <F>4650</F>
+      </Row>
+      <Row>
+        <F>Bikes for Tykes</F>
+        <F>Canada</F>
+        <F>1155300</F>
+      </Row>
+      <Row>
+        <F>Bikes for Tykes</F>
+        <F>Canada</F>
+        <F>12570</F>
+      </Row>
+      <Row>
+        <F>Bikes for Tykes</F>
+        <F>Canada</F>
+        <F>265425</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>7050</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>229455</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>269955</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>13160</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>92361</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>52126</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>3500</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>229455</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>641955</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>8380</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>3300</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>1650</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>621810</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>801501</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>82305</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>98955</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>587970</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>139108</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>145761</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>92655</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>8380</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>2900</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>11370</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>587970</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>293985</F>
+      </Row>
+      <Row>
+        <F>Biking's It Industries</F>
+        <F>Canada</F>
+        <F>98955</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>2994</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>87133</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>10170</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>589320</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>170236</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>2994</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>7580</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>107106</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>1085917</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>347970</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>12570</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>306555</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>359790</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>347970</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>156525</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>5531</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>143955</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>152970</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>74912</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>395955</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>34475</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>8931</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>16170</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>4350</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>87945</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>7962</F>
+      </Row>
+      <Row>
+        <F>Crazy Wheels</F>
+        <F>Canada</F>
+        <F>27730</F>
+      </Row>
+      <Row>
+        <F>Cycle Fever</F>
+        <F>Canada</F>
+        <F>881955</F>
+      </Row>
+      <Row>
+        <F>Cycles and Sports</F>
+        <F>Canada</F>
+        <F>337125</F>
+      </Row>
+      <Row>
+        <F>Cycles and Sports</F>
+        <F>Canada</F>
+        <F>54870</F>
+      </Row>
+      <Row>
+        <F>Cycles and Sports</F>
+        <F>Canada</F>
+        <F>273525</F>
+      </Row>
+      <Row>
+        <F>Cycles and Sports</F>
+        <F>Canada</F>
+        <F>94008</F>
+      </Row>
+      <Row>
+        <F>Cycles and Sports</F>
+        <F>Canada</F>
+        <F>6780</F>
+      </Row>
+      <Row>
+        <F>Cycles and Sports</F>
+        <F>Canada</F>
+        <F>241885</F>
+      </Row>
+      <Row>
+        <F>Cycles and Sports</F>
+        <F>Canada</F>
+        <F>112742</F>
+      </Row>
+      <Row>
+        <F>Cycles and Sports</F>
+        <F>Canada</F>
+        <F>84555</F>
+      </Row>
+      <Row>
+        <F>Cycles and Sports</F>
+        <F>Canada</F>
+        <F>76485</F>
+      </Row>
+      <Row>
+        <F>Cycles and Sports</F>
+        <F>Canada</F>
+        <F>37175</F>
+      </Row>
+      <Row>
+        <F>Cycles and Sports</F>
+        <F>Canada</F>
+        <F>229455</F>
+      </Row>
+      <Row>
+        <F>Cycles and Sports</F>
+        <F>Canada</F>
+        <F>4050</F>
+      </Row>
+      <Row>
+        <F>Cycles and Sports</F>
+        <F>Canada</F>
+        <F>754440</F>
+      </Row>
+      <Row>
+        <F>Cycles and Sports</F>
+        <F>Canada</F>
+        <F>890771</F>
+      </Row>
+      <Row>
+        <F>Cycles and Sports</F>
+        <F>Canada</F>
+        <F>339690</F>
+      </Row>
+      <Row>
+        <F>Cycles and Sports</F>
+        <F>Canada</F>
+        <F>3273</F>
+      </Row>
+      <Row>
+        <F>Cycles and Sports</F>
+        <F>Canada</F>
+        <F>16170</F>
+      </Row>
+      <Row>
+        <F>Cycles and Sports</F>
+        <F>Canada</F>
+        <F>296175</F>
+      </Row>
+      <Row>
+        <F>Cycles and Sports</F>
+        <F>Canada</F>
+        <F>46995</F>
+      </Row>
+      <Row>
+        <F>Cycles and Sports</F>
+        <F>Canada</F>
+        <F>323942</F>
+      </Row>
+      <Row>
+        <F>Cycles and Sports</F>
+        <F>Canada</F>
+        <F>56370</F>
+      </Row>
+      <Row>
+        <F>Cycles and Sports</F>
+        <F>Canada</F>
+        <F>70120</F>
+      </Row>
+      <Row>
+        <F>Cycles and Sports</F>
+        <F>Canada</F>
+        <F>165055</F>
+      </Row>
+      <Row>
+        <F>Cycles and Sports</F>
+        <F>Canada</F>
+        <F>349365</F>
+      </Row>
+      <Row>
+        <F>Dag City Cycle</F>
+        <F>Canada</F>
+        <F>86374</F>
+      </Row>
+      <Row>
+        <F>Don't Tread On Me</F>
+        <F>Canada</F>
+        <F>27435</F>
+      </Row>
+      <Row>
+        <F>Halifax Cycle Centre</F>
+        <F>Canada</F>
+        <F>95970</F>
+      </Row>
+      <Row>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Canada</F>
+        <F>10780</F>
+      </Row>
+      <Row>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Canada</F>
+        <F>21560</F>
+      </Row>
+      <Row>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Canada</F>
+        <F>883746</F>
+      </Row>
+      <Row>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Canada</F>
+        <F>881955</F>
+      </Row>
+      <Row>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Canada</F>
+        <F>1088679</F>
+      </Row>
+      <Row>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Canada</F>
+        <F>47985</F>
+      </Row>
+      <Row>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Canada</F>
+        <F>10170</F>
+      </Row>
+      <Row>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Canada</F>
+        <F>4050</F>
+      </Row>
+      <Row>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Canada</F>
+        <F>614899</F>
+      </Row>
+      <Row>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Canada</F>
+        <F>297085</F>
+      </Row>
+      <Row>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Canada</F>
+        <F>2700</F>
+      </Row>
+      <Row>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Canada</F>
+        <F>11370</F>
+      </Row>
+      <Row>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Canada</F>
+        <F>273555</F>
+      </Row>
+      <Row>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Canada</F>
+        <F>531204</F>
+      </Row>
+      <Row>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Canada</F>
+        <F>3570</F>
+      </Row>
+      <Row>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Canada</F>
+        <F>8611</F>
+      </Row>
+      <Row>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Canada</F>
+        <F>5390</F>
+      </Row>
+      <Row>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Canada</F>
+        <F>95970</F>
+      </Row>
+      <Row>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Canada</F>
+        <F>8330</F>
+      </Row>
+      <Row>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Canada</F>
+        <F>4380</F>
+      </Row>
+      <Row>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Canada</F>
+        <F>881955</F>
+      </Row>
+      <Row>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Canada</F>
+        <F>248940</F>
+      </Row>
+      <Row>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Canada</F>
+        <F>581196</F>
+      </Row>
+      <Row>
+        <F>Wheels 'n' Deals</F>
+        <F>Canada</F>
+        <F>179970</F>
+      </Row>
+    </Rows>
+  </SavedData>
+</Report>

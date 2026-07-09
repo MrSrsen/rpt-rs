@@ -1,0 +1,18 @@
+[package]
+name = "rpt-test-support"
+description = "Dev-only shared test helpers (workspace-root fixture paths, SavedData builders). Consumed under [dev-dependencies] only."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+rpt-model = { workspace = true }
+
+[lints]
+workspace = true

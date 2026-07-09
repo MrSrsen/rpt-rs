@@ -1,0 +1,1510 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report Name="" FileName="/mnt/report.rpt" HasSavedData="True">
+  <Embedinfo />
+  <Summaryinfo KeywordsinReport="" ReportAuthor="BW" ReportComments="Sorted by Country ASC" ReportSubject="Geography, Capitol Cities of Countries" ReportTitle="" />
+  <ReportOptions EnableSaveDataWithReport="True" EnableSavePreviewPicture="True" EnableSaveSummariesWithReport="True" EnableUseDummyData="False" initialDataContext="" initialReportPartName="" />
+  <PrintOptions PageContentHeight="15120" PageContentWidth="11520" PaperOrientation="Portrait" PaperSize="DefaultPaperSize" PaperSource="FormSource" PrinterDuplex="Default" PrinterName="">
+    <PageMargins bottomMargin="360" leftMargin="360" rightMargin="360" topMargin="360" />
+    <PageMarginConditionFormulas />
+  </PrintOptions>
+  <SubReports />
+  <Database>
+    <TableLinks />
+    <Tables>
+      <Table Alias="vw_all_countries_with_capitals" ClassName="CrystalReports.Table" Name="vw_all_countries_with_capitals">
+        <ConnectionInfo Database_DLL="crdb_odbc.dll" QE_DatabaseName="" QE_DatabaseType="ODBC (RDO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="BWPortfolio" QE_SQLDB="True" SSO_Enabled="False" UserName="" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{vw_all_countries_with_capitals.id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="vw_all_countries_with_capitals.id" Name="id" ShortName="id" Type="crFieldValueTypeInt32sField" UseCount="1" />
+          <Field Description="" FormulaForm="{vw_all_countries_with_capitals.name}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_all_countries_with_capitals.name" Name="name" ShortName="name" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{vw_all_countries_with_capitals.capitals}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_all_countries_with_capitals.capitals" Name="capitals" ShortName="capitals" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{vw_all_countries_with_capitals.alpha_2_code}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_all_countries_with_capitals.alpha_2_code" Name="alpha_2_code" ShortName="alpha_2_code" Type="crFieldValueTypePersistentMemoField" UseCount="0" />
+          <Field Description="" FormulaForm="{vw_all_countries_with_capitals.alpha_3_code}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_all_countries_with_capitals.alpha_3_code" Name="alpha_3_code" ShortName="alpha_3_code" Type="crFieldValueTypePersistentMemoField" UseCount="0" />
+          <Field Description="" FormulaForm="{vw_all_countries_with_capitals.numeric_code}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_all_countries_with_capitals.numeric_code" Name="numeric_code" ShortName="numeric_code" Type="crFieldValueTypePersistentMemoField" UseCount="0" />
+        </Fields>
+      </Table>
+    </Tables>
+  </Database>
+  <DataDefinition>
+    <GroupSelectionFormula />
+    <RecordSelectionFormula />
+    <Groups />
+    <SortFields>
+      <SortField Field="{@CountryCustom}" SortDirection="AscendingOrder" SortType="RecordSortField" />
+    </SortFields>
+    <FormulaFieldDefinitions>
+      <FormulaFieldDefinition FormulaName="{@CapitolsFixed}" Kind="FormulaField" Name="CapitolsFixed" NumberOfBytes="65534" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">Local StringVar capi := {vw_all_countries_with_capitals.capitals};&#xA;&#xA;If capi = 'Chi?inau'&#xA;Then&#xA;"Chișinău"&#xA;Else If capi = 'Nuku?alofa'&#xA;Then&#xA;"Nuku'alofa"&#xA;Else&#xA;capi&#xA;;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@CountryCustom}" Kind="FormulaField" Name="CountryCustom" NumberOfBytes="65534" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">{vw_all_countries_with_capitals.name};</FormulaFieldDefinition>
+    </FormulaFieldDefinitions>
+    <GroupNameFieldDefinitions />
+    <ParameterFieldDefinitions>
+    </ParameterFieldDefinitions>
+    <RunningTotalFieldDefinitions />
+    <SQLExpressionFields />
+    <SummaryFields />
+  </DataDefinition>
+  <CustomFunctions />
+  <ReportDefinition>
+    <Areas>
+      <Area Kind="ReportHeader" Name="ReportHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="True" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="220" Kind="ReportHeader" Name="ReportHeaderSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="True" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageHeader" Name="PageHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="399" Kind="PageHeader" Name="PageHeaderSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="Detail" Name="DetailArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="4440" Kind="Detail" Name="DetailSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="id1" Kind="FieldObject" Top="960" Left="240" Width="10920" Height="468" DataSource="{vw_all_countries_with_capitals.id}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="33" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Times New Roman" Size="20" SizeinPoints="20" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="0" RoundingFormat="RoundToUnit" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="True" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <TextObject Name="Text4" Kind="TextObject" Top="360" Left="360" Width="10800" Height="480" MaxNumberOfLines="0">
+                <Text>ID</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="29" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Times New Roman" Size="18" SizeinPoints="18" Strikeout="False" Style="Underline" SystemFontName="" Underline="True" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text5" Kind="TextObject" Top="1560" Left="360" Width="10800" Height="420" MaxNumberOfLines="0">
+                <Text>COUNTRY</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="29" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Times New Roman" Size="18" SizeinPoints="18" Strikeout="False" Style="Underline" SystemFontName="" Underline="True" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text6" Kind="TextObject" Top="2880" Left="360" Width="10800" Height="480" MaxNumberOfLines="0">
+                <Text>CAPITOL CITIES</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="29" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Times New Roman" Size="18" SizeinPoints="18" Strikeout="False" Style="Underline" SystemFontName="" Underline="True" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <BoxObject Name="Box1" Kind="BoxObject" Top="180" Left="0" Width="11519" Height="4020" Bottom="4200" EnableExtendToBottomOfSection="False" EndSectionName="DetailSection1" LineStyle="SingleLine" LineThickness="30" Right="11519">
+                <LineColor Name="Gray" A="255" R="128" G="128" B="128" />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="ffe0e0e0" A="255" R="224" G="224" B="224" />
+                  <BorderColor Name="Gray" A="255" R="128" G="128" B="128" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </BoxObject>
+              <FieldObject Name="CapitolsFixed1" Kind="FieldObject" Top="3480" Left="360" Width="10800" Height="600" DataSource="{@CapitolsFixed}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="33" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Times New Roman" Size="20" SizeinPoints="20" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Blue" A="255" R="0" G="0" B="255" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="CountryFixed1" Kind="FieldObject" Top="2160" Left="360" Width="10800" Height="600" DataSource="{@CountryCustom}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="33" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Times New Roman" Size="20" SizeinPoints="20" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Blue" A="255" R="0" G="0" B="255" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="ReportFooter" Name="ReportFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="220" Kind="ReportFooter" Name="ReportFooterSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageFooter" Name="PageFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="True" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="600" Kind="PageFooter" Name="PageFooterSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="PageNofM1" Kind="FieldObject" Top="0" Left="8880" Width="2554" Height="461" DataSource="PageNofM">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="26" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Times New Roman" Size="16" SizeinPoints="16" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Blue" A="255" R="0" G="0" B="255" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+    </Areas>
+  </ReportDefinition>
+  <SavedData RecordCount="249">
+    <Fields>
+      <Field Name="vw_all_countries_with_capitals.id" Type="Int32sField" />
+      <Field Name="vw_all_countries_with_capitals.name" Type="PersistentMemoField" />
+      <Field Name="vw_all_countries_with_capitals.capitals" Type="PersistentMemoField" />
+    </Fields>
+    <Rows>
+      <Row>
+        <F>1</F>
+        <F>Algeria</F>
+        <F>Algiers</F>
+      </Row>
+      <Row>
+        <F>2</F>
+        <F>Egypt</F>
+        <F>Cairo</F>
+      </Row>
+      <Row>
+        <F>3</F>
+        <F>Libya</F>
+        <F>Tripoli</F>
+      </Row>
+      <Row>
+        <F>4</F>
+        <F>Morocco</F>
+        <F>Rabat</F>
+      </Row>
+      <Row>
+        <F>5</F>
+        <F>Sudan</F>
+        <F>Khartoum</F>
+      </Row>
+      <Row>
+        <F>6</F>
+        <F>Tunisia</F>
+        <F>Tunis</F>
+      </Row>
+      <Row>
+        <F>7</F>
+        <F>Western Sahara</F>
+        <F>El Aaiún</F>
+      </Row>
+      <Row>
+        <F>8</F>
+        <F>British Indian Ocean Territory</F>
+        <F>Camp Justice</F>
+      </Row>
+      <Row>
+        <F>9</F>
+        <F>Burundi</F>
+        <F>Bujumbura</F>
+      </Row>
+      <Row>
+        <F>10</F>
+        <F>Comoros</F>
+        <F>Moroni</F>
+      </Row>
+      <Row>
+        <F>11</F>
+        <F>Djibouti</F>
+        <F>Djibouti</F>
+      </Row>
+      <Row>
+        <F>12</F>
+        <F>Eritrea</F>
+        <F>Asmara</F>
+      </Row>
+      <Row>
+        <F>13</F>
+        <F>Ethiopia</F>
+        <F>Addis Ababa</F>
+      </Row>
+      <Row>
+        <F>14</F>
+        <F>French Southern Territories</F>
+        <F>Saint-Pierre</F>
+      </Row>
+      <Row>
+        <F>15</F>
+        <F>Kenya</F>
+        <F>Nairobi</F>
+      </Row>
+      <Row>
+        <F>16</F>
+        <F>Madagascar</F>
+        <F>Antananarivo</F>
+      </Row>
+      <Row>
+        <F>17</F>
+        <F>Malawi</F>
+        <F>Lilongwe</F>
+      </Row>
+      <Row>
+        <F>18</F>
+        <F>Mauritius</F>
+        <F>Port Louis</F>
+      </Row>
+      <Row>
+        <F>19</F>
+        <F>Mayotte</F>
+        <F>-</F>
+      </Row>
+      <Row>
+        <F>20</F>
+        <F>Mozambique</F>
+        <F>Maputo</F>
+      </Row>
+      <Row>
+        <F>21</F>
+        <F>Réunion</F>
+        <F>-</F>
+      </Row>
+      <Row>
+        <F>22</F>
+        <F>Rwanda</F>
+        <F>Kigali</F>
+      </Row>
+      <Row>
+        <F>23</F>
+        <F>Seychelles</F>
+        <F>Victoria</F>
+      </Row>
+      <Row>
+        <F>24</F>
+        <F>Somalia</F>
+        <F>Mogadishu</F>
+      </Row>
+      <Row>
+        <F>25</F>
+        <F>South Sudan</F>
+        <F>Juba</F>
+      </Row>
+      <Row>
+        <F>26</F>
+        <F>Tanzania</F>
+        <F>Dodoma</F>
+      </Row>
+      <Row>
+        <F>27</F>
+        <F>Uganda</F>
+        <F>Kampala</F>
+      </Row>
+      <Row>
+        <F>28</F>
+        <F>Zambia</F>
+        <F>Lusaka</F>
+      </Row>
+      <Row>
+        <F>29</F>
+        <F>Zimbabwe</F>
+        <F>Harare</F>
+      </Row>
+      <Row>
+        <F>30</F>
+        <F>Angola</F>
+        <F>Luanda</F>
+      </Row>
+      <Row>
+        <F>31</F>
+        <F>Cameroon</F>
+        <F>Yaounde</F>
+      </Row>
+      <Row>
+        <F>32</F>
+        <F>Central African Republic</F>
+        <F>Bangui</F>
+      </Row>
+      <Row>
+        <F>33</F>
+        <F>Chad</F>
+        <F>N'Djamena</F>
+      </Row>
+      <Row>
+        <F>34</F>
+        <F>Congo</F>
+        <F>Brazzaville</F>
+      </Row>
+      <Row>
+        <F>35</F>
+        <F>Congo</F>
+        <F>Kinshasa</F>
+      </Row>
+      <Row>
+        <F>36</F>
+        <F>Equatorial Guinea</F>
+        <F>Malabo</F>
+      </Row>
+      <Row>
+        <F>37</F>
+        <F>Gabon</F>
+        <F>Libreville</F>
+      </Row>
+      <Row>
+        <F>38</F>
+        <F>Sao Tome and Principe</F>
+        <F>São Tomé</F>
+      </Row>
+      <Row>
+        <F>39</F>
+        <F>Botswana</F>
+        <F>Gaborone</F>
+      </Row>
+      <Row>
+        <F>40</F>
+        <F>Eswatini</F>
+        <F>Mbabane</F>
+      </Row>
+      <Row>
+        <F>41</F>
+        <F>Lesotho</F>
+        <F>Maseru</F>
+      </Row>
+      <Row>
+        <F>42</F>
+        <F>Namibia</F>
+        <F>Windhoek</F>
+      </Row>
+      <Row>
+        <F>43</F>
+        <F>South Africa</F>
+        <F>Pretoria, Cape Town, Bloemfontein</F>
+      </Row>
+      <Row>
+        <F>44</F>
+        <F>Benin</F>
+        <F>Porto-Novo</F>
+      </Row>
+      <Row>
+        <F>45</F>
+        <F>Burkina Faso</F>
+        <F>Ouagadougou</F>
+      </Row>
+      <Row>
+        <F>46</F>
+        <F>Cabo Verde</F>
+        <F>Praia</F>
+      </Row>
+      <Row>
+        <F>47</F>
+        <F>Côte d'Ivoire</F>
+        <F>Yamoussoukro</F>
+      </Row>
+      <Row>
+        <F>48</F>
+        <F>Gambia</F>
+        <F>Banjul</F>
+      </Row>
+      <Row>
+        <F>49</F>
+        <F>Ghana</F>
+        <F>Accra</F>
+      </Row>
+      <Row>
+        <F>50</F>
+        <F>Guinea</F>
+        <F>Conakry</F>
+      </Row>
+      <Row>
+        <F>51</F>
+        <F>Guinea-Bissau</F>
+        <F>Bissau</F>
+      </Row>
+      <Row>
+        <F>52</F>
+        <F>Liberia</F>
+        <F>Monrovia</F>
+      </Row>
+      <Row>
+        <F>53</F>
+        <F>Mali</F>
+        <F>Bamako</F>
+      </Row>
+      <Row>
+        <F>54</F>
+        <F>Mauritania</F>
+        <F>Nouakchott</F>
+      </Row>
+      <Row>
+        <F>55</F>
+        <F>Niger</F>
+        <F>Niamey</F>
+      </Row>
+      <Row>
+        <F>56</F>
+        <F>Nigeria</F>
+        <F>Abuja</F>
+      </Row>
+      <Row>
+        <F>57</F>
+        <F>Saint Helena, Ascension and Tristan da Cunha</F>
+        <F>Jamestown</F>
+      </Row>
+      <Row>
+        <F>58</F>
+        <F>Senegal</F>
+        <F>Dakar</F>
+      </Row>
+      <Row>
+        <F>59</F>
+        <F>Sierra Leone</F>
+        <F>Freetown</F>
+      </Row>
+      <Row>
+        <F>60</F>
+        <F>Togo</F>
+        <F>Lomé</F>
+      </Row>
+      <Row>
+        <F>61</F>
+        <F>Anguilla</F>
+        <F>The Valley</F>
+      </Row>
+      <Row>
+        <F>62</F>
+        <F>Antigua and Barbuda</F>
+        <F>St. John's</F>
+      </Row>
+      <Row>
+        <F>63</F>
+        <F>Aruba</F>
+        <F>Oranjestad</F>
+      </Row>
+      <Row>
+        <F>64</F>
+        <F>Bahamas</F>
+        <F>Nassau</F>
+      </Row>
+      <Row>
+        <F>65</F>
+        <F>Barbados</F>
+        <F>Bridgetown</F>
+      </Row>
+      <Row>
+        <F>66</F>
+        <F>Bonaire, Sint Eustatius and Saba</F>
+        <F>-</F>
+      </Row>
+      <Row>
+        <F>67</F>
+        <F>Cayman Islands</F>
+        <F>George Town</F>
+      </Row>
+      <Row>
+        <F>68</F>
+        <F>Cuba</F>
+        <F>Havana</F>
+      </Row>
+      <Row>
+        <F>69</F>
+        <F>Curaçao</F>
+        <F>Willemstad</F>
+      </Row>
+      <Row>
+        <F>70</F>
+        <F>Dominica</F>
+        <F>Roseau</F>
+      </Row>
+      <Row>
+        <F>71</F>
+        <F>Dominican Republic</F>
+        <F>Santo Domingo</F>
+      </Row>
+      <Row>
+        <F>72</F>
+        <F>Grenada</F>
+        <F>St. George's</F>
+      </Row>
+      <Row>
+        <F>73</F>
+        <F>Guadeloupe</F>
+        <F>-</F>
+      </Row>
+      <Row>
+        <F>74</F>
+        <F>Haiti</F>
+        <F>Port-au-Prince</F>
+      </Row>
+      <Row>
+        <F>75</F>
+        <F>Jamaica</F>
+        <F>Kingston</F>
+      </Row>
+      <Row>
+        <F>76</F>
+        <F>Martinique</F>
+        <F>-</F>
+      </Row>
+      <Row>
+        <F>77</F>
+        <F>Montserrat</F>
+        <F>Plymouth, Brades Estate</F>
+      </Row>
+      <Row>
+        <F>78</F>
+        <F>Puerto Rico</F>
+        <F>San Juan</F>
+      </Row>
+      <Row>
+        <F>79</F>
+        <F>Saint Barthélemy</F>
+        <F>Gustavia</F>
+      </Row>
+      <Row>
+        <F>80</F>
+        <F>Saint Kitts and Nevis</F>
+        <F>Basseterre</F>
+      </Row>
+      <Row>
+        <F>81</F>
+        <F>Saint Lucia</F>
+        <F>Castries</F>
+      </Row>
+      <Row>
+        <F>82</F>
+        <F>Saint Martin</F>
+        <F>Marigot</F>
+      </Row>
+      <Row>
+        <F>83</F>
+        <F>Saint Vincent and the Grenadines</F>
+        <F>Kingstown</F>
+      </Row>
+      <Row>
+        <F>84</F>
+        <F>Sint Maarten</F>
+        <F>Philipsburg</F>
+      </Row>
+      <Row>
+        <F>85</F>
+        <F>Trinidad and Tobago</F>
+        <F>Port of Spain</F>
+      </Row>
+      <Row>
+        <F>86</F>
+        <F>Turks and Caicos Islands</F>
+        <F>Cockburn Town</F>
+      </Row>
+      <Row>
+        <F>87</F>
+        <F>Virgin Islands (British)</F>
+        <F>Road Town</F>
+      </Row>
+      <Row>
+        <F>88</F>
+        <F>Virgin Islands (U.S.)</F>
+        <F>Charlotte Amalie</F>
+      </Row>
+      <Row>
+        <F>89</F>
+        <F>Belize</F>
+        <F>Belmopan</F>
+      </Row>
+      <Row>
+        <F>90</F>
+        <F>Costa Rica</F>
+        <F>San José</F>
+      </Row>
+      <Row>
+        <F>91</F>
+        <F>El Salvador</F>
+        <F>San Salvador</F>
+      </Row>
+      <Row>
+        <F>92</F>
+        <F>Guatemala</F>
+        <F>Guatemala City</F>
+      </Row>
+      <Row>
+        <F>93</F>
+        <F>Honduras</F>
+        <F>Tegucigalpa</F>
+      </Row>
+      <Row>
+        <F>94</F>
+        <F>Mexico</F>
+        <F>Mexico City</F>
+      </Row>
+      <Row>
+        <F>95</F>
+        <F>Nicaragua</F>
+        <F>Managua</F>
+      </Row>
+      <Row>
+        <F>96</F>
+        <F>Panama</F>
+        <F>Panama City</F>
+      </Row>
+      <Row>
+        <F>97</F>
+        <F>Bermuda</F>
+        <F>Hamilton</F>
+      </Row>
+      <Row>
+        <F>98</F>
+        <F>Canada</F>
+        <F>Ottawa</F>
+      </Row>
+      <Row>
+        <F>99</F>
+        <F>Greenland</F>
+        <F>Nuuk</F>
+      </Row>
+      <Row>
+        <F>100</F>
+        <F>Saint Pierre and Miquelon</F>
+        <F>St. Pierre</F>
+      </Row>
+      <Row>
+        <F>101</F>
+        <F>United States of America</F>
+        <F>Washington, D.C.</F>
+      </Row>
+      <Row>
+        <F>102</F>
+        <F>Argentina</F>
+        <F>Buenos Aires</F>
+      </Row>
+      <Row>
+        <F>103</F>
+        <F>Bolivia</F>
+        <F>Sucre, La Paz</F>
+      </Row>
+      <Row>
+        <F>104</F>
+        <F>Bouvet Island</F>
+        <F>-</F>
+      </Row>
+      <Row>
+        <F>105</F>
+        <F>Brazil</F>
+        <F>Brasília</F>
+      </Row>
+      <Row>
+        <F>106</F>
+        <F>Chile</F>
+        <F>Santiago</F>
+      </Row>
+      <Row>
+        <F>107</F>
+        <F>Colombia</F>
+        <F>Bogotá</F>
+      </Row>
+      <Row>
+        <F>108</F>
+        <F>Ecuador</F>
+        <F>Quito</F>
+      </Row>
+      <Row>
+        <F>109</F>
+        <F>Falkland Islands</F>
+        <F>Stanley</F>
+      </Row>
+      <Row>
+        <F>110</F>
+        <F>French Guiana</F>
+        <F>-</F>
+      </Row>
+      <Row>
+        <F>111</F>
+        <F>Guyana</F>
+        <F>Georgetown</F>
+      </Row>
+      <Row>
+        <F>112</F>
+        <F>Paraguay</F>
+        <F>Asunción</F>
+      </Row>
+      <Row>
+        <F>113</F>
+        <F>Peru</F>
+        <F>Lima</F>
+      </Row>
+      <Row>
+        <F>114</F>
+        <F>South Georgia and the South Sandwich Islands</F>
+        <F>King Edward Point</F>
+      </Row>
+      <Row>
+        <F>115</F>
+        <F>Suriname</F>
+        <F>Paramaribo</F>
+      </Row>
+      <Row>
+        <F>116</F>
+        <F>Uruguay</F>
+        <F>Montevideo</F>
+      </Row>
+      <Row>
+        <F>117</F>
+        <F>Venezuela</F>
+        <F>Caracas</F>
+      </Row>
+      <Row>
+        <F>118</F>
+        <F>Antarctica</F>
+        <F>-</F>
+      </Row>
+      <Row>
+        <F>119</F>
+        <F>Kazakhstan</F>
+        <F>Astana</F>
+      </Row>
+      <Row>
+        <F>120</F>
+        <F>Kyrgyzstan</F>
+        <F>Bishkek</F>
+      </Row>
+      <Row>
+        <F>121</F>
+        <F>Tajikistan</F>
+        <F>Dushanbe</F>
+      </Row>
+      <Row>
+        <F>122</F>
+        <F>Turkmenistan</F>
+        <F>Ashgabat</F>
+      </Row>
+      <Row>
+        <F>123</F>
+        <F>Uzbekistan</F>
+        <F>Tashkent</F>
+      </Row>
+      <Row>
+        <F>124</F>
+        <F>China</F>
+        <F>Beijing</F>
+      </Row>
+      <Row>
+        <F>125</F>
+        <F>Hong Kong</F>
+        <F>-</F>
+      </Row>
+      <Row>
+        <F>126</F>
+        <F>Japan</F>
+        <F>Tokyo</F>
+      </Row>
+      <Row>
+        <F>127</F>
+        <F>North Korea</F>
+        <F>Pyongyang</F>
+      </Row>
+      <Row>
+        <F>128</F>
+        <F>South Korea</F>
+        <F>Seoul</F>
+      </Row>
+      <Row>
+        <F>129</F>
+        <F>Macao</F>
+        <F>-</F>
+      </Row>
+      <Row>
+        <F>130</F>
+        <F>Mongolia</F>
+        <F>Ulaanbaatar</F>
+      </Row>
+      <Row>
+        <F>131</F>
+        <F>Brunei Darussalam</F>
+        <F>Bandar Seri Begawan</F>
+      </Row>
+      <Row>
+        <F>132</F>
+        <F>Cambodia</F>
+        <F>Phnom Penh</F>
+      </Row>
+      <Row>
+        <F>133</F>
+        <F>Indonesia</F>
+        <F>Jakarta</F>
+      </Row>
+      <Row>
+        <F>134</F>
+        <F>Lao People's Democratic Republic</F>
+        <F>Vientiane</F>
+      </Row>
+      <Row>
+        <F>135</F>
+        <F>Malaysia</F>
+        <F>Kuala Lumpur, Putrajaya</F>
+      </Row>
+      <Row>
+        <F>136</F>
+        <F>Myanmar</F>
+        <F>Naypyidaw</F>
+      </Row>
+      <Row>
+        <F>137</F>
+        <F>Philippines</F>
+        <F>Manila</F>
+      </Row>
+      <Row>
+        <F>138</F>
+        <F>Singapore</F>
+        <F>Singapore</F>
+      </Row>
+      <Row>
+        <F>139</F>
+        <F>Thailand</F>
+        <F>Bangkok</F>
+      </Row>
+      <Row>
+        <F>140</F>
+        <F>Timor-Leste</F>
+        <F>Dili</F>
+      </Row>
+      <Row>
+        <F>141</F>
+        <F>Viet Nam</F>
+        <F>Hanoi</F>
+      </Row>
+      <Row>
+        <F>142</F>
+        <F>Afghanistan</F>
+        <F>Kabul</F>
+      </Row>
+      <Row>
+        <F>143</F>
+        <F>Bangladesh</F>
+        <F>Dhaka</F>
+      </Row>
+      <Row>
+        <F>144</F>
+        <F>Bhutan</F>
+        <F>Thimphu</F>
+      </Row>
+      <Row>
+        <F>145</F>
+        <F>India</F>
+        <F>New Delhi</F>
+      </Row>
+      <Row>
+        <F>146</F>
+        <F>Iran</F>
+        <F>Tehran</F>
+      </Row>
+      <Row>
+        <F>147</F>
+        <F>Maldives</F>
+        <F>Malé</F>
+      </Row>
+      <Row>
+        <F>148</F>
+        <F>Nepal</F>
+        <F>Kathmandu</F>
+      </Row>
+      <Row>
+        <F>149</F>
+        <F>Pakistan</F>
+        <F>Islamabad</F>
+      </Row>
+      <Row>
+        <F>150</F>
+        <F>Sri Lanka</F>
+        <F>Sri Jayawardenepura Kotte</F>
+      </Row>
+      <Row>
+        <F>151</F>
+        <F>Armenia</F>
+        <F>Yerevan</F>
+      </Row>
+      <Row>
+        <F>152</F>
+        <F>Azerbaijan</F>
+        <F>Baku</F>
+      </Row>
+      <Row>
+        <F>153</F>
+        <F>Bahrain</F>
+        <F>Manama</F>
+      </Row>
+      <Row>
+        <F>154</F>
+        <F>Cyprus</F>
+        <F>Nicosia</F>
+      </Row>
+      <Row>
+        <F>155</F>
+        <F>Georgia</F>
+        <F>Tbilisi</F>
+      </Row>
+      <Row>
+        <F>156</F>
+        <F>Iraq</F>
+        <F>Baghdad</F>
+      </Row>
+      <Row>
+        <F>157</F>
+        <F>Israel</F>
+        <F>Jerusalem</F>
+      </Row>
+      <Row>
+        <F>158</F>
+        <F>Jordan</F>
+        <F>Amman</F>
+      </Row>
+      <Row>
+        <F>159</F>
+        <F>Kuwait</F>
+        <F>Kuwait City</F>
+      </Row>
+      <Row>
+        <F>160</F>
+        <F>Lebanon</F>
+        <F>Beirut</F>
+      </Row>
+      <Row>
+        <F>161</F>
+        <F>Oman</F>
+        <F>Muscat</F>
+      </Row>
+      <Row>
+        <F>162</F>
+        <F>Palestine</F>
+        <F>Jerusalem</F>
+      </Row>
+      <Row>
+        <F>163</F>
+        <F>Qatar</F>
+        <F>Doha</F>
+      </Row>
+      <Row>
+        <F>164</F>
+        <F>Saudi Arabia</F>
+        <F>Riyadh</F>
+      </Row>
+      <Row>
+        <F>165</F>
+        <F>Syrian Arab Republic</F>
+        <F>Damascus</F>
+      </Row>
+      <Row>
+        <F>166</F>
+        <F>Turkey</F>
+        <F>Ankara</F>
+      </Row>
+      <Row>
+        <F>167</F>
+        <F>United Arab Emirates</F>
+        <F>Abu Dhabi</F>
+      </Row>
+      <Row>
+        <F>168</F>
+        <F>Yemen</F>
+        <F>Sana'a</F>
+      </Row>
+      <Row>
+        <F>169</F>
+        <F>Belarus</F>
+        <F>Minsk</F>
+      </Row>
+      <Row>
+        <F>170</F>
+        <F>Bulgaria</F>
+        <F>Sofia</F>
+      </Row>
+      <Row>
+        <F>171</F>
+        <F>Czechia</F>
+        <F>Prague</F>
+      </Row>
+      <Row>
+        <F>172</F>
+        <F>Hungary</F>
+        <F>Budapest</F>
+      </Row>
+      <Row>
+        <F>173</F>
+        <F>Moldova</F>
+        <F>Chi?inau</F>
+      </Row>
+      <Row>
+        <F>174</F>
+        <F>Poland</F>
+        <F>Warsaw</F>
+      </Row>
+      <Row>
+        <F>175</F>
+        <F>Romania</F>
+        <F>Bucharest</F>
+      </Row>
+      <Row>
+        <F>176</F>
+        <F>Russian Federation</F>
+        <F>Moscow</F>
+      </Row>
+      <Row>
+        <F>177</F>
+        <F>Slovakia</F>
+        <F>Bratislava</F>
+      </Row>
+      <Row>
+        <F>178</F>
+        <F>Ukraine</F>
+        <F>Kiev</F>
+      </Row>
+      <Row>
+        <F>179</F>
+        <F>Åland Islands</F>
+        <F>Mariehamn</F>
+      </Row>
+      <Row>
+        <F>180</F>
+        <F>Guernsey</F>
+        <F>St. Peter Port</F>
+      </Row>
+      <Row>
+        <F>181</F>
+        <F>Jersey</F>
+        <F>St. Helier</F>
+      </Row>
+      <Row>
+        <F>182</F>
+        <F>Sark</F>
+        <F>-</F>
+      </Row>
+      <Row>
+        <F>183</F>
+        <F>Denmark</F>
+        <F>Copenhagen</F>
+      </Row>
+      <Row>
+        <F>184</F>
+        <F>Estonia</F>
+        <F>Tallinn</F>
+      </Row>
+      <Row>
+        <F>185</F>
+        <F>Faroe Islands</F>
+        <F>Tórshavn</F>
+      </Row>
+      <Row>
+        <F>186</F>
+        <F>Finland</F>
+        <F>Helsinki</F>
+      </Row>
+      <Row>
+        <F>187</F>
+        <F>Iceland</F>
+        <F>Reykjavík</F>
+      </Row>
+      <Row>
+        <F>188</F>
+        <F>Ireland</F>
+        <F>Dublin</F>
+      </Row>
+      <Row>
+        <F>189</F>
+        <F>Isle of Man</F>
+        <F>Douglas</F>
+      </Row>
+      <Row>
+        <F>190</F>
+        <F>Latvia</F>
+        <F>Riga</F>
+      </Row>
+      <Row>
+        <F>191</F>
+        <F>Lithuania</F>
+        <F>Vilnius</F>
+      </Row>
+      <Row>
+        <F>192</F>
+        <F>Norway</F>
+        <F>Oslo</F>
+      </Row>
+      <Row>
+        <F>193</F>
+        <F>Svalbard and Jan Mayen</F>
+        <F>-</F>
+      </Row>
+      <Row>
+        <F>194</F>
+        <F>Sweden</F>
+        <F>Stockholm</F>
+      </Row>
+      <Row>
+        <F>195</F>
+        <F>United Kingdom</F>
+        <F>London</F>
+      </Row>
+      <Row>
+        <F>196</F>
+        <F>Albania</F>
+        <F>Tirana</F>
+      </Row>
+      <Row>
+        <F>197</F>
+        <F>Andorra</F>
+        <F>Andorra la Vella</F>
+      </Row>
+      <Row>
+        <F>198</F>
+        <F>Bosnia and Herzegovina</F>
+        <F>Sarajevo</F>
+      </Row>
+      <Row>
+        <F>199</F>
+        <F>Croatia</F>
+        <F>Zagreb</F>
+      </Row>
+      <Row>
+        <F>200</F>
+        <F>Gibraltar</F>
+        <F>Gibraltar</F>
+      </Row>
+      <Row>
+        <F>201</F>
+        <F>Greece</F>
+        <F>Athens</F>
+      </Row>
+      <Row>
+        <F>202</F>
+        <F>The Holy See</F>
+        <F>Vatican City</F>
+      </Row>
+      <Row>
+        <F>203</F>
+        <F>Italy</F>
+        <F>Rome</F>
+      </Row>
+      <Row>
+        <F>204</F>
+        <F>Malta</F>
+        <F>Valletta</F>
+      </Row>
+      <Row>
+        <F>205</F>
+        <F>Montenegro</F>
+        <F>Podgorica, Cetinje</F>
+      </Row>
+      <Row>
+        <F>206</F>
+        <F>North Macedonia</F>
+        <F>Skopje</F>
+      </Row>
+      <Row>
+        <F>207</F>
+        <F>Portugal</F>
+        <F>Lisbon</F>
+      </Row>
+      <Row>
+        <F>208</F>
+        <F>San Marino</F>
+        <F>San Marino</F>
+      </Row>
+      <Row>
+        <F>209</F>
+        <F>Serbia</F>
+        <F>Belgrade</F>
+      </Row>
+      <Row>
+        <F>210</F>
+        <F>Slovenia</F>
+        <F>Ljubljana</F>
+      </Row>
+      <Row>
+        <F>211</F>
+        <F>Spain</F>
+        <F>Madrid</F>
+      </Row>
+      <Row>
+        <F>212</F>
+        <F>Austria</F>
+        <F>Vienna</F>
+      </Row>
+      <Row>
+        <F>213</F>
+        <F>Belgium</F>
+        <F>Brussels</F>
+      </Row>
+      <Row>
+        <F>214</F>
+        <F>France</F>
+        <F>Paris</F>
+      </Row>
+      <Row>
+        <F>215</F>
+        <F>Germany</F>
+        <F>Berlin</F>
+      </Row>
+      <Row>
+        <F>216</F>
+        <F>Liechtenstein</F>
+        <F>Vaduz</F>
+      </Row>
+      <Row>
+        <F>217</F>
+        <F>Luxembourg</F>
+        <F>Luxembourg</F>
+      </Row>
+      <Row>
+        <F>218</F>
+        <F>Monaco</F>
+        <F>Monaco</F>
+      </Row>
+      <Row>
+        <F>219</F>
+        <F>Netherlands</F>
+        <F>Amsterdam</F>
+      </Row>
+      <Row>
+        <F>220</F>
+        <F>Switzerland</F>
+        <F>Bern</F>
+      </Row>
+      <Row>
+        <F>221</F>
+        <F>Australia</F>
+        <F>Canberra</F>
+      </Row>
+      <Row>
+        <F>222</F>
+        <F>Christmas Island</F>
+        <F>Flying Fish Cove</F>
+      </Row>
+      <Row>
+        <F>223</F>
+        <F>Cocos Islands</F>
+        <F>West Island</F>
+      </Row>
+      <Row>
+        <F>224</F>
+        <F>Heard Island and McDonald Islands</F>
+        <F>-</F>
+      </Row>
+      <Row>
+        <F>225</F>
+        <F>New Zealand</F>
+        <F>Wellington</F>
+      </Row>
+      <Row>
+        <F>226</F>
+        <F>Norfolk Island</F>
+        <F>Kingston</F>
+      </Row>
+      <Row>
+        <F>227</F>
+        <F>Fiji</F>
+        <F>Suva</F>
+      </Row>
+      <Row>
+        <F>228</F>
+        <F>New Caledonia</F>
+        <F>Nouméa</F>
+      </Row>
+      <Row>
+        <F>229</F>
+        <F>Papua New Guinea</F>
+        <F>Port Moresby</F>
+      </Row>
+      <Row>
+        <F>230</F>
+        <F>Solomon Islands</F>
+        <F>Honiara</F>
+      </Row>
+      <Row>
+        <F>231</F>
+        <F>Vanuatu</F>
+        <F>Port Vila</F>
+      </Row>
+      <Row>
+        <F>232</F>
+        <F>Guam</F>
+        <F>Hagåtña</F>
+      </Row>
+      <Row>
+        <F>233</F>
+        <F>Kiribati</F>
+        <F>South Tarawa</F>
+      </Row>
+      <Row>
+        <F>234</F>
+        <F>Marshall Islands</F>
+        <F>Majuro</F>
+      </Row>
+      <Row>
+        <F>235</F>
+        <F>Micronesia</F>
+        <F>Palikir</F>
+      </Row>
+      <Row>
+        <F>236</F>
+        <F>Nauru</F>
+        <F>Yaren</F>
+      </Row>
+      <Row>
+        <F>237</F>
+        <F>Northern Mariana Islands</F>
+        <F>Saipan</F>
+      </Row>
+      <Row>
+        <F>238</F>
+        <F>Palau</F>
+        <F>Ngerulmud</F>
+      </Row>
+      <Row>
+        <F>239</F>
+        <F>United States Minor Outlying Islands</F>
+        <F>Washington, D.C.</F>
+      </Row>
+      <Row>
+        <F>240</F>
+        <F>American Samoa</F>
+        <F>Pago Pago</F>
+      </Row>
+      <Row>
+        <F>241</F>
+        <F>Cook Islands</F>
+        <F>Avarua</F>
+      </Row>
+      <Row>
+        <F>242</F>
+        <F>French Polynesia</F>
+        <F>Pape'ete</F>
+      </Row>
+      <Row>
+        <F>243</F>
+        <F>Niue</F>
+        <F>Alofi</F>
+      </Row>
+      <Row>
+        <F>244</F>
+        <F>Pitcairn</F>
+        <F>Adamstown</F>
+      </Row>
+      <Row>
+        <F>245</F>
+        <F>Samoa</F>
+        <F>Apia</F>
+      </Row>
+      <Row>
+        <F>246</F>
+        <F>Tokelau</F>
+        <F>Fakaofo</F>
+      </Row>
+      <Row>
+        <F>247</F>
+        <F>Tonga</F>
+        <F>Nuku?alofa</F>
+      </Row>
+      <Row>
+        <F>248</F>
+        <F>Tuvalu</F>
+        <F>Funafuti</F>
+      </Row>
+      <Row>
+        <F>249</F>
+        <F>Wallis and Futuna</F>
+        <F>Mata-Utu</F>
+      </Row>
+    </Rows>
+  </SavedData>
+</Report>

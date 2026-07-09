@@ -72,7 +72,7 @@ fn tables() -> &'static Tables {
     })
 }
 
-/// The modified-AES-128 block **encryption** (used by CFB to make the keystream).
+/// The modified-AES-128 block **encryption** (used to make the keystream).
 pub(crate) fn encrypt_block(input: &[u8; 16]) -> [u8; 16] {
     let t = tables();
     let (te0, te1, te2, te3) = (&t.te[0], &t.te[1], &t.te[2], &t.te[3]);
@@ -148,9 +148,44 @@ pub(crate) fn cfb_decrypt(iv: &[u8; 16], ciphertext: &[u8]) -> Vec<u8> {
     out
 }
 
+/// Encrypt `plaintext` in CFB-128 mode — the inverse of [`cfb_decrypt`] (keystream block =
+/// `E(prev_ciphertext)`, first block = `E(iv)`). Returns the ciphertext (same length).
+pub(crate) fn cfb_encrypt(iv: &[u8; 16], plaintext: &[u8]) -> Vec<u8> {
+    let mut out = Vec::with_capacity(plaintext.len());
+    let mut feedback = *iv;
+    for chunk in plaintext.chunks(16) {
+        let ks = encrypt_block(&feedback);
+        let start = out.len();
+        for (i, &p) in chunk.iter().enumerate() {
+            out.push(p ^ ks[i]);
+        }
+        // Feedback for the next block is the ciphertext just produced; a partial final chunk
+        // ends the stream.
+        if chunk.len() == 16 {
+            feedback.copy_from_slice(&out[start..start + 16]);
+        }
+    }
+    out
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn cfb_encrypt_decrypt_round_trips() {
+        // The CFB pair is a mutual inverse for any length, including a partial final block.
+        let iv = [
+            0x0d, 0x31, 0x92, 0x7f, 0x9e, 0xe3, 0xa7, 0xac, 0x12, 0xd9, 0x1f, 0x68, 0xd6, 0x6b,
+            0x7e, 0x16,
+        ];
+        for len in [0usize, 1, 15, 16, 17, 31, 33, 100] {
+            let plain: Vec<u8> = (0..len).map(|i| (i as u8).wrapping_mul(37)).collect();
+            let ct = cfb_encrypt(&iv, &plain);
+            assert_eq!(ct.len(), plain.len());
+            assert_eq!(cfb_decrypt(&iv, &ct), plain, "len {len}");
+        }
+    }
 
     #[test]
     fn block_encrypt_known_answer() {

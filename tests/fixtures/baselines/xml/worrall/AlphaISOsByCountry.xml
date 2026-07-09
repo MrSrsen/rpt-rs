@@ -1,0 +1,2378 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report Name="" FileName="/mnt/report.rpt" HasSavedData="True">
+  <Embedinfo />
+  <Summaryinfo KeywordsinReport="" ReportAuthor="BW" ReportComments="" ReportSubject="Geography, Internet CCTLD, Alpha Codes" ReportTitle="Alpha Codes and Internet CCTLDs by Country" />
+  <ReportOptions EnableSaveDataWithReport="True" EnableSavePreviewPicture="True" EnableSaveSummariesWithReport="True" EnableUseDummyData="False" initialDataContext="" initialReportPartName="" />
+  <PrintOptions PageContentHeight="15120" PageContentWidth="11520" PaperOrientation="Portrait" PaperSize="DefaultPaperSize" PaperSource="FormSource" PrinterDuplex="Default" PrinterName="">
+    <PageMargins bottomMargin="360" leftMargin="360" rightMargin="360" topMargin="360" />
+    <PageMarginConditionFormulas />
+  </PrintOptions>
+  <SubReports />
+  <Database>
+    <TableLinks />
+    <Tables>
+      <Table Alias="countries_all_iso" ClassName="CrystalReports.Table" Name="countries_all_iso">
+        <ConnectionInfo Database_DLL="crdb_odbc.dll" QE_DatabaseName="" QE_DatabaseType="ODBC (RDO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="BWPortfolio" QE_SQLDB="True" SSO_Enabled="False" UserName="" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{countries_all_iso.id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="countries_all_iso.id" Name="id" ShortName="id" Type="crFieldValueTypeInt32sField" UseCount="1" />
+          <Field Description="" FormulaForm="{countries_all_iso.name}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="countries_all_iso.name" Name="name" ShortName="name" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{countries_all_iso.alpha_2_code}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="countries_all_iso.alpha_2_code" Name="alpha_2_code" ShortName="alpha_2_code" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{countries_all_iso.alpha_3_code}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="countries_all_iso.alpha_3_code" Name="alpha_3_code" ShortName="alpha_3_code" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{countries_all_iso.numeric_code}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="countries_all_iso.numeric_code" Name="numeric_code" ShortName="numeric_code" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{countries_all_iso.internet_cctld}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="countries_all_iso.internet_cctld" Name="internet_cctld" ShortName="internet_cctld" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+        </Fields>
+      </Table>
+    </Tables>
+  </Database>
+  <DataDefinition>
+    <GroupSelectionFormula />
+    <RecordSelectionFormula />
+    <Groups />
+    <SortFields />
+    <FormulaFieldDefinitions>
+      <FormulaFieldDefinition FormulaName="{@CCTLD_formatted}" Kind="FormulaField" Name="CCTLD_formatted" NumberOfBytes="65534" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">Local StringVar DotCode := {countries_all_iso.internet_cctld};&#xA;&#xA;If Length(DotCode) = 0&#xA;Then&#xA;"-"&#xA;Else&#xA;DotCode&#xA;;</FormulaFieldDefinition>
+    </FormulaFieldDefinitions>
+    <GroupNameFieldDefinitions />
+    <ParameterFieldDefinitions>
+    </ParameterFieldDefinitions>
+    <RunningTotalFieldDefinitions />
+    <SQLExpressionFields />
+    <SummaryFields />
+  </DataDefinition>
+  <CustomFunctions />
+  <ReportDefinition>
+    <Areas>
+      <Area Kind="ReportHeader" Name="ReportHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="True" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="760" Kind="ReportHeader" Name="ReportHeaderSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="ffff8000" A="255" R="255" G="128" B="0" />
+            </SectionFormat>
+            <ReportObjects>
+              <TextObject Name="Text7" Kind="TextObject" Top="80" Left="80" Width="11340" Height="600" MaxNumberOfLines="0">
+                <Text>Alpha Codes and Internet CCTLDs by Country</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="29" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Rubik" Size="18" SizeinPoints="18" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="DoubleLine" HasDropShadow="False" LeftLineStyle="DoubleLine" RightLineStyle="DoubleLine" TopLineStyle="DoubleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Aqua" A="255" R="0" G="255" B="255" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageHeader" Name="PageHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="819" Kind="PageHeader" Name="PageHeaderSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="Yellow" A="255" R="255" G="255" B="0" />
+            </SectionFormat>
+            <ReportObjects>
+              <TextObject Name="Text9" Kind="TextObject" Top="399" Left="60" Width="660" Height="240" MaxNumberOfLines="0">
+                <Text>ID</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Rubik" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text10" Kind="TextObject" Top="399" Left="1080" Width="6000" Height="240" MaxNumberOfLines="0">
+                <Text>Country</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Rubik" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text11" Kind="TextObject" Top="399" Left="7243" Width="915" Height="240" MaxNumberOfLines="0">
+                <Text>Alpha 2</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Rubik" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text12" Kind="TextObject" Top="399" Left="8280" Width="849" Height="240" MaxNumberOfLines="0">
+                <Text>Alpha 3</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Rubik" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text13" Kind="TextObject" Top="212" Left="9351" Width="1095" Height="420" MaxNumberOfLines="0">
+                <Text>Numeric&#xA;Code</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Rubik" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text14" Kind="TextObject" Top="178" Left="10560" Width="959" Height="467" MaxNumberOfLines="0">
+                <Text>Internet&#xA;CCTLD</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Rubik" Size="10" SizeinPoints="10" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="Detail" Name="DetailArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="840" Kind="Detail" Name="DetailSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas BackgroundColor="select RecordNumber mod 2&#xD;&#xA;case 0: crYellow&#xD;&#xA;case 1: crLime&#xD;&#xA;" />
+              <BackgroundColor Name="Yellow" A="255" R="255" G="255" B="0" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="id1" Kind="FieldObject" Top="0" Left="60" Width="660" Height="840" DataSource="{countries_all_iso.id}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="20" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Rubik" Size="12" SizeinPoints="12" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="0" RoundingFormat="RoundToUnit" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="True" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="name1" Kind="FieldObject" Top="0" Left="1080" Width="6000" Height="840" DataSource="{countries_all_iso.name}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="20" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Rubik" Size="12" SizeinPoints="12" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="True" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="alpha2code1" Kind="FieldObject" Top="0" Left="7243" Width="917" Height="840" DataSource="{countries_all_iso.alpha_2_code}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="20" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Rubik" Size="12" SizeinPoints="12" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="True" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="alpha3code1" Kind="FieldObject" Top="0" Left="8280" Width="960" Height="840" DataSource="{countries_all_iso.alpha_3_code}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="20" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Rubik" Size="12" SizeinPoints="12" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="True" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="numericcode1" Kind="FieldObject" Top="0" Left="9351" Width="1089" Height="840" DataSource="{countries_all_iso.numeric_code}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="20" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Rubik" Size="12" SizeinPoints="12" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="True" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="CCTLDformatted1" Kind="FieldObject" Top="0" Left="10560" Width="960" Height="840" DataSource="{@CCTLD_formatted}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="20" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Rubik" Size="12" SizeinPoints="12" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Blue" A="255" R="0" G="0" B="255" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="ReportFooter" Name="ReportFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="220" Kind="ReportFooter" Name="ReportFooterSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="Yellow" A="255" R="255" G="255" B="0" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageFooter" Name="PageFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="True" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="840" Kind="PageFooter" Name="PageFooterSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="Aqua" A="255" R="0" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="PageNofM1" Kind="FieldObject" Top="240" Left="9823" Width="1474" Height="360" DataSource="PageNofM">
+                <Color Name="ffff8000" A="255" R="255" G="128" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="18" IsSystemFont="False" Italic="True" Name="Tahoma" OriginalFontName="Rubik" Size="11" SizeinPoints="11" Strikeout="False" Style="Italic" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Blue" A="255" R="0" G="0" B="255" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <BoxObject Name="Box1" Kind="BoxObject" Top="120" Left="9721" Width="1679" Height="599" Bottom="719" EnableExtendToBottomOfSection="False" EndSectionName="PageFooterSection1" LineStyle="SingleLine" LineThickness="70" Right="11400">
+                <LineColor Name="ffff8000" A="255" R="255" G="128" B="0" />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="False" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Yellow" A="255" R="255" G="255" B="0" />
+                  <BorderColor Name="ffff8000" A="255" R="255" G="128" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </BoxObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+    </Areas>
+  </ReportDefinition>
+  <SavedData RecordCount="249">
+    <Fields>
+      <Field Name="countries_all_iso.id" Type="Int32sField" />
+      <Field Name="countries_all_iso.name" Type="PersistentMemoField" />
+      <Field Name="countries_all_iso.alpha_2_code" Type="PersistentMemoField" />
+      <Field Name="countries_all_iso.alpha_3_code" Type="PersistentMemoField" />
+      <Field Name="countries_all_iso.numeric_code" Type="PersistentMemoField" />
+      <Field Name="countries_all_iso.internet_cctld" Type="PersistentMemoField" />
+    </Fields>
+    <Rows>
+      <Row>
+        <F>1</F>
+        <F>Afghanistan</F>
+        <F>AF</F>
+        <F>AFG</F>
+        <F>004</F>
+        <F>.af</F>
+      </Row>
+      <Row>
+        <F>2</F>
+        <F>Åland Islands</F>
+        <F>AX</F>
+        <F>ALA</F>
+        <F>248</F>
+        <F>.ax</F>
+      </Row>
+      <Row>
+        <F>3</F>
+        <F>Albania</F>
+        <F>AL</F>
+        <F>ALB</F>
+        <F>008</F>
+        <F>.al</F>
+      </Row>
+      <Row>
+        <F>4</F>
+        <F>Algeria</F>
+        <F>DZ</F>
+        <F>DZA</F>
+        <F>012</F>
+        <F>.dz</F>
+      </Row>
+      <Row>
+        <F>5</F>
+        <F>American Samoa</F>
+        <F>AS</F>
+        <F>ASM</F>
+        <F>016</F>
+        <F>.as</F>
+      </Row>
+      <Row>
+        <F>6</F>
+        <F>Andorra</F>
+        <F>AD</F>
+        <F>AND</F>
+        <F>020</F>
+        <F>.ad</F>
+      </Row>
+      <Row>
+        <F>7</F>
+        <F>Angola</F>
+        <F>AO</F>
+        <F>AGO</F>
+        <F>024</F>
+        <F>.ao</F>
+      </Row>
+      <Row>
+        <F>8</F>
+        <F>Anguilla</F>
+        <F>AI</F>
+        <F>AIA</F>
+        <F>660</F>
+        <F>.ai</F>
+      </Row>
+      <Row>
+        <F>9</F>
+        <F>Antarctica</F>
+        <F>AQ</F>
+        <F>ATA</F>
+        <F>010</F>
+        <F>.aq</F>
+      </Row>
+      <Row>
+        <F>10</F>
+        <F>Antigua and Barbuda</F>
+        <F>AG</F>
+        <F>ATG</F>
+        <F>028</F>
+        <F>.ag</F>
+      </Row>
+      <Row>
+        <F>11</F>
+        <F>Argentina</F>
+        <F>AR</F>
+        <F>ARG</F>
+        <F>032</F>
+        <F>.ar</F>
+      </Row>
+      <Row>
+        <F>12</F>
+        <F>Armenia</F>
+        <F>AM</F>
+        <F>ARM</F>
+        <F>051</F>
+        <F>.am</F>
+      </Row>
+      <Row>
+        <F>13</F>
+        <F>Aruba</F>
+        <F>AW</F>
+        <F>ABW</F>
+        <F>533</F>
+        <F>.aw</F>
+      </Row>
+      <Row>
+        <F>14</F>
+        <F>Australia</F>
+        <F>AU</F>
+        <F>AUS</F>
+        <F>036</F>
+        <F>.au</F>
+      </Row>
+      <Row>
+        <F>15</F>
+        <F>Austria</F>
+        <F>AT</F>
+        <F>AUT</F>
+        <F>040</F>
+        <F>.at</F>
+      </Row>
+      <Row>
+        <F>16</F>
+        <F>Azerbaijan</F>
+        <F>AZ</F>
+        <F>AZE</F>
+        <F>031</F>
+        <F>.az</F>
+      </Row>
+      <Row>
+        <F>17</F>
+        <F>Bahamas (the)</F>
+        <F>BS</F>
+        <F>BHS</F>
+        <F>044</F>
+        <F>.bs</F>
+      </Row>
+      <Row>
+        <F>18</F>
+        <F>Bahrain</F>
+        <F>BH</F>
+        <F>BHR</F>
+        <F>048</F>
+        <F>.bh</F>
+      </Row>
+      <Row>
+        <F>19</F>
+        <F>Bangladesh</F>
+        <F>BD</F>
+        <F>BGD</F>
+        <F>050</F>
+        <F>.bd</F>
+      </Row>
+      <Row>
+        <F>20</F>
+        <F>Barbados</F>
+        <F>BB</F>
+        <F>BRB</F>
+        <F>052</F>
+        <F>.bb</F>
+      </Row>
+      <Row>
+        <F>21</F>
+        <F>Belarus</F>
+        <F>BY</F>
+        <F>BLR</F>
+        <F>112</F>
+        <F>.by</F>
+      </Row>
+      <Row>
+        <F>22</F>
+        <F>Belgium</F>
+        <F>BE</F>
+        <F>BEL</F>
+        <F>056</F>
+        <F>.be</F>
+      </Row>
+      <Row>
+        <F>23</F>
+        <F>Belize</F>
+        <F>BZ</F>
+        <F>BLZ</F>
+        <F>084</F>
+        <F>.bz</F>
+      </Row>
+      <Row>
+        <F>24</F>
+        <F>Benin</F>
+        <F>BJ</F>
+        <F>BEN</F>
+        <F>204</F>
+        <F>.bj</F>
+      </Row>
+      <Row>
+        <F>25</F>
+        <F>Bermuda</F>
+        <F>BM</F>
+        <F>BMU</F>
+        <F>060</F>
+        <F>.bm</F>
+      </Row>
+      <Row>
+        <F>26</F>
+        <F>Bhutan</F>
+        <F>BT</F>
+        <F>BTN</F>
+        <F>064</F>
+        <F>.bt</F>
+      </Row>
+      <Row>
+        <F>27</F>
+        <F>Bolivia (Plurinational State of)</F>
+        <F>BO</F>
+        <F>BOL</F>
+        <F>068</F>
+        <F>.bo</F>
+      </Row>
+      <Row>
+        <F>28</F>
+        <F>Bonaire, Sint Eustatius, Saba</F>
+        <F>BQ</F>
+        <F>BES</F>
+        <F>535</F>
+        <F>.bq, .nl</F>
+      </Row>
+      <Row>
+        <F>29</F>
+        <F>Bosnia and Herzegovina</F>
+        <F>BA</F>
+        <F>BIH</F>
+        <F>070</F>
+        <F>.ba</F>
+      </Row>
+      <Row>
+        <F>30</F>
+        <F>Botswana</F>
+        <F>BW</F>
+        <F>BWA</F>
+        <F>072</F>
+        <F>.bw</F>
+      </Row>
+      <Row>
+        <F>31</F>
+        <F>Bouvet Island</F>
+        <F>BV</F>
+        <F>BVT</F>
+        <F>074</F>
+        <F></F>
+      </Row>
+      <Row>
+        <F>32</F>
+        <F>Brazil</F>
+        <F>BR</F>
+        <F>BRA</F>
+        <F>076</F>
+        <F>.br</F>
+      </Row>
+      <Row>
+        <F>33</F>
+        <F>British Indian Ocean Territory (the)</F>
+        <F>IO</F>
+        <F>IOT</F>
+        <F>086</F>
+        <F>.io</F>
+      </Row>
+      <Row>
+        <F>34</F>
+        <F>Brunei Darussalam</F>
+        <F>BN</F>
+        <F>BRN</F>
+        <F>096</F>
+        <F>.bn</F>
+      </Row>
+      <Row>
+        <F>35</F>
+        <F>Bulgaria</F>
+        <F>BG</F>
+        <F>BGR</F>
+        <F>100</F>
+        <F>.bg</F>
+      </Row>
+      <Row>
+        <F>36</F>
+        <F>Burkina Faso</F>
+        <F>BF</F>
+        <F>BFA</F>
+        <F>854</F>
+        <F>.bf</F>
+      </Row>
+      <Row>
+        <F>37</F>
+        <F>Burundi</F>
+        <F>BI</F>
+        <F>BDI</F>
+        <F>108</F>
+        <F>.bi</F>
+      </Row>
+      <Row>
+        <F>38</F>
+        <F>Cabo Verde</F>
+        <F>CV</F>
+        <F>CPV</F>
+        <F>132</F>
+        <F>.cv</F>
+      </Row>
+      <Row>
+        <F>39</F>
+        <F>Cambodia</F>
+        <F>KH</F>
+        <F>KHM</F>
+        <F>116</F>
+        <F>.kh</F>
+      </Row>
+      <Row>
+        <F>40</F>
+        <F>Cameroon</F>
+        <F>CM</F>
+        <F>CMR</F>
+        <F>120</F>
+        <F>.cm</F>
+      </Row>
+      <Row>
+        <F>41</F>
+        <F>Canada</F>
+        <F>CA</F>
+        <F>CAN</F>
+        <F>124</F>
+        <F>.ca</F>
+      </Row>
+      <Row>
+        <F>42</F>
+        <F>Cayman Islands (the)</F>
+        <F>KY</F>
+        <F>CYM</F>
+        <F>136</F>
+        <F>.ky</F>
+      </Row>
+      <Row>
+        <F>43</F>
+        <F>Central African Republic (the)</F>
+        <F>CF</F>
+        <F>CAF</F>
+        <F>140</F>
+        <F>.cf</F>
+      </Row>
+      <Row>
+        <F>44</F>
+        <F>Chad</F>
+        <F>TD</F>
+        <F>TCD</F>
+        <F>148</F>
+        <F>.td</F>
+      </Row>
+      <Row>
+        <F>45</F>
+        <F>Chile</F>
+        <F>CL</F>
+        <F>CHL</F>
+        <F>152</F>
+        <F>.cl</F>
+      </Row>
+      <Row>
+        <F>46</F>
+        <F>China</F>
+        <F>CN</F>
+        <F>CHN</F>
+        <F>156</F>
+        <F>.cn</F>
+      </Row>
+      <Row>
+        <F>47</F>
+        <F>Christmas Island</F>
+        <F>CX</F>
+        <F>CXR</F>
+        <F>162</F>
+        <F>.cx</F>
+      </Row>
+      <Row>
+        <F>48</F>
+        <F>Cocos (Keeling) Islands (the)</F>
+        <F>CC</F>
+        <F>CCK</F>
+        <F>166</F>
+        <F>.cc</F>
+      </Row>
+      <Row>
+        <F>49</F>
+        <F>Colombia</F>
+        <F>CO</F>
+        <F>COL</F>
+        <F>170</F>
+        <F>.co</F>
+      </Row>
+      <Row>
+        <F>50</F>
+        <F>Comoros (the)</F>
+        <F>KM</F>
+        <F>COM</F>
+        <F>174</F>
+        <F>.km</F>
+      </Row>
+      <Row>
+        <F>51</F>
+        <F>Congo (the Democratic Republic of the)</F>
+        <F>CD</F>
+        <F>COD</F>
+        <F>180</F>
+        <F>.cd</F>
+      </Row>
+      <Row>
+        <F>52</F>
+        <F>Congo (the)</F>
+        <F>CG</F>
+        <F>COG</F>
+        <F>178</F>
+        <F>.cg</F>
+      </Row>
+      <Row>
+        <F>53</F>
+        <F>Cook Islands (the)</F>
+        <F>CK</F>
+        <F>COK</F>
+        <F>184</F>
+        <F>.ck</F>
+      </Row>
+      <Row>
+        <F>54</F>
+        <F>Costa Rica</F>
+        <F>CR</F>
+        <F>CRI</F>
+        <F>188</F>
+        <F>.cr</F>
+      </Row>
+      <Row>
+        <F>55</F>
+        <F>Côte d'Ivoire</F>
+        <F>CI</F>
+        <F>CIV</F>
+        <F>384</F>
+        <F>.ci</F>
+      </Row>
+      <Row>
+        <F>56</F>
+        <F>Croatia</F>
+        <F>HR</F>
+        <F>HRV</F>
+        <F>191</F>
+        <F>.hr</F>
+      </Row>
+      <Row>
+        <F>57</F>
+        <F>Cuba</F>
+        <F>CU</F>
+        <F>CUB</F>
+        <F>192</F>
+        <F>.cu</F>
+      </Row>
+      <Row>
+        <F>58</F>
+        <F>Curaçao</F>
+        <F>CW</F>
+        <F>CUW</F>
+        <F>531</F>
+        <F>.cw</F>
+      </Row>
+      <Row>
+        <F>59</F>
+        <F>Cyprus</F>
+        <F>CY</F>
+        <F>CYP</F>
+        <F>196</F>
+        <F>.cy</F>
+      </Row>
+      <Row>
+        <F>60</F>
+        <F>Czechia</F>
+        <F>CZ</F>
+        <F>CZE</F>
+        <F>203</F>
+        <F>.cz</F>
+      </Row>
+      <Row>
+        <F>61</F>
+        <F>Denmark</F>
+        <F>DK</F>
+        <F>DNK</F>
+        <F>208</F>
+        <F>.dk</F>
+      </Row>
+      <Row>
+        <F>62</F>
+        <F>Djibouti</F>
+        <F>DJ</F>
+        <F>DJI</F>
+        <F>262</F>
+        <F>.dj</F>
+      </Row>
+      <Row>
+        <F>63</F>
+        <F>Dominica</F>
+        <F>DM</F>
+        <F>DMA</F>
+        <F>212</F>
+        <F>.dm</F>
+      </Row>
+      <Row>
+        <F>64</F>
+        <F>Dominican Republic (the)</F>
+        <F>DO</F>
+        <F>DOM</F>
+        <F>214</F>
+        <F>.do</F>
+      </Row>
+      <Row>
+        <F>65</F>
+        <F>Ecuador</F>
+        <F>EC</F>
+        <F>ECU</F>
+        <F>218</F>
+        <F>.ec</F>
+      </Row>
+      <Row>
+        <F>66</F>
+        <F>Egypt</F>
+        <F>EG</F>
+        <F>EGY</F>
+        <F>818</F>
+        <F>.eg</F>
+      </Row>
+      <Row>
+        <F>67</F>
+        <F>El Salvador</F>
+        <F>SV</F>
+        <F>SLV</F>
+        <F>222</F>
+        <F>.sv</F>
+      </Row>
+      <Row>
+        <F>68</F>
+        <F>Equatorial Guinea</F>
+        <F>GQ</F>
+        <F>GNQ</F>
+        <F>226</F>
+        <F>.gq</F>
+      </Row>
+      <Row>
+        <F>69</F>
+        <F>Eritrea</F>
+        <F>ER</F>
+        <F>ERI</F>
+        <F>232</F>
+        <F>.er</F>
+      </Row>
+      <Row>
+        <F>70</F>
+        <F>Estonia</F>
+        <F>EE</F>
+        <F>EST</F>
+        <F>233</F>
+        <F>.ee</F>
+      </Row>
+      <Row>
+        <F>71</F>
+        <F>Eswatini</F>
+        <F>SZ</F>
+        <F>SWZ</F>
+        <F>748</F>
+        <F>.sz</F>
+      </Row>
+      <Row>
+        <F>72</F>
+        <F>Ethiopia</F>
+        <F>ET</F>
+        <F>ETH</F>
+        <F>231</F>
+        <F>.et</F>
+      </Row>
+      <Row>
+        <F>73</F>
+        <F>Falkland Islands (the) [Malvinas]</F>
+        <F>FK</F>
+        <F>FLK</F>
+        <F>238</F>
+        <F>.fk</F>
+      </Row>
+      <Row>
+        <F>74</F>
+        <F>Faroe Islands (the)</F>
+        <F>FO</F>
+        <F>FRO</F>
+        <F>234</F>
+        <F>.fo</F>
+      </Row>
+      <Row>
+        <F>75</F>
+        <F>Fiji</F>
+        <F>FJ</F>
+        <F>FJI</F>
+        <F>242</F>
+        <F>.fj</F>
+      </Row>
+      <Row>
+        <F>76</F>
+        <F>Finland</F>
+        <F>FI</F>
+        <F>FIN</F>
+        <F>246</F>
+        <F>.fi</F>
+      </Row>
+      <Row>
+        <F>77</F>
+        <F>France</F>
+        <F>FR</F>
+        <F>FRA</F>
+        <F>250</F>
+        <F>.fr</F>
+      </Row>
+      <Row>
+        <F>78</F>
+        <F>French Guiana</F>
+        <F>GF</F>
+        <F>GUF</F>
+        <F>254</F>
+        <F>.gf</F>
+      </Row>
+      <Row>
+        <F>79</F>
+        <F>French Polynesia</F>
+        <F>PF</F>
+        <F>PYF</F>
+        <F>258</F>
+        <F>.pf</F>
+      </Row>
+      <Row>
+        <F>80</F>
+        <F>French Southern Territories (the)</F>
+        <F>TF</F>
+        <F>ATF</F>
+        <F>260</F>
+        <F>.tf</F>
+      </Row>
+      <Row>
+        <F>81</F>
+        <F>Gabon</F>
+        <F>GA</F>
+        <F>GAB</F>
+        <F>266</F>
+        <F>.ga</F>
+      </Row>
+      <Row>
+        <F>82</F>
+        <F>Gambia (the)</F>
+        <F>GM</F>
+        <F>GMB</F>
+        <F>270</F>
+        <F>.gm</F>
+      </Row>
+      <Row>
+        <F>83</F>
+        <F>Georgia</F>
+        <F>GE</F>
+        <F>GEO</F>
+        <F>268</F>
+        <F>.ge</F>
+      </Row>
+      <Row>
+        <F>84</F>
+        <F>Germany</F>
+        <F>DE</F>
+        <F>DEU</F>
+        <F>276</F>
+        <F>.de</F>
+      </Row>
+      <Row>
+        <F>85</F>
+        <F>Ghana</F>
+        <F>GH</F>
+        <F>GHA</F>
+        <F>288</F>
+        <F>.gh</F>
+      </Row>
+      <Row>
+        <F>86</F>
+        <F>Gibraltar</F>
+        <F>GI</F>
+        <F>GIB</F>
+        <F>292</F>
+        <F>.gi</F>
+      </Row>
+      <Row>
+        <F>87</F>
+        <F>Greece</F>
+        <F>GR</F>
+        <F>GRC</F>
+        <F>300</F>
+        <F>.gr</F>
+      </Row>
+      <Row>
+        <F>88</F>
+        <F>Greenland</F>
+        <F>GL</F>
+        <F>GRL</F>
+        <F>304</F>
+        <F>.gl</F>
+      </Row>
+      <Row>
+        <F>89</F>
+        <F>Grenada</F>
+        <F>GD</F>
+        <F>GRD</F>
+        <F>308</F>
+        <F>.gd</F>
+      </Row>
+      <Row>
+        <F>90</F>
+        <F>Guadeloupe</F>
+        <F>GP</F>
+        <F>GLP</F>
+        <F>312</F>
+        <F>.gp</F>
+      </Row>
+      <Row>
+        <F>91</F>
+        <F>Guam</F>
+        <F>GU</F>
+        <F>GUM</F>
+        <F>316</F>
+        <F>.gu</F>
+      </Row>
+      <Row>
+        <F>92</F>
+        <F>Guatemala</F>
+        <F>GT</F>
+        <F>GTM</F>
+        <F>320</F>
+        <F>.gt</F>
+      </Row>
+      <Row>
+        <F>93</F>
+        <F>Guernsey</F>
+        <F>GG</F>
+        <F>GGY</F>
+        <F>831</F>
+        <F>.gg</F>
+      </Row>
+      <Row>
+        <F>94</F>
+        <F>Guinea</F>
+        <F>GN</F>
+        <F>GIN</F>
+        <F>324</F>
+        <F>.gn</F>
+      </Row>
+      <Row>
+        <F>95</F>
+        <F>Guinea-Bissau</F>
+        <F>GW</F>
+        <F>GNB</F>
+        <F>624</F>
+        <F>.gw</F>
+      </Row>
+      <Row>
+        <F>96</F>
+        <F>Guyana</F>
+        <F>GY</F>
+        <F>GUY</F>
+        <F>328</F>
+        <F>.gy</F>
+      </Row>
+      <Row>
+        <F>97</F>
+        <F>Haiti</F>
+        <F>HT</F>
+        <F>HTI</F>
+        <F>332</F>
+        <F>.ht</F>
+      </Row>
+      <Row>
+        <F>98</F>
+        <F>Heard Island and McDonald Islands</F>
+        <F>HM</F>
+        <F>HMD</F>
+        <F>334</F>
+        <F>.hm</F>
+      </Row>
+      <Row>
+        <F>99</F>
+        <F>Holy See (the)</F>
+        <F>VA</F>
+        <F>VAT</F>
+        <F>336</F>
+        <F>.va</F>
+      </Row>
+      <Row>
+        <F>100</F>
+        <F>Honduras</F>
+        <F>HN</F>
+        <F>HND</F>
+        <F>340</F>
+        <F>.hn</F>
+      </Row>
+      <Row>
+        <F>101</F>
+        <F>Hong Kong</F>
+        <F>HK</F>
+        <F>HKG</F>
+        <F>344</F>
+        <F>.hk</F>
+      </Row>
+      <Row>
+        <F>102</F>
+        <F>Hungary</F>
+        <F>HU</F>
+        <F>HUN</F>
+        <F>348</F>
+        <F>.hu</F>
+      </Row>
+      <Row>
+        <F>103</F>
+        <F>Iceland</F>
+        <F>IS</F>
+        <F>ISL</F>
+        <F>352</F>
+        <F>.is</F>
+      </Row>
+      <Row>
+        <F>104</F>
+        <F>India</F>
+        <F>IN</F>
+        <F>IND</F>
+        <F>356</F>
+        <F>.in</F>
+      </Row>
+      <Row>
+        <F>105</F>
+        <F>Indonesia</F>
+        <F>ID</F>
+        <F>IDN</F>
+        <F>360</F>
+        <F>.id</F>
+      </Row>
+      <Row>
+        <F>106</F>
+        <F>Iran (Islamic Republic of)</F>
+        <F>IR</F>
+        <F>IRN</F>
+        <F>364</F>
+        <F>.ir</F>
+      </Row>
+      <Row>
+        <F>107</F>
+        <F>Iraq</F>
+        <F>IQ</F>
+        <F>IRQ</F>
+        <F>368</F>
+        <F>.iq</F>
+      </Row>
+      <Row>
+        <F>108</F>
+        <F>Ireland</F>
+        <F>IE</F>
+        <F>IRL</F>
+        <F>372</F>
+        <F>.ie</F>
+      </Row>
+      <Row>
+        <F>109</F>
+        <F>Isle of Man</F>
+        <F>IM</F>
+        <F>IMN</F>
+        <F>833</F>
+        <F>.im</F>
+      </Row>
+      <Row>
+        <F>110</F>
+        <F>Israel</F>
+        <F>IL</F>
+        <F>ISR</F>
+        <F>376</F>
+        <F>.il</F>
+      </Row>
+      <Row>
+        <F>111</F>
+        <F>Italy</F>
+        <F>IT</F>
+        <F>ITA</F>
+        <F>380</F>
+        <F>.it</F>
+      </Row>
+      <Row>
+        <F>112</F>
+        <F>Jamaica</F>
+        <F>JM</F>
+        <F>JAM</F>
+        <F>388</F>
+        <F>.jm</F>
+      </Row>
+      <Row>
+        <F>113</F>
+        <F>Japan</F>
+        <F>JP</F>
+        <F>JPN</F>
+        <F>392</F>
+        <F>.jp</F>
+      </Row>
+      <Row>
+        <F>114</F>
+        <F>Jersey</F>
+        <F>JE</F>
+        <F>JEY</F>
+        <F>832</F>
+        <F>.je</F>
+      </Row>
+      <Row>
+        <F>115</F>
+        <F>Jordan</F>
+        <F>JO</F>
+        <F>JOR</F>
+        <F>400</F>
+        <F>.jo</F>
+      </Row>
+      <Row>
+        <F>116</F>
+        <F>Kazakhstan</F>
+        <F>KZ</F>
+        <F>KAZ</F>
+        <F>398</F>
+        <F>.kz</F>
+      </Row>
+      <Row>
+        <F>117</F>
+        <F>Kenya</F>
+        <F>KE</F>
+        <F>KEN</F>
+        <F>404</F>
+        <F>.ke</F>
+      </Row>
+      <Row>
+        <F>118</F>
+        <F>Kiribati</F>
+        <F>KI</F>
+        <F>KIR</F>
+        <F>296</F>
+        <F>.ki</F>
+      </Row>
+      <Row>
+        <F>119</F>
+        <F>Korea (the Democratic People's Republic of)</F>
+        <F>KP</F>
+        <F>PRK</F>
+        <F>408</F>
+        <F>.kp</F>
+      </Row>
+      <Row>
+        <F>120</F>
+        <F>Korea (the Republic of)</F>
+        <F>KR</F>
+        <F>KOR</F>
+        <F>410</F>
+        <F>.kr</F>
+      </Row>
+      <Row>
+        <F>121</F>
+        <F>Kuwait</F>
+        <F>KW</F>
+        <F>KWT</F>
+        <F>414</F>
+        <F>.kw</F>
+      </Row>
+      <Row>
+        <F>122</F>
+        <F>Kyrgyzstan</F>
+        <F>KG</F>
+        <F>KGZ</F>
+        <F>417</F>
+        <F>.kg</F>
+      </Row>
+      <Row>
+        <F>123</F>
+        <F>Lao People's Democratic Republic (the)</F>
+        <F>LA</F>
+        <F>LAO</F>
+        <F>418</F>
+        <F>.la</F>
+      </Row>
+      <Row>
+        <F>124</F>
+        <F>Latvia</F>
+        <F>LV</F>
+        <F>LVA</F>
+        <F>428</F>
+        <F>.lv</F>
+      </Row>
+      <Row>
+        <F>125</F>
+        <F>Lebanon</F>
+        <F>LB</F>
+        <F>LBN</F>
+        <F>422</F>
+        <F>.lb</F>
+      </Row>
+      <Row>
+        <F>126</F>
+        <F>Lesotho</F>
+        <F>LS</F>
+        <F>LSO</F>
+        <F>426</F>
+        <F>.ls</F>
+      </Row>
+      <Row>
+        <F>127</F>
+        <F>Liberia</F>
+        <F>LR</F>
+        <F>LBR</F>
+        <F>430</F>
+        <F>.lr</F>
+      </Row>
+      <Row>
+        <F>128</F>
+        <F>Libya</F>
+        <F>LY</F>
+        <F>LBY</F>
+        <F>434</F>
+        <F>.ly</F>
+      </Row>
+      <Row>
+        <F>129</F>
+        <F>Liechtenstein</F>
+        <F>LI</F>
+        <F>LIE</F>
+        <F>438</F>
+        <F>.li</F>
+      </Row>
+      <Row>
+        <F>130</F>
+        <F>Lithuania</F>
+        <F>LT</F>
+        <F>LTU</F>
+        <F>440</F>
+        <F>.lt</F>
+      </Row>
+      <Row>
+        <F>131</F>
+        <F>Luxembourg</F>
+        <F>LU</F>
+        <F>LUX</F>
+        <F>442</F>
+        <F>.lu</F>
+      </Row>
+      <Row>
+        <F>132</F>
+        <F>Macao</F>
+        <F>MO</F>
+        <F>MAC</F>
+        <F>446</F>
+        <F>.mo</F>
+      </Row>
+      <Row>
+        <F>133</F>
+        <F>North Macedonia</F>
+        <F>MK</F>
+        <F>MKD</F>
+        <F>807</F>
+        <F>.mk</F>
+      </Row>
+      <Row>
+        <F>134</F>
+        <F>Madagascar</F>
+        <F>MG</F>
+        <F>MDG</F>
+        <F>450</F>
+        <F>.mg</F>
+      </Row>
+      <Row>
+        <F>135</F>
+        <F>Malawi</F>
+        <F>MW</F>
+        <F>MWI</F>
+        <F>454</F>
+        <F>.mw</F>
+      </Row>
+      <Row>
+        <F>136</F>
+        <F>Malaysia</F>
+        <F>MY</F>
+        <F>MYS</F>
+        <F>458</F>
+        <F>.my</F>
+      </Row>
+      <Row>
+        <F>137</F>
+        <F>Maldives</F>
+        <F>MV</F>
+        <F>MDV</F>
+        <F>462</F>
+        <F>.mv</F>
+      </Row>
+      <Row>
+        <F>138</F>
+        <F>Mali</F>
+        <F>ML</F>
+        <F>MLI</F>
+        <F>466</F>
+        <F>.ml</F>
+      </Row>
+      <Row>
+        <F>139</F>
+        <F>Malta</F>
+        <F>MT</F>
+        <F>MLT</F>
+        <F>470</F>
+        <F>.mt</F>
+      </Row>
+      <Row>
+        <F>140</F>
+        <F>Marshall Islands (the)</F>
+        <F>MH</F>
+        <F>MHL</F>
+        <F>584</F>
+        <F>.mh</F>
+      </Row>
+      <Row>
+        <F>141</F>
+        <F>Martinique</F>
+        <F>MQ</F>
+        <F>MTQ</F>
+        <F>474</F>
+        <F>.mq</F>
+      </Row>
+      <Row>
+        <F>142</F>
+        <F>Mauritania</F>
+        <F>MR</F>
+        <F>MRT</F>
+        <F>478</F>
+        <F>.mr</F>
+      </Row>
+      <Row>
+        <F>143</F>
+        <F>Mauritius</F>
+        <F>MU</F>
+        <F>MUS</F>
+        <F>480</F>
+        <F>.mu</F>
+      </Row>
+      <Row>
+        <F>144</F>
+        <F>Mayotte</F>
+        <F>YT</F>
+        <F>MYT</F>
+        <F>175</F>
+        <F>.yt</F>
+      </Row>
+      <Row>
+        <F>145</F>
+        <F>Mexico</F>
+        <F>MX</F>
+        <F>MEX</F>
+        <F>484</F>
+        <F>.mx</F>
+      </Row>
+      <Row>
+        <F>146</F>
+        <F>Micronesia (Federated States of)</F>
+        <F>FM</F>
+        <F>FSM</F>
+        <F>583</F>
+        <F>.fm</F>
+      </Row>
+      <Row>
+        <F>147</F>
+        <F>Moldova (the Republic of)</F>
+        <F>MD</F>
+        <F>MDA</F>
+        <F>498</F>
+        <F>.md</F>
+      </Row>
+      <Row>
+        <F>148</F>
+        <F>Monaco</F>
+        <F>MC</F>
+        <F>MCO</F>
+        <F>492</F>
+        <F>.mc</F>
+      </Row>
+      <Row>
+        <F>149</F>
+        <F>Mongolia</F>
+        <F>MN</F>
+        <F>MNG</F>
+        <F>496</F>
+        <F>.mn</F>
+      </Row>
+      <Row>
+        <F>150</F>
+        <F>Montenegro</F>
+        <F>ME</F>
+        <F>MNE</F>
+        <F>499</F>
+        <F>.me</F>
+      </Row>
+      <Row>
+        <F>151</F>
+        <F>Montserrat</F>
+        <F>MS</F>
+        <F>MSR</F>
+        <F>500</F>
+        <F>.ms</F>
+      </Row>
+      <Row>
+        <F>152</F>
+        <F>Morocco</F>
+        <F>MA</F>
+        <F>MAR</F>
+        <F>504</F>
+        <F>.ma</F>
+      </Row>
+      <Row>
+        <F>153</F>
+        <F>Mozambique</F>
+        <F>MZ</F>
+        <F>MOZ</F>
+        <F>508</F>
+        <F>.mz</F>
+      </Row>
+      <Row>
+        <F>154</F>
+        <F>Myanmar</F>
+        <F>MM</F>
+        <F>MMR</F>
+        <F>104</F>
+        <F>.mm</F>
+      </Row>
+      <Row>
+        <F>155</F>
+        <F>Namibia</F>
+        <F>NA</F>
+        <F>NAM</F>
+        <F>516</F>
+        <F>.na</F>
+      </Row>
+      <Row>
+        <F>156</F>
+        <F>Nauru</F>
+        <F>NR</F>
+        <F>NRU</F>
+        <F>520</F>
+        <F>.nr</F>
+      </Row>
+      <Row>
+        <F>157</F>
+        <F>Nepal</F>
+        <F>NP</F>
+        <F>NPL</F>
+        <F>524</F>
+        <F>.np</F>
+      </Row>
+      <Row>
+        <F>158</F>
+        <F>Netherlands (the)</F>
+        <F>NL</F>
+        <F>NLD</F>
+        <F>528</F>
+        <F>.nl</F>
+      </Row>
+      <Row>
+        <F>159</F>
+        <F>New Caledonia</F>
+        <F>NC</F>
+        <F>NCL</F>
+        <F>540</F>
+        <F>.nc</F>
+      </Row>
+      <Row>
+        <F>160</F>
+        <F>New Zealand</F>
+        <F>NZ</F>
+        <F>NZL</F>
+        <F>554</F>
+        <F>.nz</F>
+      </Row>
+      <Row>
+        <F>161</F>
+        <F>Nicaragua</F>
+        <F>NI</F>
+        <F>NIC</F>
+        <F>558</F>
+        <F>.ni</F>
+      </Row>
+      <Row>
+        <F>162</F>
+        <F>Niger (the)</F>
+        <F>NE</F>
+        <F>NER</F>
+        <F>562</F>
+        <F>.ne</F>
+      </Row>
+      <Row>
+        <F>163</F>
+        <F>Nigeria</F>
+        <F>NG</F>
+        <F>NGA</F>
+        <F>566</F>
+        <F>.ng</F>
+      </Row>
+      <Row>
+        <F>164</F>
+        <F>Niue</F>
+        <F>NU</F>
+        <F>NIU</F>
+        <F>570</F>
+        <F>.nu</F>
+      </Row>
+      <Row>
+        <F>165</F>
+        <F>Norfolk Island</F>
+        <F>NF</F>
+        <F>NFK</F>
+        <F>574</F>
+        <F>.nf</F>
+      </Row>
+      <Row>
+        <F>166</F>
+        <F>Northern Mariana Islands (the)</F>
+        <F>MP</F>
+        <F>MNP</F>
+        <F>580</F>
+        <F>.mp</F>
+      </Row>
+      <Row>
+        <F>167</F>
+        <F>Norway</F>
+        <F>NO</F>
+        <F>NOR</F>
+        <F>578</F>
+        <F>.no</F>
+      </Row>
+      <Row>
+        <F>168</F>
+        <F>Oman</F>
+        <F>OM</F>
+        <F>OMN</F>
+        <F>512</F>
+        <F>.om</F>
+      </Row>
+      <Row>
+        <F>169</F>
+        <F>Pakistan</F>
+        <F>PK</F>
+        <F>PAK</F>
+        <F>586</F>
+        <F>.pk</F>
+      </Row>
+      <Row>
+        <F>170</F>
+        <F>Palau</F>
+        <F>PW</F>
+        <F>PLW</F>
+        <F>585</F>
+        <F>.pw</F>
+      </Row>
+      <Row>
+        <F>171</F>
+        <F>Palestine, State of</F>
+        <F>PS</F>
+        <F>PSE</F>
+        <F>275</F>
+        <F>.ps</F>
+      </Row>
+      <Row>
+        <F>172</F>
+        <F>Panama</F>
+        <F>PA</F>
+        <F>PAN</F>
+        <F>591</F>
+        <F>.pa</F>
+      </Row>
+      <Row>
+        <F>173</F>
+        <F>Papua New Guinea</F>
+        <F>PG</F>
+        <F>PNG</F>
+        <F>598</F>
+        <F>.pg</F>
+      </Row>
+      <Row>
+        <F>174</F>
+        <F>Paraguay</F>
+        <F>PY</F>
+        <F>PRY</F>
+        <F>600</F>
+        <F>.py</F>
+      </Row>
+      <Row>
+        <F>175</F>
+        <F>Peru</F>
+        <F>PE</F>
+        <F>PER</F>
+        <F>604</F>
+        <F>.pe</F>
+      </Row>
+      <Row>
+        <F>176</F>
+        <F>Philippines (the)</F>
+        <F>PH</F>
+        <F>PHL</F>
+        <F>608</F>
+        <F>.ph</F>
+      </Row>
+      <Row>
+        <F>177</F>
+        <F>Pitcairn</F>
+        <F>PN</F>
+        <F>PCN</F>
+        <F>612</F>
+        <F>.pn</F>
+      </Row>
+      <Row>
+        <F>178</F>
+        <F>Poland</F>
+        <F>PL</F>
+        <F>POL</F>
+        <F>616</F>
+        <F>.pl</F>
+      </Row>
+      <Row>
+        <F>179</F>
+        <F>Portugal</F>
+        <F>PT</F>
+        <F>PRT</F>
+        <F>620</F>
+        <F>.pt</F>
+      </Row>
+      <Row>
+        <F>180</F>
+        <F>Puerto Rico</F>
+        <F>PR</F>
+        <F>PRI</F>
+        <F>630</F>
+        <F>.pr</F>
+      </Row>
+      <Row>
+        <F>181</F>
+        <F>Qatar</F>
+        <F>QA</F>
+        <F>QAT</F>
+        <F>634</F>
+        <F>.qa</F>
+      </Row>
+      <Row>
+        <F>182</F>
+        <F>Réunion</F>
+        <F>RE</F>
+        <F>REU</F>
+        <F>638</F>
+        <F>.re</F>
+      </Row>
+      <Row>
+        <F>183</F>
+        <F>Romania</F>
+        <F>RO</F>
+        <F>ROU</F>
+        <F>642</F>
+        <F>.ro</F>
+      </Row>
+      <Row>
+        <F>184</F>
+        <F>Russian Federation (the)</F>
+        <F>RU</F>
+        <F>RUS</F>
+        <F>643</F>
+        <F>.ru</F>
+      </Row>
+      <Row>
+        <F>185</F>
+        <F>Rwanda</F>
+        <F>RW</F>
+        <F>RWA</F>
+        <F>646</F>
+        <F>.rw</F>
+      </Row>
+      <Row>
+        <F>186</F>
+        <F>Saint Barthélemy</F>
+        <F>BL</F>
+        <F>BLM</F>
+        <F>652</F>
+        <F>.bl</F>
+      </Row>
+      <Row>
+        <F>187</F>
+        <F>Saint Helena, Ascension Island, Tristan da Cunha</F>
+        <F>SH</F>
+        <F>SHN</F>
+        <F>654</F>
+        <F>.sh</F>
+      </Row>
+      <Row>
+        <F>188</F>
+        <F>Saint Kitts and Nevis</F>
+        <F>KN</F>
+        <F>KNA</F>
+        <F>659</F>
+        <F>.kn</F>
+      </Row>
+      <Row>
+        <F>189</F>
+        <F>Saint Lucia</F>
+        <F>LC</F>
+        <F>LCA</F>
+        <F>662</F>
+        <F>.lc</F>
+      </Row>
+      <Row>
+        <F>190</F>
+        <F>Saint Martin (French part)</F>
+        <F>MF</F>
+        <F>MAF</F>
+        <F>663</F>
+        <F>.mf</F>
+      </Row>
+      <Row>
+        <F>191</F>
+        <F>Saint Pierre and Miquelon</F>
+        <F>PM</F>
+        <F>SPM</F>
+        <F>666</F>
+        <F>.pm</F>
+      </Row>
+      <Row>
+        <F>192</F>
+        <F>Saint Vincent and the Grenadines</F>
+        <F>VC</F>
+        <F>VCT</F>
+        <F>670</F>
+        <F>.vc</F>
+      </Row>
+      <Row>
+        <F>193</F>
+        <F>Samoa</F>
+        <F>WS</F>
+        <F>WSM</F>
+        <F>882</F>
+        <F>.ws</F>
+      </Row>
+      <Row>
+        <F>194</F>
+        <F>San Marino</F>
+        <F>SM</F>
+        <F>SMR</F>
+        <F>674</F>
+        <F>.sm</F>
+      </Row>
+      <Row>
+        <F>195</F>
+        <F>Sao Tome and Principe</F>
+        <F>ST</F>
+        <F>STP</F>
+        <F>678</F>
+        <F>.st</F>
+      </Row>
+      <Row>
+        <F>196</F>
+        <F>Saudi Arabia</F>
+        <F>SA</F>
+        <F>SAU</F>
+        <F>682</F>
+        <F>.sa</F>
+      </Row>
+      <Row>
+        <F>197</F>
+        <F>Senegal</F>
+        <F>SN</F>
+        <F>SEN</F>
+        <F>686</F>
+        <F>.sn</F>
+      </Row>
+      <Row>
+        <F>198</F>
+        <F>Serbia</F>
+        <F>RS</F>
+        <F>SRB</F>
+        <F>688</F>
+        <F>.rs</F>
+      </Row>
+      <Row>
+        <F>199</F>
+        <F>Seychelles</F>
+        <F>SC</F>
+        <F>SYC</F>
+        <F>690</F>
+        <F>.sc</F>
+      </Row>
+      <Row>
+        <F>200</F>
+        <F>Sierra Leone</F>
+        <F>SL</F>
+        <F>SLE</F>
+        <F>694</F>
+        <F>.sl</F>
+      </Row>
+      <Row>
+        <F>201</F>
+        <F>Singapore</F>
+        <F>SG</F>
+        <F>SGP</F>
+        <F>702</F>
+        <F>.sg</F>
+      </Row>
+      <Row>
+        <F>202</F>
+        <F>Sint Maarten (Dutch part)</F>
+        <F>SX</F>
+        <F>SXM</F>
+        <F>534</F>
+        <F>.sx</F>
+      </Row>
+      <Row>
+        <F>203</F>
+        <F>Slovakia</F>
+        <F>SK</F>
+        <F>SVK</F>
+        <F>703</F>
+        <F>.sk</F>
+      </Row>
+      <Row>
+        <F>204</F>
+        <F>Slovenia</F>
+        <F>SI</F>
+        <F>SVN</F>
+        <F>705</F>
+        <F>.si</F>
+      </Row>
+      <Row>
+        <F>205</F>
+        <F>Solomon Islands</F>
+        <F>SB</F>
+        <F>SLB</F>
+        <F>090</F>
+        <F>.sb</F>
+      </Row>
+      <Row>
+        <F>206</F>
+        <F>Somalia</F>
+        <F>SO</F>
+        <F>SOM</F>
+        <F>706</F>
+        <F>.so</F>
+      </Row>
+      <Row>
+        <F>207</F>
+        <F>South Africa</F>
+        <F>ZA</F>
+        <F>ZAF</F>
+        <F>710</F>
+        <F>.za</F>
+      </Row>
+      <Row>
+        <F>208</F>
+        <F>South Georgia and the South Sandwich Islands</F>
+        <F>GS</F>
+        <F>SGS</F>
+        <F>239</F>
+        <F>.gs</F>
+      </Row>
+      <Row>
+        <F>209</F>
+        <F>South Sudan</F>
+        <F>SS</F>
+        <F>SSD</F>
+        <F>728</F>
+        <F>.ss</F>
+      </Row>
+      <Row>
+        <F>210</F>
+        <F>Spain</F>
+        <F>ES</F>
+        <F>ESP</F>
+        <F>724</F>
+        <F>.es</F>
+      </Row>
+      <Row>
+        <F>211</F>
+        <F>Sri Lanka</F>
+        <F>LK</F>
+        <F>LKA</F>
+        <F>144</F>
+        <F>.lk</F>
+      </Row>
+      <Row>
+        <F>212</F>
+        <F>Sudan (the)</F>
+        <F>SD</F>
+        <F>SDN</F>
+        <F>729</F>
+        <F>.sd</F>
+      </Row>
+      <Row>
+        <F>213</F>
+        <F>Suriname</F>
+        <F>SR</F>
+        <F>SUR</F>
+        <F>740</F>
+        <F>.sr</F>
+      </Row>
+      <Row>
+        <F>214</F>
+        <F>Svalbard, Jan Mayen</F>
+        <F>SJ</F>
+        <F>SJM</F>
+        <F>744</F>
+        <F></F>
+      </Row>
+      <Row>
+        <F>215</F>
+        <F>Sweden</F>
+        <F>SE</F>
+        <F>SWE</F>
+        <F>752</F>
+        <F>.se</F>
+      </Row>
+      <Row>
+        <F>216</F>
+        <F>Switzerland</F>
+        <F>CH</F>
+        <F>CHE</F>
+        <F>756</F>
+        <F>.ch</F>
+      </Row>
+      <Row>
+        <F>217</F>
+        <F>Syrian Arab Republic (the)</F>
+        <F>SY</F>
+        <F>SYR</F>
+        <F>760</F>
+        <F>.sy</F>
+      </Row>
+      <Row>
+        <F>218</F>
+        <F>Taiwan (Province of China)</F>
+        <F>TW</F>
+        <F>TWN</F>
+        <F>158</F>
+        <F>.tw</F>
+      </Row>
+      <Row>
+        <F>219</F>
+        <F>Tajikistan</F>
+        <F>TJ</F>
+        <F>TJK</F>
+        <F>762</F>
+        <F>.tj</F>
+      </Row>
+      <Row>
+        <F>220</F>
+        <F>Tanzania, the United Republic of</F>
+        <F>TZ</F>
+        <F>TZA</F>
+        <F>834</F>
+        <F>.tz</F>
+      </Row>
+      <Row>
+        <F>221</F>
+        <F>Thailand</F>
+        <F>TH</F>
+        <F>THA</F>
+        <F>764</F>
+        <F>.th</F>
+      </Row>
+      <Row>
+        <F>222</F>
+        <F>Timor-Leste</F>
+        <F>TL</F>
+        <F>TLS</F>
+        <F>626</F>
+        <F>.tl</F>
+      </Row>
+      <Row>
+        <F>223</F>
+        <F>Togo</F>
+        <F>TG</F>
+        <F>TGO</F>
+        <F>768</F>
+        <F>.tg</F>
+      </Row>
+      <Row>
+        <F>224</F>
+        <F>Tokelau</F>
+        <F>TK</F>
+        <F>TKL</F>
+        <F>772</F>
+        <F>.tk</F>
+      </Row>
+      <Row>
+        <F>225</F>
+        <F>Tonga</F>
+        <F>TO</F>
+        <F>TON</F>
+        <F>776</F>
+        <F>.to</F>
+      </Row>
+      <Row>
+        <F>226</F>
+        <F>Trinidad and Tobago</F>
+        <F>TT</F>
+        <F>TTO</F>
+        <F>780</F>
+        <F>.tt</F>
+      </Row>
+      <Row>
+        <F>227</F>
+        <F>Tunisia</F>
+        <F>TN</F>
+        <F>TUN</F>
+        <F>788</F>
+        <F>.tn</F>
+      </Row>
+      <Row>
+        <F>228</F>
+        <F>Turkey</F>
+        <F>TR</F>
+        <F>TUR</F>
+        <F>792</F>
+        <F>.tr</F>
+      </Row>
+      <Row>
+        <F>229</F>
+        <F>Turkmenistan</F>
+        <F>TM</F>
+        <F>TKM</F>
+        <F>795</F>
+        <F>.tm</F>
+      </Row>
+      <Row>
+        <F>230</F>
+        <F>Turks and Caicos Islands (the)</F>
+        <F>TC</F>
+        <F>TCA</F>
+        <F>796</F>
+        <F>.tc</F>
+      </Row>
+      <Row>
+        <F>231</F>
+        <F>Tuvalu</F>
+        <F>TV</F>
+        <F>TUV</F>
+        <F>798</F>
+        <F>.tv</F>
+      </Row>
+      <Row>
+        <F>232</F>
+        <F>Uganda</F>
+        <F>UG</F>
+        <F>UGA</F>
+        <F>800</F>
+        <F>.ug</F>
+      </Row>
+      <Row>
+        <F>233</F>
+        <F>Ukraine</F>
+        <F>UA</F>
+        <F>UKR</F>
+        <F>804</F>
+        <F>.ua</F>
+      </Row>
+      <Row>
+        <F>234</F>
+        <F>United Arab Emirates (the)</F>
+        <F>AE</F>
+        <F>ARE</F>
+        <F>784</F>
+        <F>.ae</F>
+      </Row>
+      <Row>
+        <F>235</F>
+        <F>United Kingdom of Great Britain and Northern Ireland (the)</F>
+        <F>GB</F>
+        <F>GBR</F>
+        <F>826</F>
+        <F>.gb, .uk</F>
+      </Row>
+      <Row>
+        <F>236</F>
+        <F>United States Minor Outlying Islands (the)</F>
+        <F>UM</F>
+        <F>UMI</F>
+        <F>581</F>
+        <F></F>
+      </Row>
+      <Row>
+        <F>237</F>
+        <F>United States of America (the)</F>
+        <F>US</F>
+        <F>USA</F>
+        <F>840</F>
+        <F>.us</F>
+      </Row>
+      <Row>
+        <F>238</F>
+        <F>Uruguay</F>
+        <F>UY</F>
+        <F>URY</F>
+        <F>858</F>
+        <F>.uy</F>
+      </Row>
+      <Row>
+        <F>239</F>
+        <F>Uzbekistan</F>
+        <F>UZ</F>
+        <F>UZB</F>
+        <F>860</F>
+        <F>.uz</F>
+      </Row>
+      <Row>
+        <F>240</F>
+        <F>Vanuatu</F>
+        <F>VU</F>
+        <F>VUT</F>
+        <F>548</F>
+        <F>.vu</F>
+      </Row>
+      <Row>
+        <F>241</F>
+        <F>Venezuela (Bolivarian Republic of)</F>
+        <F>VE</F>
+        <F>VEN</F>
+        <F>862</F>
+        <F>.ve</F>
+      </Row>
+      <Row>
+        <F>242</F>
+        <F>Viet Nam</F>
+        <F>VN</F>
+        <F>VNM</F>
+        <F>704</F>
+        <F>.vn</F>
+      </Row>
+      <Row>
+        <F>243</F>
+        <F>Virgin Islands (British)</F>
+        <F>VG</F>
+        <F>VGB</F>
+        <F>092</F>
+        <F>.vg</F>
+      </Row>
+      <Row>
+        <F>244</F>
+        <F>Virgin Islands (U.S.)</F>
+        <F>VI</F>
+        <F>VIR</F>
+        <F>850</F>
+        <F>.vi</F>
+      </Row>
+      <Row>
+        <F>245</F>
+        <F>Wallis and Futuna</F>
+        <F>WF</F>
+        <F>WLF</F>
+        <F>876</F>
+        <F>.wf</F>
+      </Row>
+      <Row>
+        <F>246</F>
+        <F>Western Sahara</F>
+        <F>EH</F>
+        <F>ESH</F>
+        <F>732</F>
+        <F></F>
+      </Row>
+      <Row>
+        <F>247</F>
+        <F>Yemen</F>
+        <F>YE</F>
+        <F>YEM</F>
+        <F>887</F>
+        <F>.ye</F>
+      </Row>
+      <Row>
+        <F>248</F>
+        <F>Zambia</F>
+        <F>ZM</F>
+        <F>ZMB</F>
+        <F>894</F>
+        <F>.zm</F>
+      </Row>
+      <Row>
+        <F>249</F>
+        <F>Zimbabwe</F>
+        <F>ZW</F>
+        <F>ZWE</F>
+        <F>716</F>
+        <F>.zw</F>
+      </Row>
+    </Rows>
+  </SavedData>
+</Report>

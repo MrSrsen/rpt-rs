@@ -1,4 +1,5 @@
-.idea
+**/.idea/
+**/.vs/
 
 # Sensitive or work-in-progress staff that should not be committed
 /samples/
@@ -12,3 +13,15 @@
 /CLAUDE.md
 /.claude/
 
+# Beads will be ignored until project is not stabilized
+.beads/
+render-out/
+
+# Example programs are dev/scratch tools — kept on disk for `cargo run --example`, not tracked.
+**/examples/
+
+# Private-report SQL fixtures carry real production schema/table/column names — never commit.
+/tests/fixtures/sql/private/
+
+# Private-report HTML baselines (real schema-derived render) — never commit.
+/tests/fixtures/baselines/html/private/

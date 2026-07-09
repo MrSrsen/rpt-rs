@@ -1,19 +1,23 @@
 # Test fixtures
 
-Public Crystal Reports `.rpt` files and their XML baselines, used by the regression test in
-`crates/rpt-to-xml/tests/baseline.rs`.
+Public Crystal Reports `.rpt` files and their baselines, used by two regression tests: the XML
+exporter baseline (`crates/rpt-cli/tests/baseline.rs`) and the data-driven HTML render baseline
+(`crates/rpt-render/tests/postgres_fixtures.rs`).
 
 - `reports/` — the `.rpt` fixtures.
-- `baselines/` — the expected XML output for each report (`<name>.xml`).
+- `baselines/xml/` — the committed XML export baselines (`<group>/<name>.xml`).
+- `baselines/html/` — the committed HTML render baselines (`<group>/<name>.html`), one per report seeded
+  from `sql/<group>/`. `baselines/html/private/` holds gitignored baselines for private reports.
+- `sql/` — SQL migrations (schema + synthetic seed) for the data-driven render test; see `sql/README.md`.
 
-The test exports each report with `rpt-to-xml` inside a [Bubblewrap](https://github.com/containers/bubblewrap) sandbox,
+The test exports each report with `rpt xml-dump` inside a [Bubblewrap](https://github.com/containers/bubblewrap) sandbox,
 with the report bind-mounted at a fixed path, so path-derived attributes are identical on every machine and the
 comparison is deterministic. The output must match the baseline exactly.
 
 Regenerate the baselines after an intentional change to the XML output:
 
 ```sh
-RPT_BLESS=1 cargo test -p rpt-to-xml --test baseline
+RPT_BLESS=1 cargo test -p rpt-cli --test baseline
 ```
 
 ## Sources and attribution

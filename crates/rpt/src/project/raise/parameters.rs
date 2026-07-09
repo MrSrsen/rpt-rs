@@ -6,7 +6,11 @@ use super::*;
 /// report-vs-stored-procedure kind, and the optional-prompt flag are not in the PromptManager XML
 /// (which carries only name, value type and panel visibility) — they live in this record.
 pub(super) struct ParamRecord {
-    pub(super) guid: String,
+    /// The `crobj://{…}` GUID that joins this record to its PromptManager entry, or `None` for a
+    /// GUID-less record — a parameter used only in a formula, with no PromptManager entry. GUID-less
+    /// records are synthesized directly into a `ParameterField` by
+    /// [`raise_orphan_param`] rather than joined.
+    pub(super) guid: Option<String>,
     pub(super) prompt_text: String,
     pub(super) is_sp_param: bool,
     pub(super) is_optional: bool,
@@ -21,6 +25,15 @@ pub(super) struct ParamRecord {
     /// descriptions, decoded from the value-list block of this `0x007a` record. Empty for a plain
     /// parameter with no pick list.
     pub(super) default_values: Vec<ParameterValue>,
+    /// SDK `@DefaultValueDisplayType` — decoded from a flag byte in this `0x007a` record.
+    pub(super) display_type: crate::model::ParameterDisplayType,
+    /// SDK `@DefaultValueSortOrder` — decoded from a flag byte in this `0x007a` record.
+    pub(super) sort_order: crate::model::ParameterSortOrder,
+    /// The raw Crystal value-type code (`CrFieldValueType`) from the record's `ff ff <vt>` value-list
+    /// marker (`6` = Number, `7` = Currency, `9` = Date, `11` = String — see [`parse_value_entries`]).
+    /// Used only to resolve the [`ParameterValueKind`] for a GUID-less record, which has no
+    /// PromptManager `ValueType` to read.
+    pub(super) value_type_code: Option<u8>,
 }
 
 /// Decode a parameter detail record (`0x007a`, leaf already de-obfuscated by the XOR-0x7a record
@@ -66,9 +79,15 @@ pub(super) fn parse_param_leaf(leaf: &[u8]) -> Option<ParamRecord> {
             == Some(1);
     let allow_custom_values = !dynamic;
     let allow_editing_default = !dynamic;
-    let guid = find_guid_lp(leaf)?;
+    // A GUID-less record (parameter used only in a formula, no PromptManager entry) is kept — it is
+    // synthesized into a `ParameterField` directly by `raise_orphan_param`.
+    let guid = find_guid_lp(leaf);
     let index = u16_be(leaf, 0)?;
+    let value_type_code = find_value_marker(leaf, p).and_then(|m| leaf.get(m + 2).copied());
     let default_values = parse_default_value_list(leaf, p).unwrap_or_default();
+    let (display_type, sort_order) = ff_end
+        .and_then(|e| parse_default_value_flags(leaf, e))
+        .unwrap_or_default();
     Some(ParamRecord {
         guid,
         prompt_text,
@@ -79,7 +98,113 @@ pub(super) fn parse_param_leaf(leaf: &[u8]) -> Option<ParamRecord> {
         allow_editing_default,
         index,
         default_values,
+        display_type,
+        sort_order,
+        value_type_code,
     })
+}
+
+/// The [`ParameterValueKind`] for a GUID-less parameter, resolved from its `0x007a` value-list marker
+/// code (`CrFieldValueType`). `6`/`7`/`9`/`11` (Number/Currency/Date/String) are confirmed by the
+/// value-entry decoder; `8`/`10` (Boolean/Time) are the natural fill and marked unverified (no corpus
+/// sample of a GUID-less parameter with those codes). Unknown codes fall back to a string parameter.
+fn value_kind_from_code(code: u8) -> ParameterValueKind {
+    match code {
+        6 => ParameterValueKind::NumberParameter,
+        7 => ParameterValueKind::CurrencyParameter,
+        8 => ParameterValueKind::BooleanParameter, // unverified: no corpus sample
+        9 => ParameterValueKind::DateParameter,
+        10 => ParameterValueKind::TimeParameter, // unverified: no corpus sample
+        11 => ParameterValueKind::StringParameter,
+        _ => ParameterValueKind::StringParameter,
+    }
+}
+
+/// Synthesize a `ParameterField` from a GUID-less `0x007a` record (a parameter referenced only by a
+/// formula, absent from the PromptManager). Its Name and PromptText are the record's LP-string (offset
+/// 6); the value kind comes from the value-list marker; the flag attributes are the ones already
+/// decoded from the record. Initial/current value lists are empty (there is no PromptManager entry or
+/// `ReportParametersStream` join). Returns `None` if the record carries no usable name.
+pub(super) fn raise_orphan_param(rec: &ParamRecord) -> Option<FieldDef> {
+    let name = rec.prompt_text.clone();
+    if name.is_empty() {
+        return None;
+    }
+    let value_kind = rec
+        .value_type_code
+        .map(value_kind_from_code)
+        .unwrap_or_default();
+    Some(FieldDef {
+        kind: FieldKindData::Parameter(Box::new(ParameterField {
+            value_kind,
+            parameter_type: crate::model::ParameterType::ReportParameter,
+            prompt_text: Some(name.clone()),
+            show_on_panel: false,
+            editable_on_panel: false,
+            optional_prompt: rec.is_optional,
+            has_current_value: false,
+            allow_multiple_values: rec.allow_multiple,
+            allow_custom_values: rec.allow_custom_values,
+            allow_editing_default_value: rec.allow_editing_default,
+            default_values: rec.default_values.clone(),
+            initial_values: Vec::new(),
+            current_values: Vec::new(),
+            default_value_display_type: rec.display_type,
+            default_value_sort_order: rec.sort_order,
+            ..Default::default()
+        })),
+        value_type: param_value_type(value_kind),
+        name,
+        ..Default::default()
+    })
+}
+
+/// Decode the SDK `@DefaultValueDisplayType` and `@DefaultValueSortOrder` flags from a `0x007a`
+/// parameter record. Both are single bytes positioned relative to the parameter-name LP-string (the
+/// first length-prefixed printable string after the 32-byte `0xFF` bounds block, `ff_end`): the
+/// display-type byte sits 4 bytes past the end of the name field, the sort-order byte 5 bytes past
+/// it. Values: display `1` = `Description` (else `DescriptionAndValue`); sort `1` =
+/// `AlphabeticalAscending` (else `NoSort`). Absent ⇒ engine defaults.
+fn parse_default_value_flags(
+    leaf: &[u8],
+    ff_end: usize,
+) -> Option<(
+    crate::model::ParameterDisplayType,
+    crate::model::ParameterSortOrder,
+)> {
+    use crate::model::{ParameterDisplayType, ParameterSortOrder};
+    const DISPLAY_TYPE_OFFSET: usize = 4;
+    const SORT_ORDER_OFFSET: usize = 5;
+    let (name_pos, name_len) = first_lp_after(leaf, ff_end)?;
+    let name_end = name_pos + 1 + name_len;
+    let display = match leaf.get(name_end + DISPLAY_TYPE_OFFSET).copied() {
+        Some(1) => ParameterDisplayType::Description,
+        _ => ParameterDisplayType::DescriptionAndValue,
+    };
+    let sort = match leaf.get(name_end + SORT_ORDER_OFFSET).copied() {
+        Some(1) => ParameterSortOrder::AlphabeticalAscending,
+        _ => ParameterSortOrder::NoSort,
+    };
+    Some((display, sort))
+}
+
+/// The `(length-byte index, content length)` of the first length-prefixed printable string at or
+/// after `from` — anchors on the parameter-name LP-string. Mirrors [`read_lp_strings`]'s per-string
+/// validation (a `u8` length in `1..=64` with printable, non-empty content).
+fn first_lp_after(bytes: &[u8], from: usize) -> Option<(usize, usize)> {
+    let mut p = from;
+    while p < bytes.len() {
+        let len = bytes[p] as usize;
+        if (1..=64).contains(&len) && p + 1 + len <= bytes.len() {
+            let raw = &bytes[p + 1..p + 1 + len];
+            let end = raw.iter().position(|&b| b == 0).unwrap_or(raw.len());
+            if end > 0 && raw[..end].iter().all(|&b| (0x20..0x7f).contains(&b)) {
+                return Some((p, len));
+            }
+        }
+        p += 1;
+    }
+    None
 }
 
 /// Decode the default pick-list (`<ParameterDefaultValues>`) from a `0x007a` parameter record.
@@ -114,6 +239,7 @@ fn parse_default_value_list(leaf: &[u8], prompt_end: usize) -> Option<Vec<Parame
             .map(|(i, value)| ParameterValue {
                 value,
                 description: Some(descs.get(i).cloned().unwrap_or_default()),
+                range: None,
             })
             .collect(),
     )
@@ -192,6 +318,9 @@ fn read_descriptions(leaf: &[u8], marker: usize, count: usize) -> Vec<String> {
 /// Collect up to `max` non-empty printable NUL-terminated **byte-length-prefixed** strings from
 /// `bytes` (a `u8` length ≤ 64, unlike the u32-prefixed [`read_lp_string`] flavor), skipping any
 /// non-conforming padding/marker bytes between them (advance one byte on a non-match).
+///
+/// A deliberate `u8`-length, printable-filtered variant — a different framing from the
+/// `u32`-prefixed `read_be_lp_string_lossy`, so it is not collapsed onto it.
 fn read_lp_strings(bytes: &[u8], max: usize) -> Vec<String> {
     let mut out = Vec::new();
     let mut p = 0;
@@ -329,6 +458,7 @@ pub(crate) fn parse_report_parameters(stream: &RecordStream) -> BTreeMap<u16, Ve
                 .map(|(i, value)| ParameterValue {
                     value,
                     description: Some(descs.get(i).cloned().unwrap_or_default()),
+                    range: None,
                 })
                 .collect();
             if !values.is_empty() {
@@ -356,7 +486,11 @@ fn parse_discrete_values(xml: &str, with_description: bool) -> Vec<ParameterValu
         } else {
             None
         };
-        out.push(ParameterValue { value, description });
+        out.push(ParameterValue {
+            value,
+            description,
+            range: None,
+        });
     }
     out
 }
@@ -396,6 +530,12 @@ pub(super) fn raise_parameters(
             .split_once("Int_ShowOnViewerPanel</Name><Value VariantType=\"Integer\">")
             .and_then(|(_, v)| v.trim_start().chars().next())
             == Some('1');
+        // Prompt-group linkage: the group GUID plus the two group-membership property flags. A
+        // cascading (parent->child) group shares one PromptGroupRef GUID across its ordered levels;
+        // a standalone parameter carries its own auto-generated singleton group and PartOfGroup=0.
+        let prompt_group = xml_tag(obj, "PromptGroupRef");
+        let part_of_group = prop_flag(meta, "Boolean_PartOfGroup");
+        let mutually_exclusive_group = prop_flag(meta, "Boolean_MutuallyExclusiveGroup");
         let guid = xml_tag(meta, "ID").unwrap_or_default();
         let rec = param_records.get(&guid);
         let parameter_type = match rec {
@@ -435,6 +575,13 @@ pub(super) fn raise_parameters(
                 default_values,
                 initial_values,
                 current_values: current,
+                // DefaultValueDisplayType / DefaultValueSortOrder decoded from the `0x007a` record;
+                // engine defaults (DescriptionAndValue / NoSort) when no detail record exists.
+                default_value_display_type: rec.map(|r| r.display_type).unwrap_or_default(),
+                default_value_sort_order: rec.map(|r| r.sort_order).unwrap_or_default(),
+                prompt_group,
+                part_of_group,
+                mutually_exclusive_group,
                 ..Default::default()
             })),
             value_type: param_value_type(value_kind),
@@ -443,6 +590,17 @@ pub(super) fn raise_parameters(
         });
     }
     out
+}
+
+/// Read a boolean-valued PromptManager `<Property>` flag by name: finds
+/// `<Name>{name}</Name><Value …>X</Value>` and returns `true` iff `X` begins with `1` (the engine
+/// writes `Boolean`/`Integer` variant flags as `0`/`1`). Absent property ⇒ `false`.
+fn prop_flag(meta: &str, name: &str) -> bool {
+    let tag = format!("<Name>{name}</Name><Value ");
+    meta.split_once(&tag)
+        .and_then(|(_, rest)| rest.split_once('>'))
+        .and_then(|(_, v)| v.trim_start().chars().next())
+        == Some('1')
 }
 
 /// The field value type a parameter exposes, from its value kind.
@@ -464,4 +622,168 @@ pub(super) fn xml_tag(s: &str, tag: &str) -> Option<String> {
     let start = s.find(&open)? + open.len();
     let end = s[start..].find(&format!("</{tag}>"))? + start;
     Some(s[start..end].to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// A GUID-less `0x007a` leaf: index, an offset-5 LP name, a `ff ff <vt>` value marker with a
+    /// zero count, then a 32-byte `0xFF` bounds block — the shape of a formula-only parameter.
+    /// `find_guid_lp` finds no `crobj://`, so `guid` is `None` and the record is treated as an
+    /// orphan; `value_type_code` is read from the marker.
+    fn guidless_number_leaf(name: &[u8]) -> Vec<u8> {
+        let mut leaf = vec![0u8; 5]; // index (u16 BE) + padding
+        leaf.push(name.len() as u8); // offset 5: LP length
+        leaf.extend_from_slice(name); // offset 6..: name
+        leaf.extend_from_slice(&[0xff, 0xff, 0x06]); // value marker, vt = 6 (Number)
+        leaf.extend_from_slice(&[0x00, 0x00]); // value count = 0
+        leaf.extend(std::iter::repeat_n(0xff, 32)); // 32-byte 0xFF bounds block
+        leaf.extend_from_slice(&[0u8; 8]); // trailer past ff_block_end
+        leaf.push(0x00); // last byte: is_optional = false
+        leaf
+    }
+
+    #[test]
+    fn parse_guidless_param_is_orphan_number() {
+        let leaf = guidless_number_leaf(b"some_param");
+        let rec = parse_param_leaf(&leaf).expect("parse");
+        assert_eq!(rec.guid, None, "GUID-less record must have no GUID");
+        assert_eq!(rec.prompt_text, "some_param");
+        assert_eq!(rec.value_type_code, Some(6));
+        assert!(!rec.is_optional);
+        assert!(rec.allow_custom_values && rec.allow_editing_default);
+        assert!(!rec.allow_multiple);
+    }
+
+    #[test]
+    fn orphan_param_synthesizes_number_parameter() {
+        let leaf = guidless_number_leaf(b"some_param");
+        let rec = parse_param_leaf(&leaf).expect("parse");
+        let fd = raise_orphan_param(&rec).expect("synthesize");
+        assert_eq!(fd.name, "some_param");
+        assert_eq!(fd.value_type, FieldValueType::Number);
+        let FieldKindData::Parameter(p) = &fd.kind else {
+            panic!("expected a parameter field");
+        };
+        assert_eq!(p.value_kind, ParameterValueKind::NumberParameter);
+        assert_eq!(p.prompt_text.as_deref(), Some("some_param"));
+        assert!(!p.has_current_value);
+        assert_eq!(
+            p.parameter_type,
+            crate::model::ParameterType::ReportParameter
+        );
+        assert!(p.default_values.is_empty());
+    }
+
+    #[test]
+    fn value_kind_codes_map_to_confirmed_kinds() {
+        assert_eq!(value_kind_from_code(6), ParameterValueKind::NumberParameter);
+        assert_eq!(
+            value_kind_from_code(7),
+            ParameterValueKind::CurrencyParameter
+        );
+        assert_eq!(value_kind_from_code(9), ParameterValueKind::DateParameter);
+        assert_eq!(
+            value_kind_from_code(11),
+            ParameterValueKind::StringParameter
+        );
+        // Unknown code falls back to a string parameter (conservative default).
+        assert_eq!(
+            value_kind_from_code(200),
+            ParameterValueKind::StringParameter
+        );
+    }
+
+    #[test]
+    fn prop_flag_reads_boolean_and_integer_variants() {
+        let meta = "<Property><Name>Boolean_PartOfGroup</Name>\
+             <Value VariantType=\"Boolean\">1</Value></Property>\
+             <Property><Name>Boolean_MutuallyExclusiveGroup</Name>\
+             <Value VariantType=\"Boolean\">0</Value></Property>\
+             <Property><Name>Boolean_GroupNumber</Name>\
+             <Value VariantType=\"Integer\">1</Value></Property>";
+        assert!(prop_flag(meta, "Boolean_PartOfGroup"));
+        assert!(!prop_flag(meta, "Boolean_MutuallyExclusiveGroup"));
+        // Reads the value regardless of the VariantType label.
+        assert!(prop_flag(meta, "Boolean_GroupNumber"));
+        // Absent property -> false.
+        assert!(!prop_flag(meta, "Boolean_Missing"));
+    }
+
+    #[test]
+    fn raise_parameters_decodes_group_linkage() {
+        // A minimal two-parameter PromptManager document: one standalone (PartOfGroup=0), one that
+        // is a group member (PartOfGroup=1, mutually exclusive) — exercises the group-linkage decode.
+        let xml = "<CRMetaObjects>\
+            <MetaObject xsi:type=\"CRMetaObject\" id=\"1\">\
+              <ID>crobj://{AAAA}</ID><Desc>solo</Desc><Type>Parameter</Type>\
+              <Properties>\
+                <Property><Name>Int_ShowOnViewerPanel</Name><Value VariantType=\"Integer\">1</Value></Property>\
+              </Properties>\
+              <Object xsi:type=\"Parameter\" id=\"2\"><Name>solo</Name><ValueType>String</ValueType>\
+                <PromptGroupRef>crobj://{GRP1}</PromptGroupRef></Object>\
+            </MetaObject>\
+            <MetaObject xsi:type=\"CRMetaObject\" id=\"3\">\
+              <ID>crobj://{BBBB}</ID><Desc>child</Desc><Type>Parameter</Type>\
+              <Properties>\
+                <Property><Name>Boolean_MutuallyExclusiveGroup</Name><Value VariantType=\"Boolean\">1</Value></Property>\
+                <Property><Name>Boolean_PartOfGroup</Name><Value VariantType=\"Boolean\">1</Value></Property>\
+              </Properties>\
+              <Object xsi:type=\"Parameter\" id=\"4\"><Name>child</Name><ValueType>Number</ValueType>\
+                <PromptGroupRef>crobj://{GRP2}</PromptGroupRef></Object>\
+            </MetaObject>\
+            </CRMetaObjects>";
+        let recs = BTreeMap::new();
+        let cur = BTreeMap::new();
+        let fields = raise_parameters(xml, &recs, &cur);
+        assert_eq!(fields.len(), 2);
+        let solo = fields.iter().find(|f| f.name == "solo").unwrap();
+        let child = fields.iter().find(|f| f.name == "child").unwrap();
+        let FieldKindData::Parameter(sp) = &solo.kind else {
+            panic!("expected parameter");
+        };
+        let FieldKindData::Parameter(cp) = &child.kind else {
+            panic!("expected parameter");
+        };
+        assert_eq!(sp.prompt_group.as_deref(), Some("crobj://{GRP1}"));
+        assert!(!sp.part_of_group);
+        assert!(!sp.mutually_exclusive_group);
+        assert_eq!(cp.prompt_group.as_deref(), Some("crobj://{GRP2}"));
+        assert!(cp.part_of_group);
+        assert!(cp.mutually_exclusive_group);
+        // Range/dynamic default to the discrete/no-binding shape (the corpus carries neither).
+        assert_eq!(
+            cp.discrete_or_range_kind,
+            crate::model::DiscreteOrRangeKind::DiscreteValue
+        );
+        assert!(cp.dynamic_lov.is_none());
+    }
+
+    #[test]
+    fn parameter_value_models_a_range() {
+        use crate::model::{ParameterRange, ParameterValue, RangeBoundType};
+        // A range value: value = lower bound, range.end_value = upper bound, per-end inclusivity.
+        let v = ParameterValue {
+            value: "1/1/2024".into(),
+            description: None,
+            range: Some(ParameterRange {
+                end_value: "12/31/2024".into(),
+                lower_bound: RangeBoundType::BoundInclusive,
+                upper_bound: RangeBoundType::BoundExclusive,
+            }),
+        };
+        let r = v.range.as_ref().unwrap();
+        assert_eq!(v.value, "1/1/2024");
+        assert_eq!(r.end_value, "12/31/2024");
+        assert_eq!(r.lower_bound, RangeBoundType::BoundInclusive);
+        assert_eq!(r.upper_bound, RangeBoundType::BoundExclusive);
+        // A discrete value leaves range unset.
+        let d = ParameterValue {
+            value: "x".into(),
+            description: None,
+            range: None,
+        };
+        assert!(d.range.is_none());
+    }
 }

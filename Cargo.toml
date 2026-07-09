@@ -1,6 +1,27 @@
 [workspace]
 resolver = "2"
-members = ["crates/rpt", "crates/rpt-engine", "crates/rpt-to-xml", "crates/rpt-cli"]
+members = [
+    "crates/rpt",
+    "crates/rpt-model",
+    "crates/crystal-formula",
+    "crates/rpt-cli",
+    "crates/rpt-pages",
+    "crates/rpt-format-value",
+    "crates/rpt-data",
+    "crates/rpt-query",
+    "crates/rpt-layout",
+    "crates/rpt-text",
+    "crates/rpt-render",
+    "crates/rpt-render-cli",
+    "crates/rpt-render-pdf",
+    "crates/rpt-render-html",
+    "crates/rpt-db-postgres",
+    "crates/rpt-db-sqlite",
+    "crates/rpt-render-svg",
+    "crates/rpt-render-raster",
+    "crates/rpt-render-util",
+    "crates/rpt-test-support",
+]
 
 [workspace.package]
 version = "0.0.0"
@@ -9,24 +30,43 @@ license = "MPL-2.0"
 authors = ["Martin Srsen <martin@srsen.sk>"]
 repository = "https://github.com/MrSrsen/rpt-rs"
 readme = "README.md"
-keywords = ["crystal-reports", "rpt", "parser", "sap", "report"]
+keywords = ["crystal-reports", "rpt", "parser", "report", "renderer"]
 categories = ["parser-implementations", "encoding"]
 rust-version = "1.85"
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
 missing_debug_implementations = "warn"
+missing_docs = "deny"
+
+[workspace.lints.rustdoc]
+broken_intra_doc_links = "deny"
 
 [workspace.lints.clippy]
 all = { level = "warn", priority = -1 }
 
 [workspace.dependencies]
 rpt = { path = "crates/rpt" }
-rpt-engine = { path = "crates/rpt-engine" }
+rpt-model = { path = "crates/rpt-model" }
+crystal-formula = { path = "crates/crystal-formula" }
+rpt-pages = { path = "crates/rpt-pages" }
+rpt-format-value = { path = "crates/rpt-format-value" }
+rpt-data = { path = "crates/rpt-data" }
+rpt-query = { path = "crates/rpt-query" }
+rpt-db-postgres = { path = "crates/rpt-db-postgres" }
+rpt-db-sqlite = { path = "crates/rpt-db-sqlite" }
+rpt-layout = { path = "crates/rpt-layout" }
+rpt-text = { path = "crates/rpt-text", default-features = false }
+rpt-render = { path = "crates/rpt-render" }
+rpt-render-svg = { path = "crates/rpt-render-svg" }
+rpt-render-raster = { path = "crates/rpt-render-raster" }
+rpt-render-pdf = { path = "crates/rpt-render-pdf" }
+rpt-render-html = { path = "crates/rpt-render-html" }
+rpt-render-util = { path = "crates/rpt-render-util" }
+rpt-test-support = { path = "crates/rpt-test-support" }
 cfb = "0.10"
 miniz_oxide = "0.8"
 thiserror = "2"
-bitflags = "2"
 quick-xml = "0.37"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"

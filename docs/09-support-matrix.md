@@ -54,29 +54,42 @@ Legend: ✅ decoded · ◐ partial · ○ recognized but not decoded (passed thr
 | `0x007a` | ParamRecord            | `0x00fc` | ObjectFormat             |
 | `0x007e` | SummaryDef             | `0x00fd` | ObjectConditionFormulas  |
 | `0x0080` | RunningTotalReset      | `0x00fe` | AreaSectionFormat        |
-| `0x00e5` | Group                  | `0x00ff` | SectionConditionFormulas |
+| `0x0088` | GroupAreaFormat        | `0x00ff` | SectionConditionFormulas |
+| `0x00e5` | Group                  |          |                          |
 | `0x0100` | FontColor              | `0x0101` | FontConditionFormulas    |
 | `0x0106` | SubReportLink          | `0x0166` | FieldHeadingLink         |
 | `0x018e` | PaperRect              |          |                          |
 
 See the [block catalog](06-block-catalog.md) for each one's meaning and layout.
 
-### Recognized but not decoded
+### Record-type coverage
 
-These types appear in real reports and are preserved verbatim, but are not yet interpreted into the model:
+Every record type that occurs in the 283-report corpus is now **identified and named** in the record registry
+(`RecordTag::name()`). The `rpt streams` undecoded count across the whole corpus fell from ~138,700 records to **0** —
+every corpus record type is named, including the last two rare codes `0x017e`/`0x017f` (identified as
+`CrossTabColumnGroupIndex`/`CrossTabTotalValue`). None of these types affect oracle parity — the reference exporter never
+emits their content — so this was format-completeness work, measured by `rpt streams`, not `oraclematch.py`.
 
-```
-0x0000 0x0001 0x0005 0x0009 0x006c 0x006e 0x006f 0x0077 0x0079 0x007f 0x0082 0x0084
-0x0086 0x0088 0x008d 0x008f 0x0091 0x0093 0x0095 0x0097 0x0099 0x009b 0x009c 0x009d
-0x00aa 0x00ac 0x00af 0x00b1 0x00b3 0x00b4 0x00bd 0x00ca 0x00e7 0x00e9 0x00ed 0x00ee
-0x00ef 0x00f0 0x00f1 0x00f2 0x00f3 0x00f4 0x00f5 0x00f6 0x00f7 0x00f8 0x00f9 0x00fa
-0x00fb 0x0103 0x0104 0x0107 0x0108 0x010a 0x010c 0x010d 0x010f 0x0111 0x0112 0x0116
-0x0118 0x011c 0x011f 0x0120 0x0121 0x0126 0x0127 0x0128 0x013f 0x0140 0x0142 0x015f
-0x0160 0x0165 0x016a 0x016d 0x0178 0x0179 0x017b 0x0189 0x018b 0x018d
-```
+Coverage comes in two grades:
 
-(`0x00b1` and `0x00b4` are partially used during decode — the blob-field wrapper and chart data block — but are not
-fully modelled.)
+- **Decoded into the model** — typed field sub-formats (`0x00ee`–`0x00fb`, stored attrs; the effective date/time/numeric
+  display is runtime-derived and excluded like `NumberOfBytes`), object hyperlinks (text + type, from the `0x00fc`
+  leaf), hierarchical grouping (`0x00e9`), formula variables (`0x0116`/`0x0118` → name/type/scope), save metadata
+  (`0x0178`), subreport re-import (`0x0142`), the field-manager census (`0x006e`), section codes / area-type
+  (`0x009b`–`0x009d`), designer guidelines/connections coordinates (`0x010c`/`0x0111`), the cross-tab object /
+  dimensions / grid formats (`0x00b8`/`0x00b9`/`0x00cb`/`0x00ce`/`0x00d2`/`0x0143`/`0x0145`), the chart binding / data
+  records (`0x00b4`/`0x007f`) and chart data-value labels (`0x011f`), the OLE embedding ordinal (`0x00bd`), the object
+  border-colour condition (`0x00ed`), container references (`0x018d`), and the parameter sort/display flags
+  (`ParameterFieldDefinition`).
+- **Named for recognition** — the many open/close bracket and wrapper/terminator records (e.g. `FieldManagerEnd`,
+  `ReportRootEnd`, the section-band and area-pair ends, chart/cross-tab/ruler/guideline/history ends), which are
+  structurally redundant with the content they bracket, plus opaque render state (the chart styling blob `0x0121`) and
+  the designer/IDE state whose semantics carry nothing a reader needs.
+
+**Absent-from-corpus families** (cross-tab is partially present and named; full OLAP grid, maps, dimension selection,
+alerts, Flash/Xcelsius, and XML/XSLT export defs do **not** occur in the corpus) are named at the **family** level from
+the crpe32 writer TU map for recognition, but their byte layouts are not decoded — that needs sample reports authored in
+a Crystal Reports designer.
 
 ## Feature areas
 
@@ -90,13 +103,17 @@ fully modelled.)
 | Summaries & running totals                                  |   ✅   |                                                                                             |
 | Sections & areas                                            |   ✅   | with formatting and conditional formatting                                                  |
 | Report objects (field, text, line, box, picture, subreport) |   ✅   | placement, formatting, fonts, borders                                                       |
+| Object hyperlinks                                           |   ✅   | hyperlink text + type decoded from the object-format leaf (not emitted by the XML export)    |
 | Subreports & subreport links                                |   ✅   | including value passing between reports                                                     |
 | Page setup / print options                                  |   ✅   | paper size, orientation, margins, page rectangle                                            |
-| Charts / graphs                                             |   ◐    | placeholder object only; chart data model not decoded                                       |
-| Cross-tabs / OLAP grids                                     |   ○    | not modelled                                                                                |
-| Maps, alerts, hierarchical grouping                         |   ○    | not modelled                                                                                |
-| Typed field sub-formats (number/date/currency masks)        |   ○    | not modelled                                                                                |
-| Writing / editing `.rpt` files                              |   ○    | the substrate round-trips; a public write API is future work                                |
+| Charts / graphs                                             |   ◐    | object + analytic layout + data-value labels decoded; styling blob named but opaque |
+| Cross-tabs / OLAP grids                                     |   ◐    | cross-tab records named/structured (object, dimensions, grid formats); full OLAP grid absent from corpus |
+| Hierarchical grouping                                       |   ✅   | `0x00e9` group-value name + defining condition-formula decoded                              |
+| Maps, alerts, Flash/Xcelsius, XML/XSLT export               |   ○    | named at family level from the writer TU map; absent from corpus, decode pending samples    |
+| Typed field sub-formats (number/date/currency/time/boolean/string masks) | ✅ | stored format attrs decoded (model structs populated); runtime-resolved display format excluded from parity (like `NumberOfBytes`). Wiring these stored specs into the renderer is separate follow-on work — the layout engine currently formats with type defaults |
+| Formula variables (Global / Shared)                         |   ✅   | name, result type, and scope decoded                                                        |
+| Designer / IDE state (rulers, guidelines, connections, history, interactive sort) | ◐ | recognized and geometry decoded; parity-inert (no SDK read surface)              |
+| Writing / editing `.rpt` files                              |   ◐    | a byte-faithful re-encoder ships (`Rpt::reencode`, `patch_record_leaf`/`patch_record_leaf_resize`; the `rpt reencode`/`patch` CLI commands): the substrate round-trips and a decoded record's leaf can be byte-patched. There is **no** model→records lowering — you cannot mutate the semantic model and serialize it back |
 
 ## Lossless guarantee
 

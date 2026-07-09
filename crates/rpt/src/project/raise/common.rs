@@ -8,8 +8,8 @@
 use super::*;
 
 pub(super) use crate::bytes::{
-    first_lp, i32_be, longest_lp, lp_scan, lp_string_at, read_lp_string, u16_be, u16_le, u32_be,
-    Cursor, Scan,
+    first_lp, i32_be, longest_lp, lp_scan, lp_string_at, read_be_lp_string_lossy, read_lp_string,
+    u16_be, u16_le, u32_be, Cursor, Scan,
 };
 
 /// All nodes of the tree (pre-order) satisfying `pred`.

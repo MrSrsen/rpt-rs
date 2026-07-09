@@ -4,7 +4,7 @@
 //! [`RecordTag`], so the substrate can re-emit it verbatim while still exposing its identity
 //! for inspection.
 
-use super::tag::RecordTag;
+use super::RecordTag;
 
 /// The on-disk location of a record within its stream.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

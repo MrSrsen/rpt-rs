@@ -39,14 +39,28 @@ pub(super) fn raise_data_definition(
                     // group's Top N limit. It is not also emitted as a record sort.
                     if let Some((operand, dir_byte)) = pending_group_sorts.pop_front() {
                         g.sort.field = render_group_sort_summary(&operand, &g.condition_field);
-                        g.sort.direction =
-                            group_sort_direction(dir_byte, group_topn_limit(node, logical));
+                        let n = group_topn_limit(node, logical);
+                        g.sort.direction = group_sort_direction(dir_byte, n);
+                        // Only a summary-based group sort is a `TopBottomNSortField`; a plain
+                        // group-field sort keeps `topn = None` and emits no Top N attrs.
+                        g.sort.topn = Some(decode_group_topn(node, logical, n));
                     }
                     groups.push(g);
                 }
             }
             GROUP_OPTIONS => {
                 pending_group_format = Some(decode_group_area_format(&node.leaf_bytes(logical)));
+            }
+            // A `0x00e9` specified-order group value follows its group's `0xe5` (flat siblings), so it
+            // binds to the most-recently-raised report group. Grid `0xe5` records raise to `None`, so
+            // `groups.last_mut()` is always a real report group.
+            HIER_GROUP => {
+                if let (Some(g), Some(v)) = (
+                    groups.last_mut(),
+                    decode_hierarchical_value(&node.leaf_bytes(logical)),
+                ) {
+                    g.hierarchical.push(v);
+                }
             }
             RECORD_SORT_FIELD => match raise_sort(node, logical) {
                 Some(SortRecord::GroupSummary { operand, dir_byte }) => {
@@ -82,8 +96,82 @@ pub(super) fn raise_data_definition(
         condition_formula_bodies: formulas.condition_formula_bodies,
         running_total_condition_formulas: formulas.running_total_condition_formulas,
         summary_binding_fields: raise_summary_bindings(tree, logical),
-        ..Default::default()
+        formula_variables: raise_formula_variables(tree, logical),
+        field_manager_census: raise_field_manager_census(tree, logical),
     }
+}
+
+/// Decode a `0x00e9` `HierarchicalGroupingOptions` leaf: two length-prefixed strings (`u32` big-endian
+/// byte count including the trailing NUL) — the specified-order group value's display name then its
+/// defining condition-formula. Returns `None` if the value name is empty/unparseable.
+pub(super) fn decode_hierarchical_value(
+    leaf: &[u8],
+) -> Option<crate::model::HierarchicalGroupValue> {
+    let (value_name, consumed) = read_lp_string(leaf)?;
+    let condition = read_lp_string(&leaf[consumed..])
+        .map(|(s, _)| s)
+        .unwrap_or_default();
+    Some(crate::model::HierarchicalGroupValue {
+        value_name,
+        condition,
+    })
+}
+
+/// Decode the field-pool census from the `0x006e` `FieldManagerEntry` record (20-byte leaf, writer
+/// `fldmgrbs`, one per report): `[u32 BE database_fields][u16 BE formula-body-count-less-3][…]`.
+/// Returns `None` when the record is absent. The stored formula-body count omits the three built-in
+/// formulas, so it is reconstructed here (`+ 3`), matching the `0x0076` record count exactly.
+pub(super) fn raise_field_manager_census(
+    tree: &[RecordNode],
+    logical: &[u8],
+) -> Option<crate::model::FieldManagerCensus> {
+    const BUILTIN_FORMULAS: u16 = 3;
+    let node = nodes_where(tree, |n| n.rtype == FIELD_MANAGER_ENTRY)
+        .into_iter()
+        .next()?;
+    let leaf = node.leaf_bytes(logical);
+    let database_fields = u32_be(&leaf, 0)?;
+    let formula_bodies = u16_be(&leaf, 4)?.saturating_add(BUILTIN_FORMULAS);
+    Some(crate::model::FieldManagerCensus {
+        database_fields,
+        formula_bodies,
+    })
+}
+
+/// The report's persisted formula-language variables (`Global`/`Shared`), decoded from the `0x0118`
+/// records (the preceding `0x0116` header holds the count). Each
+/// `0x0118` leaf is `[u32 BE namelen (incl NUL)][name + NUL][type byte][scope byte]`, where `type` is
+/// the variable's declared FL result kind (mapped to [`FieldValueType`]) and
+/// `scope` its `FLScope` (`0`=Shared, `1`=Global; `Local` variables are not persisted). One
+/// [`FormulaVariable`] is materialised per `0x0118` found (the `0x0116` count is redundant). These are
+/// STRUCTURAL — no SDK accessor exposes them, so they are not on the XML surface.
+pub(super) fn raise_formula_variables(tree: &[RecordNode], logical: &[u8]) -> Vec<FormulaVariable> {
+    let mut out = Vec::new();
+    for root in tree {
+        root.walk(&mut |node| {
+            if node.rtype != FORMULA_VARIABLE {
+                return;
+            }
+            let leaf = node.leaf_bytes(logical);
+            let Some((name, consumed)) = read_lp_string(&leaf) else {
+                return;
+            };
+            let value_type = leaf
+                .get(consumed)
+                .map(|&b| FieldValueType::from_result_kind(i32::from(b)))
+                .unwrap_or_default();
+            let scope = leaf
+                .get(consumed + 1)
+                .map(|&b| FormulaVariableScope::from_code(i32::from(b)))
+                .unwrap_or_default();
+            out.push(FormulaVariable {
+                name,
+                value_type,
+                scope,
+            });
+        });
+    }
+    out
 }
 
 /// The summarized field of every **summary definition** (`ISummaryField`) in the data-definition
@@ -280,7 +368,7 @@ pub(super) fn raise_formulas(
                         // flag(2)) — the last-saved length as it sits in the file. The engine sometimes
                         // *recomputes* this at load, but that recompute is runtime-gated and not
                         // reproducible from the file alone, so `rpt` emits the stored fact. The recompute
-                        // model lives in `rpt-engine::formula::string_max_bytes` for the eval/LSP paths
+                        // model lives in `crystal_formula::string_max_bytes` for the eval/LSP paths
                         // that have runtime context. Capped at 32767 chars → 65534.
                         let number_of_bytes = if let Some(n) = value_type.byte_length() {
                             n
@@ -501,6 +589,7 @@ pub(super) fn raise_sort(node: &RecordNode, logical: &[u8]) -> Option<SortRecord
         field,
         direction: crate::model::SortDirection::from_code(i32::from(dir_byte)),
         kind: crate::model::SortKind::RecordSortField,
+        topn: None,
     }))
 }
 
@@ -514,6 +603,34 @@ pub(super) fn group_topn_limit(node: &RecordNode, logical: &[u8]) -> u16 {
         .checked_sub(11)
         .and_then(|i| u16_be(&bytes, i))
         .unwrap_or(0)
+}
+
+/// Number of bytes between the end of a `0xe5` group's field reference and its Top N "Others"-bucket
+/// name: `[u32 group ordinal][u16 pad]`, then the length-prefixed `NotInTopBottomNName`.
+const E5_OTHERS_NAME_OFFSET: usize = 6;
+
+/// Decode a summary-based group sort's Top N / Bottom N options (SDK `TopBottomNSortField`) from the
+/// group's `0xe5` record. `number_of_groups` is the group's Top N limit (already resolved by the
+/// caller via [`group_topn_limit`]); `not_in_topn_name` is the length-prefixed "Others"-bucket name
+/// that follows the field reference. `discard_others` has no located byte (always the default
+/// `false`), see [`crate::model::TopBottomNSort`].
+fn decode_group_topn(
+    node: &RecordNode,
+    logical: &[u8],
+    number_of_groups: u16,
+) -> crate::model::TopBottomNSort {
+    let bytes = node.leaf_bytes(logical);
+    let not_in_topn_name = read_lp_string(&bytes)
+        .and_then(|(_, consumed)| read_lp_string(bytes.get(consumed + E5_OTHERS_NAME_OFFSET..)?))
+        .map(|(name, _)| name)
+        .unwrap_or_default();
+    crate::model::TopBottomNSort {
+        number_of_groups,
+        discard_others: false,
+        not_in_topn_name,
+        // The WithTies byte has not been located, so it defaults to false (see `TopBottomNSort`).
+        with_ties: false,
+    }
 }
 
 /// Resolve a group summary sort's direction from its direction byte and Top N limit: limited
@@ -553,6 +670,60 @@ pub(super) fn decode_group_area_format(lb: &[u8]) -> crate::model::GroupAreaForm
     }
 }
 
+/// Map the legacy internal date-group period `<code>` (the byte after the `@Group #N Order` marker,
+/// structure `01 00 <code> ff ff`) to the lowercase period name the engine renders as the second
+/// `GroupName` operand (`GroupName ({field}, "Monthly")`, title-cased on emit). Returns `None` for an
+/// unknown code (never panics).
+///
+/// `0x01` = daily, `0x03` = monthly, `0x06`/`0x08` = weekly (there are two week codes — week-of-year
+/// vs. a fixed-weekday week — that both render "Weekly").
+///
+/// This internal `<code>` is *not* the SDK `CrGroupConditionEnum` ordinal — that ordinal lives in a
+/// separate byte ([`sdk_period_name`], `used + 3`). Some reports leave this `<code>` at `0` and carry
+/// the period only in the SDK-ordinal byte, so both are consulted.
+fn date_period_name(code: u8) -> Option<&'static str> {
+    match code {
+        0x01 => Some("daily"),
+        0x03 => Some("monthly"),
+        0x06 | 0x08 => Some("weekly"),
+        _ => None,
+    }
+}
+
+/// Map the SDK `CrGroupConditionEnum` ordinal — stored in the `0xe5` leaf at `used + 3` (the byte
+/// after the group's field reference) — to the lowercase period name. This byte is populated
+/// consistently (unlike the legacy [`date_period_name`] `<code>`, which some reports leave at `0`),
+/// so it is the primary period source.
+///
+/// Ordinal `1` = weekly, `4` = monthly. Ordinal `0` = daily, but `0` is also the value on
+/// non-periodic groups, so daily is *not* mapped here (to avoid a false positive on a discrete group)
+/// and is detected via the legacy paths instead. Ordinals `2`/`3`/`5`/`6`/`7` (biweekly /
+/// semimonthly / quarterly / semiannually / annually) are the remaining *date* periods; `8`–`11`
+/// (per second / minute / hour / AM-PM) are the *time-of-day* periods a Time/DateTime field also
+/// offers — appended after the eight date periods. These extra ordinals follow the SDK enum ordering
+/// and never collide with the no-period state, so they are safe to map (they only ever fire on a
+/// genuine periodic group).
+///
+/// Returns the lowercase canonical token stored on [`Group::date_condition`]; the exact title-cased
+/// `GroupName` operand string (e.g. `SemiAnnually`, `BySecond`) is produced at emit time, since this
+/// same lowercase token is also matched by the render pipeline's date bucketer.
+fn sdk_period_name(ordinal: u8) -> Option<&'static str> {
+    match ordinal {
+        1 => Some("weekly"),
+        2 => Some("biweekly"),
+        3 => Some("semimonthly"),
+        4 => Some("monthly"),
+        5 => Some("quarterly"),
+        6 => Some("semiannually"),
+        7 => Some("annually"),
+        8 => Some("bysecond"),
+        9 => Some("byminute"),
+        10 => Some("byhour"),
+        11 => Some("byampm"),
+        _ => None,
+    }
+}
+
 pub(super) fn raise_group(
     node: &RecordNode,
     logical: &[u8],
@@ -584,38 +755,73 @@ pub(super) fn raise_group(
     // type gates it. Only `daily` is decoded via this flag; other codes are left undecoded rather
     // than guessed. `condition_field` is `Alias.name`; look the type up case-insensitively.
     use crate::model::FieldValueType::*;
-    // The longer date-grouping periods are selected by the byte after the report-group order marker
-    // (`@Group #N Order`), where the trailing structure is `01 00 <code> ff ff`: 0x03 = monthly,
-    // 0x06 / 0x08 = weekly (the engine emits two week codes — e.g. week-of-year vs a week starting
-    // on a fixed weekday — that both render as "Weekly"). Daily is 0x01, or via the older
-    // `used + 4 == 0x02` flag (with the selector left 0); discrete date grouping leaves both clear.
-    // Quarterly/yearly codes are not present in the corpus, so they are left undecoded rather than
-    // guessed.
+    // The date-grouping period has two encodings in the `0xe5` leaf, consulted in order:
+    //  1. The SDK `CrGroupConditionEnum` ordinal at `used + 3` (the byte after the field reference) —
+    //     consistently populated (see [`sdk_period_name`]); ordinals >= 1 are the non-daily periods
+    //     and never collide with the no-period state.
+    //  2. The legacy internal `<code>` after the `@Group #N Order` marker (structure `01 00 <code>
+    //     ff ff`, see [`date_period_name`]), plus the older `used + 4 == 0x02` daily flag — used for
+    //     daily and for pre-SDK-ordinal reports. Discrete date grouping leaves all of these clear.
+    let sdk_ordinal = bytes.get(used + 3).copied();
     let period_code = lp_scan(&bytes, Scan::Consume)
         .find(|(_, s, _)| s.starts_with("@Group #") && s.ends_with(" Order"))
         .and_then(|(i, _, consumed)| bytes.get(i + consumed + 2).copied());
     let date_condition = field_types
         .get(&field.to_lowercase())
         .filter(|t| matches!(t, Date | Time | DateTime | Boolean))
-        .and_then(|_| match period_code {
-            Some(0x01) => Some("daily".to_string()),
-            Some(0x03) => Some("monthly".to_string()),
-            Some(0x06) | Some(0x08) => Some("weekly".to_string()),
-            _ if bytes.get(used + 4).copied() == Some(0x02) => Some("daily".to_string()),
-            _ => None,
+        .and_then(|_| {
+            sdk_ordinal
+                .and_then(sdk_period_name)
+                .or_else(|| period_code.and_then(date_period_name))
+                .map(str::to_string)
+                .or_else(|| {
+                    (bytes.get(used + 4).copied() == Some(0x02)).then(|| "daily".to_string())
+                })
         });
     Some(Group {
         sort: Sort {
             field: field.clone(),
             direction,
             kind: crate::model::SortKind::GroupSortField,
+            topn: None,
         },
         condition_field: field,
         date_condition,
         options: Default::default(),
         // Populated by the off-by-one `0x0088` pass in `raise_data_definition`.
         area_format: Default::default(),
+        // Populated by the `0x00e9` pass in `raise_data_definition` (specified-order groups only).
+        hierarchical: Vec::new(),
     })
+}
+
+#[cfg(test)]
+mod hierarchical_tests {
+    use super::decode_hierarchical_value;
+
+    /// A `0x00e9` leaf is two `u32`-BE-length-prefixed (NUL-terminated) strings.
+    fn lp(s: &str) -> Vec<u8> {
+        let mut v = ((s.len() + 1) as u32).to_be_bytes().to_vec();
+        v.extend_from_slice(s.as_bytes());
+        v.push(0);
+        v
+    }
+
+    #[test]
+    fn decodes_value_name_and_condition() {
+        let mut leaf = lp("X");
+        leaf.extend(lp("{Command.some_field} = \"X\""));
+        let v = decode_hierarchical_value(&leaf).expect("parse");
+        assert_eq!(v.value_name, "X");
+        assert_eq!(v.condition, "{Command.some_field} = \"X\"");
+    }
+
+    #[test]
+    fn missing_condition_yields_empty() {
+        let v = decode_hierarchical_value(&lp("Low")).expect("parse");
+        assert_eq!(v.value_name, "Low");
+        assert_eq!(v.condition, "");
+    }
 }
 
 /// Decode a field-definition record: the nested string leaf holds the name followed by the
@@ -653,4 +859,32 @@ pub(super) fn raise_field(node: &RecordNode, logical: &[u8]) -> Option<FieldDef>
         kind: FieldKindData::Database(DbField::default()),
         ..Default::default()
     })
+}
+
+#[cfg(test)]
+mod group_option_tests {
+    use super::date_period_name;
+
+    #[test]
+    fn confirmed_date_period_codes() {
+        assert_eq!(date_period_name(0x01), Some("daily"));
+        assert_eq!(date_period_name(0x03), Some("monthly"));
+        assert_eq!(date_period_name(0x06), Some("weekly"));
+        assert_eq!(date_period_name(0x08), Some("weekly"));
+    }
+
+    #[test]
+    fn unknown_date_period_codes_fall_back_to_none() {
+        // Codes with no confirmed meaning (incl. the SDK ordinals that would collide with the
+        // confirmed codes if naively applied) must NOT be mapped — they fall back to discrete.
+        for code in [0x00u8, 0x02, 0x04, 0x05, 0x07, 0xff] {
+            assert_eq!(date_period_name(code), None, "code {code:#04x}");
+        }
+    }
+
+    #[test]
+    fn with_ties_defaults_false() {
+        // WithTies has no located byte; it must default to false.
+        assert!(!crate::model::TopBottomNSort::default().with_ties);
+    }
 }

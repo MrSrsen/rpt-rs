@@ -1,0 +1,1340 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report Name="" FileName="/mnt/report.rpt" HasSavedData="True">
+  <Embedinfo />
+  <Summaryinfo KeywordsinReport="" ReportAuthor="" ReportComments="" ReportSubject="" ReportTitle="Boyum BOM Master (HANA)" />
+  <ReportOptions EnableSaveDataWithReport="True" EnableSavePreviewPicture="True" EnableSaveSummariesWithReport="True" EnableUseDummyData="False" initialDataContext="" initialReportPartName="" />
+  <PrintOptions PageContentHeight="11328" PageContentWidth="16258" PaperOrientation="Landscape" PaperSize="PaperA4" PaperSource="Auto" PrinterDuplex="Default" PrinterName="">
+    <PageMargins bottomMargin="288" leftMargin="288" rightMargin="288" topMargin="288" />
+    <PageMarginConditionFormulas />
+  </PrintOptions>
+  <SubReports />
+  <Database>
+    <TableLinks>
+      <TableLink JoinType="Equal">
+        <SourceFields>
+          <Field FormulaName="{Lines.Father}" Kind="DatabaseField" Name="Father" NumberOfBytes="102" ValueType="StringField" />
+        </SourceFields>
+        <DestinationFields>
+          <Field FormulaName="{Header.ParentCode}" Kind="DatabaseField" Name="ParentCode" NumberOfBytes="102" ValueType="StringField" />
+        </DestinationFields>
+      </TableLink>
+    </TableLinks>
+    <Tables>
+      <Table Alias="Header" ClassName="CrystalReports.CommandTable" Name="Command">
+        <ConnectionInfo Database_DLL="crdb_odbc.dll" QE_DatabaseName="SBODEMODK" QE_DatabaseType="ODBC (RDO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="192.168.25.39:30015" QE_SQLDB="True" SSO_Enabled="False" UserName="SYSTEM" Password="" />
+        <Command>SELECT &#xA;T0."Code" AS "ParentCode", &#xA;T1."ItemName" AS "ParentDescription", &#xA;T1."InvntryUom" AS "UoM", &#xA;T0."Qauntity", &#xA;T0."TreeType", &#xA;T2."Price" AS "ParentPrice", &#xA;T2."Currency" AS "ParentCurrency", &#xA;CASE &#xA;&#x9;WHEN (SELECT COUNT(*) FROM ITT1 TS0 WHERE TS0."Father" = '{?DocKey@}') - (SELECT COUNT(*) FROM ITT1 TS0 WHERE TS0."Father" = '{?DocKey@}' AND TS0."Currency" &lt;&gt; (SELECT TOP 1 "MainCurncy" FROM OADM)) = 0 THEN&#xA;&#x9;(SELECT MIN(TS0."Currency") FROM ITT1 TS0 WHERE TS0."Father" = T0."Code") &#xA;&#x9;ELSE &#xA;&#x9;(SELECT MIN("MainCurncy") FROM OADM) END AS "TotalComponentCurrency", &#xA;CASE &#xA;&#x9;WHEN (SELECT COUNT(*) FROM ITT1 TS0 WHERE TS0."Father" = '{?DocKey@}') - (SELECT COUNT(*) FROM ITT1 TS0 WHERE TS0."Father" = '{?DocKey@}' AND TS0."Currency" &lt;&gt; (SELECT TOP 1 "MainCurncy" FROM OADM)) = 0 THEN &#xA;&#x9;'N' &#xA;&#x9;ELSE &#xA;&#x9;'Y' END AS "UseTotalLCForComponentTotal" &#xA;FROM OITT T0 &#xA;INNER JOIN OITM T1 ON T0."Code" = T1."ItemCode" &#xA;LEFT JOIN ITM1 T2 ON T0."Code" = T2."ItemCode" AND T0."PriceList" = T2."PriceList" &#xA;WHERE T0."Code" = '{?DocKey@}'</Command>
+        <Fields>
+          <Field Description="" FormulaForm="{Header.ParentCode}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="102" LongName="Header.ParentCode" Name="ParentCode" ShortName="ParentCode" Type="crFieldValueTypeStringField" UseCount="1" />
+          <Field Description="" FormulaForm="{Header.ParentDescription}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="202" LongName="Header.ParentDescription" Name="ParentDescription" ShortName="ParentDescription" Type="crFieldValueTypeStringField" UseCount="1" />
+          <Field Description="" FormulaForm="{Header.UoM}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="202" LongName="Header.UoM" Name="UoM" ShortName="UoM" Type="crFieldValueTypeStringField" UseCount="1" />
+          <Field Description="" FormulaForm="{Header.Qauntity}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Header.Qauntity" Name="Qauntity" ShortName="Qauntity" Type="crFieldValueTypeNumberField" UseCount="1" />
+          <Field Description="" FormulaForm="{Header.TreeType}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Header.TreeType" Name="TreeType" ShortName="TreeType" Type="crFieldValueTypeStringField" UseCount="1" />
+          <Field Description="" FormulaForm="{Header.ParentPrice}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Header.ParentPrice" Name="ParentPrice" ShortName="ParentPrice" Type="crFieldValueTypeNumberField" UseCount="1" />
+          <Field Description="" FormulaForm="{Header.ParentCurrency}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Header.ParentCurrency" Name="ParentCurrency" ShortName="ParentCurrency" Type="crFieldValueTypeStringField" UseCount="1" />
+          <Field Description="" FormulaForm="{Header.TotalComponentCurrency}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Header.TotalComponentCurrency" Name="TotalComponentCurrency" ShortName="TotalComponentCurrency" Type="crFieldValueTypeStringField" UseCount="1" />
+          <Field Description="" FormulaForm="{Header.UseTotalLCForComponentTotal}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Header.UseTotalLCForComponentTotal" Name="UseTotalLCForComponentTotal" ShortName="UseTotalLCForComponentTotal" Type="crFieldValueTypeStringField" UseCount="1" />
+        </Fields>
+      </Table>
+      <Table Alias="Lines" ClassName="CrystalReports.CommandTable" Name="Command">
+        <ConnectionInfo Database_DLL="crdb_odbc.dll" QE_DatabaseName="SBODEMODK" QE_DatabaseType="ODBC (RDO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="192.168.25.39:30015" QE_SQLDB="True" SSO_Enabled="False" UserName="SYSTEM" Password="" />
+        <Command>SELECT &#xA;T0."Father", &#xA;T0."Code", &#xA;T1."ItemName", &#xA;T1."InvntryUom" AS "UoM", &#xA;T0."Quantity", &#xA;T1."OnHand", &#xA;T0."Warehouse", &#xA;T0."Price", &#xA;T0."Quantity" * T0."Price" AS "Total", &#xA;CASE T0."Currency" &#xA;&#x9;WHEN (SELECT TOP 1 "MainCurncy" FROM OADM) THEN &#xA;&#x9;T0."Price" * T0."Quantity" &#xA;&#x9;ELSE &#xA;&#x9;CASE &#xA;&#x9;&#x9;WHEN (SELECT TOP 1 "DirectRate" FROM OADM) &lt;&gt; 'Y' THEN &#xA;&#x9;&#x9;T0."Quantity" * T0."Price" / (SELECT IFNULL(TS0."Rate", 1) FROM ORTT TS0 WHERE TS0."Currency" = T0."Currency" AND TS0."RateDate" = TO_DATE(NOW())) &#xA;&#x9;&#x9;ELSE &#xA;&#x9;&#x9;T0."Quantity" * T0."Price" * (SELECT IFNULL(TS0."Rate", 1) FROM ORTT TS0 WHERE TS0."Currency" = T0."Currency" AND TS0."RateDate" = TO_DATE(NOW())) &#xA;&#x9;END &#xA;END AS "TotalLC", &#xA;T0."Currency" &#xA;FROM ITT1 T0 &#xA;INNER JOIN OITM T1 ON T0."Code" = T1."ItemCode" &#xA;WHERE T0."Father" = '{?DocKey@}'</Command>
+        <Fields>
+          <Field Description="" FormulaForm="{Lines.Father}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="102" LongName="Lines.Father" Name="Father" ShortName="Father" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Lines.Code}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="102" LongName="Lines.Code" Name="Code" ShortName="Code" Type="crFieldValueTypeStringField" UseCount="1" />
+          <Field Description="" FormulaForm="{Lines.ItemName}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="202" LongName="Lines.ItemName" Name="ItemName" ShortName="ItemName" Type="crFieldValueTypeStringField" UseCount="1" />
+          <Field Description="" FormulaForm="{Lines.UoM}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="202" LongName="Lines.UoM" Name="UoM" ShortName="UoM" Type="crFieldValueTypeStringField" UseCount="1" />
+          <Field Description="" FormulaForm="{Lines.Quantity}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Lines.Quantity" Name="Quantity" ShortName="Quantity" Type="crFieldValueTypeNumberField" UseCount="1" />
+          <Field Description="" FormulaForm="{Lines.OnHand}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Lines.OnHand" Name="OnHand" ShortName="OnHand" Type="crFieldValueTypeNumberField" UseCount="1" />
+          <Field Description="" FormulaForm="{Lines.Warehouse}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="18" LongName="Lines.Warehouse" Name="Warehouse" ShortName="Warehouse" Type="crFieldValueTypeStringField" UseCount="1" />
+          <Field Description="" FormulaForm="{Lines.Price}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Lines.Price" Name="Price" ShortName="Price" Type="crFieldValueTypeNumberField" UseCount="1" />
+          <Field Description="" FormulaForm="{Lines.Total}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Lines.Total" Name="Total" ShortName="Total" Type="crFieldValueTypeNumberField" UseCount="2" />
+          <Field Description="" FormulaForm="{Lines.TotalLC}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Lines.TotalLC" Name="TotalLC" ShortName="TotalLC" Type="crFieldValueTypeNumberField" UseCount="1" />
+          <Field Description="" FormulaForm="{Lines.Currency}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Lines.Currency" Name="Currency" ShortName="Currency" Type="crFieldValueTypeStringField" UseCount="2" />
+        </Fields>
+      </Table>
+    </Tables>
+  </Database>
+  <DataDefinition>
+    <GroupSelectionFormula />
+    <RecordSelectionFormula />
+    <Groups />
+    <SortFields />
+    <FormulaFieldDefinitions>
+      <FormulaFieldDefinition FormulaName="{@Title}" Kind="FormulaField" Name="Title" NumberOfBytes="36" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', 'Stykliste',&#xA;    {@X_Language} = 'DE', 'Stückliste',&#xA;    True, 'Bill of Materials' //Default English&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_ProductCode}" Kind="FormulaField" Name="Title_ProductCode" NumberOfBytes="26" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', 'Produktkode',&#xA;    {@X_Language} = 'DE', 'Produktnr.',&#xA;    True, 'Product Code' //Default English&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_ProductDescription}" Kind="FormulaField" Name="Title_ProductDescription" NumberOfBytes="40" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', 'Produktbeskrivelse',&#xA;    {@X_Language} = 'DE', 'Produktbeschreibung',&#xA;    True, 'Product Desc.' //Default English&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_UoM}" Kind="FormulaField" Name="Title_UoM" NumberOfBytes="16" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', 'Enhed',&#xA;    {@X_Language} = 'DE', 'Einheit',&#xA;    True, 'UoM' //Default English&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Qty}" Kind="FormulaField" Name="Title_Qty" NumberOfBytes="14" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', 'Mængde',&#xA;    {@X_Language} = 'DE', 'Menge',&#xA;    True, 'Qty' //Default English&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Type}" Kind="FormulaField" Name="Title_Type" NumberOfBytes="10" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', 'Type',&#xA;    {@X_Language} = 'DE', 'Typ',&#xA;    True, 'Type' //Default English&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Date}" Kind="FormulaField" Name="Title_Date" NumberOfBytes="12" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', 'Dato',&#xA;    {@X_Language} = 'DE', 'Datum',&#xA;    True, 'Date' //Default English&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Time}" Kind="FormulaField" Name="Title_Time" NumberOfBytes="10" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', 'Tid',&#xA;    {@X_Language} = 'DE', 'Zeit',&#xA;    True, 'Time' //Default English&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_TotalComponents}" Kind="FormulaField" Name="Title_TotalComponents" NumberOfBytes="46" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', 'Total for komponenter',&#xA;    {@X_Language} = 'DE', 'Gesamt für Komponenten',&#xA;    True, 'Total Components' //Default English&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_ParentPrice}" Kind="FormulaField" Name="Title_ParentPrice" NumberOfBytes="26" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', 'Produktpris',&#xA;    {@X_Language} = 'De', 'Produktpreis',&#xA;    True, 'Parent Price' //Default English&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Line_#}" Kind="FormulaField" Name="Title_Line_#" NumberOfBytes="4" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', '#',&#xA;    {@X_Language} = 'DE', '#',&#xA;    True, '#' //Default English&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Line_Item}" Kind="FormulaField" Name="Title_Line_Item" NumberOfBytes="22" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', 'Artikelnr.',&#xA;    {@X_Language} = 'DE', 'Artikelnr.',&#xA;    True, 'Item' //Default English&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Line_UoM}" Kind="FormulaField" Name="Title_Line_UoM" NumberOfBytes="16" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', 'Enhed',&#xA;    {@X_Language} = 'DE', 'Einheit',&#xA;    True, 'UoM' //Default English&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Line_Qty}" Kind="FormulaField" Name="Title_Line_Qty" NumberOfBytes="18" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', 'Mængde',&#xA;    {@X_Language} = 'DE', 'Menge',&#xA;    True, 'Quantity' //Default English&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Line_CurrentComponentStock}" Kind="FormulaField" Name="Title_Line_CurrentComponentStock" NumberOfBytes="20" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', 'På Lager',&#xA;    {@X_Language} = 'DE', 'Auf Lager',&#xA;    True, 'On Hand' //Default English&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Line_Whs}" Kind="FormulaField" Name="Title_Line_Whs" NumberOfBytes="12" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', 'Lager',&#xA;    {@X_Language} = 'DE', 'Lager',&#xA;    True, 'Whse' //Default English&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Line_UnitPrice}" Kind="FormulaField" Name="Title_Line_UnitPrice" NumberOfBytes="22" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', 'Stykpris',&#xA;    {@X_Language} = 'DE', 'Stückpreis',&#xA;    True, 'Unit Price' //Default English&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Line_Total}" Kind="FormulaField" Name="Title_Line_Total" NumberOfBytes="14" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', 'Total',&#xA;    {@X_Language} = 'DE', 'Gesamt',&#xA;    True, 'Total' //Default English&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@ProductCode}" Kind="FormulaField" Name="ProductCode" NumberOfBytes="102" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">{Header.ParentCode}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@ProductDescription}" Kind="FormulaField" Name="ProductDescription" NumberOfBytes="202" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">{Header.ParentDescription}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@UoM}" Kind="FormulaField" Name="UoM" NumberOfBytes="202" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">{Header.UoM}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Qty}" Kind="FormulaField" Name="Qty" NumberOfBytes="8" ValueType="NumberField" Syntax="crFormulaSyntaxCrystal">{Header.Qauntity}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Production}" Kind="FormulaField" Name="Title_Production" NumberOfBytes="22" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', 'Produktion',&#xA;    {@X_Language} = 'DE', 'Produktion',&#xA;    True, 'Production' //Default English&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Assembly}" Kind="FormulaField" Name="Title_Assembly" NumberOfBytes="18" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', 'Montage',&#xA;    {@X_Language} = 'DE', 'Montage',&#xA;    True, 'Assembly' //Default English&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Sales}" Kind="FormulaField" Name="Title_Sales" NumberOfBytes="16" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', 'Salg',&#xA;    {@X_Language} = 'DE', 'Verkauf',&#xA;    True, 'Sales' //Default English&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Template}" Kind="FormulaField" Name="Title_Template" NumberOfBytes="18" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', 'Skabelon',&#xA;    {@X_Language} = 'DE', 'Vorlage',&#xA;    True, 'Template' //Default English&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Type}" Kind="FormulaField" Name="Type" NumberOfBytes="36" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch&#xA;(&#xA;    {Header.TreeType} = 'A', {@Title_Assembly},&#xA;    {Header.TreeType} = 'P', {@Title_Production},&#xA;    {Header.TreeType} = 'S', {@Title_Sales},&#xA;    {Header.TreeType} = 'T', {@Title_Template},&#xA;    True, 'UNKNOWN_TREE_TYPE'&#xA;)</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@TotalComponents}" Kind="FormulaField" Name="TotalComponents" NumberOfBytes="312" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">IF({Header.UseTotalLCForComponentTotal} = 'Y') THEN&#xA;(&#xA;ToText(SUM({Lines.TotalLC}))+' '+{Header.TotalComponentCurrency}&#xA;)&#xA;ELSE&#xA;(&#xA;ToText(SUM({Lines.Total}))+' '+{Header.TotalComponentCurrency}&#xA;)</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@ParentPrice}" Kind="FormulaField" Name="ParentPrice" NumberOfBytes="312" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">ToText({Header.ParentPrice})+ ' '+{Header.ParentCurrency}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Line_#}" Kind="FormulaField" Name="Line_#" NumberOfBytes="8" ValueType="NumberField" Syntax="crFormulaSyntaxCrystal">whileprintingrecords;&#xA;global numberVar Number;&#xA;Number := Number+1</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Line_Item}" Kind="FormulaField" Name="Line_Item" NumberOfBytes="102" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">{Lines.Code}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Line_UoM}" Kind="FormulaField" Name="Line_UoM" NumberOfBytes="202" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">{Lines.UoM}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Line_Qty}" Kind="FormulaField" Name="Line_Qty" NumberOfBytes="8" ValueType="NumberField" Syntax="crFormulaSyntaxCrystal">{Lines.Quantity}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Line_CurrentComponentStock}" Kind="FormulaField" Name="Line_CurrentComponentStock" NumberOfBytes="8" ValueType="NumberField" Syntax="crFormulaSyntaxCrystal">{Lines.OnHand}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Line_Whs}" Kind="FormulaField" Name="Line_Whs" NumberOfBytes="18" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">{Lines.Warehouse}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Line_UnitPrice}" Kind="FormulaField" Name="Line_UnitPrice" NumberOfBytes="312" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">ToText({Lines.Price})+' '+{Lines.Currency}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Line_Total}" Kind="FormulaField" Name="Line_Total" NumberOfBytes="312" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">ToText({Lines.Total})+' '+{Lines.Currency}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Line_ItemName}" Kind="FormulaField" Name="Line_ItemName" NumberOfBytes="202" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">{Lines.ItemName}</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Line_ItemName}" Kind="FormulaField" Name="Title_Line_ItemName" NumberOfBytes="40" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', 'Artikelbeskrivelse',&#xA;    {@X_Language} = 'DE', 'Artikelbeschreibung',&#xA;    True, 'Itemname' //Default English&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@X_Language}" Kind="FormulaField" Name="X_Language" NumberOfBytes="6" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;{?$[CURRENT_LANGUAGE]} = 1, 'HE', //Hebrew&#xA;{?$[CURRENT_LANGUAGE]} = 3, 'EN', //English&#xA;{?$[CURRENT_LANGUAGE]} = 5, 'PL', //Polish&#xA;{?$[CURRENT_LANGUAGE]} = 8, 'GB', //Englis (UK)&#xA;{?$[CURRENT_LANGUAGE]} = 9, 'DE', //German&#xA;{?$[CURRENT_LANGUAGE]} = 11, 'DK', //Danish&#xA;{?$[CURRENT_LANGUAGE]} = 12, 'NO', //Norwegian&#xA;{?$[CURRENT_LANGUAGE]} = 13, 'IT', //Italian&#xA;{?$[CURRENT_LANGUAGE]} = 14, 'HU', //Hungarian&#xA;{?$[CURRENT_LANGUAGE]} = 16, 'NL', //Dutch&#xA;{?$[CURRENT_LANGUAGE]} = 17, 'FI', //Finnish&#xA;{?$[CURRENT_LANGUAGE]} = 18, 'GR', //Greek&#xA;{?$[CURRENT_LANGUAGE]} = 19, 'PT', //Portuguese&#xA;{?$[CURRENT_LANGUAGE]} = 20, 'SE', //Swedish&#xA;{?$[CURRENT_LANGUAGE]} = 22, 'FR', //French&#xA;{?$[CURRENT_LANGUAGE]} = 23, 'ES', //Spanish&#xA;{?$[CURRENT_LANGUAGE]} = 24, 'RU', //Russian&#xA;{?$[CURRENT_LANGUAGE]} = 25, 'CO', //Spanish (LA)&#xA;{?$[CURRENT_LANGUAGE]} = 26, 'CZ', //Czech&#xA;{?$[CURRENT_LANGUAGE]} = 27, 'SK', //Slovak&#xA;True, 'EN' //Unknown (English)&#xA;)&#xA;</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@PageXofY}" Kind="FormulaField" Name="PageXofY" NumberOfBytes="208" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;{@X_Language} = 'DK', 'Side: '+ ToText(PageNumber,'#') +' af '+Totext(TotalPageCount,'#'),&#xA;{@X_Language} = 'NO', 'Side: '+ ToText(PageNumber,'#') +' av '+Totext(TotalPageCount,'#'),&#xA;{@X_Language} = 'DE', 'Seite: '+ ToText(PageNumber,'#') +' von '+Totext(TotalPageCount,'#'),&#xA;{@X_Language} = 'ES', 'Página: '+ ToText(PageNumber,'#') +' de '+Totext(TotalPageCount,'#'),&#xA;{@X_Language} = 'NL', 'Pagina: '+ ToText(PageNumber,'#') +' van '+Totext(TotalPageCount,'#'),&#xA;{@X_Language} = 'FR', 'Page: '+ ToText(PageNumber,'#') +' de '+Totext(TotalPageCount,'#'),&#xA;TRUE, 'Page: '+ ToText(PageNumber,'#') +' of '+Totext(TotalPageCount,'#')&#xA;)</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Page}" Kind="FormulaField" Name="Title_Page" NumberOfBytes="14" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;    {@X_Language} = 'DK', 'Side',&#xA;    {@X_Language} = 'NO', 'Side',&#xA;    {@X_Language} = 'DE', 'Seite',&#xA;    {@X_Language} = 'ES', 'Página',&#xA;    {@X_Language} = 'NL', 'Pagina',&#xA;    {@X_Language} = 'FR', 'Page',&#xA;    TRUE, 'Page'&#xA;)</FormulaFieldDefinition>
+      <FormulaFieldDefinition FormulaName="{@Title_Of}" Kind="FormulaField" Name="Title_Of" NumberOfBytes="8" ValueType="StringField" Syntax="crFormulaSyntaxCrystal">switch(&#xA;{@X_Language} = 'DK', 'af',&#xA;{@X_Language} = 'NO', 'av',&#xA;{@X_Language} = 'DE', 'von',&#xA;{@X_Language} = 'ES', 'de',&#xA;{@X_Language} = 'NL', 'van',&#xA;{@X_Language} = 'FR', 'de',&#xA;TRUE, 'of'&#xA;)</FormulaFieldDefinition>
+    </FormulaFieldDefinitions>
+    <GroupNameFieldDefinitions />
+    <ParameterFieldDefinitions>
+      <ParameterFieldDefinition AllowCustomCurrentValues="True" DefaultValueDisplayType="DescriptionAndValue" DefaultValueSortMethod="BasedOnValue" DefaultValueSortOrder="NoSort" DiscreteOrRangeKind="DiscreteValue" EditMask="" EnableAllowEditingDefaultValue="True" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?DocKey@}" HasCurrentValue="True" IsOptionalPrompt="False" Kind="ParameterField" MaximumValue="" MinimumValue="" Name="DocKey@" NumberOfBytes="65534" ParameterFieldName="DocKey@" ParameterFieldUsage="InUse, DataFetching" ParameterType="StoreProcedureParameter" ParameterValueKind="StringParameter" PromptText="ItemCode" ReportName="" ValueType="StringField">
+        <ParameterDefaultValues />
+        <ParameterInitialValues />
+        <ParameterCurrentValues>
+          <ParameterCurrentValue Description="" Value="LM4029" />
+        </ParameterCurrentValues>
+      </ParameterFieldDefinition>
+      <ParameterFieldDefinition AllowCustomCurrentValues="False" DefaultValueDisplayType="DescriptionAndValue" DefaultValueSortMethod="BasedOnValue" DefaultValueSortOrder="NoSort" DiscreteOrRangeKind="DiscreteValue" EditMask="" EnableAllowEditingDefaultValue="False" EnableAllowMultipleValue="False" EnableNullValue="False" FormulaName="{?$[CURRENT_LANGUAGE]}" HasCurrentValue="True" IsOptionalPrompt="False" Kind="ParameterField" MaximumValue="" MinimumValue="" Name="$[CURRENT_LANGUAGE]" NumberOfBytes="8" ParameterFieldName="$[CURRENT_LANGUAGE]" ParameterFieldUsage="InUse, ShowOnPanel, EditableOnPanel" ParameterType="ReportParameter" ParameterValueKind="NumberParameter" PromptText="Enter Language:" ReportName="" ValueType="NumberField">
+        <ParameterDefaultValues>
+          <ParameterDefaultValue Description="Hebrew" Value="1" />
+          <ParameterDefaultValue Description="English" Value="3" />
+          <ParameterDefaultValue Description="Polish" Value="5" />
+          <ParameterDefaultValue Description="English (UK)" Value="8" />
+          <ParameterDefaultValue Description="German" Value="9" />
+          <ParameterDefaultValue Description="Danish" Value="11" />
+          <ParameterDefaultValue Description="Norwegian" Value="12" />
+          <ParameterDefaultValue Description="Italian" Value="13" />
+          <ParameterDefaultValue Description="Hungarian" Value="14" />
+          <ParameterDefaultValue Description="Dutch" Value="16" />
+          <ParameterDefaultValue Description="Finnish" Value="17" />
+          <ParameterDefaultValue Description="Greek" Value="18" />
+          <ParameterDefaultValue Description="Portuguese" Value="19" />
+          <ParameterDefaultValue Description="Swedish" Value="20" />
+          <ParameterDefaultValue Description="French" Value="22" />
+          <ParameterDefaultValue Description="Spanish" Value="23" />
+          <ParameterDefaultValue Description="Russian" Value="24" />
+          <ParameterDefaultValue Description="Spanish (LA)" Value="25" />
+          <ParameterDefaultValue Description="Czech" Value="26" />
+          <ParameterDefaultValue Description="Slovak" Value="27" />
+        </ParameterDefaultValues>
+        <ParameterInitialValues>
+          <ParameterInitialValue Value="3" />
+        </ParameterInitialValues>
+        <ParameterCurrentValues>
+          <ParameterCurrentValue Description="English" Value="3" />
+        </ParameterCurrentValues>
+      </ParameterFieldDefinition>
+    </ParameterFieldDefinitions>
+    <RunningTotalFieldDefinitions />
+    <SQLExpressionFields />
+    <SummaryFields />
+  </DataDefinition>
+  <CustomFunctions />
+  <ReportDefinition>
+    <Areas>
+      <Area Kind="ReportHeader" Name="ReportHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="True" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="0" Kind="ReportHeader" Name="ReportHeaderSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageHeader" Name="PageHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="2775" Kind="PageHeader" Name="PageHeaderSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="Title1" Kind="FieldObject" Top="306" Left="643" Width="5507" Height="450" DataSource="{@Title}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="26" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="16" SizeinPoints="16" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleProductCode1" Kind="FieldObject" Top="1145" Left="643" Width="1622" Height="221" DataSource="{@Title_ProductCode}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="ProductCode1" Kind="FieldObject" Top="1145" Left="2505" Width="3961" Height="221" DataSource="{@ProductCode}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="ProductDescription1" Kind="FieldObject" Top="1508" Left="2505" Width="4350" Height="221" DataSource="{@ProductDescription}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleProductDescription1" Kind="FieldObject" Top="1508" Left="643" Width="1622" Height="221" DataSource="{@Title_ProductDescription}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleUoM1" Kind="FieldObject" Top="1860" Left="9576" Width="803" Height="221" DataSource="{@Title_UoM}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="UoM1" Kind="FieldObject" Top="1860" Left="10605" Width="1445" Height="221" DataSource="{@UoM}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="Qty1" Kind="FieldObject" Top="1508" Left="10605" Width="1445" Height="221" DataSource="{@Qty}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="False" />
+                  <NumericFieldFormat DecimalPlaces="0" RoundingFormat="RoundToUnit" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="True" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleQty1" Kind="FieldObject" Top="1508" Left="9576" Width="803" Height="221" DataSource="{@Title_Qty}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleType1" Kind="FieldObject" Top="1145" Left="9576" Width="803" Height="221" DataSource="{@Title_Type}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="Type1" Kind="FieldObject" Top="1145" Left="10605" Width="1445" Height="221" DataSource="{@Type}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleLine1" Kind="FieldObject" Top="2382" Left="643" Width="482" Height="221" DataSource="{@Title_Line_#}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleLineItem1" Kind="FieldObject" Top="2382" Left="1125" Width="2385" Height="221" DataSource="{@Title_Line_Item}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleLineUoM1" Kind="FieldObject" Top="2382" Left="9576" Width="1029" Height="221" DataSource="{@Title_Line_UoM}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleLineQty1" Kind="FieldObject" Top="2382" Left="10605" Width="1029" Height="221" DataSource="{@Title_Line_Qty}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleLineCurrentComponentStock1" Kind="FieldObject" Top="2382" Left="11625" Width="1140" Height="221" DataSource="{@Title_Line_CurrentComponentStock}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleLineWhs1" Kind="FieldObject" Top="2382" Left="12765" Width="765" Height="221" DataSource="{@Title_Line_Whs}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleLineUnitPrice1" Kind="FieldObject" Top="2382" Left="13530" Width="1275" Height="221" DataSource="{@Title_Line_UnitPrice}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleLineTotal1" Kind="FieldObject" Top="2382" Left="14804" Width="1256" Height="221" DataSource="{@Title_Line_Total}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleLineItemName1" Kind="FieldObject" Top="2382" Left="3510" Width="6066" Height="221" DataSource="{@Title_Line_ItemName}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleDate1" Kind="FieldObject" Top="233" Left="14268" Width="782" Height="221" DataSource="{@Title_Date}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <LineObject Name="Line6" Kind="LineObject" Top="864" Left="621" Width="15428" Height="0" Bottom="864" EnableExtendToBottomOfSection="False" EndSectionName="PageHeaderSection1" LineStyle="SingleLine" LineThickness="20" Right="16049">
+                <LineColor Name="Black" A="255" R="0" G="0" B="0" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <FieldObject Name="TitleTime1" Kind="FieldObject" Top="544" Left="14268" Width="782" Height="221" DataSource="{@Title_Time}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="DataDate1" Kind="FieldObject" Top="233" Left="15060" Width="1000" Height="225" DataSource="DataDate">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="NumericDay" MonthFormat="NumericMonth" YearFormat="LongYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="NumericDay" MonthFormat="NumericMonth" YearFormat="LongYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="DataTime1" Kind="FieldObject" Top="544" Left="15060" Width="1000" Height="225" DataSource="DataTime">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="False" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <TextObject Name="Text5" Kind="TextObject" Top="1145" Left="2265" Width="132" Height="221" MaxNumberOfLines="0">
+                <Text>:</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text1" Kind="TextObject" Top="1508" Left="2265" Width="132" Height="221" MaxNumberOfLines="0">
+                <Text>:</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text2" Kind="TextObject" Top="1145" Left="10379" Width="132" Height="221" MaxNumberOfLines="0">
+                <Text>:</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text3" Kind="TextObject" Top="1508" Left="10379" Width="132" Height="221" MaxNumberOfLines="0">
+                <Text>:</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text4" Kind="TextObject" Top="1860" Left="10379" Width="132" Height="221" MaxNumberOfLines="0">
+                <Text>:</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <BoxObject Name="Box1" Kind="BoxObject" Top="2310" Left="475" Width="15756" Height="366" Bottom="2676" EnableExtendToBottomOfSection="False" EndSectionName="PageHeaderSection1" LineStyle="NoLine" LineThickness="20" Right="16231">
+                <LineColor Name="Black" A="255" R="0" G="0" B="0" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="Silver" A="255" R="192" G="192" B="192" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </BoxObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="Detail" Name="DetailArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="291" Kind="Detail" Name="DetailSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas BackgroundColor="// This conditional formatting formula must return one of the following Color Constants:&#xD;&#xA;// &#xD;&#xA;// Color (red, green, blue)&#xD;&#xA;// crBlack&#xD;&#xA;// crMaroon&#xD;&#xA;// crGreen&#xD;&#xA;// crOlive&#xD;&#xA;// crNavy&#xD;&#xA;// crPurple&#xD;&#xA;// crTeal&#xD;&#xA;// crSilver&#xD;&#xA;// crRed&#xD;&#xA;// crLime&#xD;&#xA;// crYellow&#xD;&#xA;// crBlue&#xD;&#xA;// crFuchsia&#xD;&#xA;// crAqua&#xD;&#xA;// crWhite&#xD;&#xA;// crNoColor&#xD;&#xA;// &#xD;&#xA;whileprintingrecords;&#xD;&#xA;if({@Line_#} MOD 2 &lt;&gt; 0) then&#xD;&#xA;crNoColor&#xD;&#xA;else&#xD;&#xA;crSilver" />
+              <BackgroundColor Name="Silver" A="255" R="192" G="192" B="192" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="LineItem1" Kind="FieldObject" Top="38" Left="1125" Width="2385" Height="221" DataSource="{@Line_Item}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="Line1" Kind="FieldObject" Top="38" Left="643" Width="482" Height="221" DataSource="{@Line_#}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="False" />
+                  <NumericFieldFormat DecimalPlaces="0" RoundingFormat="RoundToUnit" NegativeFormat="NotNegative" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="True" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="LineUoM1" Kind="FieldObject" Top="38" Left="9576" Width="1029" Height="221" DataSource="{@Line_UoM}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="LineQty1" Kind="FieldObject" Top="38" Left="10605" Width="1020" Height="221" DataSource="{@Line_Qty}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="False" />
+                  <NumericFieldFormat DecimalPlaces="0" RoundingFormat="RoundToUnit" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="True" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="LineCurrentComponentStock1" Kind="FieldObject" Top="38" Left="11625" Width="1140" Height="221" DataSource="{@Line_CurrentComponentStock}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="False" />
+                  <NumericFieldFormat DecimalPlaces="0" RoundingFormat="RoundToUnit" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="True" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="LineUnitPrice1" Kind="FieldObject" Top="38" Left="13530" Width="1275" Height="221" DataSource="{@Line_UnitPrice}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="LineTotal1" Kind="FieldObject" Top="38" Left="14804" Width="1256" Height="221" DataSource="{@Line_Total}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="LineWhs1" Kind="FieldObject" Top="38" Left="12765" Width="765" Height="221" DataSource="{@Line_Whs}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="LineItemName1" Kind="FieldObject" Top="38" Left="3510" Width="6066" Height="210" DataSource="{@Line_ItemName}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="13" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="8" SizeinPoints="8" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="True" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="ReportFooter" Name="ReportFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="893" Kind="ReportFooter" Name="ReportFooterSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="TitleTotalComponents1" Kind="FieldObject" Top="190" Left="11625" Width="2193" Height="221" DataSource="{@Title_TotalComponents}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TotalComponents1" Kind="FieldObject" Top="190" Left="13875" Width="2185" Height="221" DataSource="{@TotalComponents}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="TitleParentPrice1" Kind="FieldObject" Top="585" Left="11625" Width="2193" Height="221" DataSource="{@Title_ParentPrice}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="ParentPrice1" Kind="FieldObject" Top="585" Left="13905" Width="2155" Height="221" DataSource="{@ParentPrice}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <LineObject Name="Line4" Kind="LineObject" Top="480" Left="11625" Width="4435" Height="0" Bottom="480" EnableExtendToBottomOfSection="False" EndSectionName="ReportFooterSection1" LineStyle="SingleLine" LineThickness="20" Right="16060">
+                <LineColor Name="Black" A="255" R="0" G="0" B="0" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <LineObject Name="Line7" Kind="LineObject" Top="75" Left="643" Width="15428" Height="0" Bottom="75" EnableExtendToBottomOfSection="False" EndSectionName="ReportFooterSection1" LineStyle="SingleLine" LineThickness="20" Right="16071">
+                <LineColor Name="Black" A="255" R="0" G="0" B="0" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <LineObject Name="Line8" Kind="LineObject" Top="870" Left="11625" Width="4435" Height="0" Bottom="870" EnableExtendToBottomOfSection="False" EndSectionName="ReportFooterSection1" LineStyle="SingleLine" LineThickness="20" Right="16060">
+                <LineColor Name="Black" A="255" R="0" G="0" B="0" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageFooter" Name="PageFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="True" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="330" Kind="PageFooter" Name="PageFooterSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="PageXofY1" Kind="FieldObject" Top="60" Left="14065" Width="1995" Height="240" DataSource="{@PageXofY}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="15" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="9" SizeinPoints="9" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+    </Areas>
+  </ReportDefinition>
+  <SavedData RecordCount="5">
+    <Fields>
+      <Field Name="Lines.Currency" Type="StringField" />
+      <Field Name="Header.ParentPrice" Type="NumberField" />
+      <Field Name="Header.ParentCurrency" Type="StringField" />
+      <Field Name="Header.TreeType" Type="StringField" />
+      <Field Name="Header.Qauntity" Type="NumberField" />
+      <Field Name="Header.UoM" Type="StringField" />
+      <Field Name="Header.ParentDescription" Type="StringField" />
+      <Field Name="Header.ParentCode" Type="StringField" />
+      <Field Name="Lines.ItemName" Type="StringField" />
+      <Field Name="Lines.Total" Type="NumberField" />
+      <Field Name="Lines.Price" Type="NumberField" />
+      <Field Name="Lines.Warehouse" Type="StringField" />
+      <Field Name="Lines.OnHand" Type="NumberField" />
+      <Field Name="Lines.Quantity" Type="NumberField" />
+      <Field Name="Lines.UoM" Type="StringField" />
+      <Field Name="Lines.Code" Type="StringField" />
+      <Field Name="Header.UseTotalLCForComponentTotal" Type="StringField" />
+      <Field Name="Lines.TotalLC" Type="NumberField" />
+      <Field Name="Header.TotalComponentCurrency" Type="StringField" />
+    </Fields>
+    <Rows>
+      <Row>
+        <F>$</F>
+        <F>24000</F>
+        <F>$</F>
+        <F>P</F>
+        <F>100</F>
+        <F></F>
+        <F>LeMon 4029 Printer</F>
+        <F>LM4029</F>
+        <F>LeMon 4029 500 sheet paper drawer</F>
+        <F>3500</F>
+        <F>3500</F>
+        <F>01</F>
+        <F>92400</F>
+        <F>100</F>
+        <F></F>
+        <F>LM4029D</F>
+        <F>Y</F>
+        <F>3500</F>
+        <F>$</F>
+      </Row>
+      <Row>
+        <F>$</F>
+        <F>24000</F>
+        <F>$</F>
+        <F>P</F>
+        <F>100</F>
+        <F></F>
+        <F>LeMon 4029 Printer</F>
+        <F>LM4029</F>
+        <F>Memory Chip</F>
+        <F>10000</F>
+        <F>5000</F>
+        <F>01</F>
+        <F>54200</F>
+        <F>200</F>
+        <F></F>
+        <F>LM4029MC</F>
+        <F>Y</F>
+        <F>10000</F>
+        <F>$</F>
+      </Row>
+      <Row>
+        <F>$</F>
+        <F>24000</F>
+        <F>$</F>
+        <F>P</F>
+        <F>100</F>
+        <F></F>
+        <F>LeMon 4029 Printer</F>
+        <F>LM4029</F>
+        <F>LeMon 4029 Printer Head</F>
+        <F>2000</F>
+        <F>2000</F>
+        <F>01</F>
+        <F>88200</F>
+        <F>100</F>
+        <F></F>
+        <F>LM4029PH</F>
+        <F>Y</F>
+        <F>2000</F>
+        <F>$</F>
+      </Row>
+      <Row>
+        <F>$</F>
+        <F>24000</F>
+        <F>$</F>
+        <F>P</F>
+        <F>100</F>
+        <F></F>
+        <F>LeMon 4029 Printer</F>
+        <F>LM4029</F>
+        <F>LeMon 4029 Printer Power Supply</F>
+        <F>2000</F>
+        <F>2000</F>
+        <F>01</F>
+        <F>15900</F>
+        <F>100</F>
+        <F></F>
+        <F>LM4029PS</F>
+        <F>Y</F>
+        <F>2000</F>
+        <F>$</F>
+      </Row>
+      <Row>
+        <F>$</F>
+        <F>24000</F>
+        <F>$</F>
+        <F>P</F>
+        <F>100</F>
+        <F></F>
+        <F>LeMon 4029 Printer</F>
+        <F>LM4029</F>
+        <F>LeMon 4029 Printer System Board</F>
+        <F>10000</F>
+        <F>10000</F>
+        <F>01</F>
+        <F>85600</F>
+        <F>100</F>
+        <F></F>
+        <F>LM4029SB</F>
+        <F>Y</F>
+        <F>10000</F>
+        <F>$</F>
+      </Row>
+    </Rows>
+  </SavedData>
+</Report>

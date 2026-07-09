@@ -2,6 +2,9 @@
 
 use super::*;
 
+/// Multi-column detail layout ("Format with Multiple Columns"): a report-level singleton record.
+const MULTI_COLUMN: u16 = 0x6c;
+
 /// SDK `PrintOptions`: the page margins (`0x66`), the printable content size (`0x18e` paper
 /// rectangle less the margins) and the DEVMODE orientation / paper size / source (`0x07`). The
 /// printer driver / name / port come from the printer record (`0x03`); the printer name is emitted
@@ -125,6 +128,39 @@ pub(super) fn raise_print_options(tree: &[RecordNode], logical: &[u8]) -> PrintO
             }
         }
     }
+    // Multi-column detail layout (0x6c): the "Format with Multiple Columns" label grid, a
+    // report-level singleton. Field order (big-endian): leftMargin, topMargin, **labelWidth**,
+    // labelHeight, horizontalGap, verticalGap (u16 twips), then downThenAcross (u32 bool). The
+    // label (column) width sits at leaf offset 0x0c; it is 0 unless multi-column is enabled, so it
+    // also serves as the on/off signal (a separate multi-column-enable flag is not needed to detect
+    // it). The engine stores **no** column count — it fits as many label-width columns as span the
+    // printable width — so we derive it as `content_width / (width + gap)`.
+    if let Some(b) = leaves_of(tree, logical, MULTI_COLUMN).into_iter().next() {
+        let col_w = u16_be(&b, 0x0c).map(i32::from).unwrap_or(0);
+        if col_w > 0 {
+            let gap_h = u16_be(&b, 0x10).map(i32::from).unwrap_or(0);
+            let gap_v = u16_be(&b, 0x12).map(i32::from).unwrap_or(0);
+            // downThenAcross == 1 means fill a column top-to-bottom first; anything else (0, or the
+            // -1 "unset" default) is the usual across-then-down flow.
+            let down_then_across = u32_be(&b, 0x14) == Some(1);
+            let pitch = col_w + gap_h;
+            let columns = if pitch > 0 && opts.content_width.0 > 0 {
+                (opts.content_width.0 + gap_h) / pitch
+            } else {
+                1
+            };
+            if columns >= 2 {
+                opts.multi_column = Some(crate::model::MultiColumn {
+                    columns: columns as u16,
+                    column_width: Twips(col_w),
+                    gap_h: Twips(gap_h),
+                    gap_v: Twips(gap_v),
+                    across_then_down: !down_then_across,
+                });
+            }
+        }
+    }
+
     if let Some(node) = tree.iter().find(|n| n.rtype == PRINTER) {
         let strings = all_strings(node, logical);
         // Order: driver ("winspool"), printer name, port. The printer name is emitted empty (the
@@ -135,4 +171,54 @@ pub(super) fn raise_print_options(tree: &[RecordNode], logical: &[u8]) -> PrintO
         opts.port_name = strings.get(2).cloned();
     }
     opts
+}
+
+#[cfg(test)]
+mod tests {
+    //! `samples/` is git-ignored; these tests locate reports by path and skip when absent so a
+    //! clean checkout still runs green. Only numeric layout values are asserted.
+    use std::path::PathBuf;
+
+    fn sample(name: &str) -> PathBuf {
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .ancestors()
+            .nth(2)
+            .expect("workspace root")
+            .join("samples")
+            .join(name)
+    }
+
+    /// The multi-column report decodes to 3 columns; the geometry reproduces the engine's render
+    /// (column pitch ≈ 3810 twips tiling the 11520-twip printable width three across).
+    #[test]
+    fn multi_column_us_states() {
+        let path = sample("worrall_USStatesWithAbbreviations.rpt");
+        let Ok(rpt) = crate::Rpt::open(&path) else {
+            eprintln!("[skip] sample absent: {}", path.display());
+            return;
+        };
+        let mc = rpt
+            .report()
+            .print_options
+            .multi_column
+            .expect("US States is a multi-column report");
+        assert_eq!(mc.columns, 3);
+        assert_eq!(mc.column_width.0, 3816);
+        assert_eq!(mc.gap_h.0, 0);
+        assert_eq!(mc.gap_v.0, 0);
+        assert!(mc.across_then_down);
+        // The stored pitch tiles the printable width three across.
+        assert!((mc.column_width.0 + mc.gap_h.0 - 3810).abs() <= 20);
+    }
+
+    /// The single-column control report has no multi-column layout.
+    #[test]
+    fn single_column_alpha_isos() {
+        let path = sample("worrall_AlphaISOsByCountry.rpt");
+        let Ok(rpt) = crate::Rpt::open(&path) else {
+            eprintln!("[skip] sample absent: {}", path.display());
+            return;
+        };
+        assert!(rpt.report().print_options.multi_column.is_none());
+    }
 }

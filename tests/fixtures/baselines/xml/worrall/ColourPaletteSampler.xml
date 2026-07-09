@@ -1,0 +1,7055 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report Name="" FileName="/mnt/report.rpt" HasSavedData="True">
+  <Embedinfo />
+  <Summaryinfo KeywordsinReport="" ReportAuthor="BW" ReportComments="" ReportSubject="Colour Palette" ReportTitle="Colour Palette, sorted alphabetically" />
+  <ReportOptions EnableSaveDataWithReport="True" EnableSavePreviewPicture="True" EnableSaveSummariesWithReport="True" EnableUseDummyData="False" initialDataContext="" initialReportPartName="" />
+  <PrintOptions PageContentHeight="15120" PageContentWidth="11520" PaperOrientation="Portrait" PaperSize="DefaultPaperSize" PaperSource="FormSource" PrinterDuplex="Default" PrinterName="">
+    <PageMargins bottomMargin="360" leftMargin="360" rightMargin="360" topMargin="360" />
+    <PageMarginConditionFormulas />
+  </PrintOptions>
+  <SubReports />
+  <Database>
+    <TableLinks />
+    <Tables>
+      <Table Alias="web_colours" ClassName="CrystalReports.Table" Name="web_colours">
+        <ConnectionInfo Database_DLL="crdb_odbc.dll" QE_DatabaseName="" QE_DatabaseType="ODBC (RDO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="BWPortfolio" QE_SQLDB="True" SSO_Enabled="False" UserName="" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{web_colours.id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="web_colours.id" Name="id" ShortName="id" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{web_colours.name}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="web_colours.name" Name="name" ShortName="name" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{web_colours.hexcode}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="web_colours.hexcode" Name="hexcode" ShortName="hexcode" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{web_colours.rgb_red}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="web_colours.rgb_red" Name="rgb_red" ShortName="rgb_red" Type="crFieldValueTypeInt32sField" UseCount="3" />
+          <Field Description="" FormulaForm="{web_colours.rgb_green}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="web_colours.rgb_green" Name="rgb_green" ShortName="rgb_green" Type="crFieldValueTypeInt32sField" UseCount="3" />
+          <Field Description="" FormulaForm="{web_colours.rgb_blue}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="web_colours.rgb_blue" Name="rgb_blue" ShortName="rgb_blue" Type="crFieldValueTypeInt32sField" UseCount="3" />
+          <Field Description="" FormulaForm="{web_colours.hue}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="web_colours.hue" Name="hue" ShortName="hue" Type="crFieldValueTypePersistentMemoField" UseCount="0" />
+          <Field Description="" FormulaForm="{web_colours.hsl_satur}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="web_colours.hsl_satur" Name="hsl_satur" ShortName="hsl_satur" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{web_colours.hsl_light}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="web_colours.hsl_light" Name="hsl_light" ShortName="hsl_light" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{web_colours.hsv_satur}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="web_colours.hsv_satur" Name="hsv_satur" ShortName="hsv_satur" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{web_colours.hsv_value}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="web_colours.hsv_value" Name="hsv_value" ShortName="hsv_value" Type="crFieldValueTypeInt32sField" UseCount="0" />
+        </Fields>
+      </Table>
+    </Tables>
+  </Database>
+  <DataDefinition>
+    <GroupSelectionFormula />
+    <RecordSelectionFormula />
+    <Groups />
+    <SortFields />
+    <FormulaFieldDefinitions>
+    </FormulaFieldDefinitions>
+    <GroupNameFieldDefinitions />
+    <ParameterFieldDefinitions>
+    </ParameterFieldDefinitions>
+    <RunningTotalFieldDefinitions />
+    <SQLExpressionFields />
+    <SummaryFields />
+  </DataDefinition>
+  <CustomFunctions />
+  <ReportDefinition>
+    <Areas>
+      <Area Kind="ReportHeader" Name="ReportHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="True" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="745" Kind="ReportHeader" Name="ReportHeaderSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <TextObject Name="Text6" Kind="TextObject" Top="120" Left="120" Width="11280" Height="480" MaxNumberOfLines="0">
+                <Text>Colour Palette, sorted alphabetically</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="29" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Georgia" Size="18" SizeinPoints="18" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageHeader" Name="PageHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="450" Kind="PageHeader" Name="PageHeaderSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="Detail" Name="DetailArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="2666" Kind="Detail" Name="DetailSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="name1" Kind="FieldObject" Top="0" Left="0" Width="5885" Height="331" DataSource="{web_colours.name}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="True" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="hexcode1" Kind="FieldObject" Top="0" Left="6000" Width="1200" Height="360" DataSource="{web_colours.hexcode}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="True" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="rgbred1" Kind="FieldObject" Top="0" Left="8400" Width="672" Height="324" DataSource="{web_colours.rgb_red}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="0" RoundingFormat="RoundToUnit" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="True" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="rgbgreen1" Kind="FieldObject" Top="0" Left="9480" Width="660" Height="324" DataSource="{web_colours.rgb_green}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="0" RoundingFormat="RoundToUnit" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="True" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="rgbblue1" Kind="FieldObject" Top="0" Left="10560" Width="626" Height="324" DataSource="{web_colours.rgb_blue}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="0" RoundingFormat="RoundToUnit" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="True" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <BoxObject Name="Box1" Kind="BoxObject" Top="360" Left="0" Width="11474" Height="1800" Bottom="2160" EnableExtendToBottomOfSection="False" EndSectionName="DetailSection1" LineStyle="SingleLine" LineThickness="20" Right="11474">
+                <LineColor Name="Black" A="255" R="0" G="0" B="0" />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="True" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas BackgroundColor="Color ({web_colours.rgb_red}, {web_colours.rgb_green}, {web_colours.rgb_blue});" BorderColor="Color((255 - {web_colours.rgb_red}), (255 - {web_colours.rgb_green}), (255 - {web_colours.rgb_blue}));" />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </BoxObject>
+              <TextObject Name="Text7" Kind="TextObject" Top="0" Left="5640" Width="375" Height="360" MaxNumberOfLines="0">
+                <Text>#</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <LineObject Name="Line1" Kind="LineObject" Top="2400" Left="0" Width="11519" Height="0" Bottom="2400" EnableExtendToBottomOfSection="False" EndSectionName="DetailSection1" LineStyle="DotLine" LineThickness="0" Right="11519">
+                <LineColor Name="ffbcbcbc" A="255" R="188" G="188" B="188" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="DotLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="ffbcbcbc" A="255" R="188" G="188" B="188" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <TextObject Name="Text8" Kind="TextObject" Top="0" Left="11160" Width="359" Height="360" MaxNumberOfLines="0">
+                <Text>)</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text9" Kind="TextObject" Top="0" Left="10200" Width="330" Height="421" MaxNumberOfLines="0">
+                <Text>,</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text10" Kind="TextObject" Top="0" Left="9045" Width="315" Height="421" MaxNumberOfLines="0">
+                <Text>,</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text11" Kind="TextObject" Top="0" Left="7434" Width="810" Height="421" MaxNumberOfLines="0">
+                <Text>RGB (</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="ReportFooter" Name="ReportFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="280" Kind="ReportFooter" Name="ReportFooterSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageFooter" Name="PageFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="True" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="360" Kind="PageFooter" Name="PageFooterSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="PageNofM1" Kind="FieldObject" Top="0" Left="8909" Width="2554" Height="360" DataSource="PageNofM">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="18" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Georgia" Size="11" SizeinPoints="11" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Blue" A="255" R="0" G="0" B="255" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+    </Areas>
+  </ReportDefinition>
+  <SavedData RecordCount="956">
+    <Fields>
+      <Field Name="web_colours.name" Type="PersistentMemoField" />
+      <Field Name="web_colours.hexcode" Type="PersistentMemoField" />
+      <Field Name="web_colours.rgb_red" Type="Int32sField" />
+      <Field Name="web_colours.rgb_green" Type="Int32sField" />
+      <Field Name="web_colours.rgb_blue" Type="Int32sField" />
+    </Fields>
+    <Rows>
+      <Row>
+        <F>Absolute Zero</F>
+        <F>0048BA</F>
+        <F>0</F>
+        <F>28</F>
+        <F>73</F>
+      </Row>
+      <Row>
+        <F>Acid green</F>
+        <F>B0BF1A</F>
+        <F>69</F>
+        <F>75</F>
+        <F>10</F>
+      </Row>
+      <Row>
+        <F>Aero</F>
+        <F>7CB9E8</F>
+        <F>49</F>
+        <F>73</F>
+        <F>91</F>
+      </Row>
+      <Row>
+        <F>Aero blue</F>
+        <F>C9FFE5</F>
+        <F>79</F>
+        <F>100</F>
+        <F>90</F>
+      </Row>
+      <Row>
+        <F>African violet</F>
+        <F>B284BE</F>
+        <F>70</F>
+        <F>52</F>
+        <F>75</F>
+      </Row>
+      <Row>
+        <F>Air superiority blue</F>
+        <F>72A0C1</F>
+        <F>45</F>
+        <F>63</F>
+        <F>76</F>
+      </Row>
+      <Row>
+        <F>Alabaster</F>
+        <F>EDEAE0</F>
+        <F>93</F>
+        <F>92</F>
+        <F>88</F>
+      </Row>
+      <Row>
+        <F>Alice blue</F>
+        <F>F0F8FF</F>
+        <F>94</F>
+        <F>97</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Alloy orange</F>
+        <F>C46210</F>
+        <F>77</F>
+        <F>38</F>
+        <F>6</F>
+      </Row>
+      <Row>
+        <F>Almond</F>
+        <F>EFDECD</F>
+        <F>94</F>
+        <F>87</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Amaranth</F>
+        <F>E52B50</F>
+        <F>90</F>
+        <F>17</F>
+        <F>31</F>
+      </Row>
+      <Row>
+        <F>Amaranth (M&amp;P)</F>
+        <F>9F2B68</F>
+        <F>62</F>
+        <F>17</F>
+        <F>41</F>
+      </Row>
+      <Row>
+        <F>Amaranth pink</F>
+        <F>F19CBB</F>
+        <F>95</F>
+        <F>61</F>
+        <F>73</F>
+      </Row>
+      <Row>
+        <F>Amaranth purple</F>
+        <F>AB274F</F>
+        <F>67</F>
+        <F>15</F>
+        <F>31</F>
+      </Row>
+      <Row>
+        <F>Amaranth red</F>
+        <F>D3212D</F>
+        <F>83</F>
+        <F>13</F>
+        <F>18</F>
+      </Row>
+      <Row>
+        <F>Amazon</F>
+        <F>3B7A57</F>
+        <F>23</F>
+        <F>48</F>
+        <F>34</F>
+      </Row>
+      <Row>
+        <F>Amber</F>
+        <F>FFBF00</F>
+        <F>100</F>
+        <F>75</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Amber (SAE/ECE)</F>
+        <F>FF7E00</F>
+        <F>100</F>
+        <F>49</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Amethyst</F>
+        <F>9966CC</F>
+        <F>60</F>
+        <F>40</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Android green</F>
+        <F>A4C639</F>
+        <F>64</F>
+        <F>78</F>
+        <F>22</F>
+      </Row>
+      <Row>
+        <F>Antique brass</F>
+        <F>CD9575</F>
+        <F>80</F>
+        <F>58</F>
+        <F>46</F>
+      </Row>
+      <Row>
+        <F>Antique bronze</F>
+        <F>665D1E</F>
+        <F>40</F>
+        <F>36</F>
+        <F>12</F>
+      </Row>
+      <Row>
+        <F>Antique fuchsia</F>
+        <F>915C83</F>
+        <F>57</F>
+        <F>36</F>
+        <F>51</F>
+      </Row>
+      <Row>
+        <F>Antique ruby</F>
+        <F>841B2D</F>
+        <F>52</F>
+        <F>11</F>
+        <F>18</F>
+      </Row>
+      <Row>
+        <F>Antique white</F>
+        <F>FAEBD7</F>
+        <F>98</F>
+        <F>92</F>
+        <F>84</F>
+      </Row>
+      <Row>
+        <F>Ao (English)</F>
+        <F>008000</F>
+        <F>0</F>
+        <F>50</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Apple green</F>
+        <F>8DB600</F>
+        <F>55</F>
+        <F>71</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Apricot</F>
+        <F>FBCEB1</F>
+        <F>98</F>
+        <F>81</F>
+        <F>69</F>
+      </Row>
+      <Row>
+        <F>Aqua</F>
+        <F>00FFFF</F>
+        <F>0</F>
+        <F>100</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Aquamarine</F>
+        <F>7FFFD4</F>
+        <F>50</F>
+        <F>100</F>
+        <F>83</F>
+      </Row>
+      <Row>
+        <F>Arctic lime</F>
+        <F>D0FF14</F>
+        <F>82</F>
+        <F>100</F>
+        <F>8</F>
+      </Row>
+      <Row>
+        <F>Army green</F>
+        <F>4B5320</F>
+        <F>29</F>
+        <F>33</F>
+        <F>13</F>
+      </Row>
+      <Row>
+        <F>Artichoke</F>
+        <F>8F9779</F>
+        <F>56</F>
+        <F>59</F>
+        <F>47</F>
+      </Row>
+      <Row>
+        <F>Arylide yellow</F>
+        <F>E9D66B</F>
+        <F>91</F>
+        <F>84</F>
+        <F>42</F>
+      </Row>
+      <Row>
+        <F>Ash gray</F>
+        <F>B2BEB5</F>
+        <F>70</F>
+        <F>75</F>
+        <F>71</F>
+      </Row>
+      <Row>
+        <F>Asparagus</F>
+        <F>87A96B</F>
+        <F>53</F>
+        <F>66</F>
+        <F>42</F>
+      </Row>
+      <Row>
+        <F>Atomic tangerine</F>
+        <F>FF9966</F>
+        <F>100</F>
+        <F>60</F>
+        <F>40</F>
+      </Row>
+      <Row>
+        <F>Auburn</F>
+        <F>A52A2A</F>
+        <F>65</F>
+        <F>16</F>
+        <F>16</F>
+      </Row>
+      <Row>
+        <F>Aureolin</F>
+        <F>FDEE00</F>
+        <F>99</F>
+        <F>93</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Avocado</F>
+        <F>568203</F>
+        <F>34</F>
+        <F>51</F>
+        <F>1</F>
+      </Row>
+      <Row>
+        <F>Azure</F>
+        <F>007FFF</F>
+        <F>0</F>
+        <F>50</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Azure (X11/web color)</F>
+        <F>F0FFFF</F>
+        <F>94</F>
+        <F>100</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Baby blue</F>
+        <F>89CFF0</F>
+        <F>54</F>
+        <F>81</F>
+        <F>94</F>
+      </Row>
+      <Row>
+        <F>Baby blue eyes</F>
+        <F>A1CAF1</F>
+        <F>63</F>
+        <F>79</F>
+        <F>95</F>
+      </Row>
+      <Row>
+        <F>Baby pink</F>
+        <F>F4C2C2</F>
+        <F>96</F>
+        <F>76</F>
+        <F>76</F>
+      </Row>
+      <Row>
+        <F>Baby powder</F>
+        <F>FEFEFA</F>
+        <F>100</F>
+        <F>100</F>
+        <F>98</F>
+      </Row>
+      <Row>
+        <F>Baker-Miller pink</F>
+        <F>FF91AF</F>
+        <F>100</F>
+        <F>57</F>
+        <F>69</F>
+      </Row>
+      <Row>
+        <F>Banana Mania</F>
+        <F>FAE7B5</F>
+        <F>98</F>
+        <F>91</F>
+        <F>71</F>
+      </Row>
+      <Row>
+        <F>Barbie Pink</F>
+        <F>DA1884</F>
+        <F>85</F>
+        <F>9</F>
+        <F>52</F>
+      </Row>
+      <Row>
+        <F>Barn red</F>
+        <F>7C0A02</F>
+        <F>49</F>
+        <F>4</F>
+        <F>1</F>
+      </Row>
+      <Row>
+        <F>Battleship grey</F>
+        <F>848482</F>
+        <F>52</F>
+        <F>52</F>
+        <F>51</F>
+      </Row>
+      <Row>
+        <F>Beau blue</F>
+        <F>BCD4E6</F>
+        <F>74</F>
+        <F>83</F>
+        <F>90</F>
+      </Row>
+      <Row>
+        <F>Beaver</F>
+        <F>9F8170</F>
+        <F>62</F>
+        <F>51</F>
+        <F>44</F>
+      </Row>
+      <Row>
+        <F>Beige</F>
+        <F>F5F5DC</F>
+        <F>96</F>
+        <F>96</F>
+        <F>86</F>
+      </Row>
+      <Row>
+        <F>B'dazzled blue</F>
+        <F>2E5894</F>
+        <F>18</F>
+        <F>35</F>
+        <F>58</F>
+      </Row>
+      <Row>
+        <F>Big dip o’ruby</F>
+        <F>9C2542</F>
+        <F>61</F>
+        <F>15</F>
+        <F>26</F>
+      </Row>
+      <Row>
+        <F>Bisque</F>
+        <F>FFE4C4</F>
+        <F>100</F>
+        <F>89</F>
+        <F>77</F>
+      </Row>
+      <Row>
+        <F>Bistre</F>
+        <F>3D2B1F</F>
+        <F>24</F>
+        <F>17</F>
+        <F>12</F>
+      </Row>
+      <Row>
+        <F>Bistre brown</F>
+        <F>967117</F>
+        <F>59</F>
+        <F>44</F>
+        <F>9</F>
+      </Row>
+      <Row>
+        <F>Bitter lemon</F>
+        <F>CAE00D</F>
+        <F>79</F>
+        <F>88</F>
+        <F>5</F>
+      </Row>
+      <Row>
+        <F>Bitter lime</F>
+        <F>BFFF00</F>
+        <F>75</F>
+        <F>100</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Bittersweet</F>
+        <F>FE6F5E</F>
+        <F>100</F>
+        <F>44</F>
+        <F>37</F>
+      </Row>
+      <Row>
+        <F>Bittersweet shimmer</F>
+        <F>BF4F51</F>
+        <F>75</F>
+        <F>31</F>
+        <F>32</F>
+      </Row>
+      <Row>
+        <F>Black</F>
+        <F>000000</F>
+        <F>0</F>
+        <F>0</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Black bean</F>
+        <F>3D0C02</F>
+        <F>24</F>
+        <F>5</F>
+        <F>1</F>
+      </Row>
+      <Row>
+        <F>Black chocolate</F>
+        <F>1B1811</F>
+        <F>11</F>
+        <F>9</F>
+        <F>7</F>
+      </Row>
+      <Row>
+        <F>Black coffee</F>
+        <F>3B2F2F</F>
+        <F>23</F>
+        <F>18</F>
+        <F>18</F>
+      </Row>
+      <Row>
+        <F>Black coral</F>
+        <F>54626F</F>
+        <F>33</F>
+        <F>38</F>
+        <F>44</F>
+      </Row>
+      <Row>
+        <F>Black olive</F>
+        <F>3B3C36</F>
+        <F>23</F>
+        <F>24</F>
+        <F>21</F>
+      </Row>
+      <Row>
+        <F>Black Shadows</F>
+        <F>BFAFB2</F>
+        <F>75</F>
+        <F>69</F>
+        <F>70</F>
+      </Row>
+      <Row>
+        <F>Blanched almond</F>
+        <F>FFEBCD</F>
+        <F>100</F>
+        <F>92</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Blast-off bronze</F>
+        <F>A57164</F>
+        <F>65</F>
+        <F>44</F>
+        <F>39</F>
+      </Row>
+      <Row>
+        <F>Bleu de France</F>
+        <F>318CE7</F>
+        <F>19</F>
+        <F>55</F>
+        <F>91</F>
+      </Row>
+      <Row>
+        <F>Blizzard blue</F>
+        <F>ACE5EE</F>
+        <F>67</F>
+        <F>90</F>
+        <F>93</F>
+      </Row>
+      <Row>
+        <F>Blond</F>
+        <F>FAF0BE</F>
+        <F>98</F>
+        <F>94</F>
+        <F>75</F>
+      </Row>
+      <Row>
+        <F>Blood red</F>
+        <F>660000</F>
+        <F>40</F>
+        <F>0</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Blue</F>
+        <F>0000FF</F>
+        <F>0</F>
+        <F>0</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Blue (Crayola)</F>
+        <F>1F75FE</F>
+        <F>12</F>
+        <F>46</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Blue (Munsell)</F>
+        <F>0093AF</F>
+        <F>0</F>
+        <F>58</F>
+        <F>69</F>
+      </Row>
+      <Row>
+        <F>Blue (NCS)</F>
+        <F>0087BD</F>
+        <F>0</F>
+        <F>53</F>
+        <F>74</F>
+      </Row>
+      <Row>
+        <F>Blue (Pantone)</F>
+        <F>0018A8</F>
+        <F>0</F>
+        <F>9</F>
+        <F>66</F>
+      </Row>
+      <Row>
+        <F>Blue (pigment)</F>
+        <F>333399</F>
+        <F>20</F>
+        <F>20</F>
+        <F>60</F>
+      </Row>
+      <Row>
+        <F>Blue (RYB)</F>
+        <F>0247FE</F>
+        <F>1</F>
+        <F>28</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Blue bell</F>
+        <F>A2A2D0</F>
+        <F>64</F>
+        <F>64</F>
+        <F>82</F>
+      </Row>
+      <Row>
+        <F>Blue-gray</F>
+        <F>6699CC</F>
+        <F>40</F>
+        <F>60</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Blue-green</F>
+        <F>0D98BA</F>
+        <F>5</F>
+        <F>60</F>
+        <F>73</F>
+      </Row>
+      <Row>
+        <F>Blue-green (color wheel)</F>
+        <F>064E40</F>
+        <F>2</F>
+        <F>31</F>
+        <F>25</F>
+      </Row>
+      <Row>
+        <F>Blue jeans</F>
+        <F>5DADEC</F>
+        <F>36</F>
+        <F>68</F>
+        <F>93</F>
+      </Row>
+      <Row>
+        <F>Blue sapphire</F>
+        <F>126180</F>
+        <F>7</F>
+        <F>38</F>
+        <F>50</F>
+      </Row>
+      <Row>
+        <F>Blue-violet</F>
+        <F>8A2BE2</F>
+        <F>54</F>
+        <F>17</F>
+        <F>89</F>
+      </Row>
+      <Row>
+        <F>Blue-violet (Crayola)</F>
+        <F>7366BD</F>
+        <F>45</F>
+        <F>40</F>
+        <F>74</F>
+      </Row>
+      <Row>
+        <F>Blue-violet (color wheel)</F>
+        <F>4D1A7F</F>
+        <F>30</F>
+        <F>10</F>
+        <F>50</F>
+      </Row>
+      <Row>
+        <F>Blue yonder</F>
+        <F>5072A7</F>
+        <F>31</F>
+        <F>45</F>
+        <F>65</F>
+      </Row>
+      <Row>
+        <F>Bluetiful</F>
+        <F>3C69E7</F>
+        <F>24</F>
+        <F>41</F>
+        <F>91</F>
+      </Row>
+      <Row>
+        <F>Blush</F>
+        <F>DE5D83</F>
+        <F>87</F>
+        <F>36</F>
+        <F>51</F>
+      </Row>
+      <Row>
+        <F>Bole</F>
+        <F>79443B</F>
+        <F>47</F>
+        <F>27</F>
+        <F>23</F>
+      </Row>
+      <Row>
+        <F>Bone</F>
+        <F>E3DAC9</F>
+        <F>89</F>
+        <F>85</F>
+        <F>79</F>
+      </Row>
+      <Row>
+        <F>Bottle green</F>
+        <F>006A4E</F>
+        <F>0</F>
+        <F>42</F>
+        <F>31</F>
+      </Row>
+      <Row>
+        <F>Brandy</F>
+        <F>87413F</F>
+        <F>53</F>
+        <F>25</F>
+        <F>25</F>
+      </Row>
+      <Row>
+        <F>Brick red</F>
+        <F>CB4154</F>
+        <F>80</F>
+        <F>25</F>
+        <F>33</F>
+      </Row>
+      <Row>
+        <F>Bright green</F>
+        <F>66FF00</F>
+        <F>40</F>
+        <F>100</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Bright lilac</F>
+        <F>D891EF</F>
+        <F>85</F>
+        <F>57</F>
+        <F>94</F>
+      </Row>
+      <Row>
+        <F>Bright maroon</F>
+        <F>C32148</F>
+        <F>76</F>
+        <F>13</F>
+        <F>28</F>
+      </Row>
+      <Row>
+        <F>Bright navy blue</F>
+        <F>1974D2</F>
+        <F>10</F>
+        <F>45</F>
+        <F>82</F>
+      </Row>
+      <Row>
+        <F>Bright yellow (Crayola)</F>
+        <F>FFAA1D</F>
+        <F>100</F>
+        <F>67</F>
+        <F>11</F>
+      </Row>
+      <Row>
+        <F>Brilliant rose</F>
+        <F>FF55A3</F>
+        <F>100</F>
+        <F>33</F>
+        <F>64</F>
+      </Row>
+      <Row>
+        <F>Brink pink</F>
+        <F>FB607F</F>
+        <F>98</F>
+        <F>38</F>
+        <F>50</F>
+      </Row>
+      <Row>
+        <F>British racing green</F>
+        <F>004225</F>
+        <F>0</F>
+        <F>26</F>
+        <F>15</F>
+      </Row>
+      <Row>
+        <F>Bronze</F>
+        <F>CD7F32</F>
+        <F>80</F>
+        <F>50</F>
+        <F>20</F>
+      </Row>
+      <Row>
+        <F>Brown</F>
+        <F>88540B</F>
+        <F>53</F>
+        <F>33</F>
+        <F>4</F>
+      </Row>
+      <Row>
+        <F>Brown sugar</F>
+        <F>AF6E4D</F>
+        <F>69</F>
+        <F>43</F>
+        <F>30</F>
+      </Row>
+      <Row>
+        <F>Brunswick green</F>
+        <F>1B4D3E</F>
+        <F>11</F>
+        <F>30</F>
+        <F>24</F>
+      </Row>
+      <Row>
+        <F>Bud green</F>
+        <F>7BB661</F>
+        <F>48</F>
+        <F>71</F>
+        <F>38</F>
+      </Row>
+      <Row>
+        <F>Buff</F>
+        <F>F0DC82</F>
+        <F>94</F>
+        <F>86</F>
+        <F>51</F>
+      </Row>
+      <Row>
+        <F>Burgundy</F>
+        <F>800020</F>
+        <F>50</F>
+        <F>0</F>
+        <F>13</F>
+      </Row>
+      <Row>
+        <F>Burlywood</F>
+        <F>DEB887</F>
+        <F>87</F>
+        <F>72</F>
+        <F>53</F>
+      </Row>
+      <Row>
+        <F>Burnished brown</F>
+        <F>A17A74</F>
+        <F>63</F>
+        <F>48</F>
+        <F>45</F>
+      </Row>
+      <Row>
+        <F>Burnt orange</F>
+        <F>CC5500</F>
+        <F>80</F>
+        <F>33</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Burnt sienna</F>
+        <F>E97451</F>
+        <F>91</F>
+        <F>45</F>
+        <F>32</F>
+      </Row>
+      <Row>
+        <F>Burnt umber</F>
+        <F>8A3324</F>
+        <F>54</F>
+        <F>20</F>
+        <F>14</F>
+      </Row>
+      <Row>
+        <F>Byzantine</F>
+        <F>BD33A4</F>
+        <F>74</F>
+        <F>20</F>
+        <F>64</F>
+      </Row>
+      <Row>
+        <F>Byzantium</F>
+        <F>702963</F>
+        <F>44</F>
+        <F>16</F>
+        <F>39</F>
+      </Row>
+      <Row>
+        <F>Cadet</F>
+        <F>536872</F>
+        <F>33</F>
+        <F>41</F>
+        <F>45</F>
+      </Row>
+      <Row>
+        <F>Cadet blue</F>
+        <F>5F9EA0</F>
+        <F>37</F>
+        <F>62</F>
+        <F>63</F>
+      </Row>
+      <Row>
+        <F>Cadet blue (Crayola)</F>
+        <F>A9B2C3</F>
+        <F>66</F>
+        <F>70</F>
+        <F>76</F>
+      </Row>
+      <Row>
+        <F>Cadet grey</F>
+        <F>91A3B0</F>
+        <F>57</F>
+        <F>64</F>
+        <F>69</F>
+      </Row>
+      <Row>
+        <F>Cadmium green</F>
+        <F>006B3C</F>
+        <F>0</F>
+        <F>42</F>
+        <F>24</F>
+      </Row>
+      <Row>
+        <F>Cadmium orange</F>
+        <F>ED872D</F>
+        <F>93</F>
+        <F>53</F>
+        <F>18</F>
+      </Row>
+      <Row>
+        <F>Cadmium red</F>
+        <F>E30022</F>
+        <F>89</F>
+        <F>0</F>
+        <F>13</F>
+      </Row>
+      <Row>
+        <F>Cadmium yellow</F>
+        <F>FFF600</F>
+        <F>100</F>
+        <F>96</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Café au lait</F>
+        <F>A67B5B</F>
+        <F>65</F>
+        <F>48</F>
+        <F>36</F>
+      </Row>
+      <Row>
+        <F>Café noir</F>
+        <F>4B3621</F>
+        <F>29</F>
+        <F>21</F>
+        <F>13</F>
+      </Row>
+      <Row>
+        <F>Cambridge blue</F>
+        <F>A3C1AD</F>
+        <F>64</F>
+        <F>76</F>
+        <F>68</F>
+      </Row>
+      <Row>
+        <F>Camel</F>
+        <F>C19A6B</F>
+        <F>76</F>
+        <F>60</F>
+        <F>42</F>
+      </Row>
+      <Row>
+        <F>Cameo pink</F>
+        <F>EFBBCC</F>
+        <F>94</F>
+        <F>73</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Canary</F>
+        <F>FFFF99</F>
+        <F>100</F>
+        <F>100</F>
+        <F>60</F>
+      </Row>
+      <Row>
+        <F>Canary yellow</F>
+        <F>FFEF00</F>
+        <F>100</F>
+        <F>94</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Candy apple red</F>
+        <F>FF0800</F>
+        <F>100</F>
+        <F>3</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Candy pink</F>
+        <F>E4717A</F>
+        <F>89</F>
+        <F>44</F>
+        <F>48</F>
+      </Row>
+      <Row>
+        <F>Capri</F>
+        <F>00BFFF</F>
+        <F>0</F>
+        <F>75</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Caput mortuum</F>
+        <F>592720</F>
+        <F>35</F>
+        <F>15</F>
+        <F>13</F>
+      </Row>
+      <Row>
+        <F>Cardinal</F>
+        <F>C41E3A</F>
+        <F>77</F>
+        <F>12</F>
+        <F>23</F>
+      </Row>
+      <Row>
+        <F>Caribbean green</F>
+        <F>00CC99</F>
+        <F>0</F>
+        <F>80</F>
+        <F>60</F>
+      </Row>
+      <Row>
+        <F>Carmine</F>
+        <F>960018</F>
+        <F>59</F>
+        <F>0</F>
+        <F>9</F>
+      </Row>
+      <Row>
+        <F>Carmine (M&amp;P)</F>
+        <F>D70040</F>
+        <F>84</F>
+        <F>0</F>
+        <F>25</F>
+      </Row>
+      <Row>
+        <F>Carnation pink</F>
+        <F>FFA6C9</F>
+        <F>100</F>
+        <F>65</F>
+        <F>79</F>
+      </Row>
+      <Row>
+        <F>Carnelian</F>
+        <F>B31B1B</F>
+        <F>70</F>
+        <F>11</F>
+        <F>11</F>
+      </Row>
+      <Row>
+        <F>Carolina blue</F>
+        <F>56A0D3</F>
+        <F>34</F>
+        <F>63</F>
+        <F>83</F>
+      </Row>
+      <Row>
+        <F>Carrot orange</F>
+        <F>ED9121</F>
+        <F>93</F>
+        <F>57</F>
+        <F>13</F>
+      </Row>
+      <Row>
+        <F>Castleton green</F>
+        <F>00563F</F>
+        <F>0</F>
+        <F>34</F>
+        <F>25</F>
+      </Row>
+      <Row>
+        <F>Catawba</F>
+        <F>703642</F>
+        <F>44</F>
+        <F>21</F>
+        <F>26</F>
+      </Row>
+      <Row>
+        <F>Cedar Chest</F>
+        <F>C95A49</F>
+        <F>79</F>
+        <F>35</F>
+        <F>29</F>
+      </Row>
+      <Row>
+        <F>Celadon</F>
+        <F>ACE1AF</F>
+        <F>67</F>
+        <F>88</F>
+        <F>69</F>
+      </Row>
+      <Row>
+        <F>Celadon blue</F>
+        <F>007BA7</F>
+        <F>0</F>
+        <F>48</F>
+        <F>65</F>
+      </Row>
+      <Row>
+        <F>Celadon green</F>
+        <F>2F847C</F>
+        <F>18</F>
+        <F>52</F>
+        <F>49</F>
+      </Row>
+      <Row>
+        <F>Celeste</F>
+        <F>B2FFFF</F>
+        <F>70</F>
+        <F>100</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Celtic blue</F>
+        <F>246BCE</F>
+        <F>14</F>
+        <F>42</F>
+        <F>81</F>
+      </Row>
+      <Row>
+        <F>Cerise</F>
+        <F>DE3163</F>
+        <F>87</F>
+        <F>19</F>
+        <F>39</F>
+      </Row>
+      <Row>
+        <F>Cerulean</F>
+        <F>007BA7</F>
+        <F>0</F>
+        <F>48</F>
+        <F>65</F>
+      </Row>
+      <Row>
+        <F>Cerulean blue</F>
+        <F>2A52BE</F>
+        <F>16</F>
+        <F>32</F>
+        <F>75</F>
+      </Row>
+      <Row>
+        <F>Cerulean frost</F>
+        <F>6D9BC3</F>
+        <F>43</F>
+        <F>61</F>
+        <F>76</F>
+      </Row>
+      <Row>
+        <F>Cerulean (Crayola)</F>
+        <F>1DACD6</F>
+        <F>11</F>
+        <F>67</F>
+        <F>84</F>
+      </Row>
+      <Row>
+        <F>CG blue</F>
+        <F>007AA5</F>
+        <F>0</F>
+        <F>48</F>
+        <F>65</F>
+      </Row>
+      <Row>
+        <F>CG red</F>
+        <F>E03C31</F>
+        <F>88</F>
+        <F>24</F>
+        <F>19</F>
+      </Row>
+      <Row>
+        <F>Champagne</F>
+        <F>F7E7CE</F>
+        <F>97</F>
+        <F>91</F>
+        <F>81</F>
+      </Row>
+      <Row>
+        <F>Champagne pink</F>
+        <F>F1DDCF</F>
+        <F>95</F>
+        <F>87</F>
+        <F>81</F>
+      </Row>
+      <Row>
+        <F>Charcoal</F>
+        <F>36454F</F>
+        <F>21</F>
+        <F>27</F>
+        <F>31</F>
+      </Row>
+      <Row>
+        <F>Charleston green</F>
+        <F>232B2B</F>
+        <F>14</F>
+        <F>17</F>
+        <F>17</F>
+      </Row>
+      <Row>
+        <F>Charm pink</F>
+        <F>E68FAC</F>
+        <F>90</F>
+        <F>56</F>
+        <F>67</F>
+      </Row>
+      <Row>
+        <F>Chartreuse (traditional)</F>
+        <F>DFFF00</F>
+        <F>87</F>
+        <F>100</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Chartreuse (web)</F>
+        <F>7FFF00</F>
+        <F>50</F>
+        <F>100</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Cherry blossom pink</F>
+        <F>FFB7C5</F>
+        <F>100</F>
+        <F>72</F>
+        <F>77</F>
+      </Row>
+      <Row>
+        <F>Chestnut</F>
+        <F>954535</F>
+        <F>58</F>
+        <F>27</F>
+        <F>21</F>
+      </Row>
+      <Row>
+        <F>China pink</F>
+        <F>DE6FA1</F>
+        <F>87</F>
+        <F>44</F>
+        <F>63</F>
+      </Row>
+      <Row>
+        <F>China rose</F>
+        <F>A8516E</F>
+        <F>66</F>
+        <F>32</F>
+        <F>43</F>
+      </Row>
+      <Row>
+        <F>Chinese red</F>
+        <F>AA381E</F>
+        <F>67</F>
+        <F>22</F>
+        <F>12</F>
+      </Row>
+      <Row>
+        <F>Chinese violet</F>
+        <F>856088</F>
+        <F>52</F>
+        <F>38</F>
+        <F>53</F>
+      </Row>
+      <Row>
+        <F>Chinese yellow</F>
+        <F>FFB200</F>
+        <F>100</F>
+        <F>70</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Chocolate (traditional)</F>
+        <F>7B3F00</F>
+        <F>48</F>
+        <F>25</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Chocolate (web)</F>
+        <F>D2691E</F>
+        <F>82</F>
+        <F>41</F>
+        <F>12</F>
+      </Row>
+      <Row>
+        <F>Chrome yellow</F>
+        <F>FFA700</F>
+        <F>100</F>
+        <F>65</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Cinereous</F>
+        <F>98817B</F>
+        <F>60</F>
+        <F>51</F>
+        <F>48</F>
+      </Row>
+      <Row>
+        <F>Cinnabar</F>
+        <F>E34234</F>
+        <F>89</F>
+        <F>26</F>
+        <F>20</F>
+      </Row>
+      <Row>
+        <F>Cinnamon Satin</F>
+        <F>CD607E</F>
+        <F>80</F>
+        <F>38</F>
+        <F>49</F>
+      </Row>
+      <Row>
+        <F>Citrine</F>
+        <F>E4D00A</F>
+        <F>89</F>
+        <F>82</F>
+        <F>4</F>
+      </Row>
+      <Row>
+        <F>Citron</F>
+        <F>9FA91F</F>
+        <F>62</F>
+        <F>66</F>
+        <F>12</F>
+      </Row>
+      <Row>
+        <F>Claret</F>
+        <F>7F1734</F>
+        <F>50</F>
+        <F>9</F>
+        <F>20</F>
+      </Row>
+      <Row>
+        <F>Cobalt blue</F>
+        <F>0047AB</F>
+        <F>0</F>
+        <F>28</F>
+        <F>67</F>
+      </Row>
+      <Row>
+        <F>Cocoa brown</F>
+        <F>D2691E</F>
+        <F>82</F>
+        <F>41</F>
+        <F>12</F>
+      </Row>
+      <Row>
+        <F>Coffee</F>
+        <F>6F4E37</F>
+        <F>44</F>
+        <F>31</F>
+        <F>22</F>
+      </Row>
+      <Row>
+        <F>Columbia Blue</F>
+        <F>B9D9EB</F>
+        <F>73</F>
+        <F>85</F>
+        <F>92</F>
+      </Row>
+      <Row>
+        <F>Congo pink</F>
+        <F>F88379</F>
+        <F>97</F>
+        <F>51</F>
+        <F>47</F>
+      </Row>
+      <Row>
+        <F>Cool grey</F>
+        <F>8C92AC</F>
+        <F>55</F>
+        <F>57</F>
+        <F>67</F>
+      </Row>
+      <Row>
+        <F>Copper</F>
+        <F>B87333</F>
+        <F>72</F>
+        <F>45</F>
+        <F>20</F>
+      </Row>
+      <Row>
+        <F>Copper (Crayola)</F>
+        <F>DA8A67</F>
+        <F>85</F>
+        <F>54</F>
+        <F>40</F>
+      </Row>
+      <Row>
+        <F>Copper penny</F>
+        <F>AD6F69</F>
+        <F>68</F>
+        <F>44</F>
+        <F>41</F>
+      </Row>
+      <Row>
+        <F>Copper red</F>
+        <F>CB6D51</F>
+        <F>80</F>
+        <F>43</F>
+        <F>32</F>
+      </Row>
+      <Row>
+        <F>Copper rose</F>
+        <F>996666</F>
+        <F>60</F>
+        <F>40</F>
+        <F>40</F>
+      </Row>
+      <Row>
+        <F>Coquelicot</F>
+        <F>FF3800</F>
+        <F>100</F>
+        <F>22</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Coral</F>
+        <F>FF7F50</F>
+        <F>100</F>
+        <F>50</F>
+        <F>31</F>
+      </Row>
+      <Row>
+        <F>Coral pink</F>
+        <F>F88379</F>
+        <F>97</F>
+        <F>51</F>
+        <F>47</F>
+      </Row>
+      <Row>
+        <F>Cordovan</F>
+        <F>893F45</F>
+        <F>54</F>
+        <F>25</F>
+        <F>27</F>
+      </Row>
+      <Row>
+        <F>Corn</F>
+        <F>FBEC5D</F>
+        <F>98</F>
+        <F>93</F>
+        <F>36</F>
+      </Row>
+      <Row>
+        <F>Cornflower blue</F>
+        <F>6495ED</F>
+        <F>39</F>
+        <F>58</F>
+        <F>93</F>
+      </Row>
+      <Row>
+        <F>Cornsilk</F>
+        <F>FFF8DC</F>
+        <F>100</F>
+        <F>97</F>
+        <F>86</F>
+      </Row>
+      <Row>
+        <F>Cosmic cobalt</F>
+        <F>2E2D88</F>
+        <F>18</F>
+        <F>18</F>
+        <F>53</F>
+      </Row>
+      <Row>
+        <F>Cosmic latte</F>
+        <F>FFF8E7</F>
+        <F>100</F>
+        <F>97</F>
+        <F>91</F>
+      </Row>
+      <Row>
+        <F>Coyote brown</F>
+        <F>81613C</F>
+        <F>51</F>
+        <F>38</F>
+        <F>24</F>
+      </Row>
+      <Row>
+        <F>Cotton candy</F>
+        <F>FFBCD9</F>
+        <F>100</F>
+        <F>74</F>
+        <F>85</F>
+      </Row>
+      <Row>
+        <F>Cream</F>
+        <F>FFFDD0</F>
+        <F>100</F>
+        <F>99</F>
+        <F>82</F>
+      </Row>
+      <Row>
+        <F>Crimson</F>
+        <F>DC143C</F>
+        <F>86</F>
+        <F>8</F>
+        <F>24</F>
+      </Row>
+      <Row>
+        <F>Crimson (UA)</F>
+        <F>9E1B32</F>
+        <F>62</F>
+        <F>11</F>
+        <F>20</F>
+      </Row>
+      <Row>
+        <F>Cultured</F>
+        <F>F5F5F5</F>
+        <F>96</F>
+        <F>96</F>
+        <F>96</F>
+      </Row>
+      <Row>
+        <F>Cyan</F>
+        <F>00FFFF</F>
+        <F>0</F>
+        <F>100</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Cyan (process)</F>
+        <F>00B7EB</F>
+        <F>0</F>
+        <F>72</F>
+        <F>92</F>
+      </Row>
+      <Row>
+        <F>Cyber grape</F>
+        <F>58427C</F>
+        <F>35</F>
+        <F>26</F>
+        <F>49</F>
+      </Row>
+      <Row>
+        <F>Cyber yellow</F>
+        <F>FFD300</F>
+        <F>100</F>
+        <F>83</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Cyclamen</F>
+        <F>F56FA1</F>
+        <F>96</F>
+        <F>44</F>
+        <F>63</F>
+      </Row>
+      <Row>
+        <F>Dark blue-gray</F>
+        <F>666699</F>
+        <F>40</F>
+        <F>40</F>
+        <F>60</F>
+      </Row>
+      <Row>
+        <F>Dark brown</F>
+        <F>654321</F>
+        <F>40</F>
+        <F>26</F>
+        <F>13</F>
+      </Row>
+      <Row>
+        <F>Dark byzantium</F>
+        <F>5D3954</F>
+        <F>36</F>
+        <F>22</F>
+        <F>33</F>
+      </Row>
+      <Row>
+        <F>Dark cornflower blue</F>
+        <F>26428B</F>
+        <F>15</F>
+        <F>26</F>
+        <F>55</F>
+      </Row>
+      <Row>
+        <F>Dark cyan</F>
+        <F>008B8B</F>
+        <F>0</F>
+        <F>55</F>
+        <F>55</F>
+      </Row>
+      <Row>
+        <F>Dark electric blue</F>
+        <F>536878</F>
+        <F>33</F>
+        <F>41</F>
+        <F>47</F>
+      </Row>
+      <Row>
+        <F>Dark goldenrod</F>
+        <F>B8860B</F>
+        <F>72</F>
+        <F>53</F>
+        <F>4</F>
+      </Row>
+      <Row>
+        <F>Dark green</F>
+        <F>013220</F>
+        <F>0</F>
+        <F>20</F>
+        <F>13</F>
+      </Row>
+      <Row>
+        <F>Dark green (X11)</F>
+        <F>006400</F>
+        <F>0</F>
+        <F>39</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Dark jungle green</F>
+        <F>1A2421</F>
+        <F>10</F>
+        <F>14</F>
+        <F>13</F>
+      </Row>
+      <Row>
+        <F>Dark khaki</F>
+        <F>BDB76B</F>
+        <F>74</F>
+        <F>72</F>
+        <F>42</F>
+      </Row>
+      <Row>
+        <F>Dark lava</F>
+        <F>483C32</F>
+        <F>28</F>
+        <F>24</F>
+        <F>20</F>
+      </Row>
+      <Row>
+        <F>Dark liver</F>
+        <F>534B4F</F>
+        <F>33</F>
+        <F>29</F>
+        <F>31</F>
+      </Row>
+      <Row>
+        <F>Dark liver (horses)</F>
+        <F>543D37</F>
+        <F>33</F>
+        <F>24</F>
+        <F>22</F>
+      </Row>
+      <Row>
+        <F>Dark magenta</F>
+        <F>8B008B</F>
+        <F>55</F>
+        <F>0</F>
+        <F>55</F>
+      </Row>
+      <Row>
+        <F>Dark moss green</F>
+        <F>4A5D23</F>
+        <F>29</F>
+        <F>36</F>
+        <F>14</F>
+      </Row>
+      <Row>
+        <F>Dark olive green</F>
+        <F>556B2F</F>
+        <F>33</F>
+        <F>42</F>
+        <F>18</F>
+      </Row>
+      <Row>
+        <F>Dark orange</F>
+        <F>FF8C00</F>
+        <F>100</F>
+        <F>55</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Dark orchid</F>
+        <F>9932CC</F>
+        <F>60</F>
+        <F>20</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Dark pastel green</F>
+        <F>03C03C</F>
+        <F>1</F>
+        <F>75</F>
+        <F>24</F>
+      </Row>
+      <Row>
+        <F>Dark purple</F>
+        <F>301934</F>
+        <F>19</F>
+        <F>10</F>
+        <F>20</F>
+      </Row>
+      <Row>
+        <F>Dark red</F>
+        <F>8B0000</F>
+        <F>55</F>
+        <F>0</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Dark salmon</F>
+        <F>E9967A</F>
+        <F>91</F>
+        <F>59</F>
+        <F>48</F>
+      </Row>
+      <Row>
+        <F>Dark sea green</F>
+        <F>8FBC8F</F>
+        <F>56</F>
+        <F>74</F>
+        <F>56</F>
+      </Row>
+      <Row>
+        <F>Dark sienna</F>
+        <F>3C1414</F>
+        <F>24</F>
+        <F>8</F>
+        <F>8</F>
+      </Row>
+      <Row>
+        <F>Dark sky blue</F>
+        <F>8CBED6</F>
+        <F>55</F>
+        <F>75</F>
+        <F>84</F>
+      </Row>
+      <Row>
+        <F>Dark slate blue</F>
+        <F>483D8B</F>
+        <F>28</F>
+        <F>24</F>
+        <F>55</F>
+      </Row>
+      <Row>
+        <F>Dark slate gray</F>
+        <F>2F4F4F</F>
+        <F>18</F>
+        <F>31</F>
+        <F>31</F>
+      </Row>
+      <Row>
+        <F>Dark spring green</F>
+        <F>177245</F>
+        <F>9</F>
+        <F>45</F>
+        <F>27</F>
+      </Row>
+      <Row>
+        <F>Dark turquoise</F>
+        <F>00CED1</F>
+        <F>0</F>
+        <F>81</F>
+        <F>82</F>
+      </Row>
+      <Row>
+        <F>Dark violet</F>
+        <F>9400D3</F>
+        <F>58</F>
+        <F>0</F>
+        <F>83</F>
+      </Row>
+      <Row>
+        <F>Dartmouth green</F>
+        <F>00703C</F>
+        <F>0</F>
+        <F>44</F>
+        <F>24</F>
+      </Row>
+      <Row>
+        <F>Davy's grey</F>
+        <F>555555</F>
+        <F>33</F>
+        <F>33</F>
+        <F>33</F>
+      </Row>
+      <Row>
+        <F>Deep cerise</F>
+        <F>DA3287</F>
+        <F>85</F>
+        <F>20</F>
+        <F>53</F>
+      </Row>
+      <Row>
+        <F>Deep champagne</F>
+        <F>FAD6A5</F>
+        <F>98</F>
+        <F>84</F>
+        <F>65</F>
+      </Row>
+      <Row>
+        <F>Deep chestnut</F>
+        <F>B94E48</F>
+        <F>73</F>
+        <F>31</F>
+        <F>28</F>
+      </Row>
+      <Row>
+        <F>Deep jungle green</F>
+        <F>004B49</F>
+        <F>0</F>
+        <F>29</F>
+        <F>29</F>
+      </Row>
+      <Row>
+        <F>Deep pink</F>
+        <F>FF1493</F>
+        <F>100</F>
+        <F>8</F>
+        <F>58</F>
+      </Row>
+      <Row>
+        <F>Deep saffron</F>
+        <F>FF9933</F>
+        <F>100</F>
+        <F>60</F>
+        <F>20</F>
+      </Row>
+      <Row>
+        <F>Deep sky blue</F>
+        <F>00BFFF</F>
+        <F>0</F>
+        <F>75</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Deep Space Sparkle</F>
+        <F>4A646C</F>
+        <F>29</F>
+        <F>39</F>
+        <F>42</F>
+      </Row>
+      <Row>
+        <F>Deep taupe</F>
+        <F>7E5E60</F>
+        <F>49</F>
+        <F>37</F>
+        <F>38</F>
+      </Row>
+      <Row>
+        <F>Denim</F>
+        <F>1560BD</F>
+        <F>8</F>
+        <F>38</F>
+        <F>74</F>
+      </Row>
+      <Row>
+        <F>Denim blue</F>
+        <F>2243B6</F>
+        <F>13</F>
+        <F>26</F>
+        <F>71</F>
+      </Row>
+      <Row>
+        <F>Desert</F>
+        <F>C19A6B</F>
+        <F>76</F>
+        <F>60</F>
+        <F>42</F>
+      </Row>
+      <Row>
+        <F>Desert sand</F>
+        <F>EDC9AF</F>
+        <F>93</F>
+        <F>79</F>
+        <F>69</F>
+      </Row>
+      <Row>
+        <F>Dim gray</F>
+        <F>696969</F>
+        <F>41</F>
+        <F>41</F>
+        <F>41</F>
+      </Row>
+      <Row>
+        <F>Dodger blue</F>
+        <F>1E90FF</F>
+        <F>12</F>
+        <F>56</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Dogwood rose</F>
+        <F>D71868</F>
+        <F>84</F>
+        <F>9</F>
+        <F>41</F>
+      </Row>
+      <Row>
+        <F>Drab</F>
+        <F>967117</F>
+        <F>59</F>
+        <F>44</F>
+        <F>9</F>
+      </Row>
+      <Row>
+        <F>Duke blue</F>
+        <F>00009C</F>
+        <F>0</F>
+        <F>0</F>
+        <F>61</F>
+      </Row>
+      <Row>
+        <F>Dutch white</F>
+        <F>EFDFBB</F>
+        <F>94</F>
+        <F>87</F>
+        <F>73</F>
+      </Row>
+      <Row>
+        <F>Earth yellow</F>
+        <F>E1A95F</F>
+        <F>88</F>
+        <F>66</F>
+        <F>37</F>
+      </Row>
+      <Row>
+        <F>Ebony</F>
+        <F>555D50</F>
+        <F>33</F>
+        <F>36</F>
+        <F>31</F>
+      </Row>
+      <Row>
+        <F>Ecru</F>
+        <F>C2B280</F>
+        <F>76</F>
+        <F>70</F>
+        <F>50</F>
+      </Row>
+      <Row>
+        <F>Eerie black</F>
+        <F>1B1B1B</F>
+        <F>11</F>
+        <F>11</F>
+        <F>11</F>
+      </Row>
+      <Row>
+        <F>Eggplant</F>
+        <F>614051</F>
+        <F>38</F>
+        <F>25</F>
+        <F>32</F>
+      </Row>
+      <Row>
+        <F>Eggshell</F>
+        <F>F0EAD6</F>
+        <F>94</F>
+        <F>92</F>
+        <F>84</F>
+      </Row>
+      <Row>
+        <F>Egyptian blue</F>
+        <F>1034A6</F>
+        <F>6</F>
+        <F>20</F>
+        <F>65</F>
+      </Row>
+      <Row>
+        <F>Electric blue</F>
+        <F>7DF9FF</F>
+        <F>49</F>
+        <F>98</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Electric green</F>
+        <F>00FF00</F>
+        <F>0</F>
+        <F>100</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Electric indigo</F>
+        <F>6F00FF</F>
+        <F>44</F>
+        <F>0</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Electric lime</F>
+        <F>CCFF00</F>
+        <F>80</F>
+        <F>100</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Electric purple</F>
+        <F>BF00FF</F>
+        <F>75</F>
+        <F>0</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Electric violet</F>
+        <F>8F00FF</F>
+        <F>56</F>
+        <F>0</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Emerald</F>
+        <F>50C878</F>
+        <F>31</F>
+        <F>78</F>
+        <F>47</F>
+      </Row>
+      <Row>
+        <F>Eminence</F>
+        <F>6C3082</F>
+        <F>42</F>
+        <F>19</F>
+        <F>51</F>
+      </Row>
+      <Row>
+        <F>English green</F>
+        <F>1B4D3E</F>
+        <F>11</F>
+        <F>30</F>
+        <F>24</F>
+      </Row>
+      <Row>
+        <F>English lavender</F>
+        <F>B48395</F>
+        <F>71</F>
+        <F>51</F>
+        <F>58</F>
+      </Row>
+      <Row>
+        <F>English red</F>
+        <F>AB4B52</F>
+        <F>67</F>
+        <F>29</F>
+        <F>32</F>
+      </Row>
+      <Row>
+        <F>English vermillion</F>
+        <F>CC474B</F>
+        <F>80</F>
+        <F>28</F>
+        <F>29</F>
+      </Row>
+      <Row>
+        <F>English violet</F>
+        <F>563C5C</F>
+        <F>34</F>
+        <F>24</F>
+        <F>36</F>
+      </Row>
+      <Row>
+        <F>Erin</F>
+        <F>00FF40</F>
+        <F>0</F>
+        <F>100</F>
+        <F>25</F>
+      </Row>
+      <Row>
+        <F>Eton blue</F>
+        <F>96C8A2</F>
+        <F>59</F>
+        <F>78</F>
+        <F>64</F>
+      </Row>
+      <Row>
+        <F>Fallow</F>
+        <F>C19A6B</F>
+        <F>76</F>
+        <F>60</F>
+        <F>42</F>
+      </Row>
+      <Row>
+        <F>Falu red</F>
+        <F>801818</F>
+        <F>50</F>
+        <F>9</F>
+        <F>9</F>
+      </Row>
+      <Row>
+        <F>Fandango</F>
+        <F>B53389</F>
+        <F>71</F>
+        <F>20</F>
+        <F>54</F>
+      </Row>
+      <Row>
+        <F>Fandango pink</F>
+        <F>DE5285</F>
+        <F>87</F>
+        <F>32</F>
+        <F>52</F>
+      </Row>
+      <Row>
+        <F>Fashion fuchsia</F>
+        <F>F400A1</F>
+        <F>96</F>
+        <F>0</F>
+        <F>63</F>
+      </Row>
+      <Row>
+        <F>Fawn</F>
+        <F>E5AA70</F>
+        <F>90</F>
+        <F>67</F>
+        <F>44</F>
+      </Row>
+      <Row>
+        <F>Feldgrau</F>
+        <F>4D5D53</F>
+        <F>30</F>
+        <F>36</F>
+        <F>33</F>
+      </Row>
+      <Row>
+        <F>Fern green</F>
+        <F>4F7942</F>
+        <F>31</F>
+        <F>47</F>
+        <F>26</F>
+      </Row>
+      <Row>
+        <F>Field drab</F>
+        <F>6C541E</F>
+        <F>42</F>
+        <F>33</F>
+        <F>12</F>
+      </Row>
+      <Row>
+        <F>Fiery rose</F>
+        <F>FF5470</F>
+        <F>100</F>
+        <F>33</F>
+        <F>44</F>
+      </Row>
+      <Row>
+        <F>Firebrick</F>
+        <F>B22222</F>
+        <F>70</F>
+        <F>13</F>
+        <F>13</F>
+      </Row>
+      <Row>
+        <F>Fire engine red</F>
+        <F>CE2029</F>
+        <F>81</F>
+        <F>13</F>
+        <F>16</F>
+      </Row>
+      <Row>
+        <F>Fire opal</F>
+        <F>E95C4B</F>
+        <F>91</F>
+        <F>36</F>
+        <F>29</F>
+      </Row>
+      <Row>
+        <F>Flame</F>
+        <F>E25822</F>
+        <F>89</F>
+        <F>35</F>
+        <F>13</F>
+      </Row>
+      <Row>
+        <F>Flax</F>
+        <F>EEDC82</F>
+        <F>93</F>
+        <F>86</F>
+        <F>51</F>
+      </Row>
+      <Row>
+        <F>Flickr Blue</F>
+        <F>0063dc</F>
+        <F>13</F>
+        <F>42</F>
+        <F>84</F>
+      </Row>
+      <Row>
+        <F>Flickr Pink</F>
+        <F>FB0081</F>
+        <F>98</F>
+        <F>0</F>
+        <F>51</F>
+      </Row>
+      <Row>
+        <F>Flirt</F>
+        <F>A2006D</F>
+        <F>64</F>
+        <F>0</F>
+        <F>43</F>
+      </Row>
+      <Row>
+        <F>Floral white</F>
+        <F>FFFAF0</F>
+        <F>100</F>
+        <F>98</F>
+        <F>94</F>
+      </Row>
+      <Row>
+        <F>Fluorescent blue</F>
+        <F>15F4EE</F>
+        <F>8</F>
+        <F>96</F>
+        <F>93</F>
+      </Row>
+      <Row>
+        <F>Forest green (Crayola)</F>
+        <F>5FA777</F>
+        <F>37</F>
+        <F>65</F>
+        <F>47</F>
+      </Row>
+      <Row>
+        <F>Forest green (traditional)</F>
+        <F>014421</F>
+        <F>0</F>
+        <F>27</F>
+        <F>13</F>
+      </Row>
+      <Row>
+        <F>Forest green (web)</F>
+        <F>228B22</F>
+        <F>13</F>
+        <F>55</F>
+        <F>13</F>
+      </Row>
+      <Row>
+        <F>French beige</F>
+        <F>A67B5B</F>
+        <F>65</F>
+        <F>48</F>
+        <F>36</F>
+      </Row>
+      <Row>
+        <F>French bistre</F>
+        <F>856D4D</F>
+        <F>52</F>
+        <F>43</F>
+        <F>30</F>
+      </Row>
+      <Row>
+        <F>French blue</F>
+        <F>0072BB</F>
+        <F>0</F>
+        <F>45</F>
+        <F>73</F>
+      </Row>
+      <Row>
+        <F>French fuchsia</F>
+        <F>FD3F92</F>
+        <F>99</F>
+        <F>25</F>
+        <F>57</F>
+      </Row>
+      <Row>
+        <F>French lilac</F>
+        <F>86608E</F>
+        <F>53</F>
+        <F>38</F>
+        <F>56</F>
+      </Row>
+      <Row>
+        <F>French lime</F>
+        <F>9EFD38</F>
+        <F>62</F>
+        <F>99</F>
+        <F>22</F>
+      </Row>
+      <Row>
+        <F>French mauve</F>
+        <F>D473D4</F>
+        <F>83</F>
+        <F>45</F>
+        <F>83</F>
+      </Row>
+      <Row>
+        <F>French pink</F>
+        <F>FD6C9E</F>
+        <F>99</F>
+        <F>42</F>
+        <F>62</F>
+      </Row>
+      <Row>
+        <F>French raspberry</F>
+        <F>C72C48</F>
+        <F>78</F>
+        <F>17</F>
+        <F>28</F>
+      </Row>
+      <Row>
+        <F>French rose</F>
+        <F>F64A8A</F>
+        <F>96</F>
+        <F>29</F>
+        <F>54</F>
+      </Row>
+      <Row>
+        <F>French sky blue</F>
+        <F>77B5FE</F>
+        <F>47</F>
+        <F>71</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>French violet</F>
+        <F>8806CE</F>
+        <F>53</F>
+        <F>2</F>
+        <F>81</F>
+      </Row>
+      <Row>
+        <F>Frostbite</F>
+        <F>E936A7</F>
+        <F>91</F>
+        <F>21</F>
+        <F>65</F>
+      </Row>
+      <Row>
+        <F>Fuchsia</F>
+        <F>FF00FF</F>
+        <F>100</F>
+        <F>0</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Fuchsia (Crayola)</F>
+        <F>C154C1</F>
+        <F>76</F>
+        <F>33</F>
+        <F>76</F>
+      </Row>
+      <Row>
+        <F>Fuchsia purple</F>
+        <F>CC397B</F>
+        <F>80</F>
+        <F>22</F>
+        <F>48</F>
+      </Row>
+      <Row>
+        <F>Fuchsia rose</F>
+        <F>C74375</F>
+        <F>78</F>
+        <F>26</F>
+        <F>46</F>
+      </Row>
+      <Row>
+        <F>Fulvous</F>
+        <F>E48400</F>
+        <F>89</F>
+        <F>52</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Fuzzy Wuzzy</F>
+        <F>87421F</F>
+        <F>53</F>
+        <F>26</F>
+        <F>12</F>
+      </Row>
+      <Row>
+        <F>Gainsboro</F>
+        <F>DCDCDC</F>
+        <F>86</F>
+        <F>86</F>
+        <F>86</F>
+      </Row>
+      <Row>
+        <F>Gamboge</F>
+        <F>E49B0F</F>
+        <F>89</F>
+        <F>61</F>
+        <F>6</F>
+      </Row>
+      <Row>
+        <F>Generic viridian</F>
+        <F>007F66</F>
+        <F>0</F>
+        <F>50</F>
+        <F>40</F>
+      </Row>
+      <Row>
+        <F>Ghost white</F>
+        <F>F8F8FF</F>
+        <F>97</F>
+        <F>97</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Glaucous</F>
+        <F>6082B6</F>
+        <F>38</F>
+        <F>51</F>
+        <F>71</F>
+      </Row>
+      <Row>
+        <F>Glossy grape</F>
+        <F>AB92B3</F>
+        <F>67</F>
+        <F>57</F>
+        <F>70</F>
+      </Row>
+      <Row>
+        <F>GO green</F>
+        <F>00AB66</F>
+        <F>0</F>
+        <F>67</F>
+        <F>40</F>
+      </Row>
+      <Row>
+        <F>Gold</F>
+        <F>A57C00</F>
+        <F>65</F>
+        <F>49</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Gold (metallic)</F>
+        <F>D4AF37</F>
+        <F>83</F>
+        <F>69</F>
+        <F>22</F>
+      </Row>
+      <Row>
+        <F>Gold (web) (Golden)</F>
+        <F>FFD700</F>
+        <F>100</F>
+        <F>84</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Gold (Crayola)</F>
+        <F>E6BE8A</F>
+        <F>90</F>
+        <F>75</F>
+        <F>54</F>
+      </Row>
+      <Row>
+        <F>Gold Fusion</F>
+        <F>85754E</F>
+        <F>52</F>
+        <F>46</F>
+        <F>31</F>
+      </Row>
+      <Row>
+        <F>Golden brown</F>
+        <F>996515</F>
+        <F>60</F>
+        <F>40</F>
+        <F>8</F>
+      </Row>
+      <Row>
+        <F>Golden poppy</F>
+        <F>FCC200</F>
+        <F>99</F>
+        <F>76</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Golden yellow</F>
+        <F>FFDF00</F>
+        <F>100</F>
+        <F>87</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Goldenrod</F>
+        <F>DAA520</F>
+        <F>85</F>
+        <F>65</F>
+        <F>13</F>
+      </Row>
+      <Row>
+        <F>Granite gray</F>
+        <F>676767</F>
+        <F>40</F>
+        <F>40</F>
+        <F>40</F>
+      </Row>
+      <Row>
+        <F>Granny Smith apple</F>
+        <F>A8E4A0</F>
+        <F>66</F>
+        <F>89</F>
+        <F>63</F>
+      </Row>
+      <Row>
+        <F>Gray (web)</F>
+        <F>808080</F>
+        <F>50</F>
+        <F>50</F>
+        <F>50</F>
+      </Row>
+      <Row>
+        <F>Gray (X11 gray)</F>
+        <F>BEBEBE</F>
+        <F>75</F>
+        <F>75</F>
+        <F>75</F>
+      </Row>
+      <Row>
+        <F>Green</F>
+        <F>00FF00</F>
+        <F>0</F>
+        <F>100</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Green (Crayola)</F>
+        <F>1CAC78</F>
+        <F>11</F>
+        <F>67</F>
+        <F>47</F>
+      </Row>
+      <Row>
+        <F>Green (web)</F>
+        <F>008000</F>
+        <F>0</F>
+        <F>50</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Green (Munsell)</F>
+        <F>00A877</F>
+        <F>0</F>
+        <F>66</F>
+        <F>47</F>
+      </Row>
+      <Row>
+        <F>Green (NCS)</F>
+        <F>009F6B</F>
+        <F>0</F>
+        <F>62</F>
+        <F>42</F>
+      </Row>
+      <Row>
+        <F>Green (Pantone)</F>
+        <F>00AD43</F>
+        <F>0</F>
+        <F>68</F>
+        <F>26</F>
+      </Row>
+      <Row>
+        <F>Green (pigment)</F>
+        <F>00A550</F>
+        <F>0</F>
+        <F>65</F>
+        <F>31</F>
+      </Row>
+      <Row>
+        <F>Green (RYB)</F>
+        <F>66B032</F>
+        <F>40</F>
+        <F>69</F>
+        <F>20</F>
+      </Row>
+      <Row>
+        <F>Green-blue</F>
+        <F>1164B4</F>
+        <F>7</F>
+        <F>39</F>
+        <F>71</F>
+      </Row>
+      <Row>
+        <F>Green-blue (Crayola)</F>
+        <F>2887C8</F>
+        <F>16</F>
+        <F>53</F>
+        <F>78</F>
+      </Row>
+      <Row>
+        <F>Green-cyan</F>
+        <F>009966</F>
+        <F>0</F>
+        <F>60</F>
+        <F>40</F>
+      </Row>
+      <Row>
+        <F>Green Lizard</F>
+        <F>A7F432</F>
+        <F>65</F>
+        <F>96</F>
+        <F>20</F>
+      </Row>
+      <Row>
+        <F>Green Sheen</F>
+        <F>6EAEA1</F>
+        <F>43</F>
+        <F>68</F>
+        <F>63</F>
+      </Row>
+      <Row>
+        <F>Green-yellow</F>
+        <F>ADFF2F</F>
+        <F>68</F>
+        <F>100</F>
+        <F>18</F>
+      </Row>
+      <Row>
+        <F>Green-yellow (Crayola)</F>
+        <F>F0E891</F>
+        <F>94</F>
+        <F>91</F>
+        <F>57</F>
+      </Row>
+      <Row>
+        <F>Grullo</F>
+        <F>A99A86</F>
+        <F>66</F>
+        <F>60</F>
+        <F>53</F>
+      </Row>
+      <Row>
+        <F>Gunmetal</F>
+        <F>2a3439</F>
+        <F>16</F>
+        <F>20</F>
+        <F>22</F>
+      </Row>
+      <Row>
+        <F>Han blue</F>
+        <F>446CCF</F>
+        <F>27</F>
+        <F>42</F>
+        <F>81</F>
+      </Row>
+      <Row>
+        <F>Han purple</F>
+        <F>5218FA</F>
+        <F>32</F>
+        <F>9</F>
+        <F>98</F>
+      </Row>
+      <Row>
+        <F>Hansa yellow</F>
+        <F>E9D66B</F>
+        <F>91</F>
+        <F>84</F>
+        <F>42</F>
+      </Row>
+      <Row>
+        <F>Harlequin</F>
+        <F>3FFF00</F>
+        <F>25</F>
+        <F>100</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Harvest gold</F>
+        <F>DA9100</F>
+        <F>85</F>
+        <F>57</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Heat Wave</F>
+        <F>FF7A00</F>
+        <F>100</F>
+        <F>48</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Heliotrope</F>
+        <F>DF73FF</F>
+        <F>87</F>
+        <F>45</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Heliotrope gray</F>
+        <F>AA98A9</F>
+        <F>67</F>
+        <F>60</F>
+        <F>66</F>
+      </Row>
+      <Row>
+        <F>Hollywood cerise</F>
+        <F>F400A1</F>
+        <F>96</F>
+        <F>0</F>
+        <F>63</F>
+      </Row>
+      <Row>
+        <F>Honeydew</F>
+        <F>F0FFF0</F>
+        <F>94</F>
+        <F>100</F>
+        <F>94</F>
+      </Row>
+      <Row>
+        <F>Honolulu blue</F>
+        <F>006DB0</F>
+        <F>0</F>
+        <F>43</F>
+        <F>69</F>
+      </Row>
+      <Row>
+        <F>Hooker's green</F>
+        <F>49796B</F>
+        <F>29</F>
+        <F>47</F>
+        <F>42</F>
+      </Row>
+      <Row>
+        <F>Hot magenta</F>
+        <F>FF1DCE</F>
+        <F>100</F>
+        <F>11</F>
+        <F>81</F>
+      </Row>
+      <Row>
+        <F>Hot pink</F>
+        <F>FF69B4</F>
+        <F>100</F>
+        <F>41</F>
+        <F>71</F>
+      </Row>
+      <Row>
+        <F>Hunter green</F>
+        <F>355E3B</F>
+        <F>21</F>
+        <F>37</F>
+        <F>23</F>
+      </Row>
+      <Row>
+        <F>Iceberg</F>
+        <F>71A6D2</F>
+        <F>44</F>
+        <F>65</F>
+        <F>82</F>
+      </Row>
+      <Row>
+        <F>Icterine</F>
+        <F>FCF75E</F>
+        <F>99</F>
+        <F>97</F>
+        <F>37</F>
+      </Row>
+      <Row>
+        <F>Illuminating emerald</F>
+        <F>319177</F>
+        <F>19</F>
+        <F>57</F>
+        <F>47</F>
+      </Row>
+      <Row>
+        <F>Imperial red</F>
+        <F>ED2939</F>
+        <F>93</F>
+        <F>16</F>
+        <F>22</F>
+      </Row>
+      <Row>
+        <F>Inchworm</F>
+        <F>B2EC5D</F>
+        <F>70</F>
+        <F>93</F>
+        <F>36</F>
+      </Row>
+      <Row>
+        <F>Independence</F>
+        <F>4C516D</F>
+        <F>30</F>
+        <F>32</F>
+        <F>43</F>
+      </Row>
+      <Row>
+        <F>India green</F>
+        <F>138808</F>
+        <F>7</F>
+        <F>53</F>
+        <F>3</F>
+      </Row>
+      <Row>
+        <F>Indian red</F>
+        <F>CD5C5C</F>
+        <F>80</F>
+        <F>36</F>
+        <F>36</F>
+      </Row>
+      <Row>
+        <F>Indian yellow</F>
+        <F>E3A857</F>
+        <F>89</F>
+        <F>66</F>
+        <F>34</F>
+      </Row>
+      <Row>
+        <F>Indigo</F>
+        <F>4B0082</F>
+        <F>29</F>
+        <F>0</F>
+        <F>51</F>
+      </Row>
+      <Row>
+        <F>Indigo dye</F>
+        <F>00416A</F>
+        <F>0</F>
+        <F>25</F>
+        <F>42</F>
+      </Row>
+      <Row>
+        <F>International Klein Blue</F>
+        <F>002FA7</F>
+        <F>0</F>
+        <F>18</F>
+        <F>65</F>
+      </Row>
+      <Row>
+        <F>International orange (aerospace)</F>
+        <F>FF4F00</F>
+        <F>100</F>
+        <F>31</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>International orange (engineering)</F>
+        <F>BA160C</F>
+        <F>73</F>
+        <F>9</F>
+        <F>5</F>
+      </Row>
+      <Row>
+        <F>International orange (Golden Gate Bridge)</F>
+        <F>C0362C</F>
+        <F>75</F>
+        <F>21</F>
+        <F>17</F>
+      </Row>
+      <Row>
+        <F>Iris</F>
+        <F>5A4FCF</F>
+        <F>35</F>
+        <F>31</F>
+        <F>81</F>
+      </Row>
+      <Row>
+        <F>Irresistible</F>
+        <F>B3446C</F>
+        <F>70</F>
+        <F>27</F>
+        <F>42</F>
+      </Row>
+      <Row>
+        <F>Isabelline</F>
+        <F>F4F0EC</F>
+        <F>96</F>
+        <F>94</F>
+        <F>93</F>
+      </Row>
+      <Row>
+        <F>Italian sky blue</F>
+        <F>B2FFFF</F>
+        <F>70</F>
+        <F>100</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Ivory</F>
+        <F>FFFFF0</F>
+        <F>100</F>
+        <F>100</F>
+        <F>94</F>
+      </Row>
+      <Row>
+        <F>Jade</F>
+        <F>00A86B</F>
+        <F>0</F>
+        <F>66</F>
+        <F>42</F>
+      </Row>
+      <Row>
+        <F>Jasmine</F>
+        <F>F8DE7E</F>
+        <F>97</F>
+        <F>87</F>
+        <F>49</F>
+      </Row>
+      <Row>
+        <F>Jazzberry jam</F>
+        <F>A50B5E</F>
+        <F>65</F>
+        <F>4</F>
+        <F>37</F>
+      </Row>
+      <Row>
+        <F>Jet</F>
+        <F>343434</F>
+        <F>20</F>
+        <F>20</F>
+        <F>20</F>
+      </Row>
+      <Row>
+        <F>Jonquil</F>
+        <F>F4CA16</F>
+        <F>96</F>
+        <F>79</F>
+        <F>9</F>
+      </Row>
+      <Row>
+        <F>June bud</F>
+        <F>BDDA57</F>
+        <F>74</F>
+        <F>85</F>
+        <F>34</F>
+      </Row>
+      <Row>
+        <F>Jungle green</F>
+        <F>29AB87</F>
+        <F>16</F>
+        <F>67</F>
+        <F>53</F>
+      </Row>
+      <Row>
+        <F>Kelly green</F>
+        <F>4CBB17</F>
+        <F>30</F>
+        <F>73</F>
+        <F>9</F>
+      </Row>
+      <Row>
+        <F>Keppel</F>
+        <F>3AB09E</F>
+        <F>23</F>
+        <F>69</F>
+        <F>62</F>
+      </Row>
+      <Row>
+        <F>Key lime</F>
+        <F>E8F48C</F>
+        <F>91</F>
+        <F>96</F>
+        <F>55</F>
+      </Row>
+      <Row>
+        <F>Khaki (web)</F>
+        <F>C3B091</F>
+        <F>76</F>
+        <F>69</F>
+        <F>57</F>
+      </Row>
+      <Row>
+        <F>Khaki (X11) (Light khaki)</F>
+        <F>F0E68C</F>
+        <F>94</F>
+        <F>90</F>
+        <F>55</F>
+      </Row>
+      <Row>
+        <F>Kobe</F>
+        <F>882D17</F>
+        <F>53</F>
+        <F>18</F>
+        <F>9</F>
+      </Row>
+      <Row>
+        <F>Kobi</F>
+        <F>E79FC4</F>
+        <F>91</F>
+        <F>62</F>
+        <F>77</F>
+      </Row>
+      <Row>
+        <F>Kobicha</F>
+        <F>6B4423</F>
+        <F>42</F>
+        <F>27</F>
+        <F>14</F>
+      </Row>
+      <Row>
+        <F>Kombu green</F>
+        <F>354230</F>
+        <F>21</F>
+        <F>26</F>
+        <F>19</F>
+      </Row>
+      <Row>
+        <F>KSU purple</F>
+        <F>512888</F>
+        <F>31</F>
+        <F>15</F>
+        <F>51</F>
+      </Row>
+      <Row>
+        <F>Languid lavender</F>
+        <F>D6CADD</F>
+        <F>84</F>
+        <F>79</F>
+        <F>87</F>
+      </Row>
+      <Row>
+        <F>Lapis lazuli</F>
+        <F>26619C</F>
+        <F>15</F>
+        <F>38</F>
+        <F>61</F>
+      </Row>
+      <Row>
+        <F>Laser lemon</F>
+        <F>FFFF66</F>
+        <F>100</F>
+        <F>100</F>
+        <F>40</F>
+      </Row>
+      <Row>
+        <F>Laurel green</F>
+        <F>A9BA9D</F>
+        <F>66</F>
+        <F>73</F>
+        <F>62</F>
+      </Row>
+      <Row>
+        <F>Lava</F>
+        <F>CF1020</F>
+        <F>81</F>
+        <F>6</F>
+        <F>13</F>
+      </Row>
+      <Row>
+        <F>Lavender (floral)</F>
+        <F>B57EDC</F>
+        <F>71</F>
+        <F>49</F>
+        <F>86</F>
+      </Row>
+      <Row>
+        <F>Lavender (web)</F>
+        <F>E6E6FA</F>
+        <F>90</F>
+        <F>90</F>
+        <F>98</F>
+      </Row>
+      <Row>
+        <F>Lavender blue</F>
+        <F>CCCCFF</F>
+        <F>80</F>
+        <F>80</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Lavender blush</F>
+        <F>FFF0F5</F>
+        <F>100</F>
+        <F>94</F>
+        <F>96</F>
+      </Row>
+      <Row>
+        <F>Lavender gray</F>
+        <F>C4C3D0</F>
+        <F>77</F>
+        <F>76</F>
+        <F>82</F>
+      </Row>
+      <Row>
+        <F>Lawn green</F>
+        <F>7CFC00</F>
+        <F>49</F>
+        <F>99</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Lemon</F>
+        <F>FFF700</F>
+        <F>100</F>
+        <F>97</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Lemon chiffon</F>
+        <F>FFFACD</F>
+        <F>100</F>
+        <F>98</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Lemon curry</F>
+        <F>CCA01D</F>
+        <F>80</F>
+        <F>63</F>
+        <F>11</F>
+      </Row>
+      <Row>
+        <F>Lemon glacier</F>
+        <F>FDFF00</F>
+        <F>99</F>
+        <F>100</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Lemon meringue</F>
+        <F>F6EABE</F>
+        <F>96</F>
+        <F>92</F>
+        <F>75</F>
+      </Row>
+      <Row>
+        <F>Lemon yellow</F>
+        <F>FFF44F</F>
+        <F>100</F>
+        <F>96</F>
+        <F>31</F>
+      </Row>
+      <Row>
+        <F>Lemon yellow (Crayola)</F>
+        <F>FFFF9F</F>
+        <F>100</F>
+        <F>100</F>
+        <F>62</F>
+      </Row>
+      <Row>
+        <F>Liberty</F>
+        <F>545AA7</F>
+        <F>33</F>
+        <F>35</F>
+        <F>65</F>
+      </Row>
+      <Row>
+        <F>Light blue</F>
+        <F>ADD8E6</F>
+        <F>68</F>
+        <F>85</F>
+        <F>90</F>
+      </Row>
+      <Row>
+        <F>Light coral</F>
+        <F>F08080</F>
+        <F>94</F>
+        <F>50</F>
+        <F>50</F>
+      </Row>
+      <Row>
+        <F>Light cornflower blue</F>
+        <F>93CCEA</F>
+        <F>58</F>
+        <F>80</F>
+        <F>92</F>
+      </Row>
+      <Row>
+        <F>Light cyan</F>
+        <F>E0FFFF</F>
+        <F>88</F>
+        <F>100</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Light French beige</F>
+        <F>C8AD7F</F>
+        <F>78</F>
+        <F>68</F>
+        <F>50</F>
+      </Row>
+      <Row>
+        <F>Light goldenrod yellow</F>
+        <F>FAFAD2</F>
+        <F>98</F>
+        <F>98</F>
+        <F>82</F>
+      </Row>
+      <Row>
+        <F>Light gray</F>
+        <F>D3D3D3</F>
+        <F>83</F>
+        <F>83</F>
+        <F>83</F>
+      </Row>
+      <Row>
+        <F>Light green</F>
+        <F>90EE90</F>
+        <F>56</F>
+        <F>93</F>
+        <F>56</F>
+      </Row>
+      <Row>
+        <F>Light orange</F>
+        <F>FED8B1</F>
+        <F>100</F>
+        <F>85</F>
+        <F>69</F>
+      </Row>
+      <Row>
+        <F>Light periwinkle</F>
+        <F>C5CBE1</F>
+        <F>77</F>
+        <F>80</F>
+        <F>88</F>
+      </Row>
+      <Row>
+        <F>Light pink</F>
+        <F>FFB6C1</F>
+        <F>100</F>
+        <F>71</F>
+        <F>76</F>
+      </Row>
+      <Row>
+        <F>Light salmon</F>
+        <F>FFA07A</F>
+        <F>100</F>
+        <F>63</F>
+        <F>48</F>
+      </Row>
+      <Row>
+        <F>Light sea green</F>
+        <F>20B2AA</F>
+        <F>13</F>
+        <F>70</F>
+        <F>67</F>
+      </Row>
+      <Row>
+        <F>Light sky blue</F>
+        <F>87CEFA</F>
+        <F>53</F>
+        <F>81</F>
+        <F>98</F>
+      </Row>
+      <Row>
+        <F>Light slate gray</F>
+        <F>778899</F>
+        <F>47</F>
+        <F>53</F>
+        <F>60</F>
+      </Row>
+      <Row>
+        <F>Light steel blue</F>
+        <F>B0C4DE</F>
+        <F>69</F>
+        <F>77</F>
+        <F>87</F>
+      </Row>
+      <Row>
+        <F>Light yellow</F>
+        <F>FFFFE0</F>
+        <F>100</F>
+        <F>100</F>
+        <F>88</F>
+      </Row>
+      <Row>
+        <F>Lilac</F>
+        <F>C8A2C8</F>
+        <F>78</F>
+        <F>64</F>
+        <F>78</F>
+      </Row>
+      <Row>
+        <F>Lilac Luster</F>
+        <F>AE98AA</F>
+        <F>68</F>
+        <F>60</F>
+        <F>67</F>
+      </Row>
+      <Row>
+        <F>Lime (color wheel)</F>
+        <F>BFFF00</F>
+        <F>75</F>
+        <F>100</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Lime (web) (X11 green)</F>
+        <F>00FF00</F>
+        <F>0</F>
+        <F>100</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Lime green</F>
+        <F>32CD32</F>
+        <F>20</F>
+        <F>80</F>
+        <F>20</F>
+      </Row>
+      <Row>
+        <F>Lincoln green</F>
+        <F>195905</F>
+        <F>10</F>
+        <F>35</F>
+        <F>2</F>
+      </Row>
+      <Row>
+        <F>Linen</F>
+        <F>FAF0E6</F>
+        <F>98</F>
+        <F>94</F>
+        <F>90</F>
+      </Row>
+      <Row>
+        <F>Lion</F>
+        <F>C19A6B</F>
+        <F>76</F>
+        <F>60</F>
+        <F>42</F>
+      </Row>
+      <Row>
+        <F>Liseran purple</F>
+        <F>DE6FA1</F>
+        <F>87</F>
+        <F>44</F>
+        <F>63</F>
+      </Row>
+      <Row>
+        <F>Little boy blue</F>
+        <F>6CA0DC</F>
+        <F>42</F>
+        <F>63</F>
+        <F>86</F>
+      </Row>
+      <Row>
+        <F>Liver</F>
+        <F>674C47</F>
+        <F>40</F>
+        <F>30</F>
+        <F>28</F>
+      </Row>
+      <Row>
+        <F>Liver (dogs)</F>
+        <F>B86D29</F>
+        <F>72</F>
+        <F>43</F>
+        <F>16</F>
+      </Row>
+      <Row>
+        <F>Liver (organ)</F>
+        <F>6C2E1F</F>
+        <F>42</F>
+        <F>18</F>
+        <F>12</F>
+      </Row>
+      <Row>
+        <F>Liver chestnut</F>
+        <F>987456</F>
+        <F>60</F>
+        <F>45</F>
+        <F>34</F>
+      </Row>
+      <Row>
+        <F>Livid</F>
+        <F>6699CC</F>
+        <F>40</F>
+        <F>60</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Macaroni and Cheese</F>
+        <F>FFBD88</F>
+        <F>100</F>
+        <F>74</F>
+        <F>53</F>
+      </Row>
+      <Row>
+        <F>Madder Lake</F>
+        <F>CC3336</F>
+        <F>80</F>
+        <F>20</F>
+        <F>21</F>
+      </Row>
+      <Row>
+        <F>Magenta</F>
+        <F>FF00FF</F>
+        <F>100</F>
+        <F>0</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Magenta (Crayola)</F>
+        <F>F653A6</F>
+        <F>96</F>
+        <F>33</F>
+        <F>65</F>
+      </Row>
+      <Row>
+        <F>Magenta (dye)</F>
+        <F>CA1F7B</F>
+        <F>79</F>
+        <F>12</F>
+        <F>48</F>
+      </Row>
+      <Row>
+        <F>Magenta (Pantone)</F>
+        <F>D0417E</F>
+        <F>82</F>
+        <F>25</F>
+        <F>49</F>
+      </Row>
+      <Row>
+        <F>Magenta (process)</F>
+        <F>FF0090</F>
+        <F>100</F>
+        <F>0</F>
+        <F>56</F>
+      </Row>
+      <Row>
+        <F>Magenta haze</F>
+        <F>9F4576</F>
+        <F>62</F>
+        <F>27</F>
+        <F>46</F>
+      </Row>
+      <Row>
+        <F>Magic mint</F>
+        <F>AAF0D1</F>
+        <F>67</F>
+        <F>94</F>
+        <F>82</F>
+      </Row>
+      <Row>
+        <F>Magnolia</F>
+        <F>F8F4FF</F>
+        <F>97</F>
+        <F>96</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Mahogany</F>
+        <F>C04000</F>
+        <F>75</F>
+        <F>25</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Maize</F>
+        <F>FBEC5D</F>
+        <F>98</F>
+        <F>93</F>
+        <F>36</F>
+      </Row>
+      <Row>
+        <F>Maize (Crayola)</F>
+        <F>F2C649</F>
+        <F>95</F>
+        <F>78</F>
+        <F>29</F>
+      </Row>
+      <Row>
+        <F>Majorelle blue</F>
+        <F>6050DC</F>
+        <F>38</F>
+        <F>31</F>
+        <F>86</F>
+      </Row>
+      <Row>
+        <F>Malachite</F>
+        <F>0BDA51</F>
+        <F>4</F>
+        <F>85</F>
+        <F>32</F>
+      </Row>
+      <Row>
+        <F>Manatee</F>
+        <F>979AAA</F>
+        <F>59</F>
+        <F>60</F>
+        <F>67</F>
+      </Row>
+      <Row>
+        <F>Mandarin</F>
+        <F>F37A48</F>
+        <F>95</F>
+        <F>48</F>
+        <F>28</F>
+      </Row>
+      <Row>
+        <F>Mango</F>
+        <F>FDBE02</F>
+        <F>99</F>
+        <F>75</F>
+        <F>1</F>
+      </Row>
+      <Row>
+        <F>Mango Tango</F>
+        <F>FF8243</F>
+        <F>100</F>
+        <F>51</F>
+        <F>26</F>
+      </Row>
+      <Row>
+        <F>Mantis</F>
+        <F>74C365</F>
+        <F>45</F>
+        <F>76</F>
+        <F>40</F>
+      </Row>
+      <Row>
+        <F>Mardi Gras</F>
+        <F>880085</F>
+        <F>53</F>
+        <F>0</F>
+        <F>52</F>
+      </Row>
+      <Row>
+        <F>Marigold</F>
+        <F>EAA221</F>
+        <F>92</F>
+        <F>64</F>
+        <F>13</F>
+      </Row>
+      <Row>
+        <F>Maroon (Crayola)</F>
+        <F>C32148</F>
+        <F>76</F>
+        <F>13</F>
+        <F>28</F>
+      </Row>
+      <Row>
+        <F>Maroon (web)</F>
+        <F>800000</F>
+        <F>50</F>
+        <F>0</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Maroon (X11)</F>
+        <F>B03060</F>
+        <F>69</F>
+        <F>19</F>
+        <F>38</F>
+      </Row>
+      <Row>
+        <F>Mauve</F>
+        <F>E0B0FF</F>
+        <F>88</F>
+        <F>69</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Mauve taupe</F>
+        <F>915F6D</F>
+        <F>57</F>
+        <F>37</F>
+        <F>43</F>
+      </Row>
+      <Row>
+        <F>Mauvelous</F>
+        <F>EF98AA</F>
+        <F>94</F>
+        <F>60</F>
+        <F>67</F>
+      </Row>
+      <Row>
+        <F>Maximum blue</F>
+        <F>47ABCC</F>
+        <F>28</F>
+        <F>67</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Maximum blue green</F>
+        <F>30BFBF</F>
+        <F>19</F>
+        <F>75</F>
+        <F>75</F>
+      </Row>
+      <Row>
+        <F>Maximum blue purple</F>
+        <F>ACACE6</F>
+        <F>67</F>
+        <F>67</F>
+        <F>90</F>
+      </Row>
+      <Row>
+        <F>Maximum green</F>
+        <F>5E8C31</F>
+        <F>37</F>
+        <F>55</F>
+        <F>19</F>
+      </Row>
+      <Row>
+        <F>Maximum green yellow</F>
+        <F>D9E650</F>
+        <F>85</F>
+        <F>90</F>
+        <F>31</F>
+      </Row>
+      <Row>
+        <F>Maximum purple</F>
+        <F>733380</F>
+        <F>45</F>
+        <F>20</F>
+        <F>50</F>
+      </Row>
+      <Row>
+        <F>Maximum red</F>
+        <F>D92121</F>
+        <F>85</F>
+        <F>13</F>
+        <F>13</F>
+      </Row>
+      <Row>
+        <F>Maximum red purple</F>
+        <F>A63A79</F>
+        <F>65</F>
+        <F>23</F>
+        <F>47</F>
+      </Row>
+      <Row>
+        <F>Maximum yellow</F>
+        <F>FAFA37</F>
+        <F>98</F>
+        <F>98</F>
+        <F>22</F>
+      </Row>
+      <Row>
+        <F>Maximum yellow red</F>
+        <F>F2BA49</F>
+        <F>95</F>
+        <F>73</F>
+        <F>29</F>
+      </Row>
+      <Row>
+        <F>May green</F>
+        <F>4C9141</F>
+        <F>30</F>
+        <F>57</F>
+        <F>25</F>
+      </Row>
+      <Row>
+        <F>Maya blue</F>
+        <F>73C2FB</F>
+        <F>45</F>
+        <F>76</F>
+        <F>98</F>
+      </Row>
+      <Row>
+        <F>Medium aquamarine</F>
+        <F>66DDAA</F>
+        <F>40</F>
+        <F>87</F>
+        <F>67</F>
+      </Row>
+      <Row>
+        <F>Medium blue</F>
+        <F>0000CD</F>
+        <F>0</F>
+        <F>0</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Medium candy apple red</F>
+        <F>E2062C</F>
+        <F>89</F>
+        <F>2</F>
+        <F>17</F>
+      </Row>
+      <Row>
+        <F>Medium carmine</F>
+        <F>AF4035</F>
+        <F>69</F>
+        <F>25</F>
+        <F>21</F>
+      </Row>
+      <Row>
+        <F>Medium champagne</F>
+        <F>F3E5AB</F>
+        <F>95</F>
+        <F>90</F>
+        <F>67</F>
+      </Row>
+      <Row>
+        <F>Medium orchid</F>
+        <F>BA55D3</F>
+        <F>73</F>
+        <F>33</F>
+        <F>83</F>
+      </Row>
+      <Row>
+        <F>Medium purple</F>
+        <F>9370DB</F>
+        <F>58</F>
+        <F>44</F>
+        <F>86</F>
+      </Row>
+      <Row>
+        <F>Medium sea green</F>
+        <F>3CB371</F>
+        <F>24</F>
+        <F>70</F>
+        <F>44</F>
+      </Row>
+      <Row>
+        <F>Medium slate blue</F>
+        <F>7B68EE</F>
+        <F>48</F>
+        <F>41</F>
+        <F>93</F>
+      </Row>
+      <Row>
+        <F>Medium spring green</F>
+        <F>00FA9A</F>
+        <F>0</F>
+        <F>98</F>
+        <F>60</F>
+      </Row>
+      <Row>
+        <F>Medium turquoise</F>
+        <F>48D1CC</F>
+        <F>28</F>
+        <F>82</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Medium violet-red</F>
+        <F>C71585</F>
+        <F>78</F>
+        <F>8</F>
+        <F>52</F>
+      </Row>
+      <Row>
+        <F>Mellow apricot</F>
+        <F>F8B878</F>
+        <F>97</F>
+        <F>72</F>
+        <F>47</F>
+      </Row>
+      <Row>
+        <F>Mellow yellow</F>
+        <F>F8DE7E</F>
+        <F>97</F>
+        <F>87</F>
+        <F>49</F>
+      </Row>
+      <Row>
+        <F>Melon</F>
+        <F>FEBAAD</F>
+        <F>100</F>
+        <F>73</F>
+        <F>68</F>
+      </Row>
+      <Row>
+        <F>Metallic gold</F>
+        <F>D3AF37</F>
+        <F>83</F>
+        <F>69</F>
+        <F>22</F>
+      </Row>
+      <Row>
+        <F>Metallic Seaweed</F>
+        <F>0A7E8C</F>
+        <F>4</F>
+        <F>49</F>
+        <F>55</F>
+      </Row>
+      <Row>
+        <F>Metallic Sunburst</F>
+        <F>9C7C38</F>
+        <F>61</F>
+        <F>49</F>
+        <F>22</F>
+      </Row>
+      <Row>
+        <F>Mexican pink</F>
+        <F>E4007C</F>
+        <F>89</F>
+        <F>0</F>
+        <F>49</F>
+      </Row>
+      <Row>
+        <F>Middle blue</F>
+        <F>7ED4E6</F>
+        <F>49</F>
+        <F>83</F>
+        <F>90</F>
+      </Row>
+      <Row>
+        <F>Middle blue green</F>
+        <F>8DD9CC</F>
+        <F>55</F>
+        <F>85</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Middle blue purple</F>
+        <F>8B72BE</F>
+        <F>55</F>
+        <F>45</F>
+        <F>75</F>
+      </Row>
+      <Row>
+        <F>Middle grey</F>
+        <F>8B8680</F>
+        <F>55</F>
+        <F>53</F>
+        <F>50</F>
+      </Row>
+      <Row>
+        <F>Middle green</F>
+        <F>4D8C57</F>
+        <F>30</F>
+        <F>55</F>
+        <F>34</F>
+      </Row>
+      <Row>
+        <F>Middle green yellow</F>
+        <F>ACBF60</F>
+        <F>67</F>
+        <F>75</F>
+        <F>38</F>
+      </Row>
+      <Row>
+        <F>Middle purple</F>
+        <F>D982B5</F>
+        <F>85</F>
+        <F>51</F>
+        <F>71</F>
+      </Row>
+      <Row>
+        <F>Middle red</F>
+        <F>E58E73</F>
+        <F>90</F>
+        <F>56</F>
+        <F>45</F>
+      </Row>
+      <Row>
+        <F>Middle red purple</F>
+        <F>A55353</F>
+        <F>65</F>
+        <F>33</F>
+        <F>33</F>
+      </Row>
+      <Row>
+        <F>Middle yellow</F>
+        <F>FFEB00</F>
+        <F>100</F>
+        <F>92</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Middle yellow red</F>
+        <F>ECB176</F>
+        <F>93</F>
+        <F>69</F>
+        <F>46</F>
+      </Row>
+      <Row>
+        <F>Midnight</F>
+        <F>702670</F>
+        <F>44</F>
+        <F>15</F>
+        <F>44</F>
+      </Row>
+      <Row>
+        <F>Midnight blue</F>
+        <F>191970</F>
+        <F>10</F>
+        <F>10</F>
+        <F>44</F>
+      </Row>
+      <Row>
+        <F>Midnight green (eagle green)</F>
+        <F>004953</F>
+        <F>0</F>
+        <F>29</F>
+        <F>33</F>
+      </Row>
+      <Row>
+        <F>Mikado yellow</F>
+        <F>FFC40C</F>
+        <F>100</F>
+        <F>77</F>
+        <F>5</F>
+      </Row>
+      <Row>
+        <F>Mimi pink</F>
+        <F>FFDAE9</F>
+        <F>100</F>
+        <F>85</F>
+        <F>91</F>
+      </Row>
+      <Row>
+        <F>Mindaro</F>
+        <F>E3F988</F>
+        <F>89</F>
+        <F>98</F>
+        <F>53</F>
+      </Row>
+      <Row>
+        <F>Ming</F>
+        <F>36747D</F>
+        <F>21</F>
+        <F>45</F>
+        <F>49</F>
+      </Row>
+      <Row>
+        <F>Minion yellow</F>
+        <F>F5E050</F>
+        <F>96</F>
+        <F>86</F>
+        <F>31</F>
+      </Row>
+      <Row>
+        <F>Mint</F>
+        <F>3EB489</F>
+        <F>24</F>
+        <F>71</F>
+        <F>54</F>
+      </Row>
+      <Row>
+        <F>Mint cream</F>
+        <F>F5FFFA</F>
+        <F>96</F>
+        <F>100</F>
+        <F>98</F>
+      </Row>
+      <Row>
+        <F>Mint green</F>
+        <F>98FF98</F>
+        <F>60</F>
+        <F>100</F>
+        <F>60</F>
+      </Row>
+      <Row>
+        <F>Misty moss</F>
+        <F>BBB477</F>
+        <F>73</F>
+        <F>71</F>
+        <F>47</F>
+      </Row>
+      <Row>
+        <F>Misty rose</F>
+        <F>FFE4E1</F>
+        <F>100</F>
+        <F>89</F>
+        <F>88</F>
+      </Row>
+      <Row>
+        <F>Mode beige</F>
+        <F>967117</F>
+        <F>59</F>
+        <F>44</F>
+        <F>9</F>
+      </Row>
+      <Row>
+        <F>Morning blue</F>
+        <F>8DA399</F>
+        <F>55</F>
+        <F>64</F>
+        <F>60</F>
+      </Row>
+      <Row>
+        <F>Moss green</F>
+        <F>8A9A5B</F>
+        <F>54</F>
+        <F>60</F>
+        <F>36</F>
+      </Row>
+      <Row>
+        <F>Mountain Meadow</F>
+        <F>30BA8F</F>
+        <F>19</F>
+        <F>73</F>
+        <F>56</F>
+      </Row>
+      <Row>
+        <F>Mountbatten pink</F>
+        <F>997A8D</F>
+        <F>60</F>
+        <F>48</F>
+        <F>55</F>
+      </Row>
+      <Row>
+        <F>MSU green</F>
+        <F>18453B</F>
+        <F>9</F>
+        <F>27</F>
+        <F>23</F>
+      </Row>
+      <Row>
+        <F>Mulberry</F>
+        <F>C54B8C</F>
+        <F>77</F>
+        <F>29</F>
+        <F>55</F>
+      </Row>
+      <Row>
+        <F>Mulberry (Crayola)</F>
+        <F>C8509B</F>
+        <F>78</F>
+        <F>31</F>
+        <F>61</F>
+      </Row>
+      <Row>
+        <F>Mustard</F>
+        <F>FFDB58</F>
+        <F>100</F>
+        <F>86</F>
+        <F>35</F>
+      </Row>
+      <Row>
+        <F>Myrtle green</F>
+        <F>317873</F>
+        <F>19</F>
+        <F>47</F>
+        <F>45</F>
+      </Row>
+      <Row>
+        <F>Mystic</F>
+        <F>D65282</F>
+        <F>84</F>
+        <F>32</F>
+        <F>51</F>
+      </Row>
+      <Row>
+        <F>Mystic maroon</F>
+        <F>AD4379</F>
+        <F>68</F>
+        <F>26</F>
+        <F>47</F>
+      </Row>
+      <Row>
+        <F>Nadeshiko pink</F>
+        <F>F6ADC6</F>
+        <F>96</F>
+        <F>68</F>
+        <F>78</F>
+      </Row>
+      <Row>
+        <F>Naples yellow</F>
+        <F>FADA5E</F>
+        <F>98</F>
+        <F>85</F>
+        <F>37</F>
+      </Row>
+      <Row>
+        <F>Navajo white</F>
+        <F>FFDEAD</F>
+        <F>100</F>
+        <F>87</F>
+        <F>68</F>
+      </Row>
+      <Row>
+        <F>Navy blue</F>
+        <F>000080</F>
+        <F>0</F>
+        <F>0</F>
+        <F>50</F>
+      </Row>
+      <Row>
+        <F>Navy blue (Crayola)</F>
+        <F>1974D2</F>
+        <F>10</F>
+        <F>45</F>
+        <F>82</F>
+      </Row>
+      <Row>
+        <F>Neon blue</F>
+        <F>4666FF</F>
+        <F>27</F>
+        <F>40</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Neon green</F>
+        <F>39FF14</F>
+        <F>22</F>
+        <F>100</F>
+        <F>8</F>
+      </Row>
+      <Row>
+        <F>New York pink</F>
+        <F>D7837F</F>
+        <F>84</F>
+        <F>51</F>
+        <F>50</F>
+      </Row>
+      <Row>
+        <F>Nickel</F>
+        <F>727472</F>
+        <F>45</F>
+        <F>45</F>
+        <F>45</F>
+      </Row>
+      <Row>
+        <F>Non-photo blue</F>
+        <F>A4DDED</F>
+        <F>64</F>
+        <F>87</F>
+        <F>93</F>
+      </Row>
+      <Row>
+        <F>Nyanza</F>
+        <F>E9FFDB</F>
+        <F>91</F>
+        <F>100</F>
+        <F>86</F>
+      </Row>
+      <Row>
+        <F>Ocean Blue</F>
+        <F>4F42B5</F>
+        <F>31</F>
+        <F>26</F>
+        <F>71</F>
+      </Row>
+      <Row>
+        <F>Ocean green</F>
+        <F>48BF91</F>
+        <F>28</F>
+        <F>75</F>
+        <F>57</F>
+      </Row>
+      <Row>
+        <F>Ochre</F>
+        <F>CC7722</F>
+        <F>80</F>
+        <F>47</F>
+        <F>13</F>
+      </Row>
+      <Row>
+        <F>Old burgundy</F>
+        <F>43302E</F>
+        <F>26</F>
+        <F>19</F>
+        <F>18</F>
+      </Row>
+      <Row>
+        <F>Old gold</F>
+        <F>CFB53B</F>
+        <F>81</F>
+        <F>71</F>
+        <F>23</F>
+      </Row>
+      <Row>
+        <F>Old lace</F>
+        <F>FDF5E6</F>
+        <F>99</F>
+        <F>96</F>
+        <F>90</F>
+      </Row>
+      <Row>
+        <F>Old lavender</F>
+        <F>796878</F>
+        <F>47</F>
+        <F>41</F>
+        <F>47</F>
+      </Row>
+      <Row>
+        <F>Old mauve</F>
+        <F>673147</F>
+        <F>40</F>
+        <F>19</F>
+        <F>28</F>
+      </Row>
+      <Row>
+        <F>Old rose</F>
+        <F>C08081</F>
+        <F>75</F>
+        <F>50</F>
+        <F>51</F>
+      </Row>
+      <Row>
+        <F>Old silver</F>
+        <F>848482</F>
+        <F>52</F>
+        <F>52</F>
+        <F>51</F>
+      </Row>
+      <Row>
+        <F>Olive</F>
+        <F>808000</F>
+        <F>50</F>
+        <F>50</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Olive Drab (#3)</F>
+        <F>6B8E23</F>
+        <F>42</F>
+        <F>56</F>
+        <F>14</F>
+      </Row>
+      <Row>
+        <F>Olive Drab #7</F>
+        <F>3C341F</F>
+        <F>24</F>
+        <F>20</F>
+        <F>12</F>
+      </Row>
+      <Row>
+        <F>Olive green</F>
+        <F>B5B35C</F>
+        <F>71</F>
+        <F>70</F>
+        <F>36</F>
+      </Row>
+      <Row>
+        <F>Olivine</F>
+        <F>9AB973</F>
+        <F>60</F>
+        <F>73</F>
+        <F>45</F>
+      </Row>
+      <Row>
+        <F>Onyx</F>
+        <F>353839</F>
+        <F>21</F>
+        <F>22</F>
+        <F>22</F>
+      </Row>
+      <Row>
+        <F>Opal</F>
+        <F>A8C3BC</F>
+        <F>66</F>
+        <F>76</F>
+        <F>74</F>
+      </Row>
+      <Row>
+        <F>Opera mauve</F>
+        <F>B784A7</F>
+        <F>72</F>
+        <F>52</F>
+        <F>65</F>
+      </Row>
+      <Row>
+        <F>Orange</F>
+        <F>FF7F00</F>
+        <F>100</F>
+        <F>50</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Orange (Crayola)</F>
+        <F>FF7538</F>
+        <F>100</F>
+        <F>46</F>
+        <F>22</F>
+      </Row>
+      <Row>
+        <F>Orange (Pantone)</F>
+        <F>FF5800</F>
+        <F>100</F>
+        <F>35</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Orange (web)</F>
+        <F>FFA500</F>
+        <F>100</F>
+        <F>65</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Orange peel</F>
+        <F>FF9F00</F>
+        <F>100</F>
+        <F>62</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Orange-red</F>
+        <F>FF681F</F>
+        <F>100</F>
+        <F>41</F>
+        <F>12</F>
+      </Row>
+      <Row>
+        <F>Orange-red (Crayola)</F>
+        <F>FF5349</F>
+        <F>100</F>
+        <F>33</F>
+        <F>29</F>
+      </Row>
+      <Row>
+        <F>Orange soda</F>
+        <F>FA5B3D</F>
+        <F>98</F>
+        <F>36</F>
+        <F>24</F>
+      </Row>
+      <Row>
+        <F>Orange-yellow</F>
+        <F>F5BD1F</F>
+        <F>96</F>
+        <F>74</F>
+        <F>12</F>
+      </Row>
+      <Row>
+        <F>Orange-yellow (Crayola)</F>
+        <F>F8D568</F>
+        <F>97</F>
+        <F>84</F>
+        <F>41</F>
+      </Row>
+      <Row>
+        <F>Orchid</F>
+        <F>DA70D6</F>
+        <F>85</F>
+        <F>44</F>
+        <F>84</F>
+      </Row>
+      <Row>
+        <F>Orchid pink</F>
+        <F>F2BDCD</F>
+        <F>95</F>
+        <F>74</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Orchid (Crayola)</F>
+        <F>E29CD2</F>
+        <F>89</F>
+        <F>61</F>
+        <F>82</F>
+      </Row>
+      <Row>
+        <F>Outer space (Crayola)</F>
+        <F>2D383A</F>
+        <F>18</F>
+        <F>22</F>
+        <F>23</F>
+      </Row>
+      <Row>
+        <F>Outrageous Orange</F>
+        <F>FF6E4A</F>
+        <F>100</F>
+        <F>43</F>
+        <F>29</F>
+      </Row>
+      <Row>
+        <F>Oxblood</F>
+        <F>800020</F>
+        <F>50</F>
+        <F>0</F>
+        <F>13</F>
+      </Row>
+      <Row>
+        <F>Oxford blue</F>
+        <F>002147</F>
+        <F>0</F>
+        <F>13</F>
+        <F>28</F>
+      </Row>
+      <Row>
+        <F>OU Crimson red</F>
+        <F>841617</F>
+        <F>52</F>
+        <F>9</F>
+        <F>9</F>
+      </Row>
+      <Row>
+        <F>Pacific blue</F>
+        <F>1CA9C9</F>
+        <F>11</F>
+        <F>66</F>
+        <F>79</F>
+      </Row>
+      <Row>
+        <F>Pakistan green</F>
+        <F>006600</F>
+        <F>0</F>
+        <F>40</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Palatinate purple</F>
+        <F>682860</F>
+        <F>41</F>
+        <F>16</F>
+        <F>38</F>
+      </Row>
+      <Row>
+        <F>Pale aqua</F>
+        <F>BCD4E6</F>
+        <F>74</F>
+        <F>83</F>
+        <F>90</F>
+      </Row>
+      <Row>
+        <F>Pale cerulean</F>
+        <F>9BC4E2</F>
+        <F>61</F>
+        <F>77</F>
+        <F>89</F>
+      </Row>
+      <Row>
+        <F>Pale pink</F>
+        <F>FADADD</F>
+        <F>98</F>
+        <F>85</F>
+        <F>87</F>
+      </Row>
+      <Row>
+        <F>Pale purple (Pantone)</F>
+        <F>FAE6FA</F>
+        <F>98</F>
+        <F>90</F>
+        <F>98</F>
+      </Row>
+      <Row>
+        <F>Pale silver</F>
+        <F>C9C0BB</F>
+        <F>79</F>
+        <F>75</F>
+        <F>73</F>
+      </Row>
+      <Row>
+        <F>Pale spring bud</F>
+        <F>ECEBBD</F>
+        <F>93</F>
+        <F>92</F>
+        <F>74</F>
+      </Row>
+      <Row>
+        <F>Pansy purple</F>
+        <F>78184A</F>
+        <F>47</F>
+        <F>9</F>
+        <F>29</F>
+      </Row>
+      <Row>
+        <F>Paolo Veronese green</F>
+        <F>009B7D</F>
+        <F>0</F>
+        <F>61</F>
+        <F>49</F>
+      </Row>
+      <Row>
+        <F>Papaya whip</F>
+        <F>FFEFD5</F>
+        <F>100</F>
+        <F>94</F>
+        <F>84</F>
+      </Row>
+      <Row>
+        <F>Paradise pink</F>
+        <F>E63E62</F>
+        <F>90</F>
+        <F>24</F>
+        <F>38</F>
+      </Row>
+      <Row>
+        <F>Paris Green</F>
+        <F>50C878</F>
+        <F>31</F>
+        <F>78</F>
+        <F>47</F>
+      </Row>
+      <Row>
+        <F>Pastel pink</F>
+        <F>DEA5A4</F>
+        <F>87</F>
+        <F>65</F>
+        <F>64</F>
+      </Row>
+      <Row>
+        <F>Patriarch</F>
+        <F>800080</F>
+        <F>50</F>
+        <F>0</F>
+        <F>50</F>
+      </Row>
+      <Row>
+        <F>Payne's grey</F>
+        <F>536878</F>
+        <F>33</F>
+        <F>41</F>
+        <F>47</F>
+      </Row>
+      <Row>
+        <F>Peach</F>
+        <F>FFE5B4</F>
+        <F>100</F>
+        <F>90</F>
+        <F>71</F>
+      </Row>
+      <Row>
+        <F>Peach (Crayola)</F>
+        <F>FFCBA4</F>
+        <F>100</F>
+        <F>80</F>
+        <F>64</F>
+      </Row>
+      <Row>
+        <F>Peach puff</F>
+        <F>FFDAB9</F>
+        <F>100</F>
+        <F>85</F>
+        <F>73</F>
+      </Row>
+      <Row>
+        <F>Pear</F>
+        <F>D1E231</F>
+        <F>82</F>
+        <F>89</F>
+        <F>19</F>
+      </Row>
+      <Row>
+        <F>Pearly purple</F>
+        <F>B768A2</F>
+        <F>72</F>
+        <F>41</F>
+        <F>64</F>
+      </Row>
+      <Row>
+        <F>Periwinkle</F>
+        <F>CCCCFF</F>
+        <F>80</F>
+        <F>80</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Periwinkle (Crayola)</F>
+        <F>C3CDE6</F>
+        <F>76</F>
+        <F>80</F>
+        <F>90</F>
+      </Row>
+      <Row>
+        <F>Permanent Geranium Lake</F>
+        <F>E12C2C</F>
+        <F>88</F>
+        <F>17</F>
+        <F>17</F>
+      </Row>
+      <Row>
+        <F>Persian blue</F>
+        <F>1C39BB</F>
+        <F>11</F>
+        <F>22</F>
+        <F>73</F>
+      </Row>
+      <Row>
+        <F>Persian green</F>
+        <F>00A693</F>
+        <F>0</F>
+        <F>65</F>
+        <F>58</F>
+      </Row>
+      <Row>
+        <F>Persian indigo</F>
+        <F>32127A</F>
+        <F>20</F>
+        <F>7</F>
+        <F>48</F>
+      </Row>
+      <Row>
+        <F>Persian orange</F>
+        <F>D99058</F>
+        <F>85</F>
+        <F>56</F>
+        <F>35</F>
+      </Row>
+      <Row>
+        <F>Persian pink</F>
+        <F>F77FBE</F>
+        <F>97</F>
+        <F>50</F>
+        <F>75</F>
+      </Row>
+      <Row>
+        <F>Persian plum</F>
+        <F>701C1C</F>
+        <F>44</F>
+        <F>11</F>
+        <F>11</F>
+      </Row>
+      <Row>
+        <F>Persian red</F>
+        <F>CC3333</F>
+        <F>80</F>
+        <F>20</F>
+        <F>20</F>
+      </Row>
+      <Row>
+        <F>Persian rose</F>
+        <F>FE28A2</F>
+        <F>100</F>
+        <F>16</F>
+        <F>64</F>
+      </Row>
+      <Row>
+        <F>Persimmon</F>
+        <F>EC5800</F>
+        <F>93</F>
+        <F>35</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Pewter Blue</F>
+        <F>8BA8B7</F>
+        <F>55</F>
+        <F>66</F>
+        <F>72</F>
+      </Row>
+      <Row>
+        <F>Phlox</F>
+        <F>DF00FF</F>
+        <F>87</F>
+        <F>0</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Phthalo blue</F>
+        <F>000F89</F>
+        <F>0</F>
+        <F>6</F>
+        <F>54</F>
+      </Row>
+      <Row>
+        <F>Phthalo green</F>
+        <F>123524</F>
+        <F>7</F>
+        <F>21</F>
+        <F>14</F>
+      </Row>
+      <Row>
+        <F>Picotee blue</F>
+        <F>2E2787</F>
+        <F>18</F>
+        <F>15</F>
+        <F>53</F>
+      </Row>
+      <Row>
+        <F>Pictorial carmine</F>
+        <F>C30B4E</F>
+        <F>76</F>
+        <F>4</F>
+        <F>31</F>
+      </Row>
+      <Row>
+        <F>Piggy pink</F>
+        <F>FDDDE6</F>
+        <F>99</F>
+        <F>87</F>
+        <F>90</F>
+      </Row>
+      <Row>
+        <F>Pine green</F>
+        <F>01796F</F>
+        <F>0</F>
+        <F>47</F>
+        <F>44</F>
+      </Row>
+      <Row>
+        <F>Pine tree</F>
+        <F>2A2F23</F>
+        <F>16</F>
+        <F>18</F>
+        <F>14</F>
+      </Row>
+      <Row>
+        <F>Pink</F>
+        <F>FFC0CB</F>
+        <F>100</F>
+        <F>75</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Pink (Pantone)</F>
+        <F>D74894</F>
+        <F>84</F>
+        <F>28</F>
+        <F>58</F>
+      </Row>
+      <Row>
+        <F>Pink flamingo</F>
+        <F>FC74FD</F>
+        <F>99</F>
+        <F>45</F>
+        <F>99</F>
+      </Row>
+      <Row>
+        <F>Pink lace</F>
+        <F>FFDDF4</F>
+        <F>100</F>
+        <F>87</F>
+        <F>96</F>
+      </Row>
+      <Row>
+        <F>Pink lavender</F>
+        <F>D8B2D1</F>
+        <F>85</F>
+        <F>70</F>
+        <F>82</F>
+      </Row>
+      <Row>
+        <F>Pink Sherbet</F>
+        <F>F78FA7</F>
+        <F>97</F>
+        <F>56</F>
+        <F>65</F>
+      </Row>
+      <Row>
+        <F>Pistachio</F>
+        <F>93C572</F>
+        <F>58</F>
+        <F>77</F>
+        <F>45</F>
+      </Row>
+      <Row>
+        <F>Platinum</F>
+        <F>E5E4E2</F>
+        <F>90</F>
+        <F>89</F>
+        <F>89</F>
+      </Row>
+      <Row>
+        <F>Plum</F>
+        <F>8E4585</F>
+        <F>56</F>
+        <F>27</F>
+        <F>52</F>
+      </Row>
+      <Row>
+        <F>Plum (web)</F>
+        <F>DDA0DD</F>
+        <F>87</F>
+        <F>63</F>
+        <F>87</F>
+      </Row>
+      <Row>
+        <F>Plump Purple</F>
+        <F>5946B2</F>
+        <F>35</F>
+        <F>27</F>
+        <F>70</F>
+      </Row>
+      <Row>
+        <F>Polished Pine</F>
+        <F>5DA493</F>
+        <F>36</F>
+        <F>64</F>
+        <F>58</F>
+      </Row>
+      <Row>
+        <F>Pomp and Power</F>
+        <F>86608E</F>
+        <F>53</F>
+        <F>38</F>
+        <F>56</F>
+      </Row>
+      <Row>
+        <F>Popstar</F>
+        <F>BE4F62</F>
+        <F>75</F>
+        <F>31</F>
+        <F>38</F>
+      </Row>
+      <Row>
+        <F>Portland Orange</F>
+        <F>FF5A36</F>
+        <F>100</F>
+        <F>35</F>
+        <F>21</F>
+      </Row>
+      <Row>
+        <F>Powder blue</F>
+        <F>B0E0E6</F>
+        <F>69</F>
+        <F>88</F>
+        <F>90</F>
+      </Row>
+      <Row>
+        <F>Princeton orange</F>
+        <F>F58025</F>
+        <F>96</F>
+        <F>50</F>
+        <F>15</F>
+      </Row>
+      <Row>
+        <F>Prune</F>
+        <F>701C1C</F>
+        <F>44</F>
+        <F>11</F>
+        <F>11</F>
+      </Row>
+      <Row>
+        <F>Prussian blue</F>
+        <F>003153</F>
+        <F>0</F>
+        <F>19</F>
+        <F>33</F>
+      </Row>
+      <Row>
+        <F>Psychedelic purple</F>
+        <F>DF00FF</F>
+        <F>87</F>
+        <F>0</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Puce</F>
+        <F>CC8899</F>
+        <F>80</F>
+        <F>53</F>
+        <F>60</F>
+      </Row>
+      <Row>
+        <F>Pullman Brown (UPS Brown)</F>
+        <F>644117</F>
+        <F>39</F>
+        <F>25</F>
+        <F>9</F>
+      </Row>
+      <Row>
+        <F>Pumpkin</F>
+        <F>FF7518</F>
+        <F>100</F>
+        <F>46</F>
+        <F>9</F>
+      </Row>
+      <Row>
+        <F>Purple</F>
+        <F>6A0DAD</F>
+        <F>38</F>
+        <F>0</F>
+        <F>50</F>
+      </Row>
+      <Row>
+        <F>Purple (web)</F>
+        <F>800080</F>
+        <F>50</F>
+        <F>0</F>
+        <F>50</F>
+      </Row>
+      <Row>
+        <F>Purple (Munsell)</F>
+        <F>9F00C5</F>
+        <F>62</F>
+        <F>0</F>
+        <F>77</F>
+      </Row>
+      <Row>
+        <F>Purple (X11)</F>
+        <F>A020F0</F>
+        <F>63</F>
+        <F>13</F>
+        <F>94</F>
+      </Row>
+      <Row>
+        <F>Purple mountain majesty</F>
+        <F>9678B6</F>
+        <F>59</F>
+        <F>47</F>
+        <F>71</F>
+      </Row>
+      <Row>
+        <F>Purple navy</F>
+        <F>4E5180</F>
+        <F>31</F>
+        <F>32</F>
+        <F>50</F>
+      </Row>
+      <Row>
+        <F>Purple pizzazz</F>
+        <F>FE4EDA</F>
+        <F>100</F>
+        <F>31</F>
+        <F>85</F>
+      </Row>
+      <Row>
+        <F>Purple Plum</F>
+        <F>9C51B6</F>
+        <F>61</F>
+        <F>32</F>
+        <F>71</F>
+      </Row>
+      <Row>
+        <F>Purpureus</F>
+        <F>9A4EAE</F>
+        <F>60</F>
+        <F>31</F>
+        <F>68</F>
+      </Row>
+      <Row>
+        <F>Queen blue</F>
+        <F>436B95</F>
+        <F>26</F>
+        <F>42</F>
+        <F>58</F>
+      </Row>
+      <Row>
+        <F>Queen pink</F>
+        <F>E8CCD7</F>
+        <F>91</F>
+        <F>80</F>
+        <F>84</F>
+      </Row>
+      <Row>
+        <F>Quick Silver</F>
+        <F>A6A6A6</F>
+        <F>65</F>
+        <F>65</F>
+        <F>65</F>
+      </Row>
+      <Row>
+        <F>Quinacridone magenta</F>
+        <F>8E3A59</F>
+        <F>56</F>
+        <F>23</F>
+        <F>35</F>
+      </Row>
+      <Row>
+        <F>Radical Red</F>
+        <F>FF355E</F>
+        <F>100</F>
+        <F>21</F>
+        <F>37</F>
+      </Row>
+      <Row>
+        <F>Raisin black</F>
+        <F>242124</F>
+        <F>14</F>
+        <F>13</F>
+        <F>14</F>
+      </Row>
+      <Row>
+        <F>Rajah</F>
+        <F>FBAB60</F>
+        <F>98</F>
+        <F>67</F>
+        <F>38</F>
+      </Row>
+      <Row>
+        <F>Raspberry</F>
+        <F>E30B5D</F>
+        <F>89</F>
+        <F>4</F>
+        <F>36</F>
+      </Row>
+      <Row>
+        <F>Raspberry glace</F>
+        <F>915F6D</F>
+        <F>57</F>
+        <F>37</F>
+        <F>43</F>
+      </Row>
+      <Row>
+        <F>Raspberry rose</F>
+        <F>B3446C</F>
+        <F>70</F>
+        <F>27</F>
+        <F>42</F>
+      </Row>
+      <Row>
+        <F>Raw Sienna</F>
+        <F>D68A59</F>
+        <F>84</F>
+        <F>54</F>
+        <F>35</F>
+      </Row>
+      <Row>
+        <F>Raw umber</F>
+        <F>826644</F>
+        <F>51</F>
+        <F>40</F>
+        <F>27</F>
+      </Row>
+      <Row>
+        <F>Razzle dazzle rose</F>
+        <F>FF33CC</F>
+        <F>100</F>
+        <F>20</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Razzmatazz</F>
+        <F>E3256B</F>
+        <F>89</F>
+        <F>15</F>
+        <F>42</F>
+      </Row>
+      <Row>
+        <F>Razzmic Berry</F>
+        <F>8D4E85</F>
+        <F>55</F>
+        <F>31</F>
+        <F>52</F>
+      </Row>
+      <Row>
+        <F>Rebecca Purple</F>
+        <F>663399</F>
+        <F>40</F>
+        <F>20</F>
+        <F>60</F>
+      </Row>
+      <Row>
+        <F>Red</F>
+        <F>FF0000</F>
+        <F>100</F>
+        <F>0</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Red (Crayola)</F>
+        <F>EE204D</F>
+        <F>93</F>
+        <F>13</F>
+        <F>30</F>
+      </Row>
+      <Row>
+        <F>Red (Munsell)</F>
+        <F>F2003C</F>
+        <F>95</F>
+        <F>0</F>
+        <F>24</F>
+      </Row>
+      <Row>
+        <F>Red (NCS)</F>
+        <F>C40233</F>
+        <F>77</F>
+        <F>1</F>
+        <F>20</F>
+      </Row>
+      <Row>
+        <F>Red (Pantone)</F>
+        <F>ED2939</F>
+        <F>93</F>
+        <F>16</F>
+        <F>22</F>
+      </Row>
+      <Row>
+        <F>Red (pigment)</F>
+        <F>ED1C24</F>
+        <F>93</F>
+        <F>11</F>
+        <F>14</F>
+      </Row>
+      <Row>
+        <F>Red (RYB)</F>
+        <F>FE2712</F>
+        <F>100</F>
+        <F>15</F>
+        <F>7</F>
+      </Row>
+      <Row>
+        <F>Red-orange</F>
+        <F>FF5349</F>
+        <F>100</F>
+        <F>33</F>
+        <F>29</F>
+      </Row>
+      <Row>
+        <F>Red-orange (Crayola)</F>
+        <F>FF681F</F>
+        <F>100</F>
+        <F>41</F>
+        <F>12</F>
+      </Row>
+      <Row>
+        <F>Red-orange (Color wheel)</F>
+        <F>FF4500</F>
+        <F>100</F>
+        <F>27</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Red-purple</F>
+        <F>E40078</F>
+        <F>89</F>
+        <F>0</F>
+        <F>47</F>
+      </Row>
+      <Row>
+        <F>Red Salsa</F>
+        <F>FD3A4A</F>
+        <F>99</F>
+        <F>23</F>
+        <F>29</F>
+      </Row>
+      <Row>
+        <F>Red-violet</F>
+        <F>C71585</F>
+        <F>78</F>
+        <F>8</F>
+        <F>52</F>
+      </Row>
+      <Row>
+        <F>Red-violet (Crayola)</F>
+        <F>C0448F</F>
+        <F>75</F>
+        <F>27</F>
+        <F>56</F>
+      </Row>
+      <Row>
+        <F>Red-violet (Color wheel)</F>
+        <F>922B3E</F>
+        <F>57</F>
+        <F>17</F>
+        <F>24</F>
+      </Row>
+      <Row>
+        <F>Redwood</F>
+        <F>A45A52</F>
+        <F>64</F>
+        <F>35</F>
+        <F>32</F>
+      </Row>
+      <Row>
+        <F>Resolution blue</F>
+        <F>002387</F>
+        <F>0</F>
+        <F>14</F>
+        <F>53</F>
+      </Row>
+      <Row>
+        <F>Rhythm</F>
+        <F>777696</F>
+        <F>47</F>
+        <F>46</F>
+        <F>59</F>
+      </Row>
+      <Row>
+        <F>Rich black</F>
+        <F>004040</F>
+        <F>0</F>
+        <F>25</F>
+        <F>25</F>
+      </Row>
+      <Row>
+        <F>Rich black (FOGRA29)</F>
+        <F>010B13</F>
+        <F>0</F>
+        <F>4</F>
+        <F>7</F>
+      </Row>
+      <Row>
+        <F>Rich black (FOGRA39)</F>
+        <F>010203</F>
+        <F>0</F>
+        <F>1</F>
+        <F>1</F>
+      </Row>
+      <Row>
+        <F>Rifle green</F>
+        <F>444C38</F>
+        <F>27</F>
+        <F>30</F>
+        <F>22</F>
+      </Row>
+      <Row>
+        <F>Robin egg blue</F>
+        <F>00CCCC</F>
+        <F>0</F>
+        <F>80</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Rocket metallic</F>
+        <F>8A7F80</F>
+        <F>54</F>
+        <F>50</F>
+        <F>50</F>
+      </Row>
+      <Row>
+        <F>Roman silver</F>
+        <F>838996</F>
+        <F>51</F>
+        <F>54</F>
+        <F>59</F>
+      </Row>
+      <Row>
+        <F>Rose</F>
+        <F>FF007F</F>
+        <F>100</F>
+        <F>0</F>
+        <F>50</F>
+      </Row>
+      <Row>
+        <F>Rose bonbon</F>
+        <F>F9429E</F>
+        <F>98</F>
+        <F>26</F>
+        <F>62</F>
+      </Row>
+      <Row>
+        <F>Rose Dust</F>
+        <F>9E5E6F</F>
+        <F>62</F>
+        <F>37</F>
+        <F>44</F>
+      </Row>
+      <Row>
+        <F>Rose ebony</F>
+        <F>674846</F>
+        <F>40</F>
+        <F>28</F>
+        <F>27</F>
+      </Row>
+      <Row>
+        <F>Rose madder</F>
+        <F>E32636</F>
+        <F>89</F>
+        <F>15</F>
+        <F>21</F>
+      </Row>
+      <Row>
+        <F>Rose pink</F>
+        <F>FF66CC</F>
+        <F>100</F>
+        <F>40</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Rose quartz</F>
+        <F>AA98A9</F>
+        <F>67</F>
+        <F>60</F>
+        <F>66</F>
+      </Row>
+      <Row>
+        <F>Rose red</F>
+        <F>C21E56</F>
+        <F>76</F>
+        <F>12</F>
+        <F>34</F>
+      </Row>
+      <Row>
+        <F>Rose taupe</F>
+        <F>905D5D</F>
+        <F>56</F>
+        <F>36</F>
+        <F>36</F>
+      </Row>
+      <Row>
+        <F>Rose vale</F>
+        <F>AB4E52</F>
+        <F>67</F>
+        <F>31</F>
+        <F>32</F>
+      </Row>
+      <Row>
+        <F>Rosewood</F>
+        <F>65000B</F>
+        <F>40</F>
+        <F>0</F>
+        <F>4</F>
+      </Row>
+      <Row>
+        <F>Rosso corsa</F>
+        <F>D40000</F>
+        <F>83</F>
+        <F>0</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Rosy brown</F>
+        <F>BC8F8F</F>
+        <F>74</F>
+        <F>56</F>
+        <F>56</F>
+      </Row>
+      <Row>
+        <F>Royal blue (dark)</F>
+        <F>002366</F>
+        <F>0</F>
+        <F>14</F>
+        <F>40</F>
+      </Row>
+      <Row>
+        <F>Royal blue (light)</F>
+        <F>4169E1</F>
+        <F>25</F>
+        <F>41</F>
+        <F>88</F>
+      </Row>
+      <Row>
+        <F>Royal purple</F>
+        <F>7851A9</F>
+        <F>47</F>
+        <F>32</F>
+        <F>66</F>
+      </Row>
+      <Row>
+        <F>Royal yellow</F>
+        <F>FADA5E</F>
+        <F>98</F>
+        <F>85</F>
+        <F>37</F>
+      </Row>
+      <Row>
+        <F>Ruber</F>
+        <F>CE4676</F>
+        <F>81</F>
+        <F>27</F>
+        <F>46</F>
+      </Row>
+      <Row>
+        <F>Rubine red</F>
+        <F>D10056</F>
+        <F>82</F>
+        <F>0</F>
+        <F>34</F>
+      </Row>
+      <Row>
+        <F>Ruby</F>
+        <F>E0115F</F>
+        <F>88</F>
+        <F>7</F>
+        <F>37</F>
+      </Row>
+      <Row>
+        <F>Ruby red</F>
+        <F>9B111E</F>
+        <F>61</F>
+        <F>7</F>
+        <F>12</F>
+      </Row>
+      <Row>
+        <F>Rufous</F>
+        <F>A81C07</F>
+        <F>66</F>
+        <F>11</F>
+        <F>3</F>
+      </Row>
+      <Row>
+        <F>Russet</F>
+        <F>80461B</F>
+        <F>50</F>
+        <F>27</F>
+        <F>11</F>
+      </Row>
+      <Row>
+        <F>Russian green</F>
+        <F>679267</F>
+        <F>40</F>
+        <F>57</F>
+        <F>40</F>
+      </Row>
+      <Row>
+        <F>Russian violet</F>
+        <F>32174D</F>
+        <F>20</F>
+        <F>9</F>
+        <F>30</F>
+      </Row>
+      <Row>
+        <F>Rust</F>
+        <F>B7410E</F>
+        <F>72</F>
+        <F>25</F>
+        <F>5</F>
+      </Row>
+      <Row>
+        <F>Rusty red</F>
+        <F>DA2C43</F>
+        <F>85</F>
+        <F>17</F>
+        <F>26</F>
+      </Row>
+      <Row>
+        <F>Sacramento State green</F>
+        <F>043927</F>
+        <F>2</F>
+        <F>22</F>
+        <F>15</F>
+      </Row>
+      <Row>
+        <F>Saddle brown</F>
+        <F>8B4513</F>
+        <F>55</F>
+        <F>27</F>
+        <F>7</F>
+      </Row>
+      <Row>
+        <F>Safety orange</F>
+        <F>FF7800</F>
+        <F>100</F>
+        <F>47</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Safety orange (blaze orange)</F>
+        <F>FF6700</F>
+        <F>100</F>
+        <F>40</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Safety yellow</F>
+        <F>EED202</F>
+        <F>93</F>
+        <F>82</F>
+        <F>1</F>
+      </Row>
+      <Row>
+        <F>Saffron</F>
+        <F>F4C430</F>
+        <F>96</F>
+        <F>77</F>
+        <F>19</F>
+      </Row>
+      <Row>
+        <F>Sage</F>
+        <F>BCB88A</F>
+        <F>74</F>
+        <F>72</F>
+        <F>54</F>
+      </Row>
+      <Row>
+        <F>St. Patrick's blue</F>
+        <F>23297A</F>
+        <F>14</F>
+        <F>16</F>
+        <F>48</F>
+      </Row>
+      <Row>
+        <F>Salmon</F>
+        <F>FA8072</F>
+        <F>98</F>
+        <F>50</F>
+        <F>45</F>
+      </Row>
+      <Row>
+        <F>Salmon pink</F>
+        <F>FF91A4</F>
+        <F>100</F>
+        <F>57</F>
+        <F>64</F>
+      </Row>
+      <Row>
+        <F>Sand</F>
+        <F>C2B280</F>
+        <F>76</F>
+        <F>70</F>
+        <F>50</F>
+      </Row>
+      <Row>
+        <F>Sand dune</F>
+        <F>967117</F>
+        <F>59</F>
+        <F>44</F>
+        <F>9</F>
+      </Row>
+      <Row>
+        <F>Sandy brown</F>
+        <F>F4A460</F>
+        <F>96</F>
+        <F>64</F>
+        <F>38</F>
+      </Row>
+      <Row>
+        <F>Sap green</F>
+        <F>507D2A</F>
+        <F>31</F>
+        <F>49</F>
+        <F>16</F>
+      </Row>
+      <Row>
+        <F>Sapphire</F>
+        <F>0F52BA</F>
+        <F>6</F>
+        <F>32</F>
+        <F>73</F>
+      </Row>
+      <Row>
+        <F>Sapphire blue</F>
+        <F>0067A5</F>
+        <F>0</F>
+        <F>40</F>
+        <F>65</F>
+      </Row>
+      <Row>
+        <F>Sapphire (Crayola)</F>
+        <F>0067A5</F>
+        <F>18</F>
+        <F>36</F>
+        <F>63</F>
+      </Row>
+      <Row>
+        <F>Satin sheen gold</F>
+        <F>CBA135</F>
+        <F>80</F>
+        <F>63</F>
+        <F>21</F>
+      </Row>
+      <Row>
+        <F>Scarlet</F>
+        <F>FF2400</F>
+        <F>100</F>
+        <F>14</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Schauss pink</F>
+        <F>FF91AF</F>
+        <F>100</F>
+        <F>57</F>
+        <F>69</F>
+      </Row>
+      <Row>
+        <F>School bus yellow</F>
+        <F>FFD800</F>
+        <F>100</F>
+        <F>85</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Screamin' Green</F>
+        <F>66FF66</F>
+        <F>40</F>
+        <F>100</F>
+        <F>40</F>
+      </Row>
+      <Row>
+        <F>Sea green</F>
+        <F>2E8B57</F>
+        <F>18</F>
+        <F>55</F>
+        <F>34</F>
+      </Row>
+      <Row>
+        <F>Sea green (Crayola)</F>
+        <F>00FFCD</F>
+        <F>0</F>
+        <F>100</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Seal brown</F>
+        <F>59260B</F>
+        <F>20</F>
+        <F>8</F>
+        <F>8</F>
+      </Row>
+      <Row>
+        <F>Seashell</F>
+        <F>FFF5EE</F>
+        <F>100</F>
+        <F>96</F>
+        <F>93</F>
+      </Row>
+      <Row>
+        <F>Selective yellow</F>
+        <F>FFBA00</F>
+        <F>100</F>
+        <F>73</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Sepia</F>
+        <F>704214</F>
+        <F>44</F>
+        <F>26</F>
+        <F>8</F>
+      </Row>
+      <Row>
+        <F>Shadow</F>
+        <F>8A795D</F>
+        <F>54</F>
+        <F>47</F>
+        <F>36</F>
+      </Row>
+      <Row>
+        <F>Shadow blue</F>
+        <F>778BA5</F>
+        <F>47</F>
+        <F>55</F>
+        <F>65</F>
+      </Row>
+      <Row>
+        <F>Shamrock green</F>
+        <F>009E60</F>
+        <F>0</F>
+        <F>62</F>
+        <F>38</F>
+      </Row>
+      <Row>
+        <F>Sheen green</F>
+        <F>8FD400</F>
+        <F>56</F>
+        <F>83</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Shimmering Blush</F>
+        <F>D98695</F>
+        <F>85</F>
+        <F>53</F>
+        <F>58</F>
+      </Row>
+      <Row>
+        <F>Shiny Shamrock</F>
+        <F>5FA778</F>
+        <F>37</F>
+        <F>65</F>
+        <F>47</F>
+      </Row>
+      <Row>
+        <F>Shocking pink</F>
+        <F>FC0FC0</F>
+        <F>99</F>
+        <F>6</F>
+        <F>75</F>
+      </Row>
+      <Row>
+        <F>Shocking pink (Crayola)</F>
+        <F>FF6FFF</F>
+        <F>100</F>
+        <F>44</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Sienna</F>
+        <F>882D17</F>
+        <F>53</F>
+        <F>18</F>
+        <F>9</F>
+      </Row>
+      <Row>
+        <F>Silver</F>
+        <F>C0C0C0</F>
+        <F>75</F>
+        <F>75</F>
+        <F>75</F>
+      </Row>
+      <Row>
+        <F>Silver (Crayola)</F>
+        <F>C9C0BB</F>
+        <F>79</F>
+        <F>75</F>
+        <F>73</F>
+      </Row>
+      <Row>
+        <F>Silver (Metallic)</F>
+        <F>AAA9AD</F>
+        <F>67</F>
+        <F>66</F>
+        <F>68</F>
+      </Row>
+      <Row>
+        <F>Silver chalice</F>
+        <F>ACACAC</F>
+        <F>67</F>
+        <F>67</F>
+        <F>67</F>
+      </Row>
+      <Row>
+        <F>Silver pink</F>
+        <F>C4AEAD</F>
+        <F>77</F>
+        <F>68</F>
+        <F>68</F>
+      </Row>
+      <Row>
+        <F>Silver sand</F>
+        <F>BFC1C2</F>
+        <F>75</F>
+        <F>76</F>
+        <F>76</F>
+      </Row>
+      <Row>
+        <F>Sinopia</F>
+        <F>CB410B</F>
+        <F>80</F>
+        <F>25</F>
+        <F>4</F>
+      </Row>
+      <Row>
+        <F>Sizzling Red</F>
+        <F>FF3855</F>
+        <F>100</F>
+        <F>22</F>
+        <F>33</F>
+      </Row>
+      <Row>
+        <F>Sizzling Sunrise</F>
+        <F>FFDB00</F>
+        <F>100</F>
+        <F>86</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Skobeloff</F>
+        <F>007474</F>
+        <F>0</F>
+        <F>45</F>
+        <F>45</F>
+      </Row>
+      <Row>
+        <F>Sky blue</F>
+        <F>87CEEB</F>
+        <F>53</F>
+        <F>81</F>
+        <F>92</F>
+      </Row>
+      <Row>
+        <F>Sky blue (Crayola)</F>
+        <F>76D7EA</F>
+        <F>46</F>
+        <F>84</F>
+        <F>92</F>
+      </Row>
+      <Row>
+        <F>Sky magenta</F>
+        <F>CF71AF</F>
+        <F>81</F>
+        <F>44</F>
+        <F>69</F>
+      </Row>
+      <Row>
+        <F>Slate blue</F>
+        <F>6A5ACD</F>
+        <F>42</F>
+        <F>35</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Slate gray</F>
+        <F>708090</F>
+        <F>44</F>
+        <F>50</F>
+        <F>56</F>
+      </Row>
+      <Row>
+        <F>Slimy green</F>
+        <F>299617</F>
+        <F>16</F>
+        <F>59</F>
+        <F>9</F>
+      </Row>
+      <Row>
+        <F>Smitten</F>
+        <F>C84186</F>
+        <F>78</F>
+        <F>25</F>
+        <F>53</F>
+      </Row>
+      <Row>
+        <F>Smoky black</F>
+        <F>100C08</F>
+        <F>6</F>
+        <F>5</F>
+        <F>3</F>
+      </Row>
+      <Row>
+        <F>Snow</F>
+        <F>FFFAFA</F>
+        <F>100</F>
+        <F>98</F>
+        <F>98</F>
+      </Row>
+      <Row>
+        <F>Solid pink</F>
+        <F>893843</F>
+        <F>54</F>
+        <F>22</F>
+        <F>26</F>
+      </Row>
+      <Row>
+        <F>Sonic silver</F>
+        <F>757575</F>
+        <F>46</F>
+        <F>46</F>
+        <F>46</F>
+      </Row>
+      <Row>
+        <F>Space cadet</F>
+        <F>1D2951</F>
+        <F>11</F>
+        <F>16</F>
+        <F>32</F>
+      </Row>
+      <Row>
+        <F>Spanish bistre</F>
+        <F>807532</F>
+        <F>50</F>
+        <F>46</F>
+        <F>20</F>
+      </Row>
+      <Row>
+        <F>Spanish blue</F>
+        <F>0070B8</F>
+        <F>0</F>
+        <F>44</F>
+        <F>72</F>
+      </Row>
+      <Row>
+        <F>Spanish carmine</F>
+        <F>D10047</F>
+        <F>82</F>
+        <F>0</F>
+        <F>28</F>
+      </Row>
+      <Row>
+        <F>Spanish gray</F>
+        <F>989898</F>
+        <F>60</F>
+        <F>60</F>
+        <F>60</F>
+      </Row>
+      <Row>
+        <F>Spanish green</F>
+        <F>009150</F>
+        <F>0</F>
+        <F>57</F>
+        <F>31</F>
+      </Row>
+      <Row>
+        <F>Spanish orange</F>
+        <F>E86100</F>
+        <F>91</F>
+        <F>38</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Spanish pink</F>
+        <F>F7BFBE</F>
+        <F>97</F>
+        <F>75</F>
+        <F>75</F>
+      </Row>
+      <Row>
+        <F>Spanish red</F>
+        <F>E60026</F>
+        <F>90</F>
+        <F>0</F>
+        <F>15</F>
+      </Row>
+      <Row>
+        <F>Spanish sky blue</F>
+        <F>00FFFF</F>
+        <F>0</F>
+        <F>100</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Spanish violet</F>
+        <F>4C2882</F>
+        <F>30</F>
+        <F>16</F>
+        <F>51</F>
+      </Row>
+      <Row>
+        <F>Spanish viridian</F>
+        <F>007F5C</F>
+        <F>0</F>
+        <F>50</F>
+        <F>36</F>
+      </Row>
+      <Row>
+        <F>Spring bud</F>
+        <F>A7FC00</F>
+        <F>65</F>
+        <F>99</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Spring Frost</F>
+        <F>87FF2A</F>
+        <F>53</F>
+        <F>100</F>
+        <F>16</F>
+      </Row>
+      <Row>
+        <F>Spring green</F>
+        <F>00FF7F</F>
+        <F>0</F>
+        <F>100</F>
+        <F>50</F>
+      </Row>
+      <Row>
+        <F>Spring green (Crayola)</F>
+        <F>ECEBBD</F>
+        <F>93</F>
+        <F>92</F>
+        <F>74</F>
+      </Row>
+      <Row>
+        <F>Star command blue</F>
+        <F>007BB8</F>
+        <F>0</F>
+        <F>48</F>
+        <F>72</F>
+      </Row>
+      <Row>
+        <F>Steel blue</F>
+        <F>4682B4</F>
+        <F>27</F>
+        <F>51</F>
+        <F>71</F>
+      </Row>
+      <Row>
+        <F>Steel pink</F>
+        <F>CC33CC</F>
+        <F>80</F>
+        <F>20</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Steel Teal</F>
+        <F>5F8A8B</F>
+        <F>37</F>
+        <F>54</F>
+        <F>55</F>
+      </Row>
+      <Row>
+        <F>Stil de grain yellow</F>
+        <F>FADA5E</F>
+        <F>98</F>
+        <F>85</F>
+        <F>37</F>
+      </Row>
+      <Row>
+        <F>Straw</F>
+        <F>E4D96F</F>
+        <F>89</F>
+        <F>85</F>
+        <F>44</F>
+      </Row>
+      <Row>
+        <F>Sugar Plum</F>
+        <F>914E75</F>
+        <F>57</F>
+        <F>31</F>
+        <F>46</F>
+      </Row>
+      <Row>
+        <F>Sunglow</F>
+        <F>FFCC33</F>
+        <F>100</F>
+        <F>80</F>
+        <F>20</F>
+      </Row>
+      <Row>
+        <F>Sunray</F>
+        <F>E3AB57</F>
+        <F>89</F>
+        <F>67</F>
+        <F>34</F>
+      </Row>
+      <Row>
+        <F>Sunset</F>
+        <F>FAD6A5</F>
+        <F>98</F>
+        <F>84</F>
+        <F>65</F>
+      </Row>
+      <Row>
+        <F>Super pink</F>
+        <F>CF6BA9</F>
+        <F>81</F>
+        <F>42</F>
+        <F>66</F>
+      </Row>
+      <Row>
+        <F>Sweet Brown</F>
+        <F>A83731</F>
+        <F>66</F>
+        <F>22</F>
+        <F>19</F>
+      </Row>
+      <Row>
+        <F>Tan</F>
+        <F>D2B48C</F>
+        <F>82</F>
+        <F>71</F>
+        <F>55</F>
+      </Row>
+      <Row>
+        <F>Tan (Crayola)</F>
+        <F>D99A6C</F>
+        <F>85</F>
+        <F>60</F>
+        <F>42</F>
+      </Row>
+      <Row>
+        <F>Tangerine</F>
+        <F>F28500</F>
+        <F>95</F>
+        <F>52</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Tango pink</F>
+        <F>E4717A</F>
+        <F>89</F>
+        <F>44</F>
+        <F>48</F>
+      </Row>
+      <Row>
+        <F>Tart Orange</F>
+        <F>FB4D46</F>
+        <F>98</F>
+        <F>30</F>
+        <F>27</F>
+      </Row>
+      <Row>
+        <F>Taupe</F>
+        <F>483C32</F>
+        <F>28</F>
+        <F>24</F>
+        <F>20</F>
+      </Row>
+      <Row>
+        <F>Taupe gray</F>
+        <F>8B8589</F>
+        <F>55</F>
+        <F>52</F>
+        <F>54</F>
+      </Row>
+      <Row>
+        <F>Tea green</F>
+        <F>D0F0C0</F>
+        <F>82</F>
+        <F>94</F>
+        <F>75</F>
+      </Row>
+      <Row>
+        <F>Tea rose</F>
+        <F>F88379</F>
+        <F>97</F>
+        <F>51</F>
+        <F>47</F>
+      </Row>
+      <Row>
+        <F>Tea rose</F>
+        <F>F4C2C2</F>
+        <F>96</F>
+        <F>76</F>
+        <F>76</F>
+      </Row>
+      <Row>
+        <F>Teal</F>
+        <F>008080</F>
+        <F>0</F>
+        <F>50</F>
+        <F>50</F>
+      </Row>
+      <Row>
+        <F>Teal blue</F>
+        <F>367588</F>
+        <F>21</F>
+        <F>46</F>
+        <F>53</F>
+      </Row>
+      <Row>
+        <F>Telemagenta</F>
+        <F>CF3476</F>
+        <F>81</F>
+        <F>20</F>
+        <F>46</F>
+      </Row>
+      <Row>
+        <F>Tenné (tawny)</F>
+        <F>CD5700</F>
+        <F>80</F>
+        <F>34</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Terra cotta</F>
+        <F>E2725B</F>
+        <F>89</F>
+        <F>45</F>
+        <F>36</F>
+      </Row>
+      <Row>
+        <F>Thistle</F>
+        <F>D8BFD8</F>
+        <F>85</F>
+        <F>75</F>
+        <F>85</F>
+      </Row>
+      <Row>
+        <F>Thulian pink</F>
+        <F>DE6FA1</F>
+        <F>87</F>
+        <F>44</F>
+        <F>63</F>
+      </Row>
+      <Row>
+        <F>Tickle Me Pink</F>
+        <F>FC89AC</F>
+        <F>99</F>
+        <F>54</F>
+        <F>67</F>
+      </Row>
+      <Row>
+        <F>Tiffany Blue</F>
+        <F>0ABAB5</F>
+        <F>4</F>
+        <F>73</F>
+        <F>71</F>
+      </Row>
+      <Row>
+        <F>Timberwolf</F>
+        <F>DBD7D2</F>
+        <F>86</F>
+        <F>84</F>
+        <F>82</F>
+      </Row>
+      <Row>
+        <F>Titanium yellow</F>
+        <F>EEE600</F>
+        <F>93</F>
+        <F>90</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Tomato</F>
+        <F>FF6347</F>
+        <F>100</F>
+        <F>39</F>
+        <F>28</F>
+      </Row>
+      <Row>
+        <F>Tropical rain forest</F>
+        <F>00755E</F>
+        <F>0</F>
+        <F>46</F>
+        <F>37</F>
+      </Row>
+      <Row>
+        <F>True Blue</F>
+        <F>2D68C4</F>
+        <F>0</F>
+        <F>45</F>
+        <F>81</F>
+      </Row>
+      <Row>
+        <F>Trypan Blue</F>
+        <F>1C05B3</F>
+        <F>11</F>
+        <F>2</F>
+        <F>70</F>
+      </Row>
+      <Row>
+        <F>Tufts blue</F>
+        <F>3E8EDE</F>
+        <F>24</F>
+        <F>56</F>
+        <F>87</F>
+      </Row>
+      <Row>
+        <F>Tumbleweed</F>
+        <F>DEAA88</F>
+        <F>87</F>
+        <F>67</F>
+        <F>53</F>
+      </Row>
+      <Row>
+        <F>Turquoise</F>
+        <F>40E0D0</F>
+        <F>25</F>
+        <F>88</F>
+        <F>82</F>
+      </Row>
+      <Row>
+        <F>Turquoise blue</F>
+        <F>00FFEF</F>
+        <F>0</F>
+        <F>100</F>
+        <F>94</F>
+      </Row>
+      <Row>
+        <F>Turquoise green</F>
+        <F>A0D6B4</F>
+        <F>63</F>
+        <F>84</F>
+        <F>71</F>
+      </Row>
+      <Row>
+        <F>Turtle green</F>
+        <F>8A9A5B</F>
+        <F>54</F>
+        <F>60</F>
+        <F>36</F>
+      </Row>
+      <Row>
+        <F>Tuscan</F>
+        <F>FAD6A5</F>
+        <F>98</F>
+        <F>84</F>
+        <F>65</F>
+      </Row>
+      <Row>
+        <F>Tuscan brown</F>
+        <F>6F4E37</F>
+        <F>44</F>
+        <F>31</F>
+        <F>22</F>
+      </Row>
+      <Row>
+        <F>Tuscan red</F>
+        <F>7C4848</F>
+        <F>49</F>
+        <F>28</F>
+        <F>28</F>
+      </Row>
+      <Row>
+        <F>Tuscan tan</F>
+        <F>A67B5B</F>
+        <F>65</F>
+        <F>48</F>
+        <F>36</F>
+      </Row>
+      <Row>
+        <F>Tuscany</F>
+        <F>C09999</F>
+        <F>75</F>
+        <F>60</F>
+        <F>60</F>
+      </Row>
+      <Row>
+        <F>Twilight lavender</F>
+        <F>8A496B</F>
+        <F>54</F>
+        <F>29</F>
+        <F>42</F>
+      </Row>
+      <Row>
+        <F>Tyrian purple</F>
+        <F>66023C</F>
+        <F>40</F>
+        <F>1</F>
+        <F>24</F>
+      </Row>
+      <Row>
+        <F>UA blue</F>
+        <F>0033AA</F>
+        <F>0</F>
+        <F>20</F>
+        <F>67</F>
+      </Row>
+      <Row>
+        <F>UA red</F>
+        <F>D9004C</F>
+        <F>85</F>
+        <F>0</F>
+        <F>30</F>
+      </Row>
+      <Row>
+        <F>Ultramarine</F>
+        <F>3F00FF</F>
+        <F>7</F>
+        <F>4</F>
+        <F>56</F>
+      </Row>
+      <Row>
+        <F>Ultramarine blue</F>
+        <F>4166F5</F>
+        <F>25</F>
+        <F>40</F>
+        <F>96</F>
+      </Row>
+      <Row>
+        <F>Ultra pink</F>
+        <F>FF6FFF</F>
+        <F>100</F>
+        <F>44</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Ultra red</F>
+        <F>FC6C85</F>
+        <F>99</F>
+        <F>42</F>
+        <F>52</F>
+      </Row>
+      <Row>
+        <F>Umber</F>
+        <F>635147</F>
+        <F>39</F>
+        <F>32</F>
+        <F>28</F>
+      </Row>
+      <Row>
+        <F>Unbleached silk</F>
+        <F>FFDDCA</F>
+        <F>100</F>
+        <F>87</F>
+        <F>79</F>
+      </Row>
+      <Row>
+        <F>United Nations blue</F>
+        <F>5B92E5</F>
+        <F>36</F>
+        <F>57</F>
+        <F>90</F>
+      </Row>
+      <Row>
+        <F>Unmellow yellow</F>
+        <F>FFFF66</F>
+        <F>100</F>
+        <F>100</F>
+        <F>40</F>
+      </Row>
+      <Row>
+        <F>UP Forest green</F>
+        <F>014421</F>
+        <F>0</F>
+        <F>27</F>
+        <F>13</F>
+      </Row>
+      <Row>
+        <F>UP maroon</F>
+        <F>7B1113</F>
+        <F>48</F>
+        <F>7</F>
+        <F>7</F>
+      </Row>
+      <Row>
+        <F>Upsdell red</F>
+        <F>AE2029</F>
+        <F>68</F>
+        <F>13</F>
+        <F>16</F>
+      </Row>
+      <Row>
+        <F>Uranian blue</F>
+        <F>AFDBF5</F>
+        <F>69</F>
+        <F>86</F>
+        <F>96</F>
+      </Row>
+      <Row>
+        <F>USAFA blue</F>
+        <F>004F98</F>
+        <F>0</F>
+        <F>31</F>
+        <F>60</F>
+      </Row>
+      <Row>
+        <F>Van Dyke brown</F>
+        <F>664228</F>
+        <F>40</F>
+        <F>26</F>
+        <F>16</F>
+      </Row>
+      <Row>
+        <F>Vanilla</F>
+        <F>F3E5AB</F>
+        <F>95</F>
+        <F>90</F>
+        <F>67</F>
+      </Row>
+      <Row>
+        <F>Vanilla ice</F>
+        <F>F38FA9</F>
+        <F>95</F>
+        <F>56</F>
+        <F>66</F>
+      </Row>
+      <Row>
+        <F>Vegas gold</F>
+        <F>C5B358</F>
+        <F>77</F>
+        <F>70</F>
+        <F>35</F>
+      </Row>
+      <Row>
+        <F>Venetian red</F>
+        <F>C80815</F>
+        <F>78</F>
+        <F>3</F>
+        <F>8</F>
+      </Row>
+      <Row>
+        <F>Verdigris</F>
+        <F>43B3AE</F>
+        <F>26</F>
+        <F>70</F>
+        <F>68</F>
+      </Row>
+      <Row>
+        <F>Vermilion</F>
+        <F>E34234</F>
+        <F>89</F>
+        <F>26</F>
+        <F>20</F>
+      </Row>
+      <Row>
+        <F>Vermilion</F>
+        <F>D9381E</F>
+        <F>85</F>
+        <F>22</F>
+        <F>12</F>
+      </Row>
+      <Row>
+        <F>Veronica</F>
+        <F>A020F0</F>
+        <F>63</F>
+        <F>13</F>
+        <F>94</F>
+      </Row>
+      <Row>
+        <F>Violet</F>
+        <F>8F00FF</F>
+        <F>56</F>
+        <F>0</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Violet (color wheel)</F>
+        <F>7F00FF</F>
+        <F>50</F>
+        <F>0</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Violet (crayola)</F>
+        <F>963D7F</F>
+        <F>59</F>
+        <F>24</F>
+        <F>50</F>
+      </Row>
+      <Row>
+        <F>Violet (RYB)</F>
+        <F>8601AF</F>
+        <F>53</F>
+        <F>0</F>
+        <F>69</F>
+      </Row>
+      <Row>
+        <F>Violet (web)</F>
+        <F>EE82EE</F>
+        <F>93</F>
+        <F>51</F>
+        <F>93</F>
+      </Row>
+      <Row>
+        <F>Violet-blue</F>
+        <F>324AB2</F>
+        <F>20</F>
+        <F>29</F>
+        <F>70</F>
+      </Row>
+      <Row>
+        <F>Violet-blue (Crayola)</F>
+        <F>766EC8</F>
+        <F>46</F>
+        <F>43</F>
+        <F>78</F>
+      </Row>
+      <Row>
+        <F>Violet-red</F>
+        <F>F75394</F>
+        <F>97</F>
+        <F>33</F>
+        <F>58</F>
+      </Row>
+      <Row>
+        <F>Viridian</F>
+        <F>40826D</F>
+        <F>25</F>
+        <F>51</F>
+        <F>43</F>
+      </Row>
+      <Row>
+        <F>Viridian green</F>
+        <F>009698</F>
+        <F>0</F>
+        <F>59</F>
+        <F>60</F>
+      </Row>
+      <Row>
+        <F>Vivid burgundy</F>
+        <F>9F1D35</F>
+        <F>62</F>
+        <F>11</F>
+        <F>21</F>
+      </Row>
+      <Row>
+        <F>Vivid sky blue</F>
+        <F>00CCFF</F>
+        <F>0</F>
+        <F>80</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Vivid tangerine</F>
+        <F>FFA089</F>
+        <F>100</F>
+        <F>63</F>
+        <F>54</F>
+      </Row>
+      <Row>
+        <F>Vivid violet</F>
+        <F>9F00FF</F>
+        <F>62</F>
+        <F>0</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Volt</F>
+        <F>CEFF00</F>
+        <F>80</F>
+        <F>100</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Warm black</F>
+        <F>004242</F>
+        <F>0</F>
+        <F>26</F>
+        <F>26</F>
+      </Row>
+      <Row>
+        <F>Wheat</F>
+        <F>F5DEB3</F>
+        <F>96</F>
+        <F>87</F>
+        <F>70</F>
+      </Row>
+      <Row>
+        <F>White</F>
+        <F>FFFFFF</F>
+        <F>100</F>
+        <F>100</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Wild blue yonder</F>
+        <F>A2ADD0</F>
+        <F>64</F>
+        <F>68</F>
+        <F>82</F>
+      </Row>
+      <Row>
+        <F>Wild orchid</F>
+        <F>D470A2</F>
+        <F>83</F>
+        <F>44</F>
+        <F>64</F>
+      </Row>
+      <Row>
+        <F>Wild Strawberry</F>
+        <F>FF43A4</F>
+        <F>100</F>
+        <F>26</F>
+        <F>64</F>
+      </Row>
+      <Row>
+        <F>Wild watermelon</F>
+        <F>FC6C85</F>
+        <F>99</F>
+        <F>42</F>
+        <F>52</F>
+      </Row>
+      <Row>
+        <F>Windsor tan</F>
+        <F>A75502</F>
+        <F>65</F>
+        <F>33</F>
+        <F>1</F>
+      </Row>
+      <Row>
+        <F>Wine</F>
+        <F>722F37</F>
+        <F>45</F>
+        <F>18</F>
+        <F>22</F>
+      </Row>
+      <Row>
+        <F>Wine dregs</F>
+        <F>673147</F>
+        <F>40</F>
+        <F>19</F>
+        <F>28</F>
+      </Row>
+      <Row>
+        <F>Winter Sky</F>
+        <F>FF007C</F>
+        <F>100</F>
+        <F>0</F>
+        <F>49</F>
+      </Row>
+      <Row>
+        <F>Wintergreen Dream</F>
+        <F>56887D</F>
+        <F>34</F>
+        <F>53</F>
+        <F>49</F>
+      </Row>
+      <Row>
+        <F>Wisteria</F>
+        <F>C9A0DC</F>
+        <F>79</F>
+        <F>63</F>
+        <F>86</F>
+      </Row>
+      <Row>
+        <F>Wood brown</F>
+        <F>C19A6B</F>
+        <F>76</F>
+        <F>60</F>
+        <F>42</F>
+      </Row>
+      <Row>
+        <F>Xanthic</F>
+        <F>EEED09</F>
+        <F>93</F>
+        <F>93</F>
+        <F>4</F>
+      </Row>
+      <Row>
+        <F>Xanadu</F>
+        <F>738678</F>
+        <F>45</F>
+        <F>53</F>
+        <F>47</F>
+      </Row>
+      <Row>
+        <F>Xiketic</F>
+        <F>0C020F</F>
+        <F>5</F>
+        <F>1</F>
+        <F>6</F>
+      </Row>
+      <Row>
+        <F>Yale Blue</F>
+        <F>0F4D92</F>
+        <F>6</F>
+        <F>30</F>
+        <F>57</F>
+      </Row>
+      <Row>
+        <F>Yellow</F>
+        <F>FFFF00</F>
+        <F>100</F>
+        <F>100</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Yellow (Crayola)</F>
+        <F>FCE883</F>
+        <F>99</F>
+        <F>91</F>
+        <F>51</F>
+      </Row>
+      <Row>
+        <F>Yellow (Munsell)</F>
+        <F>EFCC00</F>
+        <F>94</F>
+        <F>80</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Yellow (NCS)</F>
+        <F>FFD300</F>
+        <F>100</F>
+        <F>83</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Yellow (Pantone)</F>
+        <F>FEDF00</F>
+        <F>100</F>
+        <F>87</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Yellow (process)</F>
+        <F>FFEF00</F>
+        <F>100</F>
+        <F>94</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>Yellow (RYB)</F>
+        <F>FEFE33</F>
+        <F>100</F>
+        <F>100</F>
+        <F>20</F>
+      </Row>
+      <Row>
+        <F>Yellow-green</F>
+        <F>9ACD32</F>
+        <F>60</F>
+        <F>80</F>
+        <F>20</F>
+      </Row>
+      <Row>
+        <F>Yellow-green (Crayola)</F>
+        <F>C5E384</F>
+        <F>77</F>
+        <F>89</F>
+        <F>52</F>
+      </Row>
+      <Row>
+        <F>Yellow-green (Color Wheel)</F>
+        <F>30B21A</F>
+        <F>19</F>
+        <F>70</F>
+        <F>10</F>
+      </Row>
+      <Row>
+        <F>Yellow Orange</F>
+        <F>FFAE42</F>
+        <F>100</F>
+        <F>68</F>
+        <F>26</F>
+      </Row>
+      <Row>
+        <F>Yellow Orange (Color Wheel)</F>
+        <F>FF9505</F>
+        <F>100</F>
+        <F>58</F>
+        <F>2</F>
+      </Row>
+      <Row>
+        <F>Yellow Sunshine</F>
+        <F>FFF700</F>
+        <F>100</F>
+        <F>97</F>
+        <F>0</F>
+      </Row>
+      <Row>
+        <F>YInMn Blue</F>
+        <F>2E5090</F>
+        <F>18</F>
+        <F>31</F>
+        <F>56</F>
+      </Row>
+      <Row>
+        <F>Zaffre</F>
+        <F>0014A8</F>
+        <F>0</F>
+        <F>8</F>
+        <F>66</F>
+      </Row>
+      <Row>
+        <F>Zomp</F>
+        <F>39A78E</F>
+        <F>22</F>
+        <F>65</F>
+        <F>56</F>
+      </Row>
+    </Rows>
+  </SavedData>
+</Report>

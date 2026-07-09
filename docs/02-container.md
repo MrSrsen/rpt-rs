@@ -14,7 +14,25 @@ D0 CF 11 E0 A1 B1 1A E1
 ## Streams and storages
 
 A compound file is a tree. Its leaves are **streams** (byte blobs, like files) and its internal nodes are **storages**
-(like directories). A `.rpt` uses this tree to hold the report definition plus everything attached to it.
+(like directories). A `.rpt` uses this tree to hold the report definition plus everything attached to it:
+
+```mermaid
+flowchart TD
+    root["Root Storage"]
+    root --> contents["Contents — report definition"]
+    root --> qe["QESession — data sources"]
+    root --> pm["PromptManager — parameters"]
+    root --> ri["ReportInfo"]
+    root --> si["SummaryInformation"]
+    root --> sub["Subdocument N (subreport storage)"]
+    sub --> subc["Contents"]
+    sub --> subq["QESession"]
+    sub --> subp["PromptManager"]
+    root --> emb["Embedding N (OLE object storage)"]
+    emb --> co["CompObj"]
+    emb --> ole["Ole"]
+    emb --> ec["CONTENTS"]
+```
 
 ### Report streams
 
@@ -35,6 +53,18 @@ A **subreport** is a complete nested report. It lives in its own storage named `
 `QESession`, and `PromptManager` streams. Because a subreport is just another report, the same decoder recurses into it
 directly. A report's subreport count tracks its complexity.
 
+### Saved data
+
+When a report is saved _with data_, the cached rows are kept in their own top-level streams, indexed like the other
+repeated entries. See [Saved data](10-saved-data.md) for the batch layout.
+
+| Stream                     | What it holds                                                                   |
+| -------------------------- | ------------------------------------------------------------------------------- |
+| `DataSourceManager N`      | The saved-data batch directory — which batches exist and how to read them.      |
+| `SavedRecordsStream N`     | The saved-record index: the cached rowset's rows.                               |
+| `MemoValuesStream N`       | Saved variable-length field values (memo/blob columns) referenced by the rows.  |
+| `ReportParametersStream N` | The saved parameter current values — itself a TSLV record stream like `Contents`. |
+
 ### Embedded objects and other entries
 
 | Entry                                                   | What it is                                                                                               |
@@ -50,6 +80,12 @@ directly. A report's subreport count tracks its complexity.
 The library opens the compound file, identifies each entry by name (a fixed classification: any unrecognized entry still
 has a stable identity), and hands the report streams to the stream decoder. Streams the library does not model are still
 enumerable — the [`rpt streams`](08-usage.md) command reports every stream and its record coverage.
+
+To list the streams in a file and how much of each the library decodes:
+
+```console
+$ rpt streams report.rpt
+```
 
 The next layer down is [Stream decoding](03-stream-decoding.md): turning an encrypted, compressed stream into a flat
 sequence of records.

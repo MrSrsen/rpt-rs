@@ -1,0 +1,727 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report Name="" FileName="/mnt/report.rpt" HasSavedData="True">
+  <Embedinfo />
+  <Summaryinfo KeywordsinReport="" ReportAuthor="BW" ReportComments="" ReportSubject="Pink Palette" ReportTitle="Pink Palette, sorted alphabetically" />
+  <ReportOptions EnableSaveDataWithReport="True" EnableSavePreviewPicture="True" EnableSaveSummariesWithReport="True" EnableUseDummyData="False" initialDataContext="" initialReportPartName="" />
+  <PrintOptions PageContentHeight="15120" PageContentWidth="11520" PaperOrientation="Portrait" PaperSize="DefaultPaperSize" PaperSource="FormSource" PrinterDuplex="Default" PrinterName="">
+    <PageMargins bottomMargin="360" leftMargin="360" rightMargin="360" topMargin="360" />
+    <PageMarginConditionFormulas />
+  </PrintOptions>
+  <SubReports />
+  <Database>
+    <TableLinks />
+    <Tables>
+      <Table Alias="web_colours" ClassName="CrystalReports.Table" Name="web_colours">
+        <ConnectionInfo Database_DLL="crdb_odbc.dll" QE_DatabaseName="" QE_DatabaseType="ODBC (RDO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="BWPortfolio" QE_SQLDB="True" SSO_Enabled="False" UserName="" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{web_colours.id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="web_colours.id" Name="id" ShortName="id" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{web_colours.name}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="web_colours.name" Name="name" ShortName="name" Type="crFieldValueTypePersistentMemoField" UseCount="2" />
+          <Field Description="" FormulaForm="{web_colours.hexcode}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="web_colours.hexcode" Name="hexcode" ShortName="hexcode" Type="crFieldValueTypePersistentMemoField" UseCount="1" />
+          <Field Description="" FormulaForm="{web_colours.rgb_red}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="web_colours.rgb_red" Name="rgb_red" ShortName="rgb_red" Type="crFieldValueTypeInt32sField" UseCount="3" />
+          <Field Description="" FormulaForm="{web_colours.rgb_green}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="web_colours.rgb_green" Name="rgb_green" ShortName="rgb_green" Type="crFieldValueTypeInt32sField" UseCount="3" />
+          <Field Description="" FormulaForm="{web_colours.rgb_blue}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="web_colours.rgb_blue" Name="rgb_blue" ShortName="rgb_blue" Type="crFieldValueTypeInt32sField" UseCount="3" />
+          <Field Description="" FormulaForm="{web_colours.hue}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="web_colours.hue" Name="hue" ShortName="hue" Type="crFieldValueTypePersistentMemoField" UseCount="0" />
+          <Field Description="" FormulaForm="{web_colours.hsl_satur}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="web_colours.hsl_satur" Name="hsl_satur" ShortName="hsl_satur" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{web_colours.hsl_light}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="web_colours.hsl_light" Name="hsl_light" ShortName="hsl_light" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{web_colours.hsv_satur}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="web_colours.hsv_satur" Name="hsv_satur" ShortName="hsv_satur" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{web_colours.hsv_value}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="web_colours.hsv_value" Name="hsv_value" ShortName="hsv_value" Type="crFieldValueTypeInt32sField" UseCount="0" />
+        </Fields>
+      </Table>
+    </Tables>
+  </Database>
+  <DataDefinition>
+    <GroupSelectionFormula />
+    <RecordSelectionFormula> (  'Pink' IN {web_colours.name}  )  </RecordSelectionFormula>
+    <Groups />
+    <SortFields />
+    <FormulaFieldDefinitions>
+    </FormulaFieldDefinitions>
+    <GroupNameFieldDefinitions />
+    <ParameterFieldDefinitions>
+    </ParameterFieldDefinitions>
+    <RunningTotalFieldDefinitions />
+    <SQLExpressionFields />
+    <SummaryFields />
+  </DataDefinition>
+  <CustomFunctions />
+  <ReportDefinition>
+    <Areas>
+      <Area Kind="ReportHeader" Name="ReportHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="True" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="745" Kind="ReportHeader" Name="ReportHeaderSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <TextObject Name="Text6" Kind="TextObject" Top="120" Left="120" Width="11280" Height="480" MaxNumberOfLines="0">
+                <Text>Pink Palette, sorted alphabetically</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="29" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Georgia" Size="18" SizeinPoints="18" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageHeader" Name="PageHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="450" Kind="PageHeader" Name="PageHeaderSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="Detail" Name="DetailArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="2666" Kind="Detail" Name="DetailSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="name1" Kind="FieldObject" Top="0" Left="0" Width="5885" Height="331" DataSource="{web_colours.name}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="True" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="hexcode1" Kind="FieldObject" Top="0" Left="6000" Width="1200" Height="360" DataSource="{web_colours.hexcode}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="True" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="rgbred1" Kind="FieldObject" Top="0" Left="8400" Width="672" Height="324" DataSource="{web_colours.rgb_red}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="0" RoundingFormat="RoundToUnit" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="True" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="rgbgreen1" Kind="FieldObject" Top="0" Left="9480" Width="660" Height="324" DataSource="{web_colours.rgb_green}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="0" RoundingFormat="RoundToUnit" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="True" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <FieldObject Name="rgbblue1" Kind="FieldObject" Top="0" Left="10560" Width="626" Height="324" DataSource="{web_colours.rgb_blue}">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="0" RoundingFormat="RoundToUnit" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="True" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <BoxObject Name="Box1" Kind="BoxObject" Top="360" Left="0" Width="11474" Height="1800" Bottom="2160" EnableExtendToBottomOfSection="False" EndSectionName="DetailSection1" LineStyle="SingleLine" LineThickness="20" Right="11474">
+                <LineColor Name="Black" A="255" R="0" G="0" B="0" />
+                <Border BottomLineStyle="SingleLine" HasDropShadow="True" LeftLineStyle="SingleLine" RightLineStyle="SingleLine" TopLineStyle="SingleLine">
+                  <BorderConditionFormulas BackgroundColor="Color ({web_colours.rgb_red}, {web_colours.rgb_green}, {web_colours.rgb_blue});" BorderColor="Color((255 - {web_colours.rgb_red}), (255 - {web_colours.rgb_green}), (255 - {web_colours.rgb_blue}));" />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </BoxObject>
+              <TextObject Name="Text7" Kind="TextObject" Top="0" Left="5640" Width="375" Height="360" MaxNumberOfLines="0">
+                <Text>#</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <LineObject Name="Line1" Kind="LineObject" Top="2400" Left="0" Width="11519" Height="0" Bottom="2400" EnableExtendToBottomOfSection="False" EndSectionName="DetailSection1" LineStyle="DotLine" LineThickness="0" Right="11519">
+                <LineColor Name="ffbcbcbc" A="255" R="188" G="188" B="188" />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="DotLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="ffbcbcbc" A="255" R="188" G="188" B="188" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </LineObject>
+              <TextObject Name="Text8" Kind="TextObject" Top="0" Left="11160" Width="359" Height="360" MaxNumberOfLines="0">
+                <Text>)</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text9" Kind="TextObject" Top="0" Left="10200" Width="330" Height="421" MaxNumberOfLines="0">
+                <Text>,</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text10" Kind="TextObject" Top="0" Left="9045" Width="315" Height="421" MaxNumberOfLines="0">
+                <Text>,</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="LeftAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+              <TextObject Name="Text11" Kind="TextObject" Top="0" Left="7434" Width="810" Height="421" MaxNumberOfLines="0">
+                <Text>RGB (</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="23" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="14" SizeinPoints="14" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="ReportFooter" Name="ReportFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="280" Kind="ReportFooter" Name="ReportFooterSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageFooter" Name="PageFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="True" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="360" Kind="PageFooter" Name="PageFooterSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="PageNofM1" Kind="FieldObject" Top="0" Left="8909" Width="2554" Height="360" DataSource="PageNofM">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="18" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Georgia" Size="11" SizeinPoints="11" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Blue" A="255" R="0" G="0" B="255" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="RightAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+    </Areas>
+  </ReportDefinition>
+  <SavedData RecordCount="52">
+    <Fields>
+      <Field Name="web_colours.name" Type="PersistentMemoField" />
+      <Field Name="web_colours.hexcode" Type="PersistentMemoField" />
+      <Field Name="web_colours.rgb_red" Type="Int32sField" />
+      <Field Name="web_colours.rgb_green" Type="Int32sField" />
+      <Field Name="web_colours.rgb_blue" Type="Int32sField" />
+    </Fields>
+    <Rows>
+      <Row>
+        <F>Amaranth pink</F>
+        <F>F19CBB</F>
+        <F>95</F>
+        <F>61</F>
+        <F>73</F>
+      </Row>
+      <Row>
+        <F>Baby pink</F>
+        <F>F4C2C2</F>
+        <F>96</F>
+        <F>76</F>
+        <F>76</F>
+      </Row>
+      <Row>
+        <F>Baker-Miller pink</F>
+        <F>FF91AF</F>
+        <F>100</F>
+        <F>57</F>
+        <F>69</F>
+      </Row>
+      <Row>
+        <F>Barbie Pink</F>
+        <F>DA1884</F>
+        <F>85</F>
+        <F>9</F>
+        <F>52</F>
+      </Row>
+      <Row>
+        <F>Brink pink</F>
+        <F>FB607F</F>
+        <F>98</F>
+        <F>38</F>
+        <F>50</F>
+      </Row>
+      <Row>
+        <F>Cameo pink</F>
+        <F>EFBBCC</F>
+        <F>94</F>
+        <F>73</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Candy pink</F>
+        <F>E4717A</F>
+        <F>89</F>
+        <F>44</F>
+        <F>48</F>
+      </Row>
+      <Row>
+        <F>Carnation pink</F>
+        <F>FFA6C9</F>
+        <F>100</F>
+        <F>65</F>
+        <F>79</F>
+      </Row>
+      <Row>
+        <F>Champagne pink</F>
+        <F>F1DDCF</F>
+        <F>95</F>
+        <F>87</F>
+        <F>81</F>
+      </Row>
+      <Row>
+        <F>Charm pink</F>
+        <F>E68FAC</F>
+        <F>90</F>
+        <F>56</F>
+        <F>67</F>
+      </Row>
+      <Row>
+        <F>Cherry blossom pink</F>
+        <F>FFB7C5</F>
+        <F>100</F>
+        <F>72</F>
+        <F>77</F>
+      </Row>
+      <Row>
+        <F>China pink</F>
+        <F>DE6FA1</F>
+        <F>87</F>
+        <F>44</F>
+        <F>63</F>
+      </Row>
+      <Row>
+        <F>Congo pink</F>
+        <F>F88379</F>
+        <F>97</F>
+        <F>51</F>
+        <F>47</F>
+      </Row>
+      <Row>
+        <F>Coral pink</F>
+        <F>F88379</F>
+        <F>97</F>
+        <F>51</F>
+        <F>47</F>
+      </Row>
+      <Row>
+        <F>Deep pink</F>
+        <F>FF1493</F>
+        <F>100</F>
+        <F>8</F>
+        <F>58</F>
+      </Row>
+      <Row>
+        <F>Fandango pink</F>
+        <F>DE5285</F>
+        <F>87</F>
+        <F>32</F>
+        <F>52</F>
+      </Row>
+      <Row>
+        <F>Flickr Pink</F>
+        <F>FB0081</F>
+        <F>98</F>
+        <F>0</F>
+        <F>51</F>
+      </Row>
+      <Row>
+        <F>French pink</F>
+        <F>FD6C9E</F>
+        <F>99</F>
+        <F>42</F>
+        <F>62</F>
+      </Row>
+      <Row>
+        <F>Hot pink</F>
+        <F>FF69B4</F>
+        <F>100</F>
+        <F>41</F>
+        <F>71</F>
+      </Row>
+      <Row>
+        <F>Light pink</F>
+        <F>FFB6C1</F>
+        <F>100</F>
+        <F>71</F>
+        <F>76</F>
+      </Row>
+      <Row>
+        <F>Mexican pink</F>
+        <F>E4007C</F>
+        <F>89</F>
+        <F>0</F>
+        <F>49</F>
+      </Row>
+      <Row>
+        <F>Mimi pink</F>
+        <F>FFDAE9</F>
+        <F>100</F>
+        <F>85</F>
+        <F>91</F>
+      </Row>
+      <Row>
+        <F>Mountbatten pink</F>
+        <F>997A8D</F>
+        <F>60</F>
+        <F>48</F>
+        <F>55</F>
+      </Row>
+      <Row>
+        <F>Nadeshiko pink</F>
+        <F>F6ADC6</F>
+        <F>96</F>
+        <F>68</F>
+        <F>78</F>
+      </Row>
+      <Row>
+        <F>New York pink</F>
+        <F>D7837F</F>
+        <F>84</F>
+        <F>51</F>
+        <F>50</F>
+      </Row>
+      <Row>
+        <F>Orchid pink</F>
+        <F>F2BDCD</F>
+        <F>95</F>
+        <F>74</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Pale pink</F>
+        <F>FADADD</F>
+        <F>98</F>
+        <F>85</F>
+        <F>87</F>
+      </Row>
+      <Row>
+        <F>Paradise pink</F>
+        <F>E63E62</F>
+        <F>90</F>
+        <F>24</F>
+        <F>38</F>
+      </Row>
+      <Row>
+        <F>Pastel pink</F>
+        <F>DEA5A4</F>
+        <F>87</F>
+        <F>65</F>
+        <F>64</F>
+      </Row>
+      <Row>
+        <F>Persian pink</F>
+        <F>F77FBE</F>
+        <F>97</F>
+        <F>50</F>
+        <F>75</F>
+      </Row>
+      <Row>
+        <F>Piggy pink</F>
+        <F>FDDDE6</F>
+        <F>99</F>
+        <F>87</F>
+        <F>90</F>
+      </Row>
+      <Row>
+        <F>Pink</F>
+        <F>FFC0CB</F>
+        <F>100</F>
+        <F>75</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Pink (Pantone)</F>
+        <F>D74894</F>
+        <F>84</F>
+        <F>28</F>
+        <F>58</F>
+      </Row>
+      <Row>
+        <F>Pink flamingo</F>
+        <F>FC74FD</F>
+        <F>99</F>
+        <F>45</F>
+        <F>99</F>
+      </Row>
+      <Row>
+        <F>Pink lace</F>
+        <F>FFDDF4</F>
+        <F>100</F>
+        <F>87</F>
+        <F>96</F>
+      </Row>
+      <Row>
+        <F>Pink lavender</F>
+        <F>D8B2D1</F>
+        <F>85</F>
+        <F>70</F>
+        <F>82</F>
+      </Row>
+      <Row>
+        <F>Pink Sherbet</F>
+        <F>F78FA7</F>
+        <F>97</F>
+        <F>56</F>
+        <F>65</F>
+      </Row>
+      <Row>
+        <F>Queen pink</F>
+        <F>E8CCD7</F>
+        <F>91</F>
+        <F>80</F>
+        <F>84</F>
+      </Row>
+      <Row>
+        <F>Rose pink</F>
+        <F>FF66CC</F>
+        <F>100</F>
+        <F>40</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Salmon pink</F>
+        <F>FF91A4</F>
+        <F>100</F>
+        <F>57</F>
+        <F>64</F>
+      </Row>
+      <Row>
+        <F>Schauss pink</F>
+        <F>FF91AF</F>
+        <F>100</F>
+        <F>57</F>
+        <F>69</F>
+      </Row>
+      <Row>
+        <F>Shocking pink</F>
+        <F>FC0FC0</F>
+        <F>99</F>
+        <F>6</F>
+        <F>75</F>
+      </Row>
+      <Row>
+        <F>Shocking pink (Crayola)</F>
+        <F>FF6FFF</F>
+        <F>100</F>
+        <F>44</F>
+        <F>100</F>
+      </Row>
+      <Row>
+        <F>Silver pink</F>
+        <F>C4AEAD</F>
+        <F>77</F>
+        <F>68</F>
+        <F>68</F>
+      </Row>
+      <Row>
+        <F>Solid pink</F>
+        <F>893843</F>
+        <F>54</F>
+        <F>22</F>
+        <F>26</F>
+      </Row>
+      <Row>
+        <F>Spanish pink</F>
+        <F>F7BFBE</F>
+        <F>97</F>
+        <F>75</F>
+        <F>75</F>
+      </Row>
+      <Row>
+        <F>Steel pink</F>
+        <F>CC33CC</F>
+        <F>80</F>
+        <F>20</F>
+        <F>80</F>
+      </Row>
+      <Row>
+        <F>Super pink</F>
+        <F>CF6BA9</F>
+        <F>81</F>
+        <F>42</F>
+        <F>66</F>
+      </Row>
+      <Row>
+        <F>Tango pink</F>
+        <F>E4717A</F>
+        <F>89</F>
+        <F>44</F>
+        <F>48</F>
+      </Row>
+      <Row>
+        <F>Thulian pink</F>
+        <F>DE6FA1</F>
+        <F>87</F>
+        <F>44</F>
+        <F>63</F>
+      </Row>
+      <Row>
+        <F>Tickle Me Pink</F>
+        <F>FC89AC</F>
+        <F>99</F>
+        <F>54</F>
+        <F>67</F>
+      </Row>
+      <Row>
+        <F>Ultra pink</F>
+        <F>FF6FFF</F>
+        <F>100</F>
+        <F>44</F>
+        <F>100</F>
+      </Row>
+    </Rows>
+  </SavedData>
+</Report>

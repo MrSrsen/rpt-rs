@@ -1,0 +1,46 @@
+[package]
+name = "rpt-render-cli"
+description = "The `rpt-render` command-line renderer: a decoded .rpt + its data (saved or a live DB) → HTML / PDF / SVG / PNG"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories = ["command-line-utilities"]
+rust-version.workspace = true
+
+[[bin]]
+name = "rpt-render"
+path = "src/main.rs"
+
+[dependencies]
+rpt = { workspace = true }
+crystal-formula = { workspace = true }
+rpt-data = { workspace = true }
+rpt-pages = { workspace = true }
+rpt-render = { workspace = true }
+rpt-render-svg = { workspace = true }
+rpt-render-raster = { workspace = true }
+# Live-DB path for the CLI (`--db`). Native-only; each driver crate pulls its client. Gated so the
+# default (native) build renders from a live DB while a `--no-default-features` build stays DB-free.
+rpt-query = { workspace = true, optional = true }
+rpt-db-postgres = { workspace = true, optional = true }
+rpt-db-sqlite = { workspace = true, optional = true }
+
+[features]
+# Mirror the facade's build knobs. `cosmic` forwards to the rpt-render library's font-accurate
+# cosmic-text layout (on by default for native; drop it for wasm). The `db-*` features compile the
+# CLI's live-DB backends AND turn on the matching rpt-render feature so `RenderError`'s driver-error
+# `From` impls are available for `?` on the fetch path.
+default = ["cosmic", "db-postgres", "db-sqlite"]
+cosmic = ["rpt-render/cosmic"]
+# `db` is the driver-agnostic live-DB machinery (URL/scheme parsing, fetch/scope plumbing); each
+# concrete driver feature turns it on plus its backend crate.
+db = ["dep:rpt-query"]
+db-postgres = ["db", "dep:rpt-db-postgres", "rpt-render/db-postgres"]
+db-sqlite = ["db", "dep:rpt-db-sqlite", "rpt-render/db-sqlite"]
+
+[lints]
+workspace = true

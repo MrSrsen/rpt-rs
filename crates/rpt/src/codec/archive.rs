@@ -7,7 +7,7 @@
 use super::header::StreamHeader;
 use super::mask::Mask;
 use super::tslv::{self, Flags};
-use crate::error::{Error, Result};
+use crate::error::{CodecError, Result};
 
 /// A record on the read stack.
 #[derive(Debug, Clone)]
@@ -70,7 +70,13 @@ impl<'a> ReadArchive<'a> {
             .pos
             .checked_add(n)
             .filter(|&e| e <= self.d.len())
-            .ok_or_else(|| Error::codec(format!("read past end of stream at {}", self.pos)))?;
+            .ok_or_else(|| {
+                CodecError::new(format!(
+                    "tried to read {n} bytes past end of {}-byte stream",
+                    self.d.len()
+                ))
+                .at(self.pos)
+            })?;
         let out = self.d[self.pos..end].to_vec();
         self.pos = end;
         Ok(out)
@@ -175,9 +181,12 @@ impl<'a> ReadArchive<'a> {
             }
             self.skip_rest_of_record();
             if self.at_end() {
-                return Err(Error::codec(format!(
-                    "record type {want_type:#06x} not found before end of stream"
-                )));
+                return Err(CodecError::new(
+                    "reached end of stream while searching for record type",
+                )
+                .record(want_type)
+                .at(self.pos)
+                .into());
             }
         }
     }

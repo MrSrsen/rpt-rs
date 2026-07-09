@@ -1,0 +1,95 @@
+{
+  "pages": [
+    {
+      "number": 1,
+      "size": {
+        "width": 12240,
+        "height": 15840
+      },
+      "origin": {
+        "x": 0,
+        "y": 0
+      },
+      "ops": [
+        {
+          "op": "Rect",
+          "bounds": {
+            "left": 100,
+            "top": 100,
+            "width": 2000,
+            "height": 400
+          },
+          "fill": {
+            "Solid": {
+              "a": 255,
+              "r": 255,
+              "g": 255,
+              "b": 255
+            }
+          },
+          "stroke": {
+            "color": {
+              "a": 0,
+              "r": 0,
+              "g": 0,
+              "b": 0
+            },
+            "width": 15,
+            "style": "Single"
+          },
+          "corner_radius": 0,
+          "source": {
+            "section": "Details",
+            "object_name": "Box1",
+            "kind": "Box",
+            "instance": null
+          }
+        },
+        {
+          "op": "Text",
+          "bounds": {
+            "left": 150,
+            "top": 150,
+            "width": 1900,
+            "height": 300
+          },
+          "text": "Afghanistan",
+          "font": {
+            "family": "Arial",
+            "size_pt": 10.0,
+            "bold": false,
+            "italic": false,
+            "underline": false,
+            "strikethrough": false
+          },
+          "color": {
+            "a": 0,
+            "r": 0,
+            "g": 0,
+            "b": 0
+          },
+          "align": "Left",
+          "rotation": 0.0,
+          "metrics": null,
+          "source": {
+            "section": "Details",
+            "object_name": "name",
+            "kind": "Field",
+            "instance": null
+          }
+        }
+      ]
+    }
+  ],
+  "checkpoints": [
+    {
+      "page_number": 1,
+      "record_position": 0,
+      "state": {
+        "variables": {}
+      }
+    }
+  ],
+  "diagnostics": [],
+  "assets": {}
+}

@@ -1,0 +1,21 @@
+[package]
+name = "rpt-model"
+description = "The rpt-rs semantic report model — the format-neutral, pure-data IR of a Crystal Reports report"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+rust-version.workspace = true
+
+[features]
+serde = ["dep:serde"]
+
+[dependencies]
+serde = { workspace = true, optional = true }
+
+[lints]
+workspace = true

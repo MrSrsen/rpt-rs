@@ -109,6 +109,12 @@ big-endian `f64` divided by 100; dates as a big-endian Julian day number; string
 A report group: its grouping condition field and order. Carries the group's keep-together / repeat-header /
 visible-per-page options and, for date groups, a granularity token.
 
+### `0x0088` — GroupAreaFormat
+
+A 24-byte area-pair options record that immediately *precedes* the `0x00e5` Group it describes: repeat-group-header
+and keep-group-together flags plus the visible-groups-per-page count. The outermost group has no preceding `0x0088`
+and keeps defaults.
+
 ### `0x0029` — RecordSortField
 
 A record-level sort: a field reference plus the sort direction (in the last byte).
@@ -121,6 +127,21 @@ run of these defines the report's summary fields.
 ### `0x0080` — RunningTotalReset
 
 A running total's reset condition. It immediately precedes the `0x007e` it applies to.
+
+### `0x00e9` — HierGroup
+
+A specified-order (hierarchical) group value: an lp-string group-value name followed by an lp-string defining
+condition-formula. One record per named value.
+
+### `0x0118` — FormulaVariable
+
+One persisted Global/Shared formula variable: its name, result type, and scope. The preceding `0x0116` table header
+just holds the variable count and is not parsed.
+
+### `0x006e` — FieldManagerCensus
+
+The field-pool census: a 20-byte block counting the report's database fields, formulas, and the other field-manager
+pools. A single record; drives the field-kind partitioning used elsewhere.
 
 ## Layout: areas, sections, and objects
 
@@ -188,6 +209,28 @@ index (the pairing key). The main-report field name is stored as a string; the s
 `(kind, index)` handle in the trailing descriptor (`kind` 0 = the Nth database field, `kind` 1 = the Nth formula),
 resolved against the subreport's per-kind field pool.
 
+### `0x00bd` — OleObjectItem
+
+Decorates a static picture / OLE object; its leaf `[0..4]` is a big-endian 1-based ordinal naming the `Embedding N`
+storage that holds the object's payload.
+
+### `0x00b4` — ChartBinding
+
+Opens a chart's binding block and nests the chart's `0x009e` ObjectName. The chart's "show value" data field is carried
+by a `0x007f` ChartData wrapper (around a `0x007e` child); labeled analytic values arrive as `0x011f` ChartDataValue
+records. The `0x0121` ChartDefinition2 leaf carries the v2 chart type and titles, but its styling blob (axes, series,
+colours) is named and left opaque.
+
+### `0x00b8` — CrossTabObject
+
+Opens a cross-tab object, wrapped by a `0x00b9` record that starts the cross-tab binding block and parents the object's
+`0x009e` name. The grid's dimensions and formats follow:
+
+- `0x00cb` — a dimension level: a header plus an lp-string `{table.field}` reference.
+- `0x00ce` — a column-axis level (`Column #N`); `0x00d2` — a row-axis level (`Row #N`).
+- `0x0143` — a grid-level format word (a big-endian `u16`), which opens the cell-format run.
+- `0x0145` — one grid-region cell format (an 11-byte block: flags + a BGR background colour + a flag).
+
 ## Formatting
 
 Most format records attach to the object or section that precedes them. Conditional-format records hold an array of
@@ -210,7 +253,8 @@ line). Byte 9 flags a drop shadow.
 
 ### `0x00fc` — ObjectFormat
 
-An object's format flags, including horizontal alignment (in byte 2).
+An object's format flags, including horizontal alignment (in byte 2). The object's hyperlink target text and type are
+also carried in this leaf (a lone-NUL target means no hyperlink).
 
 ### `0x00fd` — ObjectConditionFormulas
 
@@ -234,17 +278,68 @@ A section's conditional-format formula slot array.
 
 An object's font conditional-format formula slot array.
 
-## Recognized but not decoded
+### `0x00ed` — ObjectBorderCondition
 
-Many record types appear in real reports but are not yet interpreted into the model. They are preserved verbatim in the
-[record substrate](04-record-tree.md) as `Unknown` nodes (so the round-trip stays lossless) and are still counted in the
-report's record inventory. They include chart and cross-tab data blocks, OLAP grids, and a long tail of less common
-types. The [support matrix](09-support-matrix.md) tracks which are decoded.
+The conditional-format wrapper that parents a `0x00ec` ObjectBorder; it carries the border-colour condition-formula
+slots.
 
-## Feature areas not covered
+### `0x00ee`–`0x00fb` — Typed field sub-formats
 
-Beyond individual record types, whole Crystal feature areas are not modelled because they introduce their own families
-of records: deep chart/graph models (axes, series, styling — only the placeholder object is modelled), cross-tabs and
-OLAP grids, maps, alerts, hierarchical grouping, and typed field sub-formats (number/date/currency masks and rounding).
-Object-level conditional formatting flags (rotation, tooltips, hyperlinks) are stored in the model but not all
-sub-format condition formulas are decoded yet. See the [support matrix](09-support-matrix.md).
+A field object's typed display format streams after its `0x009f` opener as a fixed run of wrapper/value record pairs —
+each odd wrapper carries conditioned-value slots and parents its even value child: Common (`0x00f0`/`0x00f1`), Numeric
+(`0x00f8`/`0x00f9`), Boolean (`0x00ee`/`0x00ef`), Date (`0x00f2`/`0x00f3`), Time (`0x00f6`/`0x00f7`), DateTime
+(`0x00f4`/`0x00f5`), and String (`0x00fa`/`0x00fb`). The Common/Numeric/Boolean/String value bytes are decoded into the
+model; the Date/Time/DateTime leaves store the uniform system default, so their effective display format is
+runtime-resolved (excluded from parity like `NumberOfBytes`).
+
+## Authoring, saved data, and designer state
+
+These records carry provenance and editor state. Most are kept on the model but not emitted by the XML export.
+
+### `0x0061` — SavedData
+
+The saved-data block descriptor. Its presence marks `ReportDocument.HasSavedData`; the cached rows themselves live in
+separate streams (see [Saved data](10-saved-data.md)).
+
+### `0x0178` — SaveMetadata
+
+One save-time environment key/value pair, one record per save event, kept in stream order.
+
+### `0x0142` — ReimportInfo
+
+A subreport re-import descriptor: the source path the report/subreport was imported from plus its import timestamps.
+
+### `0x010c` — GuidelineEntry
+
+A designer snap guideline: a big-endian `u32` position in twips followed by a `u16` flags word.
+
+### `0x0111` — ObjectConnection
+
+A designer object-connection edge (a 22-byte block: source, destination, and kind).
+
+## Record-type coverage
+
+Every record type the library has encountered is **identified and named** in the registry (`RecordTag::name()`), so
+`rpt tree` / `rpt streams` render each with its type name rather than raw hex. All recognized record types are named,
+down to codes `0x017e`/`0x017f` (`CrossTabColumnGroupIndex`/`CrossTabTotalValue`). A record type the registry has not
+seen is preserved verbatim as an `Unknown` node so the round-trip stays lossless. The
+[support matrix](09-support-matrix.md) tracks which types are fully **decoded into the model** vs **named for
+recognition** (structural bracket/wrapper records and opaque render state carry nothing a reader needs).
+
+## Feature areas: modelling depth
+
+A record type being *named* does not mean its whole feature is *modelled*. Deep chart/graph styling (axes, series,
+colours — the chart object, analytic layout, and data-value labels are decoded, but the `0x0121` styling blob is named
+and left opaque), full OLAP-grid / map / alert / Flash / XML-export structure (named at the family level but not
+decoded into the model), and the effective *runtime* display format of typed field sub-formats (the stored format is
+decoded; the locale-resolved display value is excluded from parity like `NumberOfBytes`) remain partial. Not all
+object-level sub-format condition formulas are decoded yet. See the [support matrix](09-support-matrix.md).
+
+## See it yourself
+
+The `rpt dump` command is the byte-layout workbench for a record type — an annotated hex dump of the demasked leaf
+bytes a decoder reads:
+
+```console
+$ rpt dump report.rpt --type 0x0064
+```

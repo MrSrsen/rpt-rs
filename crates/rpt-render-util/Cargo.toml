@@ -1,0 +1,18 @@
+[package]
+name = "rpt-render-util"
+description = "Shared primitives for the rpt-pages render backends — unit constants, XML escaping, stroke/dash math (WASM-safe, no platform deps)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+rpt-pages = { workspace = true }
+
+[lints]
+workspace = true

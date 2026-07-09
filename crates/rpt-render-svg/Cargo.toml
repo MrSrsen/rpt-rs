@@ -1,0 +1,20 @@
+[package]
+name = "rpt-render-svg"
+description = "SVG output backend for the rpt-pages Page IR — emits a self-contained SVG per formatted page"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+rpt-model = { workspace = true }
+rpt-pages = { workspace = true }
+rpt-render-util = { workspace = true }
+
+[lints]
+workspace = true

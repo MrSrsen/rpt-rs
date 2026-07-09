@@ -1,0 +1,26 @@
+[package]
+name = "rpt-layout"
+description = "The layout engine: walks the report definition over the data instance tree, places objects, paginates, and emits the rpt-pages Page IR"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+rpt-model = { workspace = true }
+crystal-formula = { workspace = true }
+rpt-data = { workspace = true }
+rpt-format-value = { workspace = true }
+rpt-pages = { workspace = true }
+rpt-render-util = { workspace = true }
+
+[dev-dependencies]
+rpt-test-support = { workspace = true }
+
+[lints]
+workspace = true

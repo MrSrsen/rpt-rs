@@ -1,22 +1,42 @@
-//! Report definition — the area/section/object layout tree: the record walk that builds areas,
-//! sections and objects, plus the cursor helpers and post-walk transforms.
+//! Report definition — the area/section/object layout tree. This module root holds the record
+//! grammar ([`RdRecord`]) and the top-level walk ([`raise_report_definition`]) that orchestrates it;
+//! the submodules own the parsing detail:
 //!
-//! Submodules decode the leaf detail: [`formats`] (per-object/area/section format records),
-//! [`conditions`] (conditional-format formula slots), [`data_source`] (field/object reference text).
+//! - [`sections`] — area/section construction and the canonical band ordering.
+//! - [`objects`] — object cursors and the post-walk object-tree transforms.
+//! - [`summary`] — the non-running-total summary definitions a Summary object indexes.
+//! - [`grid`] / [`chart`] / [`crosstab`] — chart / cross-tab bindings, chart definitions, cross-tab
+//!   dimensions + grid formatting.
+//! - [`formats`] (per-object/area/section format records), [`conditions`] (conditional-format
+//!   formula slots), [`data_source`] (field/object reference text).
 
 use super::*;
 
+mod chart;
 mod conditions;
+mod crosstab;
 mod data_source;
 mod formats;
+mod grid;
+mod objects;
+mod sections;
+mod summary;
 
+use chart::*;
 use conditions::*;
+use crosstab::*;
 use data_source::*;
 use formats::*;
+use grid::*;
+use objects::*;
+use sections::*;
+use summary::*;
 
 // `condition_formula_bodies` is also consumed by the data-definition raise (a sibling module), so
 // re-export it up to the parent `raise` module.
 pub(in crate::project::raise) use conditions::condition_formula_bodies;
+// The parent `raise` runs `resolve_heading_alignment` after the database is decoded, so re-export it.
+pub(in crate::project::raise) use objects::resolve_heading_alignment;
 
 /// A record's role in the `ReportDefinition` stream. The stream is a flat, ordered sequence:
 /// area/section markers delimit the layout tree, an *opener* starts a report object, and the
@@ -41,6 +61,9 @@ pub(super) enum RdRecord {
     /// `0xb1` — wraps the picture opener of a blob-field object; its leaf bytes hold the bound
     /// database field reference (`table.field`). Streams immediately before its `0xae` child.
     BlobFieldRef,
+    /// `0xbd` — decorates the just-opened static/OLE picture; leaf `[0..4]` (big-endian) is the
+    /// 1-based `Embedding N` storage ordinal whose `CONTENTS` stream holds the image bytes.
+    OleObjectItem,
     /// `0xa3` — opens a subreport placeholder object.
     OpenSubreport,
     /// `0xb8` — opens a cross-tab object (wrapped by `0xb9`; the `0x9e` name nests inside it).
@@ -75,6 +98,10 @@ pub(super) enum RdRecord {
     EmbeddedField,
     /// `0xc2` — the current text object's literal text.
     TextContent,
+    /// One of the typed field-format wrappers (`0xf1`/`0xf9`/`0xef`/`0xfb` and the runtime-resolved
+    /// `0xf3`/`0xf7`/`0xf5`). Each parents its value child; the byte-derived children populate the
+    /// current field object's `FieldFormat`.
+    FieldFormatBlock,
     /// Any record not part of the object layout.
     Other,
 }
@@ -91,6 +118,7 @@ impl RdRecord {
             LINE_OBJECT => RdRecord::OpenShape,
             PICTURE_OBJECT => RdRecord::OpenPicture,
             BLOB_FIELD_REF => RdRecord::BlobFieldRef,
+            OLE_OBJECT_ITEM => RdRecord::OleObjectItem,
             SUBREPORT_OBJECT => RdRecord::OpenSubreport,
             CROSSTAB_OBJECT => RdRecord::OpenCrossTab,
             OBJECT_NAME => RdRecord::Name,
@@ -107,6 +135,8 @@ impl RdRecord {
             TEXT_OBJECT_FORMAT => RdRecord::TextObjectFormat,
             TEXT_EMBEDDED_FIELD => RdRecord::EmbeddedField,
             TEXT_CONTENT => RdRecord::TextContent,
+            FF_COMMON_WRAPPER | FF_NUMERIC_WRAPPER | FF_BOOLEAN_WRAPPER | FF_STRING_WRAPPER
+            | FF_DATE_WRAPPER | FF_TIME_WRAPPER | FF_DATETIME_WRAPPER => RdRecord::FieldFormatBlock,
             _ => RdRecord::Other,
         }
     }
@@ -150,13 +180,6 @@ pub(super) fn raise_report_definition(
     // Conditional-format formula bodies, keyed by global formula index; an object/section's
     // condition-slot record names the exact body by that index below.
     let conditions = condition_formula_bodies(tree, logical);
-    // Canonical group level per area suffix (first-appearing `GroupHeader` = outermost = 1), the
-    // same mapping `sort_areas_canonical` builds. A summary/group-name object's group scope is this
-    // level, not the raw area suffix — Crystal numbers area suffixes in UI-creation order, not
-    // nesting order, so a footer's suffix need not equal its group's nesting index.
-    let mut suffix_level: std::collections::HashMap<String, usize> =
-        std::collections::HashMap::new();
-    let mut next_level = 1usize;
     // A text object stores one font per text run (`0x08`), interleaved with the run text (`0xc2`).
     // The engine reports the object's font as the FIRST run's font, so once an object has received a
     // font we ignore later runs. Reset on every object opener.
@@ -164,43 +187,7 @@ pub(super) fn raise_report_definition(
     // True while the walk is inside a folded-away auxiliary detail-pair area (DetailHeader/Footer),
     // whose format records must not leak onto the real Detail area. Set per Area marker.
     let mut in_aux_area = false;
-    // The ordered non-running-total summary definitions (`0x7e` not preceded by a `0x80` reset).
-    // A localized field-object reference string fails the ASCII guard, so a Summary object's `code`
-    // byte indexes into this list to recover its operation + summarized field.
-    let sum_defs: Vec<(
-        crate::model::SummaryOperation,
-        String,
-        crate::model::FieldValueType,
-    )> = {
-        let mut prev = 0u16;
-        let mut out = Vec::new();
-        for n in flatten(tree) {
-            if n.rtype == SUMMARY_DEF && prev != RT_RESET {
-                let lb = n.leaf_bytes(logical);
-                let op = crate::model::SummaryOperation::from_code(i32::from(
-                    lb.first().copied().unwrap_or(0),
-                ));
-                let operand = lb
-                    .get(4..)
-                    .and_then(read_lp_string)
-                    .map(|(s, _)| s)
-                    .unwrap_or_default();
-                // The `0x71` child carries the summary's result value type: unlike a running total's
-                // child (which leads with the field name), a summary's child is a fixed header
-                // `00 00 00 01 00 <vt> 00 <nbytes> …` — the value-type code sits at offset 5.
-                let value_type = n
-                    .children
-                    .iter()
-                    .find(|c| c.rtype == NAMED_VALUE)
-                    .and_then(|child| child.leaf_bytes(logical).get(5).copied())
-                    .map(|code| crate::model::FieldValueType::from_code(i32::from(code)))
-                    .unwrap_or_default();
-                out.push((op, operand, value_type));
-            }
-            prev = n.rtype;
-        }
-        out
-    };
+    let sum_defs = collect_summary_defs(tree, logical);
     for node in flatten(tree) {
         let rd = RdRecord::classify(node);
         // Each object opener begins a fresh object: re-arm first-font capture.
@@ -226,19 +213,6 @@ pub(super) fn raise_report_definition(
                 // the auxiliary half carries an area-format record disagreeing with the Detail area,
                 // and the Detail area's is the one kept.
                 in_aux_area = !open_area(&mut areas, node, logical);
-                // Register each GroupHeader suffix → canonical level on first appearance (group
-                // headers print outermost-first, so first-seen = level 1). Footers reuse the level.
-                if let Some(a) = areas.last() {
-                    if a.kind == AreaSectionKind::GroupHeader {
-                        suffix_level
-                            .entry(trailing_digits(&a.name))
-                            .or_insert_with(|| {
-                                let l = next_level;
-                                next_level += 1;
-                                l
-                            });
-                    }
-                }
             }
             RdRecord::Section => open_section(&mut areas, node, logical),
             RdRecord::OpenText => {
@@ -310,13 +284,15 @@ pub(super) fn raise_report_definition(
                     }
                 }
                 // A summary's group scope is the group owning the section it sits in — its canonical
-                // level (not the raw area suffix). Report/page bands yield none (a grand total).
-                let group_no = areas.last().and_then(|a| match a.kind {
-                    AreaSectionKind::GroupHeader | AreaSectionKind::GroupFooter => {
-                        suffix_level.get(&trailing_digits(&a.name)).copied()
+                // level (not the raw area suffix). Report/page bands yield none (a grand total). The
+                // level map is derived from the areas built so far, which — because a group's header
+                // always precedes its own fields — holds the entry every group-band lookup needs.
+                let group_no = match areas.last().map(|a| (a.kind, trailing_digits(&a.name))) {
+                    Some((AreaSectionKind::GroupHeader | AreaSectionKind::GroupFooter, suffix)) => {
+                        canonical_group_levels(&areas).get(&suffix).copied()
                     }
                     _ => None,
-                });
+                };
                 // For a summary object, carry its definition index (dedup identity for
                 // `<SummaryFields>`) and result value type (from the indexed `0x7e` def's child).
                 let summary_code = matches!(kind, FieldRefKind::Summary)
@@ -394,6 +370,19 @@ pub(super) fn raise_report_definition(
                     ),
                 }
             }
+            // The static/OLE picture's image bytes are not in this stream: they live in the
+            // top-level `Embedding N` storage's `CONTENTS` stream. This record carries that
+            // ordinal `N` (leaf `[0..4]`, big-endian); stash it on the just-opened picture so
+            // `io` can resolve the bytes into `PictureObject.data` once the container is known.
+            RdRecord::OleObjectItem => {
+                if let Some(ReportObjectKind::Picture(pic)) =
+                    current_object(&mut areas).map(|o| &mut o.kind)
+                {
+                    if let Some(ord) = u32_be(&node.leaf_bytes(logical), 0) {
+                        pic.ole_ordinal = Some(ord);
+                    }
+                }
+            }
             // The subreport's friendly name (SubreportName) lives in the backing `Subdocument N`
             // (its report-header record), not here; the opener's leaf bytes `[0..4]` (big-endian)
             // give that index `N`, which `io` uses to resolve the name after subreports are decoded.
@@ -412,7 +401,7 @@ pub(super) fn raise_report_definition(
             }
             RdRecord::OpenCrossTab => {
                 // The `0xb8` opener carries the grid's row/column/summary bindings (decoded by
-                // rpt-engine for UseCount); here it opens a typed marker so the following name,
+                // the derived analytics for UseCount); here it opens a typed marker so the following name,
                 // geometry, border and format records decorate it like any other object.
                 open_object(
                     &mut areas,
@@ -447,6 +436,7 @@ pub(super) fn raise_report_definition(
                         obj.format.keep_together = lb.get(5).is_none_or(|&b| b != 0);
                     }
                     obj.format.can_grow = lb.get(9).is_some_and(|&b| b != 0);
+                    obj.format.hyperlink = decode_hyperlink(&lb);
                 }
             }
             RdRecord::ObjectCondition => {
@@ -552,9 +542,19 @@ pub(super) fn raise_report_definition(
                 }
             }
             RdRecord::Font => {
-                // First run wins: a multi-run text object keeps the font of its first run.
-                if !font_set {
-                    if let Some(font) = raise_font(node, logical) {
+                if let Some(font) = raise_font(node, logical) {
+                    // Per-run font: a `0x08` streams right after the run (`0xc2`/`0xc4`) it styles, so
+                    // it belongs to the current text object's last run.
+                    if let Some(ReportObjectKind::Text(t)) =
+                        current_object(&mut areas).map(|o| &mut o.kind)
+                    {
+                        if let Some(run) = t.paragraphs.last_mut().and_then(|p| p.runs.last_mut()) {
+                            run.font = Some(font.clone());
+                        }
+                    }
+                    // Object-level font: first run wins — a multi-run text object keeps the font of its
+                    // first run for the `<Font>` the exporter emits.
+                    if !font_set {
                         if let Some(fc) = current_object(&mut areas).and_then(font_color_mut) {
                             fc.font = font;
                             font_set = true;
@@ -572,6 +572,8 @@ pub(super) fn raise_report_definition(
                     if !t.display.is_empty() {
                         t.display.push('\n');
                     }
+                    // Start a new paragraph in the structured run tree (one per `0x00c0`).
+                    t.paragraphs.push(crate::model::Paragraph::default());
                 }
                 // Text and field-heading objects carry their authoritative horizontal alignment in
                 // byte 12 of this `0xc0` record (the `0xfc` value is a conditional override). It
@@ -604,6 +606,14 @@ pub(super) fn raise_report_definition(
                         current_object(&mut areas).map(|o| &mut o.kind)
                     {
                         t.display.push_str(&rendered);
+                        push_text_run(
+                            t,
+                            crate::model::TextRun {
+                                text: rendered,
+                                field_ref: Some(raw.clone()),
+                                font: None,
+                            },
+                        );
                         t.embedded_fields.push(raw);
                     }
                 }
@@ -614,475 +624,53 @@ pub(super) fn raise_report_definition(
                     current_object(&mut areas).map(|o| &mut o.kind)
                 {
                     t.display.push_str(&text);
+                    push_text_run(
+                        t,
+                        crate::model::TextRun {
+                            text: text.clone(),
+                            field_ref: None,
+                            font: None,
+                        },
+                    );
                 }
                 if let Some(obj) = current_object(&mut areas) {
                     set_object_text(&mut obj.kind, text);
                 }
             }
+            RdRecord::FieldFormatBlock => {
+                // The wrapper (odd rtype) parents its value child (even rtype = wrapper − 1). Decode
+                // the byte-derived children into the current field object's FieldFormat. Every field
+                // opener is followed by the full block, so `f.format` becomes `Some` for every field.
+                // The Numeric child streams twice; the second one is authoritative, so it overwrites.
+                if let Some(child) = node.children.first() {
+                    let lb = child.leaf_bytes(logical);
+                    if let Some(ReportObjectKind::Field(f)) =
+                        current_object(&mut areas).map(|o| &mut o.kind)
+                    {
+                        let ff = f.format.get_or_insert_with(Default::default);
+                        match child.rtype {
+                            FF_COMMON_VALUE => ff.common = decode_common_format(&lb),
+                            FF_NUMERIC_VALUE => ff.numeric = decode_numeric_format(&lb),
+                            FF_BOOLEAN_VALUE => ff.boolean = decode_boolean_format(&lb),
+                            // The `0x00f2` date leaf carries the per-field stored day/month/year
+                            // format enums (varies per field); decode them. The engine reports them
+                            // verbatim only for a date-valued non-system-default field — the
+                            // effective resolution lives in the XML exporter's field_format derivation. The time
+                            // (`0x00f6`) / datetime leaves stay runtime/locale-resolved; the string
+                            // sub-format is decoded elsewhere / not emitted.
+                            FF_DATE_VALUE => ff.date = decode_date_format(&lb),
+                            _ => {}
+                        }
+                    }
+                }
+            }
             RdRecord::Other => {}
         }
     }
-    // A text object with a field-heading link is only a FieldHeadingObject if the FieldObject it
-    // names still exists; an orphaned link (the field was removed) degrades to a plain TextObject,
-    // matching the engine's object type. Collect the live field-object names, then demote orphans.
-    // Each FieldObject's stored alignment, keyed by object name. A heading left at `DefaultAlign`
-    // inherits the explicit alignment of the field it heads; the value-type-based default (for a
-    // field that is itself `DefaultAlign`) is resolved later in `resolve_heading_alignment`, once
-    // the database has supplied each field object's value type.
-    let field_align: BTreeMap<String, Alignment> = areas
-        .iter()
-        .flat_map(|a| &a.sections)
-        .flat_map(|sec| &sec.objects)
-        // A heading can head a regular field OR a blob/picture field (e.g. a `user_signature`
-        // BlobFieldObject); both are live targets, so only a truly orphaned link degrades.
-        .filter(|o| {
-            matches!(
-                o.kind,
-                ReportObjectKind::Field(_) | ReportObjectKind::BlobField(_)
-            )
-        })
-        .map(|o| (o.name.clone(), o.format.horizontal_alignment))
-        .collect();
-    for obj in areas
-        .iter_mut()
-        .flat_map(|a| &mut a.sections)
-        .flat_map(|sec| &mut sec.objects)
-    {
-        if let ReportObjectKind::FieldHeading(h) = &obj.kind {
-            match field_align.get(h.field_object_name.as_str()) {
-                // The named field no longer exists — the heading degrades to a plain text object.
-                None => {
-                    obj.kind = ReportObjectKind::Text(TextObject {
-                        text: h.text.clone(),
-                        max_lines: h.max_lines,
-                        font_color: h.font_color.clone(),
-                        ..Default::default()
-                    });
-                }
-                // A heading without its own alignment inherits the field's explicit alignment (so a
-                // heading over a right-aligned number is itself right-aligned). When the field is
-                // also `DefaultAlign`, the heading stays default here and is resolved by value type
-                // in `resolve_heading_alignment` after the database is decoded.
-                Some(&a)
-                    if a != Alignment::DefaultAlign
-                        && obj.format.horizontal_alignment == Alignment::DefaultAlign =>
-                {
-                    obj.format.horizontal_alignment = a;
-                }
-                _ => {}
-            }
-        }
-    }
-
-    // Resolve the opener kinds that can only be told apart once the object's name is known: `0xae`
-    // is picture/chart/blob-field (the engine auto-names charts `Graph…`, static pictures `Picture…`,
-    // and binds blob fields to their database field name). Line-vs-box is already resolved at the
-    // `0xec` border record via its byte-25 shape type (see [`DrawingShapeKind`]).
-    for obj in areas
-        .iter_mut()
-        .flat_map(|a| &mut a.sections)
-        .flat_map(|sec| &mut sec.objects)
-    {
-        match &obj.kind {
-            ReportObjectKind::Picture(_) if obj.name.starts_with("Graph") => {
-                obj.kind = ReportObjectKind::Chart(Box::default());
-            }
-            ReportObjectKind::Picture(_) if !obj.name.starts_with("Picture") => {
-                // Fallback: a picture that is neither a chart nor a static image but had no `0xb1`
-                // wrapper to supply the bound field reference (so its data source stays empty).
-                obj.kind = ReportObjectKind::BlobField(crate::model::BlobFieldObject::default());
-            }
-            _ => {}
-        }
-    }
-
-    // Attach each chart / cross-tab object's decoded field bindings (decoded by name from the
-    // separate binding region; see `collect_grid_bindings`), now that openers are reclassified.
-    let bindings = collect_grid_bindings(tree, logical);
-    for obj in areas
-        .iter_mut()
-        .flat_map(|a| &mut a.sections)
-        .flat_map(|sec| &mut sec.objects)
-    {
-        let Some(refs) = bindings.get(&obj.name) else {
-            continue;
-        };
-        match &mut obj.kind {
-            ReportObjectKind::Chart(c) => {
-                c.data_refs = refs.data.clone();
-                c.category_refs = refs.category.clone();
-            }
-            // Every cross-tab grid binding is a row/column dimension (no data role here).
-            ReportObjectKind::CrossTab(c) => c.field_refs = refs.category.clone(),
-            _ => {}
-        }
-    }
+    demote_orphan_headings(&mut areas);
+    reclassify_picture_openers(&mut areas);
+    attach_grid_bindings(tree, logical, &mut areas);
     sort_areas_canonical(&mut areas);
     resolve_cross_section_boxes(&mut areas);
     ReportDefinition { areas }
-}
-
-/// Resolve the end section of every cross-section box. Walk the stacked sections (canonical layout
-/// order, across areas) from the box's section, accumulating each section's height from the box's
-/// top until the total reaches the box height — that section holds the box's bottom edge. Must run
-/// after `sort_areas_canonical` so the stacking order matches the rendered layout.
-fn resolve_cross_section_boxes(areas: &mut [Area]) {
-    let flat: Vec<(String, i32)> = areas
-        .iter()
-        .flat_map(|a| &a.sections)
-        .map(|s| (s.name.clone(), s.height.0))
-        .collect();
-    for (start, sec) in areas.iter_mut().flat_map(|a| &mut a.sections).enumerate() {
-        for obj in &mut sec.objects {
-            let top = obj.bounds.top.0;
-            let height = obj.bounds.height.0;
-            if let ReportObjectKind::Box(bx) = &mut obj.kind {
-                // Cross-section signature: the opener's (end-relative) bottom is above the top, or the
-                // box's bottom edge (top + the true span) extends past its own section.
-                if bx.shape.bottom.0 < top || top + height > flat[start].1 {
-                    // The bottom edge sits `bx.shape.bottom` twips into the end section, so the end
-                    // section's top lies `height - bottom` below the box top. Walk stacked sections
-                    // (from the box top) until the cumulative height reaches that point; that section
-                    // holds the bottom edge.
-                    let target = (height - bx.shape.bottom.0).max(0);
-                    let mut acc = flat[start].1 - top;
-                    let mut end = start;
-                    while acc < target && end + 1 < flat.len() {
-                        end += 1;
-                        acc += flat[end].1;
-                    }
-                    bx.end_section_name = flat[end].0.clone();
-                }
-            }
-        }
-    }
-}
-
-/// Collect each chart / cross-tab object's persistent field bindings from the report's binding
-/// region (a flat run of sibling records that follows the layout), keyed by object name.
-///
-/// The binding records reuse the generic group machinery, so each is scoped precisely:
-/// - A **chart** binding block starts with `0xb4` (which nests the chart's `ObjectName`); its data
-///   ("show value") field is the `0x7e` child of the next `0x7f`, and its category ("on change of")
-///   field is the next grid `0xe5`.
-/// - A **cross-tab** block starts with `0xb9`/`0xb8` (nesting `CrossTabN`); each row/column
-///   dimension is a grid `0xe5`.
-///
-/// A grid `0xe5` is told apart from a real report group (which `data_def` decodes into
-/// `DataDefinition.groups`) by its localized order-marker string: a report group carries
-/// `@Group #N Order`, a chart category `@… Grid #N Order`, and a cross-tab dimension
-/// `@Column #N Order` / `@Row #N Order`. Only field-shaped references (`Table.field` or `@formula`)
-/// are kept — grand-total dimension levels read `Others`. Cross-tab data-cell summaries
-/// (`Sum of {Table.x}`) are NOT collected here (they are counted via `<SummaryFields>`).
-fn collect_grid_bindings(
-    tree: &[RecordNode],
-    logical: &[u8],
-) -> std::collections::HashMap<String, GridBindings> {
-    let mut out: std::collections::HashMap<String, GridBindings> = std::collections::HashMap::new();
-    // The chart/cross-tab whose binding records are currently being read: (object name, is_chart).
-    let mut current: Option<(String, bool)> = None;
-    // `is_category` selects which role the field is bound in: a chart's data ("show value") field
-    // versus a category / cross-tab dimension (a grid group). The engine counts them differently.
-    let push = |out: &mut std::collections::HashMap<String, GridBindings>,
-                cur: &Option<(String, bool)>,
-                field: Option<String>,
-                is_category: bool| {
-        if let (Some((name, _)), Some(f)) = (cur, field.filter(|s| is_field_ref(s))) {
-            let b = out.entry(name.clone()).or_default();
-            if is_category {
-                b.category.push(f);
-            } else {
-                b.data.push(f);
-            }
-        }
-    };
-    for node in flatten(tree) {
-        match node.rtype {
-            CHART_BINDING => current = descendant_object_name(node, logical).map(|n| (n, true)),
-            CROSSTAB_WRAPPER => {
-                current = descendant_object_name(node, logical).map(|n| (n, false));
-            }
-            // A chart's data field (`0x7f` → `0x7e` field ref); only inside a chart block.
-            CHART_DATA if matches!(current, Some((_, true))) => {
-                push(&mut out, &current, first_string(node, logical), false);
-            }
-            // A grid group is a chart category / cross-tab dimension binding (identified by marker).
-            GROUP if current.is_some() && is_grid_group(node, logical) => {
-                push(&mut out, &current, first_string(node, logical), true);
-            }
-            // Leaving the binding scope (a real layout marker) clears the current object.
-            AREA_MARKER | SECTION_MARKER => current = None,
-            _ => {}
-        }
-    }
-    out
-}
-
-/// One chart/cross-tab object's field bindings, split by the role the engine binds them in (it
-/// references each role a different number of times for `Field.UseCount`): `data` are a chart's
-/// "show value" data fields; `category` are chart "on change of" categories and cross-tab row/column
-/// dimensions (the `0xe5` grid groups). A cross-tab has only `category` bindings.
-#[derive(Default)]
-struct GridBindings {
-    data: Vec<String>,
-    category: Vec<String>,
-}
-
-/// The object name nested in a chart/cross-tab wrapper: the first `OBJECT_NAME` (`0x9e`) descendant's
-/// string. The wrapper's own leaf bytes can decode a spurious short string, so the name must be read
-/// from the `0x9e` record specifically (not the first string anywhere in the subtree).
-fn descendant_object_name(node: &RecordNode, logical: &[u8]) -> Option<String> {
-    let mut found = None;
-    node.walk(&mut |n| {
-        if found.is_none() && n.rtype == OBJECT_NAME {
-            found = first_string(n, logical);
-        }
-    });
-    found
-}
-
-/// Whether a string is an engine field reference: a database field (`Table.field`) or a formula
-/// (`@name`). Excludes literals like `Others` and localized order/name marker strings.
-fn is_field_ref(s: &str) -> bool {
-    s.starts_with('@') || s.contains('.')
-}
-
-/// Whether a `0xe5` group record is a chart-category / cross-tab-dimension "grid" group (rather than
-/// a report group), identified by its localized order-marker string.
-fn is_grid_group(node: &RecordNode, logical: &[u8]) -> bool {
-    all_strings(node, logical)
-        .iter()
-        .any(|s| s.contains(" Grid #") || s.starts_with("@Column #") || s.starts_with("@Row #"))
-}
-
-/// Reorder areas into the canonical Crystal Reports band sequence —
-/// `ReportHeader, PageHeader, GroupHeader[1..N], Detail, GroupFooter[N..1], ReportFooter,
-/// PageFooter` — matching the order the SDK's `Areas` collection presents.
-/// The native binary stores them in raw storage order (page/report bands first, then interleaved
-/// group header/footer pairs, then detail), which is not the band order. Note ReportFooter prints
-/// *before* PageFooter even though the enum value is larger, so the band rank is explicit.
-///
-/// Group nesting level (1 = outermost) is assigned by the order in which `GroupHeader` areas
-/// appear in the binary; the matching `GroupFooter` is linked by the trailing-digit suffix shared
-/// with its header (e.g. `GroupHeaderArea4` ↔ `GroupFooterArea4`).
-pub(super) fn sort_areas_canonical(areas: &mut [Area]) {
-    use std::collections::HashMap;
-
-    let mut suffix_level: HashMap<String, usize> = HashMap::new();
-    let mut next = 1usize;
-    for area in areas.iter() {
-        if area.kind == AreaSectionKind::GroupHeader {
-            suffix_level
-                .entry(trailing_digits(&area.name))
-                .or_insert_with(|| {
-                    let l = next;
-                    next += 1;
-                    l
-                });
-        }
-    }
-    let n = next - 1;
-
-    areas.sort_by_key(|a| {
-        use AreaSectionKind::*;
-        let band: u8 = match a.kind {
-            ReportHeader => 0,
-            PageHeader => 1,
-            GroupHeader => 2,
-            Detail => 3,
-            GroupFooter => 4,
-            ReportFooter => 5,
-            PageFooter => 6,
-            _ => 7,
-        };
-        let sub: usize = match a.kind {
-            GroupHeader => *suffix_level.get(&trailing_digits(&a.name)).unwrap_or(&0),
-            GroupFooter => match suffix_level.get(&trailing_digits(&a.name)) {
-                Some(&lv) => n + 1 - lv,
-                None => 0,
-            },
-            _ => 0,
-        };
-        (band, sub)
-    });
-}
-
-/// Populate each display field object's value type from the database schema, then resolve any field
-/// heading still left at `DefaultAlign` over a `DefaultAlign` field: the engine right-aligns the
-/// heading when the underlying field is numeric and left-aligns it otherwise. (Headings that
-/// inherit an explicit field alignment were already resolved while building the report definition.)
-pub(super) fn resolve_heading_alignment(report: &mut Report) {
-    // Each database field's `{alias.name}` reference → its value type (the form a db field object's
-    // DataSource takes).
-    let field_types: BTreeMap<String, FieldValueType> = report
-        .database
-        .tables
-        .iter()
-        .flat_map(|t| {
-            t.data_fields
-                .iter()
-                .map(move |f| (format!("{{{}.{}}}", t.alias, f.name), f.value_type))
-        })
-        .collect();
-
-    for obj in report
-        .report_definition
-        .areas
-        .iter_mut()
-        .flat_map(|a| &mut a.sections)
-        .flat_map(|s| &mut s.objects)
-    {
-        if let ReportObjectKind::Field(f) = &mut obj.kind {
-            if let Some(&vt) = field_types.get(&f.data_source) {
-                f.value_type = vt;
-            }
-        }
-    }
-
-    // Field objects now carry their value type; index it by object name for the heading links.
-    let field_vt: BTreeMap<String, FieldValueType> = report
-        .report_definition
-        .areas
-        .iter()
-        .flat_map(|a| &a.sections)
-        .flat_map(|s| &s.objects)
-        .filter_map(|o| match &o.kind {
-            ReportObjectKind::Field(f) => Some((o.name.clone(), f.value_type)),
-            _ => None,
-        })
-        .collect();
-
-    for obj in report
-        .report_definition
-        .areas
-        .iter_mut()
-        .flat_map(|a| &mut a.sections)
-        .flat_map(|s| &mut s.objects)
-    {
-        let resolved = match &obj.kind {
-            ReportObjectKind::FieldHeading(h)
-                if obj.format.horizontal_alignment == Alignment::DefaultAlign =>
-            {
-                let numeric = field_vt
-                    .get(h.field_object_name.as_str())
-                    .is_some_and(|vt| vt.is_numeric());
-                Some(if numeric {
-                    Alignment::RightAlign
-                } else {
-                    Alignment::LeftAlign
-                })
-            }
-            _ => None,
-        };
-        if let Some(a) = resolved {
-            obj.format.horizontal_alignment = a;
-        }
-    }
-}
-
-/// Open an area (`0x8a`). The detail area-pair's auxiliary `DetailHeader` / `DetailFooter` halves
-/// are folded into the single `Detail` area, so they are skipped (their objects, if any, attach to
-/// the preceding area).
-/// Returns `true` if a real area was opened, `false` if this was an auxiliary detail-pair
-/// Header/Footer marker that the engine folds away (the caller suppresses its trailing records).
-pub(super) fn open_area(areas: &mut Vec<Area>, node: &RecordNode, logical: &[u8]) -> bool {
-    let name = first_string(node, logical).unwrap_or_default();
-    if name.starts_with("DetailHeader") || name.starts_with("DetailFooter") {
-        return false;
-    }
-    let kind = area_kind(&name);
-    areas.push(Area {
-        kind,
-        name,
-        sections: Vec::new(),
-        ..Default::default()
-    });
-    true
-}
-
-/// Open a section (`0x8c`) in the current area, reading its Height (u32 BE twips) + Name.
-pub(super) fn open_section(areas: &mut [Area], node: &RecordNode, logical: &[u8]) {
-    let b = node.leaf_bytes(logical);
-    let height = i32_be(&b, 0).unwrap_or(0);
-    let name = b.get(4..).and_then(first_lp).unwrap_or_default();
-    if let Some(area) = areas.last_mut() {
-        let kind = area.kind;
-        area.sections.push(Section {
-            kind,
-            height: Twips(height),
-            name,
-            ..Default::default()
-        });
-    }
-}
-
-/// Append an empty object of the given kind to the current section; its attribute records fill
-/// the rest in. Objects only ever follow a section marker, so the current section exists.
-pub(super) fn open_object(areas: &mut [Area], kind: ReportObjectKind) {
-    if let Some(area) = areas.last_mut() {
-        push_object(area, String::new(), Rect::default(), kind);
-    }
-}
-
-/// The most-recently-opened object — the last object of the last section of the last area —
-/// which the attribute records that follow an opener decorate.
-pub(super) fn current_object(areas: &mut [Area]) -> Option<&mut ReportObject> {
-    areas.last_mut()?.sections.last_mut()?.objects.last_mut()
-}
-
-pub(super) fn current_section(areas: &mut [Area]) -> Option<&mut crate::model::Section> {
-    areas.last_mut()?.sections.last_mut()
-}
-
-/// Set the literal text of a text or field-heading object (a no-op for other kinds).
-pub(super) fn set_object_text(kind: &mut ReportObjectKind, text: String) {
-    match kind {
-        ReportObjectKind::Text(t) => t.text = text,
-        ReportObjectKind::FieldHeading(h) => h.text = text,
-        _ => {}
-    }
-}
-
-pub(super) fn push_object(area: &mut Area, name: String, bounds: Rect, kind: ReportObjectKind) {
-    let obj = ReportObject {
-        name,
-        bounds,
-        kind,
-        ..Default::default()
-    };
-    if let Some(section) = area.sections.last_mut() {
-        section.objects.push(obj);
-    }
-}
-
-/// Map an area name (e.g. `PageHeaderArea1`, `DetailArea1`) to its [`AreaSectionKind`].
-pub(super) fn area_kind(name: &str) -> AreaSectionKind {
-    for (prefix, kind) in [
-        ("ReportHeader", AreaSectionKind::ReportHeader),
-        ("ReportFooter", AreaSectionKind::ReportFooter),
-        ("PageHeader", AreaSectionKind::PageHeader),
-        ("PageFooter", AreaSectionKind::PageFooter),
-        ("GroupHeader", AreaSectionKind::GroupHeader),
-        ("GroupFooter", AreaSectionKind::GroupFooter),
-        ("Detail", AreaSectionKind::Detail),
-    ] {
-        if name.starts_with(prefix) {
-            return kind;
-        }
-    }
-    // Some reports name the five fixed bands generically (`Area1`..`Area5`) instead of by band.
-    // They are numbered in canonical band order: 1=ReportHeader, 2=PageHeader, 3=Detail,
-    // 4=ReportFooter, 5=PageFooter (group bands always carry explicit `GroupHeader/FooterArea`
-    // names, so they never reach here).
-    if let Some(suffix) = name.strip_prefix("Area") {
-        return match suffix {
-            "1" => AreaSectionKind::ReportHeader,
-            "2" => AreaSectionKind::PageHeader,
-            "3" => AreaSectionKind::Detail,
-            "4" => AreaSectionKind::ReportFooter,
-            "5" => AreaSectionKind::PageFooter,
-            _ => AreaSectionKind::default(),
-        };
-    }
-    AreaSectionKind::default()
 }

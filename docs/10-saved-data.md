@@ -13,11 +13,21 @@ result-field subset, reorders columns, evaluates formulas, groups/dedupes rows a
 | Stream               | Role                                                                                 |
 | -------------------- | ------------------------------------------------------------------------------------ |
 | `DataSourceManager`  | The batch directory and the stored-record field catalog (a `Contents`-style stream). |
-| `SavedRecordsStream` | The fixed-width record index — one record per stored row.                            |
-| `MemoValuesStream`   | The variable-length (string / memo) field values.                                    |
+| `SavedRecordsStream` | The fixed-width record index (one record per row), followed by the per-row memo descriptors. |
+| `MemoValuesStream`   | The variable-length (string / memo) value heaps the memo descriptors point into.     |
 
 `DataSourceManager` decodes like any other report stream (header → CFB decrypt → inflate → records, see
 [Stream decoding](03-stream-decoding.md)). `SavedRecordsStream` and `MemoValuesStream` are **batches** (below).
+
+```mermaid
+flowchart TD
+    dsm["DataSourceManager<br/>field catalog + batch directory"]
+    srs["SavedRecordsStream<br/>fixed-width record index"]
+    mvs["MemoValuesStream<br/>variable-length values"]
+    dsm -->|"field offsets · inline/memo split · batch IVs"| srs
+    dsm -->|"column count · batch IV"| mvs
+    srs -->|"memo descriptors point into the heaps"| mvs
+```
 
 ## Batches
 
@@ -25,11 +35,12 @@ result-field subset, reorders columns, evaluates formulas, groups/dedupes rows a
 cipher as `Contents`, but with an IV built from the batch metadata rather than from a stream header:
 
 ```
-IV = [ batch_size (u32 LE) | item_count (u32 LE) | item_size (u32 LE) | 0 (u16) ]
+IV = [ batch_size (u32 LE) | item_count (u32 LE) | item_size (u32 LE) | seq (u16 LE) ]
 ```
 
-A batch decodes by building this IV, CFB-decrypting, and zlib-inflating. Only block 0 depends on the IV, so a correct IV
-is confirmed by a valid zlib header (`0x78`) and a successful inflate.
+`seq` is the batch's ordinal within its stream (`0` for the first / only batch, incrementing for each subsequent batch
+of a multi-batch run). A batch decodes by building this IV, CFB-decrypting, and zlib-inflating. Only block 0 depends on
+the IV, so a correct IV is confirmed by a valid zlib header (`0x78`) and a successful inflate.
 
 ### Batch directory
 
@@ -37,8 +48,9 @@ is confirmed by a valid zlib header (`0x78`) and a successful inflate.
 structure record `0x2d`). Each `0x6d` leaf holds two big-endian `u32`s: `item_count` at `[0..4]` and `item_size` at
 `[4..8]`. `batch_size` is not stored — it is a per-batch-type default (the record index uses `1000`).
 
-The record-index batch is the directory's primary (largest `item_count`) batch; its `item_count` is the report's saved
-record count.
+A large saved rowset splits the record index across several batches — the leading run of directory entries that share
+the index `item_size`; the report's saved record count is the sum of their `item_count`s. The memo descriptors follow as
+a second run of directory entries, with `item_size = memo_cols × 12`.
 
 ## The record index
 
@@ -47,8 +59,10 @@ records. Records begin at offset `len − count * item_size`, each `item_size` b
 
 - **Inline fields** (integers) are stored in the record, read as 4-byte little-endian integers at the field's byte
   offset.
-- **Variable-length fields** (string / memo) are _not_ in the record; their values are taken in order from
-  `MemoValuesStream`.
+- **Variable-length fields** (string / memo) are _not_ in the record. Each row has a memo **descriptor** — a
+  `memo_cols × 12` record whose 12-byte cells are `[u16 col][u16 flag][u32 heap_offset][u32 byte_length]` — that points
+  directly at a value in the matching `MemoValuesStream` heap. The pointer is explicit, so a repeated value simply
+  points back at an earlier heap entry; there is no delta / change mask to reconstruct.
 
 ### Field catalog
 
@@ -63,15 +77,16 @@ Fields are laid out in `0x41` order.
 
 ## Memo values
 
-`MemoValuesStream` decodes to a sequence of entries, each a `u32` little-endian byte length (including a trailing UTF-16
-NUL) followed by that many UTF-16LE bytes. Values are consumed sequentially, row by row, across the memo columns.
+`MemoValuesStream` decodes to one value **heap** per memo batch, each a sequence of entries — a `u32` little-endian byte
+length (including a trailing UTF-16 NUL) followed by that many UTF-16LE bytes. A cell is read by its descriptor's
+`(heap_offset, byte_length)`, not by sequential position; the k-th heap aligns with the k-th descriptor batch.
 
-Its batch IV is `(bs, bs * 12, 12)`, where `bs` is the big-endian `u16` at `DataSourceManager` record `0x05`, leaf
-offset 4 (the memo/string column count).
+Each heap's batch IV is `(memo_cols, memo_cols × 12, 12)`, where `memo_cols` is the number of memo/string columns in the
+field catalog.
 
 ## Export
 
-`rpt-to-xml` emits the stored data as a `<SavedData>` element on the main report:
+`rpt xml-dump` emits the stored data as a `<SavedData>` element on the main report:
 
 ```xml
 <SavedData RecordCount="249">
@@ -92,11 +107,18 @@ A report with no decodable saved data emits an empty `<SavedData />`.
 The library exposes the same data on the [`Report`](05-semantic-model.md) model as
 `report.saved_data: Option<SavedData>` (record count, columns, row-major cell values). See [Usage](08-usage.md).
 
+To inspect the decoded rows directly (add `--schema` for just the field catalog, `--limit N` to cap rows):
+
+```console
+$ rpt saved report.rpt
+```
+
 ## Limitations
 
 - **Stored, not presented.** The export is the stored records, so its columns, order and row count differ from the
   Crystal engine's result rowset wherever the engine projects, reorders, groups or evaluates formulas.
-- **Batch class.** Only batches whose variable-length values live in an external `MemoValuesStream` are decoded. Reports
-  that store their strings inline (a different batch class) are not yet decodable and emit an empty `<SavedData />`.
-- **Split memo streams.** `MemoValuesStream` can span multiple batches; only the first is decoded, so a report may emit
-  the rows covered by that batch rather than all of them.
+- **Batch class.** Two stored layouts decode. The **memo-heap** class keeps variable-length values in an external
+  `MemoValuesStream`, resolved per-row via the memo descriptors (a multi-batch `MemoValuesStream` is decoded in full —
+  reports are memo-cell-exact). The **packed, memo-less** class stores string columns inline in the record, compacted
+  per batch to each column's per-batch maximum width, and is decoded from the record index alone. A batch whose metadata
+  does not yield a valid decryption IV still emits an empty `<SavedData />`.

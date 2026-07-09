@@ -174,37 +174,81 @@ fn valid_text(raw: &[u8]) -> Option<(&str, usize)> {
     Some((s, end))
 }
 
+/// How a `u32`-length-prefixed span is decoded into text by [`read_lp_u32`].
+///
+/// - `Strict`: validate the span as clean text via [`valid_text`] (NUL-truncated, non-empty,
+///   valid UTF-8, no control chars except tab/CR/LF) — rejects binary mis-reads.
+/// - `Lossy`: NUL-truncate and decode with `from_utf8_lossy`, tolerating non-text bytes — for
+///   spans framed by a preceding fixed binary header rather than validated as clean text.
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(crate) enum LpText {
+    Strict,
+    Lossy,
+}
+
+/// The single `u32`-big-endian length-prefixed string reader the offset-based LP primitives share.
+///
+/// Reads a 4-byte BE length at `off`, requires it within `bounds`, then decodes that many bytes per
+/// `text`. When `exact`, the whole declared span must be exactly the string plus one trailing NUL
+/// (the NUL-truncated length + 1 equals `len`) — rejecting a span with trailing bytes after the NUL.
+/// Returns the string and the bytes consumed from `off` (`4 + len`), or `None` if the framing is
+/// implausible or runs past the end.
+fn read_lp_u32(
+    bytes: &[u8],
+    off: usize,
+    bounds: std::ops::RangeInclusive<usize>,
+    text: LpText,
+    exact: bool,
+) -> Option<(String, usize)> {
+    let len = u32_be(bytes, off)? as usize;
+    if !bounds.contains(&len) {
+        return None;
+    }
+    let raw = bytes.get(off + 4..off + 4 + len)?;
+    let (s, end) = match text {
+        LpText::Strict => {
+            let (s, end) = valid_text(raw)?;
+            (s.to_owned(), end)
+        }
+        LpText::Lossy => {
+            let end = raw.iter().position(|&x| x == 0).unwrap_or(raw.len());
+            (String::from_utf8_lossy(&raw[..end]).into_owned(), end)
+        }
+    };
+    if exact && end + 1 != len {
+        return None;
+    }
+    Some((s, 4 + len))
+}
+
 /// If a length-prefixed printable string starts at `off`, return it and the bytes consumed
 /// (4-byte big-endian length + that many bytes). Stricter than [`read_lp_string`]: the whole
 /// declared field must be one NUL-terminated string (used by the lossless DOM projection).
 pub(crate) fn lp_string_at(bytes: &[u8], off: usize) -> Option<(String, usize)> {
-    let len = u32_be(bytes, off)? as usize;
-    if !(2..=4096).contains(&len) {
-        return None;
-    }
-    let raw = bytes.get(off + 4..off + 4 + len)?;
-    let (s, end) = valid_text(raw)?;
-    // Require the whole declared field to be the NUL-terminated string.
-    if end + 1 != len {
-        return None;
-    }
-    Some((s.to_owned(), 4 + len))
+    read_lp_u32(bytes, off, 2..=4096, LpText::Strict, true)
 }
 
 /// Decode a length-prefixed string: 4-byte big-endian length, then that many bytes (a
 /// trailing NUL terminator is dropped). Returns the string and the offset just past it, or
 /// `None` if the framing is implausible.
+///
+/// The cap must clear large formula bodies — a big multi-branch `switch` can run to several KB —
+/// so it is well above 4 KB; the slice bound in [`read_lp_u32`] still rejects any length past the
+/// record end.
 pub(crate) fn read_lp_string(bytes: &[u8]) -> Option<(String, usize)> {
-    let len = u32_be(bytes, 0)? as usize;
-    // Reject 0 and absurd lengths (mis-parse). The cap must clear large formula bodies — a big
-    // multi-branch `switch` can run to several KB — so it is well above 4 KB; the slice bound below
-    // still rejects any length past the record end.
-    if len == 0 || len > 0x40000 {
-        return None;
-    }
-    let raw = bytes.get(4..4 + len)?;
-    let (s, _) = valid_text(raw)?;
-    Some((s.to_owned(), 4 + len))
+    read_lp_u32(bytes, 0, 1..=0x40000, LpText::Strict, false)
+}
+
+/// Decode a big-endian length-prefixed string at `off`: a `u32`-BE byte count (including any
+/// trailing NUL), then that many bytes taken up to the first NUL, decoded **lossily**
+/// (`from_utf8_lossy`). Returns the text and the bytes consumed from `off` (`4 + len`), or `None`
+/// if the length is absurd (> 4096) or runs past the end.
+///
+/// The lossy, cap-4096 counterpart to the strict [`read_lp_string`]: it tolerates non-text bytes
+/// rather than rejecting them, for leaves whose string span is framed by a preceding fixed binary
+/// header (chart/cross-tab records) rather than validated as clean text.
+pub(crate) fn read_be_lp_string_lossy(b: &[u8], off: usize) -> Option<(String, usize)> {
+    read_lp_u32(b, off, 0..=4096, LpText::Lossy, false)
 }
 
 #[cfg(test)]
@@ -238,6 +282,74 @@ mod tests {
         let consume: Vec<String> = lp_scan(&bytes, Scan::Consume).map(|(_, s, _)| s).collect();
         assert_eq!(slide, ["a", "b"]);
         assert_eq!(consume, ["a"]);
+    }
+
+    /// A `u32`-BE length-prefixed blob: `len` as a 4-byte BE prefix, then `body` verbatim.
+    fn lp_u32(len: u32, body: &[u8]) -> Vec<u8> {
+        let mut v = len.to_be_bytes().to_vec();
+        v.extend(body);
+        v
+    }
+
+    #[test]
+    fn read_lp_string_strips_trailing_nul_and_reports_consumed() {
+        // 4-byte BE len (incl. NUL) + "hi\0"; returns the text and 4+len consumed.
+        let bytes = lp("hi");
+        assert_eq!(read_lp_string(&bytes), Some(("hi".to_owned(), 7)));
+    }
+
+    #[test]
+    fn read_lp_string_allows_trailing_bytes_after_the_string() {
+        // Not `exact`: bytes after the NUL within the declared span are ignored, still consuming len.
+        let bytes = lp_u32(5, b"ab\0XY");
+        assert_eq!(read_lp_string(&bytes), Some(("ab".to_owned(), 9)));
+    }
+
+    #[test]
+    fn read_lp_string_rejects_zero_length_and_control_bytes() {
+        assert_eq!(read_lp_string(&lp_u32(0, b"")), None);
+        // A control byte (0x01) that is not tab/CR/LF fails strict validation.
+        assert_eq!(read_lp_string(&lp_u32(2, b"\x01\0")), None);
+    }
+
+    #[test]
+    fn read_lp_string_accepts_tab_cr_lf_in_body() {
+        let bytes = lp_u32(5, b"a\tb\n\0");
+        assert_eq!(read_lp_string(&bytes), Some(("a\tb\n".to_owned(), 9)));
+    }
+
+    #[test]
+    fn lp_string_at_requires_the_whole_field_to_be_one_nul_terminated_string() {
+        // Exact: text length + 1 must equal len — a clean "ab\0" passes.
+        assert_eq!(
+            lp_string_at(&lp_u32(3, b"ab\0"), 0),
+            Some(("ab".to_owned(), 7))
+        );
+        // Trailing bytes after the NUL make it not-exact — rejected (unlike read_lp_string).
+        assert_eq!(lp_string_at(&lp_u32(5, b"ab\0XY"), 0), None);
+        // A declared span with no NUL terminator is also rejected by exact.
+        assert_eq!(lp_string_at(&lp_u32(2, b"ab"), 0), None);
+        // Honors the offset.
+        let mut framed = vec![0xAA, 0xBB];
+        framed.extend(lp_u32(3, b"ab\0"));
+        assert_eq!(lp_string_at(&framed, 2), Some(("ab".to_owned(), 7)));
+    }
+
+    #[test]
+    fn read_be_lp_string_lossy_tolerates_non_text_and_zero_length() {
+        // Invalid UTF-8 (0xFF) is kept (replacement char), where strict would reject.
+        let (s, used) = read_be_lp_string_lossy(&lp_u32(3, b"a\xff\0"), 0).unwrap();
+        assert_eq!((s.as_str(), used), ("a\u{fffd}", 7));
+        // Length 0 yields an empty string consuming just the 4-byte prefix.
+        assert_eq!(
+            read_be_lp_string_lossy(&lp_u32(0, b""), 0),
+            Some((String::new(), 4))
+        );
+    }
+
+    #[test]
+    fn read_be_lp_string_lossy_rejects_oversized_length() {
+        assert_eq!(read_be_lp_string_lossy(&lp_u32(4097, b""), 0), None);
     }
 
     #[test]

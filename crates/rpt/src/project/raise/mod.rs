@@ -5,70 +5,22 @@ use std::collections::BTreeMap;
 use crate::codec::RecordNode;
 use crate::container::SummaryInformation;
 use crate::model::{
-    Alignment, Area, AreaSectionKind, Color, ConnectionInfo, DataDefinition, Database, DbField,
-    DbFieldDef, FieldDef, FieldKindData, FieldObject, FieldRefKind, FieldValueType, Font,
-    FontColor, Formula, FormulaField, Group, LineStyle, Node, ParameterField, ParameterValue,
-    ParameterValueKind, PrintOptions, RecordTypeCount, Rect, Report, ReportDefinition,
-    ReportObject, ReportObjectKind, ResetConditionType, RunningTotalField, Section, Sort,
-    SummaryInfo, SummaryOperation, Table, TableJoinType, TableLink, TextObject, Twips, Unknown,
-    Value,
+    Alignment, Area, AreaSectionKind, ChartDefinition, ChartGraphType, ChartGridType,
+    ChartLegendPosition, Color, ConnectionInfo, DataDefinition, Database, DbField, DbFieldDef,
+    FieldDef, FieldKindData, FieldObject, FieldRefKind, FieldValueType, Font, FontColor, Formula,
+    FormulaField, FormulaVariable, FormulaVariableScope, Group, Hyperlink, HyperlinkType,
+    LineStyle, Node, ParameterField, ParameterValue, ParameterValueKind, PrintOptions,
+    RecordTypeCount, Rect, Report, ReportDefinition, ReportObject, ReportObjectKind,
+    ResetConditionType, RunningTotalField, SaveMetadataEntry, Section, Sort, SummaryInfo,
+    SummaryOperation, Table, TableJoinType, TableLink, TextObject, Twips, Unknown, Value,
 };
 use crate::records::{RecordStream, RecordTag};
 
-// `Contents` stream record types.
-const FIELD_DEF: u16 = 0x73; // a referenced field definition (name + value-type + length)
-const FORMULA: u16 = 0x76; // a formula body (field refs + the formula body text)
-const NAMED_VALUE: u16 = 0x71; // a named value; immediately follows a formula body to name it
-const PRINTER: u16 = 0x03; // printer info (driver / name / port)
-const PAGE_SETUP: u16 = 0x66; // page setup: the four page margins (BE u32 twips)
-const PAPER_RECT: u16 = 0x018e; // the page rectangle: paper width + height (BE u32 twips)
-const PAPER_DEVMODE: u16 = 0x0007; // page-setup DEVMODE: orientation / paper size / source
-const AREA_MARKER: u16 = 0x8a; // an area, named e.g. "DetailArea1"
-const SECTION_MARKER: u16 = 0x8c; // a section: Height (u32 BE twips) + Name
+// Every record-type `u16` is named once in `records::rtype`; glob-import them so this module and
+// its submodules (via `use super::*`) classify records by name.
+pub(crate) use crate::records::rtype::*;
 
-// Each report object is a flat run of records: an *opener* (text / field / shape / picture)
-// followed by the *attribute* records that decorate it (name+size, position, format, border,
-// font colour, font, and — for text objects — the literal text) until the next opener.
-const TEXT_OBJECT: u16 = 0xa5; // opens a text object; byte 15 == 1 marks a field heading
-const TEXT_OBJECT_FORMAT: u16 = 0xc0; // a text/heading object's paragraph format (alignment in byte 12)
-const TEXT_CONTENT: u16 = 0xc2; // a text object's literal text content
-const TEXT_EMBEDDED_FIELD: u16 = 0xc4; // an embedded field/formula/parameter reference in a text object
-const FIELD_HEADING_LINK: u16 = 0x0166; // names the FieldObject a text object is the heading for
-const FIELD_OBJECT: u16 = 0x9f; // opens a field object (its data-source reference)
-const LINE_OBJECT: u16 = 0xa9; // opens a line/box drawing object (geometry distinguishes them)
-const PICTURE_OBJECT: u16 = 0xae; // opens a picture/OLE object
-const BLOB_FIELD_REF: u16 = 0xb1; // wraps a picture opener; its leaf holds the bound blob field ref
-const SUBREPORT_OBJECT: u16 = 0xa3; // opens a subreport placeholder object
-const CROSSTAB_OBJECT: u16 = 0xb8; // opens a cross-tab object (wrapped by 0xb9; parents the 0x9e name)
-const CROSSTAB_WRAPPER: u16 = 0xb9; // wraps the 0xb8 cross-tab opener; starts the cross-tab binding block
-const CHART_BINDING: u16 = 0xb4; // starts a chart's binding block (nests the chart's ObjectName)
-const CHART_DATA: u16 = 0x7f; // wraps a chart's data ("show value") field ref (0x7e child)
-const OBJECT_NAME: u16 = 0x9e; // an object's Name + Width/Height
-const OBJECT_POS: u16 = 0xbe; // an object's Left/Top (u16 twips)
-const OBJECT_FORMAT: u16 = 0xfc; // an object's format flags (horizontal alignment in byte 2)
-const OBJECT_COND: u16 = 0xfd; // an object's conditional-format formula slot array
-const OBJECT_BORDER: u16 = 0xec; // an object's border styles + border/background colours
-const OBJECT_BORDER_COND: u16 = 0xed; // wrapper parenting `0xec`; carries border colour cond slots
-const AREA_SECTION_FORMAT: u16 = 0xfe; // an area's or section's format flags (52-byte block)
-const PARAM_RECORD: u16 = 0x007a; // a parameter field's detail record (XOR-0x7a obfuscated)
-const SECTION_COND: u16 = 0xff; // a section's conditional-format formula slot array
-const FONT_COLOR: u16 = 0x0100; // an object's font colour (COLORREF 0x00BBGGRR)
-const FONT_COND: u16 = 0x0101; // an object's font conditional-format formula slot array
-const FONT: u16 = 0x08; // an object's font (name + size + weight)
-const GROUP: u16 = 0xe5; // a group: its condition field (+ "@Group #N Order")
-const GROUP_OPTIONS: u16 = 0x88; // GroupAreaFormat of the group whose 0xe5 immediately follows it
-const RECORD_SORT_FIELD: u16 = 0x29; // a record-level sort: field ref + direction (last byte)
-const SUMMARY_DEF: u16 = 0x7e; // a summary/running-total def (operation byte + summarized field)
-const RT_RESET: u16 = 0x80; // a running total's reset condition (precedes its 0x7e)
-const REPORT_HEADER: u16 = 0x0064; // top-level report header (option bits: byte 24 bit 0 = save-data)
-const SAVED_DATA: u16 = 0x0061; // saved-data block descriptor (present ⟺ ReportDocument.HasSavedData)
 const MAX_STRING_BYTES: i32 = 65534; // Crystal's max string field length: 32767 chars × 2 bytes
-
-// `QESession` (Query Engine) record types — the database/connection metadata.
-const QE_CONNECTION: u16 = 0x02; // connection container (Database_DLL / type / database name)
-const QE_TABLE: u16 = 0x03; // a table: name (+ alias), the SQL command text, and its fields
-const QE_FIELD: u16 = 0x04; // a table data field: name + value-type code + length
-const QE_TABLE_LINK: u16 = 0x0a; // a table link: src/dst field ids + join type
 
 mod common;
 mod data_def;
@@ -77,6 +29,7 @@ mod dom;
 mod parameters;
 mod print_options;
 mod report_def;
+mod subreport;
 
 use common::*;
 use data_def::*;
@@ -86,6 +39,9 @@ pub(crate) use parameters::parse_report_parameters;
 use parameters::*;
 use print_options::*;
 use report_def::*;
+pub(crate) use subreport::{
+    resolve_sf_handle, subreport_link_bindings, subreport_links, subreport_param_index_names,
+};
 
 /// The 5-byte marker that begins the report-header's saved-environment trailer (`0x0064`),
 /// immediately following the `EnableSavePreviewPicture` flag byte and preceding the
@@ -100,6 +56,68 @@ fn find_preview_flag(leaf: &[u8]) -> Option<bool> {
         .position(|w| w == PREVIEW_TRAILER_MARKER)
         .filter(|&i| i >= 1)
         .map(|i| leaf[i - 1] != 0)
+}
+
+/// A `(Julian-day, time-fraction)` timestamp pair inside a `0x0142` re-import descriptor: two
+/// big-endian `u32`s.
+fn read_reimport_timestamp(b: &[u8], off: usize) -> crate::model::ReimportTimestamp {
+    crate::model::ReimportTimestamp {
+        julian_day: u32_be(b, off).unwrap_or(0),
+        time_fraction: u32_be(b, off + 4).unwrap_or(0),
+    }
+}
+
+/// Decode a `0x0142` `SubreportReimportInfo` leaf:
+/// `[u32 BE L][source path: L bytes incl NUL][imported_at: 2×u32][enum 1B][source_saved_at: 2×u32]`.
+/// The path is empty (`L == 1`) across the corpus; the trailer is a fixed 17 bytes.
+fn decode_reimport_info(leaf: &[u8]) -> crate::model::SubreportReimportInfo {
+    let path_len = u32_be(leaf, 0).unwrap_or(0) as usize;
+    let path_end = 4 + path_len;
+    // The stored path includes a trailing NUL; strip it (and any trailing NULs) for the model.
+    let source_path = leaf
+        .get(4..path_end)
+        .map(|p| {
+            String::from_utf8_lossy(p)
+                .trim_end_matches('\0')
+                .to_string()
+        })
+        .unwrap_or_default();
+    crate::model::SubreportReimportInfo {
+        source_path,
+        imported_at: read_reimport_timestamp(leaf, path_end),
+        reimport_when_opening: leaf.get(path_end + 8).copied().unwrap_or(0),
+        source_saved_at: read_reimport_timestamp(leaf, path_end + 9),
+    }
+}
+
+/// Decode the designer/IDE geometry: the `0x010c` snap guidelines and `0x0111` object-connection
+/// edges scattered across the `Contents` tree. Structural.
+fn decode_designer_state(tree: &[RecordNode], logical: &[u8]) -> crate::model::DesignerState {
+    let guidelines = nodes_where(tree, |n| n.rtype == GUIDELINE_ENTRY)
+        .into_iter()
+        .map(|n| {
+            let leaf = n.leaf_bytes(logical);
+            crate::model::Guideline {
+                position: Twips(u32_be(&leaf, 0).unwrap_or(0) as i32),
+                flags: u16_be(&leaf, 4).unwrap_or(0),
+            }
+        })
+        .collect();
+    let connections = nodes_where(tree, |n| n.rtype == OBJECT_CONNECTION)
+        .into_iter()
+        .map(|n| {
+            let leaf = n.leaf_bytes(logical);
+            crate::model::ObjectConnection {
+                source: u16_be(&leaf, 0).unwrap_or(0),
+                destination: u16_be(&leaf, 2).unwrap_or(0),
+                kind: u16_be(&leaf, 12).unwrap_or(0),
+            }
+        })
+        .collect();
+    crate::model::DesignerState {
+        guidelines,
+        connections,
+    }
 }
 
 /// Project the `Contents` record stream (and report-level metadata) into a [`Report`].
@@ -138,6 +156,9 @@ pub(crate) fn raise(
     // Parameter detail records (`0x007a`), keyed by their `crobj://{…}` GUID — joined to the
     // PromptManager parameters below. Populated from the Contents tree.
     let mut param_records: BTreeMap<String, ParamRecord> = BTreeMap::new();
+    // GUID-less `0x007a` records — parameters referenced only by a formula, with no PromptManager
+    // entry to join to. Synthesized into `ParameterField`s after the PromptManager join below.
+    let mut orphan_params: Vec<ParamRecord> = Vec::new();
 
     if let Some(stream) = contents {
         if let Some(h) = stream.header() {
@@ -205,11 +226,37 @@ pub(crate) fn raise(
         report.report_definition =
             raise_report_definition(&tree, logical, &report.data_definition.groups);
         report.print_options = raise_print_options(&tree, logical);
+        // Save-time environment metadata (`0x0178`): each record's leaf is a length-prefixed
+        // key/value string pair (`read_lp_string` reads the key, then the value from just past it).
+        // Kept in stream order so per-save groups stay together.
+        report.save_metadata = nodes_where(&tree, |n| n.rtype == SAVE_METADATA)
+            .into_iter()
+            .filter_map(|n| {
+                let leaf = n.leaf_bytes(logical);
+                let (key, consumed) = read_lp_string(&leaf)?;
+                let value = read_lp_string(&leaf[consumed..])
+                    .map(|(v, _)| v)
+                    .unwrap_or_default();
+                Some(SaveMetadataEntry { key, value })
+            })
+            .collect();
         for n in nodes_where(&tree, |n| n.rtype == PARAM_RECORD) {
             if let Some(r) = parse_param_leaf(&n.leaf_bytes(logical)) {
-                param_records.insert(r.guid.clone(), r);
+                match &r.guid {
+                    Some(guid) => {
+                        param_records.insert(guid.clone(), r);
+                    }
+                    None => orphan_params.push(r),
+                }
             }
         }
+        // Subreport re-import provenance (`0x0142`, one per report): source `.rpt` path + import
+        // timestamps. Structural — not on the XML surface.
+        report.reimport = nodes_where(&tree, |n| n.rtype == REIMPORT_INFO)
+            .first()
+            .map(|n| decode_reimport_info(&n.leaf_bytes(logical)));
+        // Designer/IDE state (`0x010c` guidelines + `0x0111` object connections). Structural.
+        report.designer_state = decode_designer_state(&tree, logical);
     }
 
     // With the database decoded, each display field object's value type is known, so headings left
@@ -236,7 +283,7 @@ pub(crate) fn raise(
 
     // Parameter field definitions live in the `PromptManager` stream (CRMetaObjects XML). Only the
     // stored properties are raised here; the derived `InUse`/`DataFetching` usage flags are an
-    // aggregation computed in the export layer (see `rpt-to-xml`), like `Field.UseCount`.
+    // aggregation computed in the export layer (see `rpt xml-dump`), like `Field.UseCount`.
     //
     // `HasCurrentValue` is True iff the parameter has a saved current value in the
     // `ReportParametersStream` (`!current_values.is_empty()` per param).
@@ -247,12 +294,60 @@ pub(crate) fn raise(
         report.data_definition.field_definitions.extend(params);
     }
 
+    // GUID-less parameters (used only in a formula, absent from the PromptManager) are synthesized
+    // directly. Skip any whose name was already emitted from the PromptManager, so a joined parameter
+    // is never duplicated.
+    let existing_param_names: std::collections::HashSet<String> = report
+        .data_definition
+        .field_definitions
+        .iter()
+        .filter(|f| matches!(&f.kind, FieldKindData::Parameter(_)))
+        .map(|f| f.name.clone())
+        .collect();
+    for rec in &orphan_params {
+        if let Some(fd) = raise_orphan_param(rec) {
+            if !existing_param_names.contains(&fd.name) {
+                report.data_definition.field_definitions.push(fd);
+            }
+        }
+    }
+
     report
 }
 
 #[cfg(test)]
 mod tests {
-    use super::find_preview_flag;
+    use super::{decode_reimport_info, find_preview_flag};
+
+    // A `0x0142` leaf: empty path (`L == 1`, lone NUL) + 17-byte trailer of two `(JDN, fraction)`
+    // timestamps around a 1-byte re-import enum.
+    #[test]
+    fn reimport_info_empty_path_and_timestamps() {
+        let mut leaf = vec![0, 0, 0, 1, 0]; // L=1, single NUL path
+        leaf.extend_from_slice(&2_454_607u32.to_be_bytes()); // imported_at JDN
+        leaf.extend_from_slice(&57_007u32.to_be_bytes()); // imported_at fraction
+        leaf.push(1); // reimport enum
+        leaf.extend_from_slice(&0u32.to_be_bytes()); // source_saved_at JDN
+        leaf.extend_from_slice(&0u32.to_be_bytes()); // source_saved_at fraction
+        let ri = decode_reimport_info(&leaf);
+        assert_eq!(ri.source_path, "");
+        assert_eq!(ri.imported_at.julian_day, 2_454_607);
+        assert_eq!(ri.imported_at.time_fraction, 57_007);
+        assert_eq!(ri.reimport_when_opening, 1);
+        assert_eq!(ri.source_saved_at.julian_day, 0);
+    }
+
+    #[test]
+    fn reimport_info_with_source_path() {
+        // A populated path: L includes the trailing NUL.
+        let path = b"C:\\r.rpt";
+        let mut leaf = ((path.len() + 1) as u32).to_be_bytes().to_vec();
+        leaf.extend_from_slice(path);
+        leaf.push(0);
+        leaf.extend_from_slice(&[0u8; 17]); // trailer
+        let ri = decode_reimport_info(&leaf);
+        assert_eq!(ri.source_path, "C:\\r.rpt");
+    }
 
     // 0x0064 leaf tails: `… [flag] 10 01 00 00 00 [tz-len] <tz string>`. The marker floats (a
     // preceding variable-size saved-data descriptor shifts it), so the flag is found relative to the

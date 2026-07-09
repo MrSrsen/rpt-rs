@@ -1,0 +1,1798 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report Name="" FileName="/mnt/report.rpt" HasSavedData="True">
+  <Embedinfo />
+  <Summaryinfo KeywordsinReport="" ReportAuthor="" ReportComments="" ReportSubject="" ReportTitle="" />
+  <ReportOptions EnableSaveDataWithReport="True" EnableSavePreviewPicture="True" EnableSaveSummariesWithReport="True" EnableUseDummyData="False" initialDataContext="" initialReportPartName="" />
+  <PrintOptions PageContentHeight="11520" PageContentWidth="15120" PaperOrientation="Landscape" PaperSize="PaperLetter" PaperSource="FormSource" PrinterDuplex="Simplex" PrinterName="">
+    <PageMargins bottomMargin="360" leftMargin="360" rightMargin="360" topMargin="360" />
+    <PageMarginConditionFormulas />
+  </PrintOptions>
+  <SubReports />
+  <Database>
+    <TableLinks>
+      <TableLink JoinType="Equal">
+        <SourceFields>
+          <Field FormulaName="{Orders_Detail.Order ID}" Kind="DatabaseField" Name="Order ID" NumberOfBytes="4" ValueType="Int32sField" />
+        </SourceFields>
+        <DestinationFields>
+          <Field FormulaName="{Orders.Order ID}" Kind="DatabaseField" Name="Order ID" NumberOfBytes="4" ValueType="Int32sField" />
+        </DestinationFields>
+      </TableLink>
+      <TableLink JoinType="Equal">
+        <SourceFields>
+          <Field FormulaName="{Orders_Detail.Product ID}" Kind="DatabaseField" Name="Product ID" NumberOfBytes="4" ValueType="Int32sField" />
+        </SourceFields>
+        <DestinationFields>
+          <Field FormulaName="{Product.Product ID}" Kind="DatabaseField" Name="Product ID" NumberOfBytes="4" ValueType="Int32sField" />
+        </DestinationFields>
+      </TableLink>
+      <TableLink JoinType="Equal">
+        <SourceFields>
+          <Field FormulaName="{Product.Product Type ID}" Kind="DatabaseField" Name="Product Type ID" NumberOfBytes="4" ValueType="Int32sField" />
+        </SourceFields>
+        <DestinationFields>
+          <Field FormulaName="{Product_Type.Product Type ID}" Kind="DatabaseField" Name="Product Type ID" NumberOfBytes="4" ValueType="Int32sField" />
+        </DestinationFields>
+      </TableLink>
+      <TableLink JoinType="Equal">
+        <SourceFields>
+          <Field FormulaName="{Orders.Customer ID}" Kind="DatabaseField" Name="Customer ID" NumberOfBytes="4" ValueType="Int32sField" />
+        </SourceFields>
+        <DestinationFields>
+          <Field FormulaName="{Customer.Customer ID}" Kind="DatabaseField" Name="Customer ID" NumberOfBytes="4" ValueType="Int32sField" />
+        </DestinationFields>
+      </TableLink>
+    </TableLinks>
+    <Tables>
+      <Table Alias="Customer" ClassName="CrystalReports.Table" Name="Customer">
+        <ConnectionInfo Database_DLL="crdb_dao.dll" QE_DatabaseName="" QE_DatabaseType="Access/Excel (DAO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="E:\Documents\Ed2Go\Crystal_Reports\xtreme.mdb" QE_SQLDB="True" SSO_Enabled="False" UserName="" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{Customer.Customer ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Customer.Customer ID" Name="Customer ID" ShortName="Customer ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Customer Credit ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Customer.Customer Credit ID" Name="Customer Credit ID" ShortName="Customer Credit ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Customer Name}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="82" LongName="Customer.Customer Name" Name="Customer Name" ShortName="Customer Name" Type="crFieldValueTypeStringField" UseCount="3" />
+          <Field Description="" FormulaForm="{Customer.Contact First Name}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="62" LongName="Customer.Contact First Name" Name="Contact First Name" ShortName="Contact First Name" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Contact Last Name}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="62" LongName="Customer.Contact Last Name" Name="Contact Last Name" ShortName="Contact Last Name" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Contact Title}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="12" LongName="Customer.Contact Title" Name="Contact Title" ShortName="Contact Title" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Contact Position}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="62" LongName="Customer.Contact Position" Name="Contact Position" ShortName="Contact Position" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Last Year's Sales}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Customer.Last Year's Sales" Name="Last Year's Sales" ShortName="Last Year's Sales" Type="crFieldValueTypeCurrencyField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Address1}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="122" LongName="Customer.Address1" Name="Address1" ShortName="Address1" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Address2}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="42" LongName="Customer.Address2" Name="Address2" ShortName="Address2" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.City}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="42" LongName="Customer.City" Name="City" ShortName="City" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Region}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="62" LongName="Customer.Region" Name="Region" ShortName="Region" Type="crFieldValueTypeStringField" UseCount="3" />
+          <Field Description="" FormulaForm="{Customer.Country}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="62" LongName="Customer.Country" Name="Country" ShortName="Country" Type="crFieldValueTypeStringField" UseCount="1" />
+          <Field Description="" FormulaForm="{Customer.Postal Code}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="22" LongName="Customer.Postal Code" Name="Postal Code" ShortName="Postal Code" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.E-mail}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="102" LongName="Customer.E-mail" Name="E-mail" ShortName="E-mail" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Web Site}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="102" LongName="Customer.Web Site" Name="Web Site" ShortName="Web Site" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Phone}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="42" LongName="Customer.Phone" Name="Phone" ShortName="Phone" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Customer.Fax}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="42" LongName="Customer.Fax" Name="Fax" ShortName="Fax" Type="crFieldValueTypeStringField" UseCount="0" />
+        </Fields>
+      </Table>
+      <Table Alias="Orders" ClassName="CrystalReports.Table" Name="Orders">
+        <ConnectionInfo Database_DLL="crdb_dao.dll" QE_DatabaseName="" QE_DatabaseType="Access/Excel (DAO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="E:\Documents\Ed2Go\Crystal_Reports\xtreme.mdb" QE_SQLDB="True" SSO_Enabled="False" UserName="" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{Orders.Order ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Orders.Order ID" Name="Order ID" ShortName="Order ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Order Amount}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Orders.Order Amount" Name="Order Amount" ShortName="Order Amount" Type="crFieldValueTypeCurrencyField" UseCount="1" />
+          <Field Description="" FormulaForm="{Orders.Customer ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Orders.Customer ID" Name="Customer ID" ShortName="Customer ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Employee ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Orders.Employee ID" Name="Employee ID" ShortName="Employee ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Order Date}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Orders.Order Date" Name="Order Date" ShortName="Order Date" Type="crFieldValueTypeDateTimeField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Required Date}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Orders.Required Date" Name="Required Date" ShortName="Required Date" Type="crFieldValueTypeDateTimeField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Ship Date}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Orders.Ship Date" Name="Ship Date" ShortName="Ship Date" Type="crFieldValueTypeDateTimeField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Courier Website}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="Orders.Courier Website" Name="Courier Website" ShortName="Courier Website" Type="crFieldValueTypePersistentMemoField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Ship Via}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="42" LongName="Orders.Ship Via" Name="Ship Via" ShortName="Ship Via" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Shipped}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="2" LongName="Orders.Shipped" Name="Shipped" ShortName="Shipped" Type="crFieldValueTypeBooleanField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.PO#}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="102" LongName="Orders.PO#" Name="PO#" ShortName="PO#" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders.Payment Received}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="2" LongName="Orders.Payment Received" Name="Payment Received" ShortName="Payment Received" Type="crFieldValueTypeBooleanField" UseCount="0" />
+        </Fields>
+      </Table>
+      <Table Alias="Orders_Detail" ClassName="CrystalReports.Table" Name="Orders Detail">
+        <ConnectionInfo Database_DLL="crdb_dao.dll" QE_DatabaseName="" QE_DatabaseType="Access/Excel (DAO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="E:\Documents\Ed2Go\Crystal_Reports\xtreme.mdb" QE_SQLDB="True" SSO_Enabled="False" UserName="" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{Orders_Detail.Order ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Orders_Detail.Order ID" Name="Order ID" ShortName="Order ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders_Detail.Product ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Orders_Detail.Product ID" Name="Product ID" ShortName="Product ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders_Detail.Unit Price}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Orders_Detail.Unit Price" Name="Unit Price" ShortName="Unit Price" Type="crFieldValueTypeCurrencyField" UseCount="0" />
+          <Field Description="" FormulaForm="{Orders_Detail.Quantity}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Orders_Detail.Quantity" Name="Quantity" ShortName="Quantity" Type="crFieldValueTypeInt32sField" UseCount="0" />
+        </Fields>
+      </Table>
+      <Table Alias="Product" ClassName="CrystalReports.Table" Name="Product">
+        <ConnectionInfo Database_DLL="crdb_dao.dll" QE_DatabaseName="" QE_DatabaseType="Access/Excel (DAO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="E:\Documents\Ed2Go\Crystal_Reports\xtreme.mdb" QE_SQLDB="True" SSO_Enabled="False" UserName="" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{Product.Product ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Product.Product ID" Name="Product ID" ShortName="Product ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Product.Product Name}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="102" LongName="Product.Product Name" Name="Product Name" ShortName="Product Name" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Product.Color}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="42" LongName="Product.Color" Name="Color" ShortName="Color" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Product.Size}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="22" LongName="Product.Size" Name="Size" ShortName="Size" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Product.M/F}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="22" LongName="Product.M/F" Name="M/F" ShortName="M/F" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Product.Price (SRP)}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="Product.Price (SRP)" Name="Price (SRP)" ShortName="Price (SRP)" Type="crFieldValueTypeCurrencyField" UseCount="0" />
+          <Field Description="" FormulaForm="{Product.Product Type ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Product.Product Type ID" Name="Product Type ID" ShortName="Product Type ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Product.Product Class}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="102" LongName="Product.Product Class" Name="Product Class" ShortName="Product Class" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{Product.Supplier ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Product.Supplier ID" Name="Supplier ID" ShortName="Supplier ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+        </Fields>
+      </Table>
+      <Table Alias="Product_Type" ClassName="CrystalReports.Table" Name="Product Type">
+        <ConnectionInfo Database_DLL="crdb_dao.dll" QE_DatabaseName="" QE_DatabaseType="Access/Excel (DAO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="E:\Documents\Ed2Go\Crystal_Reports\xtreme.mdb" QE_SQLDB="True" SSO_Enabled="False" UserName="" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{Product_Type.Product Type ID}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="Product_Type.Product Type ID" Name="Product Type ID" ShortName="Product Type ID" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{Product_Type.Product Type Name}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="102" LongName="Product_Type.Product Type Name" Name="Product Type Name" ShortName="Product Type Name" Type="crFieldValueTypeStringField" UseCount="3" />
+          <Field Description="" FormulaForm="{Product_Type.Description}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="Product_Type.Description" Name="Description" ShortName="Description" Type="crFieldValueTypePersistentMemoField" UseCount="0" />
+          <Field Description="" FormulaForm="{Product_Type.Picture}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="Product_Type.Picture" Name="Picture" ShortName="Picture" Type="crFieldValueTypeBlobField" UseCount="0" />
+        </Fields>
+      </Table>
+    </Tables>
+  </Database>
+  <DataDefinition>
+    <GroupSelectionFormula />
+    <RecordSelectionFormula> (  {Customer.Country} = "Canada"  )  </RecordSelectionFormula>
+    <Groups>
+      <Group ConditionField="{Customer.Region}" />
+    </Groups>
+    <SortFields>
+      <SortField Field="{Customer.Region}" SortDirection="AscendingOrder" SortType="GroupSortField" />
+    </SortFields>
+    <FormulaFieldDefinitions>
+      <FormulaFieldDefinition FormulaName="{@No Summarized Field}" Kind="FormulaField" Name="No Summarized Field" NumberOfBytes="2" ValueType="BooleanField" Syntax="crFormulaSyntaxCrystal"></FormulaFieldDefinition>
+    </FormulaFieldDefinitions>
+    <GroupNameFieldDefinitions>
+      <GroupNameFieldDefinition FormulaName="GroupName ({Customer.Region})" Group="CrystalDecisions.CrystalReports.Engine.Group" GroupNameFieldName="Group #1 Name: Customer.Region" Kind="GroupNameField" Name="GroupName ({Customer.Region})" NumberOfBytes="65534" ValueType="StringField" />
+    </GroupNameFieldDefinitions>
+    <ParameterFieldDefinitions>
+    </ParameterFieldDefinitions>
+    <RunningTotalFieldDefinitions />
+    <SQLExpressionFields />
+    <SummaryFields />
+  </DataDefinition>
+  <CustomFunctions />
+  <ReportDefinition>
+    <Areas>
+      <Area Kind="ReportHeader" Name="ReportHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="True" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="675" Kind="ReportHeader" Name="ReportHeaderSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <TextObject Name="Text1" Kind="TextObject" Top="120" Left="3240" Width="5400" Height="480" MaxNumberOfLines="0">
+                <Text>Product Type Sales by Province</Text>
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="25" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="15" SizeinPoints="15" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="HorizontalCenterAlign" />
+                <ObjectFormatConditionFormulas />
+              </TextObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageHeader" Name="PageHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="442" Kind="PageHeader" Name="PageHeaderSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="PrintDate1" Kind="FieldObject" Top="221" Left="0" Width="994" Height="221" DataSource="PrintDate">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="NumericDay" MonthFormat="NumericMonth" YearFormat="LongYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="NumericDay" MonthFormat="NumericMonth" YearFormat="LongYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="GroupHeader" Name="GroupHeaderArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False">
+          <GroupAreaFormat EnableKeepGroupTogether="False" EnableRepeatGroupHeader="False" VisibleGroupNumberPerPage="0" />
+        </AreaFormat>
+        <Sections>
+          <Section Height="1752" Kind="GroupHeader" Name="GroupHeaderSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="GroupNameRegion1" Kind="FieldObject" Top="0" Left="0" Width="2554" Height="221" DataSource="GroupName ({Customer.Region})">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="True" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Bold" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="2" RoundingFormat="RoundToHundredth" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="False" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+              <CrossTabObject Name="CrossTab1" Kind="CrossTabObject" Top="480" Left="240" Width="5008" Height="1272">
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="True" EnableCloseAtPageBreak="True" EnableKeepTogether="False" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </CrossTabObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="Detail" Name="DetailArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="220" Kind="Detail" Name="DetailSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="True" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="GroupFooter" Name="GroupFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="220" Kind="GroupFooter" Name="GroupFooterSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="ReportFooter" Name="ReportFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="220" Kind="ReportFooter" Name="ReportFooterSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageFooter" Name="PageFooterArea1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="True" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="663" Kind="PageFooter" Name="PageFooterSection1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <FieldObject Name="PageNumber1" Kind="FieldObject" Top="442" Left="0" Width="950" Height="221" DataSource="PageNumber">
+                <Color Name="Black" A="255" R="0" G="0" B="0" />
+                <Font Bold="False" FontFamily="Tahoma" GdiCharSet="1" GdiVerticalFont="False" Height="17" IsSystemFont="False" Italic="False" Name="Tahoma" OriginalFontName="Arial" Size="10" SizeinPoints="10" Strikeout="False" Style="Regular" SystemFontName="" Underline="False" Unit="Point" />
+                <FontColorConditionFormulas />
+                <FieldFormat>
+                  <CommonFieldFormat EnableSuppressIfDuplicated="False" EnableUseSystemDefaults="True" />
+                  <NumericFieldFormat DecimalPlaces="0" RoundingFormat="RoundToUnit" NegativeFormat="LeadingMinus" CurrencySymbolFormat="NoSymbol" EnableUseLeadingZero="True" />
+                  <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                  <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  <DateTimeFieldFormat DateTimeSeparator="  ">
+                    <DateFieldFormat DayFormat="LeadingZeroNumericDay" MonthFormat="LeadingZeroNumericMonth" YearFormat="ShortYear" />
+                    <TimeFieldFormat HourFormat="NumericHour" MinuteFormat="NumericMinute" SecondFormat="NumericSecond" AMPMFormat="AMPMAfter" AMString=" AM" PMString=" PM" HourMinuteSeparator=":" MinuteSecondSeparator=":" TimeBase="On12Hour" />
+                  </DateTimeFieldFormat>
+                  <BooleanFieldFormat OutputType="TrueOrFalse" />
+                </FieldFormat>
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </FieldObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+    </Areas>
+  </ReportDefinition>
+  <SavedData RecordCount="208">
+    <Fields>
+      <Field Name="Customer.Region" Type="StringField" />
+      <Field Name="Customer.Customer Name" Type="StringField" />
+      <Field Name="Product_Type.Product Type Name" Type="StringField" />
+      <Field Name="Orders.Order Amount" Type="CurrencyField" />
+      <Field Name="Customer.Country" Type="StringField" />
+    </Fields>
+    <Rows>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Mountain</F>
+        <F>323942</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Hybrid</F>
+        <F>754440</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Saddles</F>
+        <F>890771</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Kids</F>
+        <F>46995</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Helmets</F>
+        <F>46995</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Helmets</F>
+        <F>46995</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Mountain</F>
+        <F>70120</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Gloves</F>
+        <F>70120</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Gloves</F>
+        <F>70120</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Hybrid</F>
+        <F>339690</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Competition</F>
+        <F>339690</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Competition</F>
+        <F>890771</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Gloves</F>
+        <F>165055</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Kids</F>
+        <F>56370</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Competition</F>
+        <F>323942</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Mountain</F>
+        <F>37175</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Helmets</F>
+        <F>37175</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Mountain</F>
+        <F>94008</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Mountain</F>
+        <F>229455</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Gloves</F>
+        <F>4050</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Kids</F>
+        <F>84555</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Competition</F>
+        <F>349365</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Gloves</F>
+        <F>349365</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Competition</F>
+        <F>273525</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Competition</F>
+        <F>347970</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Hybrid</F>
+        <F>165055</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Kids</F>
+        <F>34475</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Helmets</F>
+        <F>581196</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Saddles</F>
+        <F>87133</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Locks</F>
+        <F>87133</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Helmets</F>
+        <F>27730</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Helmets</F>
+        <F>27730</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Helmets</F>
+        <F>27730</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Kids</F>
+        <F>87945</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Helmets</F>
+        <F>87945</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Helmets</F>
+        <F>12570</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Competition</F>
+        <F>306555</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Saddles</F>
+        <F>890771</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Mountain</F>
+        <F>152970</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Hybrid</F>
+        <F>754440</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Helmets</F>
+        <F>34475</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Gloves</F>
+        <F>34475</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Hybrid</F>
+        <F>74912</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Locks</F>
+        <F>2994</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Mountain</F>
+        <F>107106</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Helmets</F>
+        <F>107106</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Gloves</F>
+        <F>107106</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Helmets</F>
+        <F>7962</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Helmets</F>
+        <F>16170</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Saddles</F>
+        <F>3273</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Gloves</F>
+        <F>3273</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Helmets</F>
+        <F>306555</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Mountain</F>
+        <F>47985</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Locks</F>
+        <F>273525</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Locks</F>
+        <F>11370</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Gloves</F>
+        <F>2700</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Competition</F>
+        <F>881955</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Locks</F>
+        <F>4380</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Helmets</F>
+        <F>10780</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Mountain</F>
+        <F>614899</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Competition</F>
+        <F>614899</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Locks</F>
+        <F>614899</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Helmets</F>
+        <F>21560</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Gloves</F>
+        <F>297085</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Helmets</F>
+        <F>10170</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Competition</F>
+        <F>297085</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Mountain</F>
+        <F>248940</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Mountain</F>
+        <F>248940</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Helmets</F>
+        <F>5390</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Competition</F>
+        <F>273555</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Saddles</F>
+        <F>273555</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Locks</F>
+        <F>3570</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Competition</F>
+        <F>1088679</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Competition</F>
+        <F>1088679</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Helmets</F>
+        <F>1088679</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Mountain</F>
+        <F>581196</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Competition</F>
+        <F>581196</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Helmets</F>
+        <F>21560</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Helmets</F>
+        <F>112742</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Competition</F>
+        <F>754440</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Competition</F>
+        <F>296175</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Locks</F>
+        <F>296175</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Mountain</F>
+        <F>76485</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Mountain</F>
+        <F>241885</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Gloves</F>
+        <F>241885</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Helmets</F>
+        <F>241885</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Mountain</F>
+        <F>337125</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Competition</F>
+        <F>337125</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Helmets</F>
+        <F>337125</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Mountain</F>
+        <F>95970</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Hybrid</F>
+        <F>112742</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Gloves</F>
+        <F>170236</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Kids</F>
+        <F>54870</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Gloves</F>
+        <F>4050</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Hybrid</F>
+        <F>531204</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Competition</F>
+        <F>531204</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Helmets</F>
+        <F>8611</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Helmets</F>
+        <F>8611</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Competition</F>
+        <F>883746</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Competition</F>
+        <F>883746</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Competition</F>
+        <F>881955</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Helmets</F>
+        <F>8330</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Pedal Pusher Bikes Inc.</F>
+        <F>Gloves</F>
+        <F>8330</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Cycles and Sports</F>
+        <F>Helmets</F>
+        <F>6780</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Helmets</F>
+        <F>29662</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Hybrid</F>
+        <F>323691</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Mountain</F>
+        <F>65970</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Mountain</F>
+        <F>98955</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Kids</F>
+        <F>398259</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Mountain</F>
+        <F>398259</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Hybrid</F>
+        <F>398259</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Mountain</F>
+        <F>153042</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Mountain</F>
+        <F>153042</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Helmets</F>
+        <F>153042</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Kids</F>
+        <F>52126</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Helmets</F>
+        <F>29662</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Helmets</F>
+        <F>1155300</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Competition</F>
+        <F>269955</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Locks</F>
+        <F>11370</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Competition</F>
+        <F>587970</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Gloves</F>
+        <F>1650</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Mountain</F>
+        <F>98955</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Hybrid</F>
+        <F>145761</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Saddles</F>
+        <F>7050</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Saddles</F>
+        <F>13160</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Hybrid</F>
+        <F>87133</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Locks</F>
+        <F>3500</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Saddles</F>
+        <F>29662</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Mountain</F>
+        <F>257925</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Mountain</F>
+        <F>112140</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Helmets</F>
+        <F>112140</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Locks</F>
+        <F>900</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Helmets</F>
+        <F>12570</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Mountain</F>
+        <F>265425</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Hybrid</F>
+        <F>265425</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Saddles</F>
+        <F>2400</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Saddles</F>
+        <F>900</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Saddles</F>
+        <F>7200</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Helmets</F>
+        <F>13470</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Mountain</F>
+        <F>323691</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Hybrid</F>
+        <F>161955</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Mountain</F>
+        <F>152970</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Hybrid</F>
+        <F>257925</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Mountain</F>
+        <F>162514</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Mountain</F>
+        <F>162514</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Helmets</F>
+        <F>162514</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Mountain</F>
+        <F>229455</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Gloves</F>
+        <F>1650</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Gloves</F>
+        <F>4650</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Competition</F>
+        <F>1155300</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Competition</F>
+        <F>1155300</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Competition</F>
+        <F>587970</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Bikes for Tykes</F>
+        <F>Gloves</F>
+        <F>13470</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Competition</F>
+        <F>1085917</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Mountain</F>
+        <F>395955</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Saddles</F>
+        <F>13160</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Competition</F>
+        <F>589320</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Gloves</F>
+        <F>589320</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Competition</F>
+        <F>347970</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Mountain</F>
+        <F>156525</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Helmets</F>
+        <F>156525</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Locks</F>
+        <F>7580</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Helmets</F>
+        <F>10170</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Locks</F>
+        <F>2994</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Mountain</F>
+        <F>92655</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Helmets</F>
+        <F>5531</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Gloves</F>
+        <F>4350</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Competition</F>
+        <F>1085917</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Helmets</F>
+        <F>1085917</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Mountain</F>
+        <F>143955</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Competition</F>
+        <F>359790</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Helmets</F>
+        <F>359790</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Gloves</F>
+        <F>359790</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Helmets</F>
+        <F>8931</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Gloves</F>
+        <F>8931</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Competition</F>
+        <F>170236</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Gloves</F>
+        <F>170236</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Gloves</F>
+        <F>5531</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Gloves</F>
+        <F>2900</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Saddles</F>
+        <F>92655</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Helmets</F>
+        <F>92655</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Helmets</F>
+        <F>8380</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Mountain</F>
+        <F>621810</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Competition</F>
+        <F>621810</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Saddles</F>
+        <F>621810</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Competition</F>
+        <F>293985</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Competition</F>
+        <F>395955</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Mountain</F>
+        <F>98955</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Crazy Wheels</F>
+        <F>Helmets</F>
+        <F>16170</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Competition</F>
+        <F>801501</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Helmets</F>
+        <F>8380</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Gloves</F>
+        <F>3300</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Kids</F>
+        <F>82305</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Mountain</F>
+        <F>92361</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Saddles</F>
+        <F>801501</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Mountain</F>
+        <F>229455</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Saddles</F>
+        <F>139108</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Mountain</F>
+        <F>139108</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Mountain</F>
+        <F>229455</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Competition</F>
+        <F>641955</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Competition</F>
+        <F>641955</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Helmets</F>
+        <F>801501</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>BC</F>
+        <F>Biking's It Industries</F>
+        <F>Gloves</F>
+        <F>92361</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>MB</F>
+        <F>Dag City Cycle</F>
+        <F>Mountain</F>
+        <F>86374</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>NS</F>
+        <F>Halifax Cycle Centre</F>
+        <F>Mountain</F>
+        <F>95970</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>ON</F>
+        <F>Don't Tread On Me</F>
+        <F>Kids</F>
+        <F>27435</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>ON</F>
+        <F>Cycle Fever</F>
+        <F>Competition</F>
+        <F>881955</F>
+        <F>Canada</F>
+      </Row>
+      <Row>
+        <F>PQ</F>
+        <F>Wheels 'n' Deals</F>
+        <F>Competition</F>
+        <F>179970</F>
+        <F>Canada</F>
+      </Row>
+    </Rows>
+  </SavedData>
+</Report>

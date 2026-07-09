@@ -9,10 +9,10 @@
 //!   [`Record::Known`] or [`Record::Unknown`] by whether its [`RecordTag`] is identified.
 
 mod raw;
-mod tag;
+pub(crate) mod rtype;
 
 pub use raw::{Origin, RawRecord};
-pub use tag::RecordTag;
+pub use rpt_model::RecordTag;
 
 use crate::codec::{self, RecordNode, StreamHeader};
 use crate::container::StreamId;
@@ -164,7 +164,7 @@ impl RecordStream {
     }
 
     /// Parse the logical report into the **recursive record tree** (nested records read under
-    /// the stack-XOR content mask, see [`crate::codec`]). Empty when the payload was not
+    /// the stack-XOR content mask, see the `crate::codec` layer). Empty when the payload was not
     /// decoded.
     pub fn record_tree(&self) -> Vec<RecordNode> {
         codec::parse_tree(&self.logical)
@@ -209,6 +209,16 @@ impl RecordStream {
     /// so `encode(decode(x)) == x` byte-for-byte.
     pub fn encode(&self) -> Vec<u8> {
         self.raw.clone()
+    }
+
+    /// Re-serialize the record tree back into the **logical** (inflated) report bytes it was parsed
+    /// from — the re-serializable raw substrate the writer rests on. Equal to [`logical_bytes`] for
+    /// a cleanly-framed stream (the tree's node spans partition the logical bytes); a structurally
+    /// inconsistent tree would diverge, so it doubles as a tree-integrity check.
+    ///
+    /// [`logical_bytes`]: RecordStream::logical_bytes
+    pub fn serialize_tree(&self) -> Vec<u8> {
+        codec::serialize_tree(&self.record_tree(), &self.logical)
     }
 
     /// The stream's symbolic id.

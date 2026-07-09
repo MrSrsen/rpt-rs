@@ -1,0 +1,24 @@
+[package]
+name = "rpt-data"
+description = "The record pipeline: RowSource → record selection → sort → group tree → summaries — the push-built instance tree the layout engine iterates"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+rpt-model = { workspace = true }
+crystal-formula = { workspace = true }
+
+[dev-dependencies]
+# Tests use the tree-walking `Evaluator` as a differential reference against the VM.
+crystal-formula = { workspace = true, features = ["differential"] }
+rpt-test-support = { workspace = true }
+
+[lints]
+workspace = true

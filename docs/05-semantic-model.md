@@ -12,6 +12,12 @@ substrate: the record tree still holds every record (including types the model d
 structured projection beside it. Code that performs this walk lives in `crates/rpt/src/project/raise/`, organized by
 domain (database, data definition, report definition, parameters, print options).
 
+```mermaid
+flowchart LR
+    substrate["Record substrate<br/>every record, verbatim<br/>(Report::records)"]
+    substrate -->|"project::raise<br/>walks & interprets"| model["Semantic model<br/>database · parameters · formulas<br/>groups · sections · objects"]
+```
+
 ## The shape of a report
 
 A `Report` groups the projected information into a handful of areas:
@@ -22,18 +28,28 @@ A `Report` groups the projected information into a handful of areas:
 | `report_options`    | Report-level options and flags.                                                                         | report-root record, options blocks |
 | `print_options`     | Page setup: paper size, orientation, margins, the page rectangle.                                       | printer/page-setup records         |
 | `database`          | Connections, tables, fields, joins, and SQL commands.                                                   | `QESession` stream + field records |
-| `data_definition`   | Parameters, formulas, groups, sort fields, running totals, summaries, and the record-selection formula. | data-definition records            |
-| `report_definition` | The page layout: areas, sections, and the report objects inside them.                                   | area/section/object records        |
+| `data_definition`   | Parameters, formulas, formula variables, groups (incl. hierarchical group values), sort fields, running totals, summaries, and the record-selection formula. | data-definition records            |
+| `report_definition` | The page layout: areas, sections, and the report objects inside them — field, text, line/box, picture, chart, cross-tab, and subreport objects, each with placement, fonts, borders, alignment, hyperlink, and conditional formats. | area/section/object records        |
+| `subreports`        | The embedded subreports (each a nested report) and the links that pass values into them.                | `Subdocument N` streams            |
+| `saved_data`        | The report's cached rows, when saved with data and decodable — stored records, not the engine's rowset. | saved-data streams                 |
 
-The full set of public model types is re-exported from `rpt::model` (see the [block catalog](06-block-catalog.md) for
-which records produce which types, and [The codebase](07-codebase.md) for where each lives).
+A handful of further members carry authoring and environment provenance that the model keeps but the XML export does not
+emit: `embeds` (embedded OLE objects, summarised by digest), `save_metadata` (per-save environment entries), `reimport`
+(subreport re-import source/timestamps), and `designer_state` (on-canvas snap guidelines and object-connection edges).
+
+The full set of public model types is re-exported from `rpt::model`, organized into submodules by domain — `document`,
+`database`, `data_def`, `report_def`, `objects` (the placed report objects, incl. chart and cross-tab), `format` (fonts,
+borders, hyperlinks, the typed field sub-formats), `enums`, `primitives`, and `dom` (the raw record tree). See the
+[block catalog](06-block-catalog.md) for which records produce which types, and [The codebase](07-codebase.md) for where
+each lives.
 
 ## Stored vs. derived
 
 The model holds **stored** facts only — values that are actually present in the file's bytes. Values that the Crystal
 engine _computes_ rather than stores (for example, how many times a field is referenced) are **not** stored on the
-model. Those derived analytics are computed separately by the `rpt-engine` crate, which walks the model. This boundary
-is deliberate: the `rpt` model reports what is in the file; `rpt-engine` reports what can be inferred from it. See
+model. Those derived analytics are computed separately by the derive layer (the XML exporter's `export::analysis` module in
+`rpt-cli`), which walks the model. This boundary is deliberate: the `rpt` model reports what is in the file; the derive
+layer reports what can be inferred from it. See
 [The codebase](07-codebase.md).
 
 ## Common building blocks
@@ -47,6 +63,7 @@ A few primitive types recur throughout the model:
 - **`Conditioned<T>`** — a value that may be set directly or driven by a conditional-format formula. Many object and
   section format properties are conditioned: they carry both a base value and an optional formula slot.
 - **`RecordRef`** — a back-reference to the record a model element was projected from.
+- **`Version`** — a decoded format-version word (from the `Contents` stream header).
 - **Enumerations** — typed enums (alignment, paper size, join type, parameter type, field value type, …) mirror the
   documented Crystal SDK and map the numeric codes stored in records to names.
 

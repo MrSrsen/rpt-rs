@@ -10,24 +10,29 @@ Tiling treats the inflated stream as a flat sequence, but each record's content 
 report's root record contains section and definition records; a section contains object records; an object contains its
 format, font, and border records; and so on. The result is a tree:
 
-```
-ReportRoot (0x0064)
-├─ FieldDef (0x0073)
-├─ Formula (0x0076)
-├─ Area (0x008a)
-│  └─ Section (0x008c)
-│     ├─ FieldObject (0x009f)
-│     │  ├─ ObjectName (0x009e)
-│     │  ├─ Font (0x0008)
-│     │  └─ ObjectBorder (0x00ec)
-│     └─ TextObject (0x00c2)
-└─ ...
+```mermaid
+flowchart TD
+    root["ReportRoot (0x0064)"]
+    root --> fd["FieldDef (0x0073)"]
+    root --> fm["Formula (0x0076)"]
+    root --> area["Area (0x008a)"]
+    area --> sec["Section (0x008c)"]
+    sec --> fo["FieldObject (0x009f)"]
+    fo --> on["ObjectName (0x009e)"]
+    fo --> font["Font (0x0008)"]
+    fo --> border["ObjectBorder (0x00ec)"]
+    sec --> tc["TextContent (0x00c2)"]
 ```
 
-The record header shape is regular enough to distinguish a nested record from raw leaf bytes: every record header is 8
-bytes — a flag byte (`0xF8`/`0xF9`), the type, a `0x07` subtype high byte, and a 4-byte big-endian length. A recursive
-reader matches that shape (under the current mask) to decide whether the next bytes open a child record or are leaf
-data, bounded by each record's declared length.
+The record header shape is regular enough to distinguish a nested record from raw leaf bytes: a nested `Contents` record
+opens with a flag byte `0xF8` (the type packed inline) or `0xF9` (an extended little-endian type word follows), then a
+subtype word whose leading byte is `0x07`, then a 4-byte big-endian length — so the header is 8 bytes with an inline type
+and 10 with an extended one. The `0x07` subtype constraint is what rejects false headers in leaf data. A recursive reader
+matches that shape (under the current mask) to decide whether the next bytes open a child record or are leaf data,
+bounded by each record's declared length.
+
+`QESession` streams nest with the same framing and stack-XOR mask, but their records use varied subtypes, so that reader
+relaxes the `0x07` constraint.
 
 ## The content mask is a stack XOR
 
@@ -57,9 +62,18 @@ type. Each node carries:
 - its decoded **leaf values** (length-prefixed strings become text; the rest is kept as raw bytes);
 - its **child records**.
 
-This is exposed as a generic tree (`Report::dom`, a [`Node`] per record) and as the raw record list (`Report::records`).
-Because the substrate keeps unmodelled records verbatim, the read path is total: nothing is dropped, and the report can
-be inspected even where it is not yet modelled.
+This is exposed on the model as `Report::records` — a `Vec<Node>` where each `Node` is a typed record when recognized
+and a `Node::Unknown` (raw type, decoded leaf values, child nodes) otherwise. Because the substrate keeps unmodelled
+records verbatim, the read path is total: nothing is dropped, and the report can be inspected even where it is not yet
+modelled.
 
 The [typed model](05-semantic-model.md) is a projection on top of this substrate — it interprets recognized record types
 into structured report objects, while the substrate continues to hold everything.
+
+## See it yourself
+
+The `rpt tree` command prints the decoded record tree for any report (add `--depth N` to limit nesting):
+
+```console
+$ rpt tree report.rpt
+```

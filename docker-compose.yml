@@ -1,0 +1,41 @@
+# PostgreSQL for the render-parity test corpus (crates/rpt-render/tests/postgres_fixtures.rs).
+#
+# PostgreSQL is the single DB technology for render testing: the harness seeds each committed
+# `tests/fixtures/sql/**/*.sql` migration into this server and renders the report against it. The
+# out-of-band cross-engine oracle reads the SAME kind of server through the native SAP engine, so
+# the only variable under test is rendering, not the data.
+#
+# Usage:
+#   docker compose up -d --wait          # start; blocks until the server is healthy
+#   export RPT_DB_URL=postgres://rpt:rpt@localhost:55432/rptfixtures
+#   cargo test -p rpt-render --test postgres_fixtures
+#   docker compose down                  # stop and discard (data is ephemeral)
+#
+# The data directory is a tmpfs, so every `up` starts from an empty server and the seed migrations
+# (idempotent DROP/CREATE/INSERT) fully define the state — fast, and never stale between runs.
+#
+# Port 55432 is the project-wide convention. If another Postgres already holds it (e.g. a long-lived
+# oracle container), override with `RPT_DB_PORT=55433 docker compose up -d --wait` and point
+# RPT_DB_URL at the same port.
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: rpt-test-db
+    environment:
+      POSTGRES_USER: rpt
+      POSTGRES_PASSWORD: rpt
+      POSTGRES_DB: rptfixtures
+    ports:
+      - "${RPT_DB_PORT:-55432}:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    volumes:
+      # Auto-seed the parking schema on every `up` (the data dir is a fresh tmpfs each start, so the
+      # init scripts always run). This makes the tables/fields available for authoring in Crystal
+      # Designer via ODBC, not just for the render tests (which re-seed idempotently anyway).
+      - ./tests/fixtures/sql/parking/parking.sql:/docker-entrypoint-initdb.d/10-parking.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rpt -d rptfixtures"]
+      interval: 2s
+      timeout: 3s
+      retries: 15

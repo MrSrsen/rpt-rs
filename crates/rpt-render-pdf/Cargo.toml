@@ -1,0 +1,34 @@
+[package]
+name = "rpt-render-pdf"
+description = "PDF output backend for the rpt-pages Page IR — font-subsetting krilla writer with a dependency-free fallback"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+rust-version.workspace = true
+
+[features]
+# The krilla backend (real font subset embedding, Type0/CID Unicode, /FlateDecode) is on by default.
+# Disable it (`--no-default-features`) to fall back to the zero-dependency hand-rolled writer.
+default = ["krilla-backend"]
+krilla-backend = ["dep:krilla", "dep:fontdb", "dep:rpt-text"]
+
+[dependencies]
+rpt-model = { workspace = true }
+rpt-pages = { workspace = true }
+rpt-render-util = { workspace = true }
+krilla = { version = "0.6.0", default-features = false, features = [
+    "raster-images",
+    "simple-text",
+], optional = true }
+fontdb = { version = "0.23", optional = true }
+# Shared face resolution (FontSpec → OS face); `default-features = false` takes only the fontdb-based
+# resolver, not the cosmic-text shaping stack. Only needed by the krilla writer's font embedding.
+rpt-text = { workspace = true, default-features = false, optional = true }
+
+[lints]
+workspace = true

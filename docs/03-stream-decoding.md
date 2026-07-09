@@ -5,29 +5,30 @@ records. It builds on [The container](02-container.md), which produced the raw s
 
 The pipeline is:
 
-```
-raw stream bytes
-  → read the stream header  (plaintext: version, IV)
-  → AES-128-CFB decrypt     (fixed key, per-stream IV)
-  → zlib inflate            (standard deflate)
-  → tile into records       (TSLV framing)
+```mermaid
+flowchart LR
+    A(["raw stream bytes"]) --> B["read stream header<br/>plaintext: version, IV"]
+    B --> C["AES-128-CFB decrypt<br/>fixed key, per-stream IV"]
+    C --> D["zlib inflate<br/>standard deflate"]
+    D --> E(["tile into records<br/>TSLV framing"])
 ```
 
 ## The stream header
 
-Every report stream begins with a single plaintext record of type `0xFFFF`. It is not encrypted, because it carries the
-information needed to start decryption. Its body is:
+A `Contents`-style report stream begins with a single plaintext record of type `0xFFFF` (the sibling `QESession` and
+`PromptManager` streams differ — see [Sibling streams](#sibling-streams) below). It is not encrypted, because it carries
+the information needed to start decryption. Its body is:
 
 | Field         | Size     | Meaning                                       |
 | ------------- | -------- | --------------------------------------------- |
 | `isEncrypted` | 2 bytes  | whether the payload is encrypted              |
 | `version`     | 2 bytes  | format version                                |
 | `useFixedKey` | 2 bytes  | whether the fixed engine key is used          |
-| `IV`          | 16 bytes | the AES initialization vector for this stream |
-| (trailer)     | 2 bytes  | —                                             |
+| `IV`          | 16 bytes | the AES initialization vector — present only when `isEncrypted` |
 
 The IV is **per stream**: each stream in the file (and in each subreport) has its own. This is why two streams with
-identical content still decrypt differently.
+identical content still decrypt differently. The header record may declare additional trailing bytes past these fields;
+the encrypted payload begins at the **end of the header record** (its declared length), not immediately after the IV.
 
 ## Decryption
 
@@ -44,8 +45,18 @@ The payload after the header is encrypted with **AES-128 in CFB-128 mode**:
   (`crates/rpt/src/codec/crypto.rs`).
 - **IV — per stream**, taken from the stream header above.
 
-The implementation is pure Rust with no cryptography dependencies: the cipher is transcribed directly from the AES
-T-table round, so there is nothing platform-specific.
+### Sibling streams
+
+`Contents` and `ReportParametersStream` decode through exactly the pipeline above. The other two encrypted report
+streams are close variants:
+
+- **`QESession`** begins with a plaintext `QENG` header rather than the type-`0xFFFF` record. It uses **textbook**
+  AES-128-CFB (standard Rijndael, not the transposed variant) with its own fixed engine key — a different constant from
+  the `Contents` key — and takes its IV from the QENG header. After decryption it inflates and tiles just like
+  `Contents`.
+- **`PromptManager`** uses the same modified cipher as `Contents`, but with a **zero IV** and no stream header: the
+  encrypted, compressed payload starts at byte 0. It inflates to one or more `CRMetaObjects` XML documents (the
+  parameter definitions) rather than a record stream.
 
 ## Decompression
 
@@ -63,13 +74,13 @@ Each record is framed in **TSLV** form — Type, Subtype, Length, Value:
 | Part          | Encoding                                                                                                                                          |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | flag word     | the first 2 bytes are a bit-packed flag word; clearing the flag bits gives the inline **type** read **big-endian** (e.g. `f8 64` → type `0x0064`) |
-| extended type | if the flag word signals it, a 2-byte type follows, read **little-endian**                                                                        |
-| subtype       | a high byte that is consistently `0x07` for report records                                                                                        |
+| extended type | if the flag word signals it, a 2-byte type follows instead of the inline one, read **little-endian**                                              |
+| subtype       | if the flag word signals it, a 2-byte subtype word follows, read **little-endian**; its leading byte is `0x07` for `Contents` records            |
 | length        | the value length, read **big-endian**, in 0/1/2/4 bytes per the flag word's length-size bits                                                      |
 | value         | exactly `length` bytes of content; the next record begins immediately after                                                                       |
 
-The flag word also encodes the length-field size (its top two bits select 0, 1, 2, or 4 length bytes) and whether an
-extended type word follows.
+The flag word encodes the length-field size (its top two bits select 0, 1, 2, or 4 length bytes), whether the type is
+inline or an extended little-endian word, and whether a subtype word follows.
 
 ### The per-record mask
 

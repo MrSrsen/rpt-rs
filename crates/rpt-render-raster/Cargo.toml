@@ -1,0 +1,28 @@
+[package]
+name = "rpt-render-raster"
+description = "Raster (PNG) output backend for the rpt-pages Page IR — rasterizes each formatted page to pixels with tiny-skia for pixel preview"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+rpt-model = { workspace = true }
+rpt-pages = { workspace = true }
+rpt-render-util = { workspace = true }
+# Shared face resolution (FontSpec → OS face) lives in rpt-text's FontDb; `default-features = false`
+# takes only the fontdb-based resolver, not the cosmic-text shaping stack.
+rpt-text = { workspace = true, default-features = false }
+tiny-skia = "0.12"
+# fontdb for the resolved-face id type; fontdue parses the face and rasterizes each glyph to a
+# coverage bitmap we composite onto the pixmap (tiny-skia rasterizes paths, not text).
+fontdb = "0.23"
+fontdue = "0.9"
+
+[lints]
+workspace = true

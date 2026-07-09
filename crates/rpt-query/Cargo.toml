@@ -1,0 +1,21 @@
+[package]
+name = "rpt-query"
+description = "SQL generation for the live-DB path — turns a report's decoded table/link graph into a joined SELECT (and pushes the translatable selection-formula subset into WHERE)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+rpt-model = { workspace = true }
+crystal-formula = { workspace = true }
+rpt-data = { workspace = true }
+sea-query = { version = "0.32", default-features = false, features = ["backend-mysql", "backend-postgres", "backend-sqlite"] }
+
+[lints]
+workspace = true

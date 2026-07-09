@@ -1,6 +1,6 @@
 [package]
 name = "rpt-cli"
-description = "Command-line tool to inspect SAP Crystal Reports .rpt files"
+description = "Command-line tool to inspect Crystal Reports .rpt files"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -17,8 +17,17 @@ path = "src/main.rs"
 
 [dependencies]
 rpt.workspace = true
+rpt-query.workspace = true
+crystal-formula.workspace = true
+rpt-format-value.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+
+[dev-dependencies]
+quick-xml.workspace = true
+similar = "2"
+# The eval_saved_oracle integration test uses the tree-walking `Evaluator` as a differential reference.
+crystal-formula = { workspace = true, features = ["differential"] }
 
 [lints]
 workspace = true

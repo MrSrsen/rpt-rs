@@ -1,0 +1,411 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report Name="" FileName="/mnt/report.rpt" HasSavedData="True">
+  <Embedinfo />
+  <Summaryinfo KeywordsinReport="" ReportAuthor="" ReportComments="" ReportSubject="" ReportTitle="" />
+  <ReportOptions EnableSaveDataWithReport="True" EnableSavePreviewPicture="False" EnableSaveSummariesWithReport="True" EnableUseDummyData="False" initialDataContext="" initialReportPartName="" />
+  <PrintOptions PageContentHeight="15120" PageContentWidth="11520" PaperOrientation="Portrait" PaperSize="DefaultPaperSize" PaperSource="FormSource" PrinterDuplex="Default" PrinterName="">
+    <PageMargins bottomMargin="360" leftMargin="360" rightMargin="360" topMargin="360" />
+    <PageMarginConditionFormulas />
+  </PrintOptions>
+  <SubReports />
+  <Database>
+    <TableLinks>
+      <TableLink JoinType="Equal">
+        <SourceFields>
+          <Field FormulaName="{order_service.order_id}" Kind="DatabaseField" Name="order_id" NumberOfBytes="4" ValueType="Int32sField" />
+        </SourceFields>
+        <DestinationFields>
+          <Field FormulaName="{orders.id}" Kind="DatabaseField" Name="id" NumberOfBytes="4" ValueType="Int32sField" />
+        </DestinationFields>
+      </TableLink>
+      <TableLink JoinType="Equal">
+        <SourceFields>
+          <Field FormulaName="{order_service.service_id}" Kind="DatabaseField" Name="service_id" NumberOfBytes="4" ValueType="Int32sField" />
+        </SourceFields>
+        <DestinationFields>
+          <Field FormulaName="{service.id}" Kind="DatabaseField" Name="id" NumberOfBytes="4" ValueType="Int32sField" />
+        </DestinationFields>
+      </TableLink>
+      <TableLink JoinType="Equal">
+        <SourceFields>
+          <Field FormulaName="{orders.partner_id}" Kind="DatabaseField" Name="partner_id" NumberOfBytes="4" ValueType="Int32sField" />
+        </SourceFields>
+        <DestinationFields>
+          <Field FormulaName="{partner.id}" Kind="DatabaseField" Name="id" NumberOfBytes="4" ValueType="Int32sField" />
+        </DestinationFields>
+      </TableLink>
+      <TableLink JoinType="Equal">
+        <SourceFields>
+          <Field FormulaName="{orders.parking_lot_id}" Kind="DatabaseField" Name="parking_lot_id" NumberOfBytes="4" ValueType="Int32sField" />
+        </SourceFields>
+        <DestinationFields>
+          <Field FormulaName="{parking_lot.id}" Kind="DatabaseField" Name="id" NumberOfBytes="4" ValueType="Int32sField" />
+        </DestinationFields>
+      </TableLink>
+    </TableLinks>
+    <Tables>
+      <Table Alias="countries_all_iso" ClassName="CrystalReports.Table" Name="countries_all_iso">
+        <ConnectionInfo Database_DLL="crdb_odbc.dll" QE_DatabaseName="" QE_DatabaseType="ODBC (RDO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="parking" QE_SQLDB="True" SSO_Enabled="False" UserName="rpt" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{countries_all_iso.id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="countries_all_iso.id" Name="id" ShortName="id" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{countries_all_iso.name}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="countries_all_iso.name" Name="name" ShortName="name" Type="crFieldValueTypePersistentMemoField" UseCount="0" />
+          <Field Description="" FormulaForm="{countries_all_iso.alpha_2_code}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="countries_all_iso.alpha_2_code" Name="alpha_2_code" ShortName="alpha_2_code" Type="crFieldValueTypePersistentMemoField" UseCount="0" />
+          <Field Description="" FormulaForm="{countries_all_iso.alpha_3_code}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="countries_all_iso.alpha_3_code" Name="alpha_3_code" ShortName="alpha_3_code" Type="crFieldValueTypePersistentMemoField" UseCount="0" />
+          <Field Description="" FormulaForm="{countries_all_iso.numeric_code}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="countries_all_iso.numeric_code" Name="numeric_code" ShortName="numeric_code" Type="crFieldValueTypePersistentMemoField" UseCount="0" />
+          <Field Description="" FormulaForm="{countries_all_iso.internet_cctld}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="countries_all_iso.internet_cctld" Name="internet_cctld" ShortName="internet_cctld" Type="crFieldValueTypePersistentMemoField" UseCount="0" />
+        </Fields>
+      </Table>
+      <Table Alias="funding_primary" ClassName="CrystalReports.Table" Name="funding_primary">
+        <ConnectionInfo Database_DLL="crdb_odbc.dll" QE_DatabaseName="" QE_DatabaseType="ODBC (RDO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="parking" QE_SQLDB="True" SSO_Enabled="False" UserName="rpt" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{funding_primary.funder_id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="funding_primary.funder_id" Name="funder_id" ShortName="funder_id" Type="crFieldValueTypeInt32sField" UseCount="0" />
+        </Fields>
+      </Table>
+      <Table Alias="order_service" ClassName="CrystalReports.Table" Name="order_service">
+        <ConnectionInfo Database_DLL="crdb_odbc.dll" QE_DatabaseName="" QE_DatabaseType="ODBC (RDO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="parking" QE_SQLDB="True" SSO_Enabled="False" UserName="rpt" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{order_service.id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="order_service.id" Name="id" ShortName="id" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{order_service.order_id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="order_service.order_id" Name="order_id" ShortName="order_id" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{order_service.service_id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="order_service.service_id" Name="service_id" ShortName="service_id" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{order_service.quantity}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="order_service.quantity" Name="quantity" ShortName="quantity" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{order_service.line_total}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="order_service.line_total" Name="line_total" ShortName="line_total" Type="crFieldValueTypeNumberField" UseCount="0" />
+        </Fields>
+      </Table>
+      <Table Alias="orders" ClassName="CrystalReports.Table" Name="orders">
+        <ConnectionInfo Database_DLL="crdb_odbc.dll" QE_DatabaseName="" QE_DatabaseType="ODBC (RDO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="parking" QE_SQLDB="True" SSO_Enabled="False" UserName="rpt" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{orders.id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="orders.id" Name="id" ShortName="id" Type="crFieldValueTypeInt32sField" UseCount="1" />
+          <Field Description="" FormulaForm="{orders.order_number}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="66" LongName="orders.order_number" Name="order_number" ShortName="order_number" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{orders.partner_id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="orders.partner_id" Name="partner_id" ShortName="partner_id" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{orders.parking_lot_id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="orders.parking_lot_id" Name="parking_lot_id" ShortName="parking_lot_id" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{orders.customer_first}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="122" LongName="orders.customer_first" Name="customer_first" ShortName="customer_first" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{orders.customer_last}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="162" LongName="orders.customer_last" Name="customer_last" ShortName="customer_last" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{orders.customer_email}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="322" LongName="orders.customer_email" Name="customer_email" ShortName="customer_email" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{orders.created_at}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="orders.created_at" Name="created_at" ShortName="created_at" Type="crFieldValueTypeDateTimeField" UseCount="2" />
+          <Field Description="" FormulaForm="{orders.arrival_date}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="orders.arrival_date" Name="arrival_date" ShortName="arrival_date" Type="crFieldValueTypeDateField" UseCount="0" />
+          <Field Description="" FormulaForm="{orders.departure_date}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="orders.departure_date" Name="departure_date" ShortName="departure_date" Type="crFieldValueTypeDateField" UseCount="0" />
+          <Field Description="" FormulaForm="{orders.arrival_time}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="orders.arrival_time" Name="arrival_time" ShortName="arrival_time" Type="crFieldValueTypeTimeField" UseCount="0" />
+          <Field Description="" FormulaForm="{orders.departure_time}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="orders.departure_time" Name="departure_time" ShortName="departure_time" Type="crFieldValueTypeTimeField" UseCount="0" />
+          <Field Description="" FormulaForm="{orders.passengers}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="orders.passengers" Name="passengers" ShortName="passengers" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{orders.nights}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="orders.nights" Name="nights" ShortName="nights" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{orders.price_per_night}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="orders.price_per_night" Name="price_per_night" ShortName="price_per_night" Type="crFieldValueTypeNumberField" UseCount="0" />
+          <Field Description="" FormulaForm="{orders.subtotal}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="orders.subtotal" Name="subtotal" ShortName="subtotal" Type="crFieldValueTypeNumberField" UseCount="0" />
+          <Field Description="" FormulaForm="{orders.discount}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="orders.discount" Name="discount" ShortName="discount" Type="crFieldValueTypeNumberField" UseCount="0" />
+          <Field Description="" FormulaForm="{orders.tax_rate}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="orders.tax_rate" Name="tax_rate" ShortName="tax_rate" Type="crFieldValueTypeNumberField" UseCount="0" />
+          <Field Description="" FormulaForm="{orders.tax_amount}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="orders.tax_amount" Name="tax_amount" ShortName="tax_amount" Type="crFieldValueTypeNumberField" UseCount="0" />
+          <Field Description="" FormulaForm="{orders.total}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="orders.total" Name="total" ShortName="total" Type="crFieldValueTypeNumberField" UseCount="1" />
+          <Field Description="" FormulaForm="{orders.paid}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="12" LongName="orders.paid" Name="paid" ShortName="paid" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{orders.oversized_vehicle}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="12" LongName="orders.oversized_vehicle" Name="oversized_vehicle" ShortName="oversized_vehicle" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{orders.state}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="50" LongName="orders.state" Name="state" ShortName="state" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{orders.source}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="34" LongName="orders.source" Name="source" ShortName="source" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{orders.note}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="2002" LongName="orders.note" Name="note" ShortName="note" Type="crFieldValueTypeStringField" UseCount="0" />
+        </Fields>
+      </Table>
+      <Table Alias="parking_lot" ClassName="CrystalReports.Table" Name="parking_lot">
+        <ConnectionInfo Database_DLL="crdb_odbc.dll" QE_DatabaseName="" QE_DatabaseType="ODBC (RDO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="parking" QE_SQLDB="True" SSO_Enabled="False" UserName="rpt" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{parking_lot.id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="parking_lot.id" Name="id" ShortName="id" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{parking_lot.code}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="34" LongName="parking_lot.code" Name="code" ShortName="code" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{parking_lot.name}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="202" LongName="parking_lot.name" Name="name" ShortName="name" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{parking_lot.capacity}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="parking_lot.capacity" Name="capacity" ShortName="capacity" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{parking_lot.covered}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="12" LongName="parking_lot.covered" Name="covered" ShortName="covered" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{parking_lot.address}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="482" LongName="parking_lot.address" Name="address" ShortName="address" Type="crFieldValueTypeStringField" UseCount="0" />
+        </Fields>
+      </Table>
+      <Table Alias="partner" ClassName="CrystalReports.Table" Name="partner">
+        <ConnectionInfo Database_DLL="crdb_odbc.dll" QE_DatabaseName="" QE_DatabaseType="ODBC (RDO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="parking" QE_SQLDB="True" SSO_Enabled="False" UserName="rpt" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{partner.id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="partner.id" Name="id" ShortName="id" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{partner.code}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="34" LongName="partner.code" Name="code" ShortName="code" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{partner.name}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="242" LongName="partner.name" Name="name" ShortName="name" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{partner.country}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="162" LongName="partner.country" Name="country" ShortName="country" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{partner.api_enabled}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="12" LongName="partner.api_enabled" Name="api_enabled" ShortName="api_enabled" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{partner.notes}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="1602" LongName="partner.notes" Name="notes" ShortName="notes" Type="crFieldValueTypeStringField" UseCount="0" />
+        </Fields>
+      </Table>
+      <Table Alias="provinces_all" ClassName="CrystalReports.Table" Name="provinces_all">
+        <ConnectionInfo Database_DLL="crdb_odbc.dll" QE_DatabaseName="" QE_DatabaseType="ODBC (RDO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="parking" QE_SQLDB="True" SSO_Enabled="False" UserName="rpt" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{provinces_all.id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="provinces_all.id" Name="id" ShortName="id" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{provinces_all.name_short}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="provinces_all.name_short" Name="name_short" ShortName="name_short" Type="crFieldValueTypePersistentMemoField" UseCount="0" />
+          <Field Description="" FormulaForm="{provinces_all.name_long}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="provinces_all.name_long" Name="name_long" ShortName="name_long" Type="crFieldValueTypePersistentMemoField" UseCount="0" />
+          <Field Description="" FormulaForm="{provinces_all.country_id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="provinces_all.country_id" Name="country_id" ShortName="country_id" Type="crFieldValueTypeInt32sField" UseCount="0" />
+        </Fields>
+      </Table>
+      <Table Alias="service" ClassName="CrystalReports.Table" Name="service">
+        <ConnectionInfo Database_DLL="crdb_odbc.dll" QE_DatabaseName="" QE_DatabaseType="ODBC (RDO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="parking" QE_SQLDB="True" SSO_Enabled="False" UserName="rpt" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{service.id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="service.id" Name="id" ShortName="id" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{service.code}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="42" LongName="service.code" Name="code" ShortName="code" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{service.name}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="202" LongName="service.name" Name="name" ShortName="name" Type="crFieldValueTypeStringField" UseCount="0" />
+          <Field Description="" FormulaForm="{service.unit_price}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="8" LongName="service.unit_price" Name="unit_price" ShortName="unit_price" Type="crFieldValueTypeNumberField" UseCount="0" />
+          <Field Description="" FormulaForm="{service.taxable}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="12" LongName="service.taxable" Name="taxable" ShortName="taxable" Type="crFieldValueTypeStringField" UseCount="0" />
+        </Fields>
+      </Table>
+      <Table Alias="vw_sports_tabler_output" ClassName="CrystalReports.Table" Name="vw_sports_tabler_output">
+        <ConnectionInfo Database_DLL="crdb_odbc.dll" QE_DatabaseName="" QE_DatabaseType="ODBC (RDO)" QE_LogonProperties="System.__ComObject" QE_ServerDescription="parking" QE_SQLDB="True" SSO_Enabled="False" UserName="rpt" Password="" />
+        <Fields>
+          <Field Description="" FormulaForm="{vw_sports_tabler_output.id}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="4" LongName="vw_sports_tabler_output.id" Name="id" ShortName="id" Type="crFieldValueTypeInt32sField" UseCount="0" />
+          <Field Description="" FormulaForm="{vw_sports_tabler_output.team}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_sports_tabler_output.team" Name="team" ShortName="team" Type="crFieldValueTypePersistentMemoField" UseCount="0" />
+          <Field Description="" FormulaForm="{vw_sports_tabler_output.sport}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_sports_tabler_output.sport" Name="sport" ShortName="sport" Type="crFieldValueTypePersistentMemoField" UseCount="0" />
+          <Field Description="" FormulaForm="{vw_sports_tabler_output.league}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_sports_tabler_output.league" Name="league" ShortName="league" Type="crFieldValueTypePersistentMemoField" UseCount="0" />
+          <Field Description="" FormulaForm="{vw_sports_tabler_output.section}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_sports_tabler_output.section" Name="section" ShortName="section" Type="crFieldValueTypePersistentMemoField" UseCount="0" />
+          <Field Description="" FormulaForm="{vw_sports_tabler_output.division}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_sports_tabler_output.division" Name="division" ShortName="division" Type="crFieldValueTypePersistentMemoField" UseCount="0" />
+          <Field Description="" FormulaForm="{vw_sports_tabler_output.hometown}" HeadingText="" IsRecurring="True" Kind="crFieldKindDBField" Length="-1" LongName="vw_sports_tabler_output.hometown" Name="hometown" ShortName="hometown" Type="crFieldValueTypePersistentMemoField" UseCount="0" />
+        </Fields>
+      </Table>
+    </Tables>
+  </Database>
+  <DataDefinition>
+    <GroupSelectionFormula />
+    <RecordSelectionFormula />
+    <Groups />
+    <SortFields />
+    <FormulaFieldDefinitions>
+    </FormulaFieldDefinitions>
+    <GroupNameFieldDefinitions />
+    <ParameterFieldDefinitions>
+    </ParameterFieldDefinitions>
+    <RunningTotalFieldDefinitions />
+    <SQLExpressionFields />
+    <SummaryFields />
+  </DataDefinition>
+  <CustomFunctions />
+  <ReportDefinition>
+    <Areas>
+      <Area Kind="ReportHeader" Name="Area1">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="True" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="4545" Kind="ReportHeader" Name="Section1">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+              <ChartObject Name="Graph1" Kind="ChartObject" Top="225" Left="2535" Width="7200" Height="4320">
+                <Border BottomLineStyle="NoLine" HasDropShadow="False" LeftLineStyle="NoLine" RightLineStyle="NoLine" TopLineStyle="NoLine">
+                  <BorderConditionFormulas />
+                  <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+                  <BorderColor Name="Black" A="255" R="0" G="0" B="0" />
+                </Border>
+                <ObjectFormat CssClass="" EnableCanGrow="False" EnableCloseAtPageBreak="True" EnableKeepTogether="True" EnableSuppress="False" HorizontalAlignment="DefaultAlign" />
+                <ObjectFormatConditionFormulas />
+              </ChartObject>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageHeader" Name="Area2">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="600" Kind="PageHeader" Name="Section2">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="Detail" Name="Area3">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="4270" Kind="Detail" Name="Section3">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="ReportFooter" Name="Area4">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="False" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="600" Kind="ReportFooter" Name="Section4">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+      <Area Kind="PageFooter" Name="Area5">
+        <AreaFormat EnableHideForDrillDown="False" EnableKeepTogether="True" EnableNewPageAfter="True" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="True" EnableResetPageNumberAfter="False" EnableSuppress="False" />
+        <Sections>
+          <Section Height="600" Kind="PageFooter" Name="Section5">
+            <SectionFormat CssClass="" EnableKeepTogether="True" EnableNewPageAfter="False" EnableNewPageBefore="False" EnablePrintAtBottomOfPage="False" EnableResetPageNumberAfter="False" EnableSuppress="False" EnableSuppressIfBlank="False" EnableUnderlaySection="False" PageOrientation="DefaultPaperOrientation">
+              <SectionAreaConditionFormulas />
+              <BackgroundColor Name="White" A="255" R="255" G="255" B="255" />
+            </SectionFormat>
+            <ReportObjects>
+            </ReportObjects>
+          </Section>
+        </Sections>
+      </Area>
+    </Areas>
+  </ReportDefinition>
+  <SavedData RecordCount="30">
+    <Fields>
+      <Field Name="orders.created_at" Type="DateTimeField" />
+      <Field Name="orders.total" Type="NumberField" />
+      <Field Name="orders.id" Type="Int32sField" />
+    </Fields>
+    <Rows>
+      <Row>
+        <F>2460312</F>
+        <F>-1</F>
+        <F>1</F>
+      </Row>
+      <Row>
+        <F>2460314</F>
+        <F>0</F>
+        <F>2</F>
+      </Row>
+      <Row>
+        <F>2460317</F>
+        <F>0</F>
+        <F>3</F>
+      </Row>
+      <Row>
+        <F>2460329</F>
+        <F>-1</F>
+        <F>4</F>
+      </Row>
+      <Row>
+        <F>2460337</F>
+        <F>0</F>
+        <F>5</F>
+      </Row>
+      <Row>
+        <F>2460341</F>
+        <F>0</F>
+        <F>6</F>
+      </Row>
+      <Row>
+        <F>2460346</F>
+        <F>0</F>
+        <F>7</F>
+      </Row>
+      <Row>
+        <F>2460354</F>
+        <F>0</F>
+        <F>8</F>
+      </Row>
+      <Row>
+        <F>2460359</F>
+        <F>-1</F>
+        <F>9</F>
+      </Row>
+      <Row>
+        <F>2460365</F>
+        <F>1</F>
+        <F>10</F>
+      </Row>
+      <Row>
+        <F>2460371</F>
+        <F>0</F>
+        <F>11</F>
+      </Row>
+      <Row>
+        <F>2460376</F>
+        <F>0</F>
+        <F>12</F>
+      </Row>
+      <Row>
+        <F>2460384</F>
+        <F>0</F>
+        <F>13</F>
+      </Row>
+      <Row>
+        <F>2460391</F>
+        <F>-1</F>
+        <F>14</F>
+      </Row>
+      <Row>
+        <F>2460398</F>
+        <F>0</F>
+        <F>15</F>
+      </Row>
+      <Row>
+        <F>2460404</F>
+        <F>0</F>
+        <F>16</F>
+      </Row>
+      <Row>
+        <F>2460409</F>
+        <F>0</F>
+        <F>17</F>
+      </Row>
+      <Row>
+        <F>2460416</F>
+        <F>0</F>
+        <F>18</F>
+      </Row>
+      <Row>
+        <F>2460421</F>
+        <F>-1</F>
+        <F>19</F>
+      </Row>
+      <Row>
+        <F>2460427</F>
+        <F>1</F>
+        <F>20</F>
+      </Row>
+      <Row>
+        <F>2460433</F>
+        <F>0</F>
+        <F>21</F>
+      </Row>
+      <Row>
+        <F>2460438</F>
+        <F>0</F>
+        <F>22</F>
+      </Row>
+      <Row>
+        <F>2460446</F>
+        <F>0</F>
+        <F>23</F>
+      </Row>
+      <Row>
+        <F>2460453</F>
+        <F>-1</F>
+        <F>24</F>
+      </Row>
+      <Row>
+        <F>2460460</F>
+        <F>0</F>
+        <F>25</F>
+      </Row>
+      <Row>
+        <F>2460466</F>
+        <F>0</F>
+        <F>26</F>
+      </Row>
+      <Row>
+        <F>2460471</F>
+        <F>0</F>
+        <F>27</F>
+      </Row>
+      <Row>
+        <F>2460478</F>
+        <F>0</F>
+        <F>28</F>
+      </Row>
+      <Row>
+        <F>2460485</F>
+        <F>-1</F>
+        <F>29</F>
+      </Row>
+      <Row>
+        <F>2460490</F>
+        <F>1</F>
+        <F>30</F>
+      </Row>
+    </Rows>
+  </SavedData>
+</Report>

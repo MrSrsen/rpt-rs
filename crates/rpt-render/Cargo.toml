@@ -1,0 +1,58 @@
+[package]
+name = "rpt-render"
+description = "End-to-end render orchestrator: a decoded rpt Report + its data → paginated Page IR, ready for any output backend"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+rpt = { workspace = true, features = ["serde"] }
+crystal-formula = { workspace = true }
+rpt-data = { workspace = true }
+rpt-layout = { workspace = true }
+rpt-pages = { workspace = true }
+rpt-render-svg = { workspace = true }
+rpt-render-raster = { workspace = true }
+rpt-render-pdf = { workspace = true }
+rpt-render-html = { workspace = true }
+rpt-text = { workspace = true, optional = true, features = ["cosmic"] }
+thiserror = { workspace = true }
+# The live-DB driver crates are optional and native-only — the lib links them ONLY for `RenderError`'s
+# driver-error `From` impls (so a caller's `?` on the fetch path converts cleanly). Gated behind the
+# `db-*` features so the portable core (and wasm builds) stay DB-free. The SQL generation and the
+# fetch/CLI plumbing live in `rpt-render-cli`, not here.
+rpt-db-postgres = { workspace = true, optional = true }
+rpt-db-sqlite = { workspace = true, optional = true }
+
+[dev-dependencies]
+# Full-stack data-driven render tests: seed a committed portable SQL fixture into PostgreSQL, feed the
+# rows through the pipeline, and check the HTML against a committed baseline. PostgreSQL is the single
+# DB technology for the render-parity corpus — the SAME database the native Crystal engine reads out-of-
+# band — so the only variable under test is rendering, not the datasource. The test skips when no
+# `RPT_DB_URL`/`DATABASE_URL` is set, so a DB-less `cargo test` stays green (CI provides a service).
+rpt-db-postgres = { workspace = true }
+rpt-test-support = { workspace = true }
+similar = "2"
+
+[features]
+# `cosmic` swaps the default text layout to the font-accurate cosmic-text stack (real hmtx advances
+# + Unicode/CJK line-breaking). On by default for native builds; disable it (`--no-default-features`)
+# for wasm32, where cosmic-text's system-font scan (std::fs) is unavailable — a WASM host injects a
+# font-loaded `CosmicLayout` via `render_dataset_with` instead.
+#
+# `db-postgres`/`db-sqlite` compile `RenderError`'s driver-error `From` impls (the lib's only use of
+# the native DB crates). In `default` so a normal native build has them; excluded by
+# `--no-default-features` (wasm) since the driver crates are native-only.
+default = ["cosmic", "db-postgres", "db-sqlite"]
+cosmic = ["dep:rpt-text"]
+db-postgres = ["dep:rpt-db-postgres"]
+db-sqlite = ["dep:rpt-db-sqlite"]
+
+[lints]
+workspace = true

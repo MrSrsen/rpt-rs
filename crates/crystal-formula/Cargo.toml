@@ -1,0 +1,23 @@
+[package]
+name = "crystal-formula"
+description = "The Crystal/Basic report formula language: lexer, parser, AST, type system, and bytecode evaluator"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+rpt-format-value = { workspace = true }
+
+[features]
+# Exposes the tree-walking `Evaluator` — the differential-test reference for the bytecode VM
+# (the sole production path). Enabled by `cfg(test)` internally; external test crates opt in.
+differential = []
+
+[lints]
+workspace = true

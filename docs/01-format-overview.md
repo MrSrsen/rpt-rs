@@ -1,6 +1,6 @@
 # Format overview
 
-A SAP Crystal Reports `.rpt` file stores a **report definition**: the data sources it reads, the parameters it prompts
+A Crystal Reports `.rpt` file stores a **report definition**: the data sources it reads, the parameters it prompts
 for, the formulas it computes, and the way it lays everything out on the page. The format is proprietary and
 undocumented; this document describes how it is structured and how `rpt-rs` decodes it.
 
@@ -8,19 +8,20 @@ undocumented; this document describes how it is structured and how `rpt-rs` deco
 
 A `.rpt` file is built as a stack of layers. Each layer wraps the one below it, and decoding peels them off in order:
 
-```
-┌─ .rpt file ───────────────────────────────────────────────────────────────┐
-│  CFB / OLE2 compound file (a container of named streams)                  │
-│  ┌─ Contents stream ────────────────────────────────────────────────────┐ │
-│  │  stream header (plaintext: version, IV)                              │ │
-│  │  ┌─ encrypted + compressed payload ─────────────────────────────────┐│ │
-│  │  │  AES-128-CFB  →  zlib deflate  →  a flat sequence of records     ││ │
-│  │  │  each record's content is itself a nested tree of records        ││ │
-│  │  └──────────────────────────────────────────────────────────────────┘│ │
-│  └──────────────────────────────────────────────────────────────────────┘ │
-│  other streams: QESession, PromptManager, ReportInfo, SummaryInformation  │
-│  nested storages: Subdocument N (subreports), Embedding N (OLE objects)   │
-└───────────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph rpt[".rpt file — CFB / OLE2 compound file"]
+        direction TB
+        subgraph contents["Contents stream"]
+            direction TB
+            hdr["Stream header (plaintext: version, IV)"]
+            subgraph payload["Encrypted + compressed payload"]
+                rec["AES-128-CFB → zlib deflate → flat record sequence<br/>(each record's content is itself a nested record tree)"]
+            end
+        end
+        other["Other streams: QESession · PromptManager · ReportInfo · SummaryInformation"]
+        stores["Nested storages: Subdocument N (subreports) · Embedding N (OLE objects)"]
+    end
 ```
 
 The report definition itself is small — typically a few kilobytes — regardless of the overall file size. Large files are
@@ -28,7 +29,20 @@ large because of embedded images and cached data, not because of the definition.
 
 ## The decode pipeline
 
-Decoding a report runs these stages in order. Each has its own document:
+Decoding a report runs these stages in order:
+
+```mermaid
+flowchart LR
+    A([".rpt file"]) --> B["Open container<br/>CFB / OLE2"]
+    B --> C["Read stream header<br/>version, IV"]
+    C --> D["Decrypt<br/>AES-128-CFB"]
+    D --> E["Decompress<br/>zlib inflate"]
+    E --> F["Tile into records<br/>TSLV framing"]
+    F --> G["Build record tree<br/>stack-XOR mask"]
+    G --> H(["Project<br/>semantic model"])
+```
+
+Each stage has its own document:
 
 1. **Open the container.** A `.rpt` is a Microsoft Compound File (CFB/OLE2) — the same structured-storage container used
    by legacy `.doc`/`.xls`. It holds named _streams_ (files) and _storages_ (directories). See
@@ -68,3 +82,13 @@ database field. The [block catalog](06-block-catalog.md) documents each type.
 The format mixes byte orders. The Crystal-defined record framing (lengths, IDs, geometry) tends to be **big-endian**,
 while value codes, flags, and embedded Windows structures tend to be **little-endian**. This is a property of the
 format, not a decode choice; see [Endianness](appendix-endianness.md).
+
+## See it yourself
+
+The `rpt` inspection CLI walks this whole pipeline and prints a one-screen summary of any report:
+
+```console
+$ rpt inspect report.rpt
+```
+
+The following documents each drill into one stage; the [usage guide](08-usage.md) covers the full CLI.

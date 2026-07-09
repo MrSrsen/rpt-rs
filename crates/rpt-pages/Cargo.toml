@@ -1,0 +1,20 @@
+[package]
+name = "rpt-pages"
+description = "Page IR: the positioned draw-op representation of a formatted Crystal report — the frozen contract between the layout engine and output backends"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+rpt-model = { workspace = true, features = ["serde"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+[lints]
+workspace = true

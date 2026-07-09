@@ -7,9 +7,11 @@ use std::fs;
 use std::io::Read;
 use std::path::Path;
 
+use crate::codec::RecordNode;
 use crate::container::{Container, SummaryInformation};
 use crate::error::Result;
-use crate::records::RecordStream;
+use crate::records::rtype::REPORT_HEADER;
+use crate::records::{RecordStream, RecordTag};
 use crate::StreamId;
 
 /// An opened `.rpt` report.
@@ -28,6 +30,26 @@ pub struct Rpt {
 
 impl Rpt {
     /// Open an `.rpt` from a file path.
+    ///
+    /// Reads the whole file, opens the CFB/OLE2 container, decodes every stream's record substrate
+    /// (decrypt → inflate → TSLV framing), and projects the semantic [`Report`](crate::Report) —
+    /// including subreports, embedded pictures, and any stored saved data. Use [`Rpt::report`] for
+    /// the decoded model and [`Rpt::save`] to round-trip the original bytes.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Err`] if the file cannot be read, the bytes are not a valid CFB container, or the
+    /// `Contents` stream fails to decode (bad header, decryption, or record framing).
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use rpt::Rpt;
+    ///
+    /// let rpt = Rpt::open("report.rpt")?;
+    /// println!("{} report objects", rpt.report().objects().count());
+    /// # Ok::<(), rpt::Error>(())
+    /// ```
     pub fn open(path: impl AsRef<Path>) -> Result<Rpt> {
         let bytes = fs::read(path.as_ref())?;
         Rpt::from_bytes(bytes)
@@ -66,18 +88,26 @@ impl Rpt {
             raise_subreports(&container, &current_values);
         report.subreports = subreports;
         report.embeds = raise_embeds(&container);
-        report.saved_data = decode_saved_data(&streams);
+        // Static/OLE picture bytes live in the top-level `Embedding N/CONTENTS` streams, not the
+        // Contents record tree; fill each `PictureObject.data` from the embedding its `0xbd`
+        // ordinal points at (subreport pictures are scoped to their `Subdocument K` storage below).
+        fill_picture_data(&mut report, &container, "");
+        // The saved-row reader needs the raised database field types (to tell an inline `Number`
+        // from an `Int32s`), so this runs after the report is raised.
+        let saved = decode_saved_data(&streams, &report);
+        report.saved_data = saved;
         // Resolve each SubreportObject's name from its backing subdocument (linked by index).
-        for area in &mut report.report_definition.areas {
-            for section in &mut area.sections {
-                for obj in &mut section.objects {
-                    if let crate::model::ReportObjectKind::Subreport(sr) = &mut obj.kind {
-                        if let Some(name) = subdoc_names.get(&sr.subdoc_index) {
-                            sr.subreport_name = name.clone();
-                        }
-                    }
+        for obj in report.objects_mut() {
+            if let crate::model::ReportObjectKind::Subreport(sr) = &mut obj.kind {
+                if let Some(name) = subdoc_names.get(&sr.subdoc_index) {
+                    sr.subreport_name = name.clone();
                 }
             }
+        }
+        // Fill any subreport picture bytes from that subreport's own `Subdocument K/Embedding N`
+        // storage (`subdoc_names` keys share order with `report.subreports`).
+        for (idx, sub) in subdoc_names.keys().zip(report.subreports.iter_mut()) {
+            fill_picture_data(&mut sub.report, &container, &format!("Subdocument {idx}"));
         }
         // Subreport links: the main report stores each link in an `0x0106` record that follows the
         // subreport's `0xa3` object (grouped by subdocument index). Attach them to the matching
@@ -90,7 +120,7 @@ impl Rpt {
         // `{field} <op> {?param}` comparisons in the subreport's `0x0076` link-selection body, see
         // `add_link_bindings`).
         if let Some(c) = contents {
-            let links = subreport_links(c);
+            let links = crate::project::subreport_links(c);
             for (idx, sub) in subdoc_names.keys().zip(report.subreports.iter_mut()) {
                 let Some(entries) = links.get(idx) else {
                     continue;
@@ -108,7 +138,7 @@ impl Rpt {
                         // empty (the engine then reports the link parameter itself).
                         let subreport_field = rec
                             .sf_handle
-                            .and_then(|(k, i)| resolve_sf_handle(&sub.report, k, i))
+                            .and_then(|(k, i)| crate::project::resolve_sf_handle(&sub.report, k, i))
                             .or_else(|| {
                                 param
                                     .as_ref()
@@ -146,7 +176,103 @@ impl Rpt {
         Ok(())
     }
 
+    /// Re-encode the report's `Contents` stream from its current logical bytes and return the new
+    /// `.rpt` file bytes — a no-op run of the write pipeline (TSLV logical → deflate → AES-CFB
+    /// encrypt → CFB rewrite, every other stream verbatim). The result re-opens to byte-identical
+    /// logical/record bytes; the file bytes differ because deflate is non-canonical.
+    pub fn reencode(&self) -> Result<Vec<u8>> {
+        let contents = self.contents_stream()?;
+        self.reencode_contents(contents.logical_bytes())
+    }
+
+    /// Change a same-size region of a decoded record's leaf and return the new `.rpt` file bytes.
+    ///
+    /// Locates the `nth` (0-based, pre-order) record whose type is `tag` in the `Contents` record
+    /// tree, then overwrites `new_bytes.len()` bytes of its **demasked leaf** starting at
+    /// `leaf_offset`, re-masking each byte with the record's stack mask. Phase-1 writer: **same-size
+    /// only** — `new_bytes` replaces an equal-length region, so the logical stream length never
+    /// changes (a length-changing edit needs the not-yet-built record-length recompute path).
+    ///
+    /// Errors if fewer than `nth + 1` records of `tag` exist, or the region `[leaf_offset,
+    /// leaf_offset + new_bytes.len())` overruns the record's leaf bytes.
+    pub fn patch_record_leaf(
+        &self,
+        tag: RecordTag,
+        nth: usize,
+        leaf_offset: usize,
+        new_bytes: &[u8],
+    ) -> Result<Vec<u8>> {
+        let contents = self.contents_stream()?;
+        let logical = contents.logical_bytes();
+        let tree = contents.record_tree();
+        let node = nth_node(&tree, tag.0, nth).ok_or_else(|| {
+            crate::error::CodecError::new(format!(
+                "record #{nth} of type {tag:?} not found in Contents record tree"
+            ))
+            .in_stream("Contents")
+            .record(tag.0)
+        })?;
+
+        let mut new_logical = logical.to_vec();
+        patch_leaf_region(node, &mut new_logical, leaf_offset, new_bytes)?;
+        self.reencode_contents(&new_logical)
+    }
+
+    /// Replace a leaf **region** of a decoded record with `new_bytes` of a **possibly different
+    /// length**, and return the new `.rpt` file bytes — the phase-2 length-changing writer.
+    ///
+    /// Locates the `nth` (0-based, pre-order) record of type `tag` in the `Contents` record tree and
+    /// replaces its demasked-leaf bytes `[region.start, region.end)` with `new_bytes` (any length).
+    /// The record's own length prefix and every enclosing record's length prefix are recomputed by
+    /// the size delta; because the `Contents` tree holds no absolute byte offsets, nothing else needs
+    /// fixing. When `region.len() ==
+    /// new_bytes.len()` this is an in-place overwrite (equivalent to [`Rpt::patch_record_leaf`]).
+    ///
+    /// Errors (writing nothing) if the record is not found, the region is out of the leaf or straddles
+    /// a nested child record, or a recomputed length prefix would overflow its on-disk field width.
+    pub fn patch_record_leaf_resize(
+        &self,
+        tag: RecordTag,
+        nth: usize,
+        region: std::ops::Range<usize>,
+        new_bytes: &[u8],
+    ) -> Result<Vec<u8>> {
+        let contents = self.contents_stream()?;
+        let logical = contents.logical_bytes();
+        let tree = contents.record_tree();
+        let (node, ancestors) = nth_node_path(&tree, tag.0, nth).ok_or_else(|| {
+            crate::error::CodecError::new(format!(
+                "record #{nth} of type {tag:?} not found in Contents record tree"
+            ))
+            .in_stream("Contents")
+            .record(tag.0)
+        })?;
+        let new_logical =
+            crate::codec::resize_leaf_region(logical, node, &ancestors, region, new_bytes)?;
+        self.reencode_contents(&new_logical)
+    }
+
+    /// The top-level `Contents` substrate stream (the primary record stream).
+    fn contents_stream(&self) -> Result<&RecordStream> {
+        self.stream(&StreamId::Contents).ok_or_else(|| {
+            crate::error::ContainerError::new("find stream", "report has no Contents stream")
+                .stream("Contents")
+                .into()
+        })
+    }
+
+    /// Re-encode `Contents` from replacement logical bytes and splice it into a fresh copy of the
+    /// container. Shared by [`Rpt::reencode`] and [`Rpt::patch_record_leaf`].
+    fn reencode_contents(&self, new_logical: &[u8]) -> Result<Vec<u8>> {
+        let raw = self.contents_stream()?.raw_bytes();
+        let new_stream = crate::codec::encode_contents(raw, new_logical)?;
+        crate::container::rewrite_stream(&self.original, &StreamId::Contents, &new_stream)
+    }
+
     /// The semantic DOM — the report projected from the record substrate.
+    ///
+    /// The byte-layout origin of each model field (its source `Contents` record and leaf layout) is
+    /// documented in [`crate::provenance`].
     pub fn report(&self) -> &crate::model::Report {
         &self.report
     }
@@ -196,35 +322,178 @@ impl Rpt {
     /// saved data or the index cannot be decoded.
     pub fn saved_index(&self) -> Option<Vec<u8>> {
         let dsm = self.data_source_manager_logical()?;
-        // The record-index batch is the directory's primary (largest-count) batch.
-        let primary = crate::codec::batch_directory(&dsm)
-            .into_iter()
-            .max_by_key(|b| b.count)?;
+        // The record index is the leading run of same-item_size batches, possibly multi-batch.
+        let index_batches = crate::codec::index_directory(&dsm);
         let srs = self
             .stream_by(|id| matches!(id, StreamId::SavedRecordsStream(_)))?
             .encode();
-        crate::codec::decode_saved_batch(
-            &srs,
-            crate::codec::INDEX_BATCH_SIZE,
-            primary.count,
-            primary.item_size,
-        )
+        crate::codec::decode_index_stream(&srs, &index_batches)
     }
 
     /// The report's decoded stored saved data (cached rows). See [`crate::model::SavedData`]. `None`
     /// when there is no saved data or the batch class is not decodable.
     pub fn saved_data(&self) -> Option<crate::model::SavedData> {
-        decode_saved_data(&self.streams)
+        decode_saved_data(&self.streams, &self.report)
     }
+
+    /// A reverse-engineering view of the saved-data batch substrate: the decoded catalog schema, the
+    /// batch directory, and — per batch — the derived decrypt IV and whether it yields a zlib header
+    /// (and, on success, the inflated first record). This is the RE instrument behind
+    /// `rpt dump --saved`; it reaches the encrypted-batch layer the plain record `dump` cannot.
+    /// `None` when the report carries no saved-data directory.
+    pub fn saved_batch_inspection(&self) -> Option<crate::model::SavedBatchInspection> {
+        let dsm = self.data_source_manager_logical()?;
+        let schema = crate::codec::saved_schema(&dsm);
+        let srs = self
+            .stream_by(|id| matches!(id, StreamId::SavedRecordsStream(_)))
+            .map(|s| s.encode())
+            .unwrap_or_default();
+        let memo = self
+            .stream_by(|id| matches!(id, StreamId::MemoValuesStream(_)))
+            .map(|s| s.encode())
+            .unwrap_or_default();
+        Some(crate::codec::inspect_saved_batches(
+            &dsm, &srs, &memo, &schema,
+        ))
+    }
+
+    /// Brute-force the saved-batch IV metadata for the ciphertext at `stream[cursor..]`, searching the
+    /// given `(batch_size, item_count, item_size, seq)` candidate values and returning every tuple
+    /// whose IV both passes the zlib gate and inflates. The search instrument for cracking an
+    /// undecoded batch class; `stream` selects `SavedRecordsStream` (false) or `MemoValuesStream`
+    /// (true). Stops after `limit` hits (`0` = unbounded).
+    #[allow(clippy::too_many_arguments)]
+    pub fn saved_iv_search(
+        &self,
+        in_memo_stream: bool,
+        cursor: usize,
+        batch_sizes: &[u32],
+        item_counts: &[u32],
+        item_sizes: &[u32],
+        seqs: &[u32],
+        limit: usize,
+    ) -> Vec<crate::model::SavedIvHit> {
+        let pred: fn(&StreamId) -> bool = if in_memo_stream {
+            |id| matches!(id, StreamId::MemoValuesStream(_))
+        } else {
+            |id| matches!(id, StreamId::SavedRecordsStream(_))
+        };
+        let Some(raw) = self.stream_by(pred).map(|s| s.encode()) else {
+            return Vec::new();
+        };
+        let ct = raw.get(cursor..).unwrap_or(&[]);
+        crate::codec::saved_iv_search(ct, batch_sizes, item_counts, item_sizes, seqs, limit)
+    }
+}
+
+/// The `nth` (0-based, pre-order) node in `tree` whose record type is `rtype`, or `None`.
+fn nth_node(tree: &[RecordNode], rtype: u16, nth: usize) -> Option<&RecordNode> {
+    fn visit<'a>(n: &'a RecordNode, rtype: u16, remaining: &mut usize) -> Option<&'a RecordNode> {
+        if n.rtype == rtype {
+            if *remaining == 0 {
+                return Some(n);
+            }
+            *remaining -= 1;
+        }
+        n.children.iter().find_map(|c| visit(c, rtype, remaining))
+    }
+    let mut remaining = nth;
+    tree.iter()
+        .find_map(|root| visit(root, rtype, &mut remaining))
+}
+
+/// Like [`nth_node`], but also returns the target's ancestor chain (root-first, excluding the
+/// target itself) — the records whose length prefixes must be recomputed on a length-changing edit.
+fn nth_node_path(
+    tree: &[RecordNode],
+    rtype: u16,
+    nth: usize,
+) -> Option<(&RecordNode, Vec<&RecordNode>)> {
+    fn visit<'a>(
+        n: &'a RecordNode,
+        rtype: u16,
+        remaining: &mut usize,
+        path: &mut Vec<&'a RecordNode>,
+    ) -> Option<(&'a RecordNode, Vec<&'a RecordNode>)> {
+        if n.rtype == rtype {
+            if *remaining == 0 {
+                return Some((n, path.clone()));
+            }
+            *remaining -= 1;
+        }
+        path.push(n);
+        let found = n
+            .children
+            .iter()
+            .find_map(|c| visit(c, rtype, remaining, path));
+        path.pop();
+        found
+    }
+    let mut remaining = nth;
+    let mut path = Vec::new();
+    tree.iter()
+        .find_map(|root| visit(root, rtype, &mut remaining, &mut path))
+}
+
+/// Overwrite `new_bytes.len()` bytes of `node`'s demasked leaf into `logical`, starting at
+/// `leaf_offset` and re-masking with the node's stack mask. Same-size: `logical`'s length is
+/// unchanged. Errors if the region overruns the record's leaf.
+fn patch_leaf_region(
+    node: &RecordNode,
+    logical: &mut [u8],
+    leaf_offset: usize,
+    new_bytes: &[u8],
+) -> Result<()> {
+    let segments = leaf_segments(node);
+    let leaf_len: usize = segments.iter().map(|(s, e)| e - s).sum();
+    let end = leaf_offset.checked_add(new_bytes.len()).ok_or_else(|| {
+        crate::error::CodecError::new(format!(
+            "patch region offset {leaf_offset} + length {} overflows usize",
+            new_bytes.len()
+        ))
+        .record(node.rtype)
+    })?;
+    if end > leaf_len {
+        return Err(crate::error::CodecError::new(format!(
+            "patch region [{leaf_offset}, {end}) overruns record leaf of {leaf_len} bytes"
+        ))
+        .record(node.rtype)
+        .into());
+    }
+    // Walk the leaf's logical segments, writing each source byte whose leaf position lands in
+    // [leaf_offset, end). The leaf maps to logical piecewise (child spans are skipped), but the
+    // stack mask is uniform across the whole record.
+    let mut leaf_pos = 0usize;
+    let mut written = 0usize;
+    for (s, e) in segments {
+        for slot in &mut logical[s..e] {
+            if (leaf_offset..end).contains(&leaf_pos) {
+                *slot = new_bytes[written] ^ node.mask;
+                written += 1;
+            }
+            leaf_pos += 1;
+        }
+    }
+    debug_assert_eq!(written, new_bytes.len());
+    Ok(())
+}
+
+/// The logical byte spans that make up `node`'s own leaf — the content gaps not covered by any
+/// child, in order. The inverse of the concatenation [`RecordNode::leaf_bytes`] performs.
+fn leaf_segments(node: &RecordNode) -> Vec<(usize, usize)> {
+    node.leaf_segments()
 }
 
 /// Decode a report's stored saved data from its `SavedRecordsStream` (record index) and
 /// `MemoValuesStream` (variable-length values). Returns the stored records — not the engine's
 /// result rowset, which projects/reorders/groups/formats them. `None` when there is no saved data,
 /// no `MemoValuesStream`, or the streams do not decode.
-fn decode_saved_data(streams: &[RecordStream]) -> Option<crate::model::SavedData> {
+fn decode_saved_data(
+    streams: &[RecordStream],
+    report: &crate::model::Report,
+) -> Option<crate::model::SavedData> {
     use crate::codec;
-    use crate::model::{FieldValueType, SavedColumn, SavedData};
+    use crate::model::{SavedColumn, SavedData};
 
     let find = |pred: fn(&StreamId) -> bool| streams.iter().find(|s| pred(s.id()));
     // The top-level `DataSourceManager` variant is inherently non-subdocument (nested streams stay
@@ -232,61 +501,137 @@ fn decode_saved_data(streams: &[RecordStream]) -> Option<crate::model::SavedData
     let dsm =
         codec::decode_contents(&find(|id| matches!(id, StreamId::DataSourceManager(_)))?.encode())
             .ok()?;
-    let primary = codec::batch_directory(&dsm)
-        .into_iter()
-        .max_by_key(|b| b.count)
-        .filter(|b| b.count > 0)?;
 
-    // Decodable only when the field values are in an external MemoValuesStream.
-    let memo_raw = find(|id| matches!(id, StreamId::MemoValuesStream(_)))?.encode();
+    // Decodable only when the field values are in an external MemoValuesStream. Reports with no memo
+    // columns (all-inline) still decode: the memo stream may be absent.
+    let memo_raw = find(|id| matches!(id, StreamId::MemoValuesStream(_)))
+        .map(|s| s.encode())
+        .unwrap_or_default();
     let srs_raw = find(|id| matches!(id, StreamId::SavedRecordsStream(_)))?.encode();
-
-    let index_plain = codec::decode_saved_batch(
-        &srs_raw,
-        codec::INDEX_BATCH_SIZE,
-        primary.count,
-        primary.item_size,
-    )?;
-    let bs = codec::memo_batch_size(&dsm)?;
-    let memo_plain = codec::decode_saved_batch(&memo_raw, bs, bs.checked_mul(12)?, 12)?;
-    let memos = codec::parse_memo_values(&memo_plain);
 
     let schema = codec::saved_schema(&dsm);
     if schema.is_empty() {
         return None;
     }
-    let rows = codec::decode_worrall_rows(
-        &index_plain,
-        &memos,
-        &schema,
-        primary.count,
-        primary.item_size,
-    );
+    // Each stored column's value type: a memo column is a `PersistentMemo`; every other column takes
+    // its declared type from the report's database field of the same qualified name (the inline
+    // packed reader keys the on-disk field width on this — a `Number` is an 8-byte double, an
+    // `Int32s` is 4 bytes, a `String` is a NUL-terminated UTF-16 run). Unmatched fields fall back to
+    // `Int32s`.
+    let field_types = saved_field_types(&schema, report);
+    // The stored rows: index batches (inline fields, packed or fixed) + memo-descriptor batches whose
+    // cells point into the memo-value heaps (no delta reconstruction needed).
+    let (rows, record_count) =
+        codec::decode_saved_rows(&dsm, &srs_raw, &memo_raw, &schema, &field_types)?;
     if rows.is_empty() {
         return None;
     }
     let columns = schema
         .iter()
-        .map(|f| SavedColumn {
+        .zip(field_types)
+        .map(|(f, value_type)| SavedColumn {
             name: f.name.clone(),
-            value_type: if f.is_memo {
-                FieldValueType::PersistentMemo
-            } else {
-                FieldValueType::Int32s
-            },
+            value_type,
         })
         .collect();
     Some(SavedData {
-        record_count: primary.count,
+        record_count,
         columns,
         rows,
     })
+}
+
+/// Resolve each saved column's value type (schema order): a memo column is a `PersistentMemo`; every
+/// other column takes the declared type of the report database field with the same qualified name
+/// (`Table.Field`, matched on both the table's stored name and its alias), defaulting to `Int32s`.
+/// This is what tells the inline row reader a `Number` column is an 8-byte double vs an `Int32s`
+/// 4-byte scalar vs a `String` — the DSM saved-field catalog itself carries no type code.
+fn saved_field_types(
+    schema: &[crate::codec::SavedFieldDesc],
+    report: &crate::model::Report,
+) -> Vec<crate::model::FieldValueType> {
+    use crate::model::FieldValueType;
+    use std::collections::HashMap;
+    let mut by_name: HashMap<String, FieldValueType> = HashMap::new();
+    for t in &report.database.tables {
+        for f in &t.data_fields {
+            by_name
+                .entry(format!("{}.{}", t.name, f.name))
+                .or_insert(f.value_type);
+            if !t.alias.is_empty() {
+                by_name
+                    .entry(format!("{}.{}", t.alias, f.name))
+                    .or_insert(f.value_type);
+            }
+        }
+    }
+    schema
+        .iter()
+        .map(|f| {
+            if f.is_memo {
+                FieldValueType::PersistentMemo
+            } else {
+                by_name
+                    .get(&f.name)
+                    .copied()
+                    .unwrap_or(FieldValueType::Int32s)
+            }
+        })
+        .collect()
 }
 
 /// Summarise embedded OLE objects: for each top-level `Embedding N` storage, hash each of its
 /// OLE data streams into an [`Embed`] (Name, byte size, Base64-MD5), in directory order. The
 /// engine emits the OLE data streams — `Ole`, `OlePres000`, `Ole10Native` — but not the
 /// `CompObj` (OLE class descriptor) or a `CONTENTS` sub-storage, so those are skipped.
+/// Fill each static `PictureObject`'s `data` from its OLE embedding. `storage_prefix` scopes the
+/// lookup to the report's own storage — empty for the main report, `Subdocument K` for a subreport
+/// — and the picture's `ole_ordinal` (from the `0xbd` record) selects the `Embedding N` within it.
+fn fill_picture_data(
+    report: &mut crate::model::Report,
+    container: &Container,
+    storage_prefix: &str,
+) {
+    for obj in report.objects_mut() {
+        if let crate::model::ReportObjectKind::Picture(pic) = &mut obj.kind {
+            if pic.data.is_empty() {
+                if let Some(ord) = pic.ole_ordinal {
+                    if let Some(bytes) = load_embedding_contents(container, storage_prefix, ord) {
+                        pic.data = bytes;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// Load the `CONTENTS` stream bytes of `{storage_prefix}/Embedding {ordinal}` — the native image
+/// data of a static/OLE picture. Path components are compared with OLE control-char prefixes
+/// (`\x01`, `\x02`) stripped, so the `\x01Ole`/`CONTENTS` naming is matched robustly.
+fn load_embedding_contents(
+    container: &Container,
+    storage_prefix: &str,
+    ordinal: u32,
+) -> Option<Vec<u8>> {
+    let clean = |s: &str| -> String { s.chars().filter(|c| !c.is_control()).collect() };
+    let want: Vec<String> = storage_prefix
+        .split('/')
+        .filter(|s| !s.is_empty())
+        .map(clean)
+        .chain([format!("Embedding {ordinal}"), "CONTENTS".to_owned()])
+        .collect();
+    container.streams().iter().find_map(|s| {
+        let parts: Vec<String> = s
+            .path
+            .components()
+            .filter_map(|c| c.as_os_str().to_str())
+            .filter(|c| !c.is_empty() && *c != "/" && *c != "\\")
+            .map(clean)
+            .collect();
+        (parts == want).then(|| s.bytes.clone())
+    })
+}
+
 fn raise_embeds(container: &Container) -> Vec<crate::model::Embed> {
     // Streams present under an `Embedding N` storage that the oracle does NOT list. `CompObj` is
     // the OLE1 class-moniker blob; `CONTENTS` (when present) is a nested storage, not object data.
@@ -397,8 +742,11 @@ fn raise_subreports(
         meta.insert(
             idx,
             SubLinkMeta {
-                index_names: subreport_param_index_names(&contents, prompt_xml.as_deref()),
-                bindings: subreport_link_bindings(&contents),
+                index_names: crate::project::subreport_param_index_names(
+                    &contents,
+                    prompt_xml.as_deref(),
+                ),
+                bindings: crate::project::subreport_link_bindings(&contents),
             },
         );
         out.push(crate::model::Subreport {
@@ -410,333 +758,10 @@ fn raise_subreports(
     (out, names, meta)
 }
 
-/// Map each subreport parameter index to its name, joining the parameter detail records (`0x007a`,
-/// whose leaf begins with the `u16` engine parameter index and embeds the `crobj://{…}` GUID) to the
-/// subreport's `PromptManager` (GUID → parameter Name). A subreport link's `0x0106` record stores
-/// this parameter index, so the map turns it into the LinkedParameterName.
-fn subreport_param_index_names(
-    contents: &RecordStream,
-    prompt_xml: Option<&str>,
-) -> std::collections::HashMap<u16, String> {
-    use crate::codec::RecordNode;
-    const PARAM_RECORD: u16 = 0x007a;
-    // GUID (`crobj://…`) → parameter Name, from the PromptManager CRMetaObjects XML.
-    let mut guid_name: std::collections::HashMap<String, String> = std::collections::HashMap::new();
-    if let Some(xml) = prompt_xml {
-        for chunk in xml.split("<MetaObject").skip(1) {
-            let Some(id) = chunk
-                .split("<ID>crobj://")
-                .nth(1)
-                .and_then(|t| t.split("</ID>").next())
-            else {
-                continue;
-            };
-            // The parameter's own Name lives in its `<Object xsi:type="Parameter">` element.
-            let Some((_, obj)) = chunk.split_once("<Object xsi:type=\"Parameter\"") else {
-                continue;
-            };
-            if let Some(name) = obj
-                .split_once("<Name>")
-                .and_then(|(_, t)| t.split_once("</Name>"))
-                .map(|(n, _)| n)
-            {
-                guid_name.insert(id.to_string(), name.to_string());
-            }
-        }
-    }
-    let logical = contents.logical_bytes();
-    let mut map = std::collections::HashMap::new();
-    let mut visit = |n: &RecordNode| {
-        if n.rtype != PARAM_RECORD {
-            return;
-        }
-        let leaf = n.leaf_bytes(logical);
-        let Some(index) = crate::bytes::u16_be(&leaf, 0) else {
-            return;
-        };
-        // Extract the `crobj://{…}` GUID body (the text after `crobj://`, up to NUL).
-        if let Some(pos) = leaf.windows(8).position(|w| w == b"crobj://") {
-            let start = pos + 8;
-            let end = leaf[start..]
-                .iter()
-                .position(|&b| b == 0)
-                .map(|e| start + e)
-                .unwrap_or(leaf.len());
-            let guid = String::from_utf8_lossy(&leaf[start..end]).into_owned();
-            if let Some(name) = guid_name.get(&guid) {
-                map.insert(index, name.clone());
-            }
-        }
-    };
-    for root in contents.record_tree() {
-        root.walk(&mut visit);
-    }
-    map
-}
-
-/// Map each subreport parameter to the subreport field it binds to, decoded from the subreport's
-/// `0x0076` link-selection records. When a main-report field is linked into a subreport on a db
-/// field, the engine stores the join as a formula record whose first operand is the bound subreport
-/// field (`Command.client_id`, `@period_from`, …) and whose second operand is the `?<parameter>` it
-/// is compared with (the auto-created link parameter). Returns `{parameter-name → field}`; a link
-/// parameter absent from the map binds directly to itself (no db field — the SubreportFieldName then
-/// equals the LinkedParameterName).
-fn subreport_link_bindings(contents: &RecordStream) -> std::collections::HashMap<String, String> {
-    use crate::codec::RecordNode;
-    const FORMULA_BODY: u16 = 0x0076;
-    let logical = contents.logical_bytes();
-    let mut map = std::collections::HashMap::new();
-    fn visit(n: &RecordNode, logical: &[u8], map: &mut std::collections::HashMap<String, String>) {
-        if n.rtype == FORMULA_BODY {
-            let leaf = n.leaf_bytes(logical);
-            // The link-selection formula's body (the human-readable operand) holds each comparison
-            // as `{sub.field} <op> {?Pm-<main>}`. A single selection can join several with `and`
-            // (e.g. `{T.a} = {?Pm-T.x} and {T.b} = {?Pm-@y}`), so every comparison is parsed, not
-            // just the first. Parsing the body (not the flat operand list) keeps the comparison
-            // operator, which gates non-equality clauses (see `add_link_bindings`).
-            for s in u32_lp_strings(&leaf) {
-                if s.contains("{?") {
-                    add_link_bindings(&s, map);
-                }
-            }
-        }
-        for c in &n.children {
-            visit(c, logical, map);
-        }
-    }
-    for root in contents.record_tree() {
-        visit(&root, logical, &mut map);
-    }
-    map
-}
-
-/// Parse a selection-formula body for `{sub.field} <op> {?Pm-<main>}` link comparisons and record
-/// `{parameter → bound field}` for each. The parameter key is the text inside `{?…}` (e.g.
-/// `Pm-@p_search_date`), matching the `LinkedParameterName` lookup.
-///
-/// Only the engine's auto-generated *equality* form (`=`) binds unconditionally. A non-equality
-/// clause (`<`, `<=`, `>`, `>=`) is accepted only when its left column matches the link's column
-/// (Crystal names the link parameter `Pm-<main>` and compares the *same* column on the subreport
-/// side). This rejects a user filter that merely re-uses the link parameter on a *different* column
-/// (e.g. `{T.leave_date} >= {?Pm-T.service_date}`), whose SubreportFieldName stays the parameter.
-/// Mirrors the `Field.UseCount` rule in `rpt-engine::subreport_link_field`.
-fn add_link_bindings(body: &str, map: &mut std::collections::HashMap<String, String>) {
-    let pat = "{?";
-    for (idx, _) in body.match_indices(pat) {
-        let rest = &body[idx + 1..]; // starts at "?…}"
-        let Some(close) = rest.find('}') else {
-            continue;
-        };
-        let param = &rest[1..close]; // inside braces, sans leading '?'
-        if param.is_empty() {
-            continue;
-        }
-        // The comparison operator immediately before `{?…}`. `=` may be the tail of `<=`/`>=`/`<>`.
-        let before = body[..idx].trim_end();
-        let (lhs, is_equality) = if let Some(l) = before.strip_suffix('=') {
-            match l.chars().last() {
-                Some(c @ ('<' | '>' | '!' | '=')) => (l.trim_end_matches(c).trim_end(), false),
-                _ => (l.trim_end(), true),
-            }
-        } else if let Some(l) = before
-            .strip_suffix('<')
-            .or_else(|| before.strip_suffix('>'))
-        {
-            (l.trim_end(), false)
-        } else {
-            continue;
-        };
-        // The left operand must be a `{table.field}` database reference.
-        let Some(field) = lhs
-            .strip_suffix('}')
-            .and_then(|l| l.rfind('{').map(|b| &l[b + 1..]))
-        else {
-            continue;
-        };
-        if field.is_empty() || field.starts_with(['?', '@']) {
-            continue;
-        }
-        // Non-equality only counts when comparing the same column the link is on. The link
-        // parameter is `Pm-<main>`, so the link column is `<main>`'s column (text after its last `.`).
-        let link_col = param
-            .strip_prefix("Pm-")
-            .unwrap_or(param)
-            .rsplit('.')
-            .next()
-            .unwrap_or("");
-        let field_col = field.rsplit('.').next().unwrap_or(field);
-        if is_equality || field_col == link_col {
-            map.entry(param.to_string())
-                .or_insert_with(|| field.to_string());
-        }
-    }
-}
-
-/// Extract the `u32`-big-endian length-prefixed, NUL-terminated strings from a record leaf (the
-/// operand encoding of a `0x0076` formula record). Scans byte-by-byte, accepting a run only when the
-/// declared length yields a NUL-terminated span of printable text — robust to the variable filler
-/// bytes between operands. Tab/CR/LF are accepted alongside printable ASCII so the multi-line
-/// **formula body** operand (which carries the comparison operators) is captured, not just the
-/// single-token field/parameter operands.
-fn u32_lp_strings(leaf: &[u8]) -> Vec<String> {
-    let printable = |b: u8| (0x20..0x7f).contains(&b) || matches!(b, b'\t' | b'\r' | b'\n');
-    let mut out = Vec::new();
-    let mut i = 0;
-    while i + 4 < leaf.len() {
-        let len = u32::from_be_bytes([leaf[i], leaf[i + 1], leaf[i + 2], leaf[i + 3]]) as usize;
-        if (2..=512).contains(&len) && i + 4 + len <= leaf.len() {
-            let span = &leaf[i + 4..i + 4 + len];
-            if span[len - 1] == 0 && span[..len - 1].iter().all(|&b| printable(b)) {
-                out.push(String::from_utf8_lossy(&span[..len - 1]).into_owned());
-                i += 4 + len;
-                continue;
-            }
-        }
-        i += 1;
-    }
-    out
-}
-
-/// One decoded `0x0106` subreport-link record: the subreport-parameter index the main field feeds,
-/// the `MainReportFieldName`, and the **SubreportFieldName handle** — the `(kind, index)` pair
-/// resolved against the subreport's field pool.
-struct LinkRecord {
-    param_index: u16,
-    main_field: String,
-    /// `(field-kind, pool-index)` from the link record's trailing descriptor: `kind` selects the
-    /// subreport field pool (`0` = database field, `1` = formula), `index` the entry within it.
-    /// `None` when the link carries no distinct subreport field (the short trailing form, or kind
-    /// `0xffff`), in which case `SubreportFieldName` falls back to the link parameter.
-    sf_handle: Option<(u16, u16)>,
-}
-
-/// Each subreport link, grouped by subdocument index. In the main report's `Contents`, every
-/// subreport object (`0xa3`) is followed by one `0x0106` link record per link. The leaf is
-/// `[u16 linked-parameter-index][u32-BE namelen][main-report field name…NUL][trailing descriptor]`:
-/// the leading `u16` is the **subreport parameter index** the main field feeds (the join key that
-/// pairs a link to the auto-created subreport parameter), and the length-prefixed name is the
-/// `MainReportFieldName`. The **trailing descriptor** (when 8+ bytes:
-/// `[main-field-kind/index ×4][u16-BE SF-kind][u16-BE SF-index]`) carries the SubreportFieldName
-/// handle. The engine counts one `Field.UseCount` per link.
-fn subreport_links(contents: &RecordStream) -> std::collections::BTreeMap<u32, Vec<LinkRecord>> {
-    use crate::codec::RecordNode;
-    use std::collections::BTreeMap;
-    const SUBREPORT_OBJECT: u16 = 0xa3;
-    const SUBREPORT_LINK: u16 = 0x0106;
-    let logical = contents.logical_bytes();
-    let mut map: BTreeMap<u32, Vec<LinkRecord>> = BTreeMap::new();
-    let mut current: Option<u32> = None;
-    // Pre-order walk: each `0x0106` belongs to the most recently seen `0xa3` subreport object.
-    fn visit(
-        n: &RecordNode,
-        logical: &[u8],
-        current: &mut Option<u32>,
-        map: &mut BTreeMap<u32, Vec<LinkRecord>>,
-    ) {
-        use crate::bytes::u16_be;
-        if n.rtype == SUBREPORT_OBJECT {
-            *current = crate::bytes::u32_be(&n.leaf_bytes(logical), 0);
-        } else if n.rtype == SUBREPORT_LINK {
-            if let Some(idx) = *current {
-                let lb = n.leaf_bytes(logical);
-                let param_index = u16_be(&lb, 0);
-                if let (Some(param_index), Some(len)) = (
-                    param_index,
-                    crate::bytes::u32_be(&lb, 2).map(|n| n as usize),
-                ) {
-                    if let Some(raw) = lb.get(6..6 + len) {
-                        let end = raw.iter().position(|&b| b == 0).unwrap_or(raw.len());
-                        if end > 0 {
-                            // The SubreportFieldName handle lives in the trailing descriptor after
-                            // the name: SF-kind = BE u16 at `[4..6]`, SF-index = BE u16 at `[6..8]`.
-                            // Absent (short trailing) or `0xffff` → no distinct subreport field.
-                            let trailing = &lb[6 + len..];
-                            let sf_handle = if trailing.len() >= 8 {
-                                let kind = u16_be(trailing, 4).unwrap_or(0);
-                                let index = u16_be(trailing, 6).unwrap_or(0);
-                                (kind != 0xffff).then_some((kind, index))
-                            } else {
-                                None
-                            };
-                            map.entry(idx).or_default().push(LinkRecord {
-                                param_index,
-                                main_field: String::from_utf8_lossy(&raw[..end]).into_owned(),
-                                sf_handle,
-                            });
-                        }
-                    }
-                }
-            }
-        }
-        for c in &n.children {
-            visit(c, logical, current, map);
-        }
-    }
-    for root in contents.record_tree() {
-        visit(&root, logical, &mut current, &mut map);
-    }
-    map
-}
-
-/// Resolve a SubreportFieldName `(kind, index)` handle against the subreport's field pool.
-/// `kind 0` = the index-th **database** field definition → `{table}.{field}`; `kind 1` = the
-/// index-th **formula** → `@{name}`. The pools are `data_definition.field_definitions` filtered by
-/// kind, in stored order. Other kinds (group, summary, …) are not yet mapped and return `None`
-/// (the caller falls back).
-fn resolve_sf_handle(report: &crate::model::Report, kind: u16, index: u16) -> Option<String> {
-    use crate::model::FieldKindData;
-    let idx = index as usize;
-    match kind {
-        0 => {
-            let fd = report
-                .data_definition
-                .field_definitions
-                .iter()
-                .filter(|f| matches!(f.kind, FieldKindData::Database(_)))
-                .nth(idx)?;
-            // Qualify with the table: the DB field's own `table_alias` if present, else the table in
-            // the database whose field list contains this name (single-table subreports are exact;
-            // first match otherwise).
-            let table = match &fd.kind {
-                FieldKindData::Database(db) if !db.table_alias.is_empty() => {
-                    Some(db.table_alias.clone())
-                }
-                _ => report
-                    .database
-                    .tables
-                    .iter()
-                    .find(|t| t.data_fields.iter().any(|d| d.name == fd.name))
-                    .map(|t| {
-                        if t.alias.is_empty() {
-                            t.name.clone()
-                        } else {
-                            t.alias.clone()
-                        }
-                    }),
-            };
-            Some(match table {
-                Some(t) => format!("{t}.{}", fd.name),
-                None => fd.name.clone(),
-            })
-        }
-        1 => {
-            let fd = report
-                .data_definition
-                .field_definitions
-                .iter()
-                .filter(|f| matches!(f.kind, FieldKindData::Formula(_)))
-                .nth(idx)?;
-            Some(format!("@{}", fd.name))
-        }
-        _ => None,
-    }
-}
-
 /// The subreport's friendly name, read from its `Subdocument`'s report-header record (`0x0064`):
 /// leaf bytes `[7..11]` hold a big-endian `u32` length, then a NUL-terminated string (the NUL is
 /// included in the length). Returns empty if absent.
 fn subreport_name_from_contents(contents: &RecordStream) -> String {
-    const REPORT_HEADER: u16 = 0x0064;
     let logical = contents.logical_bytes();
     for root in contents.record_tree() {
         if root.rtype == REPORT_HEADER {

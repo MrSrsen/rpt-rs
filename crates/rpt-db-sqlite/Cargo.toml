@@ -1,0 +1,25 @@
+[package]
+name = "rpt-db-sqlite"
+description = "In-process SQLite RowSource for the rpt-data pipeline — generates SQL from a report's table schema and executes it against a bundled SQLite (native-only, zero external processes)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+rpt-model = { workspace = true, features = ["serde"] }
+rpt-data = { workspace = true }
+rpt-query = { workspace = true }
+rusqlite = { version = "0.32", features = ["bundled"] }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+crystal-formula = { workspace = true }
+
+[lints]
+workspace = true
