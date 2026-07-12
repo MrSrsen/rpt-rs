@@ -99,7 +99,7 @@ pub(crate) fn area_chart(
                 &src,
             ));
         }
-        if i as usize % stride == 0 {
+        if (i as usize).is_multiple_of(stride) {
             ops.push(category_label(&f, i, label, &src));
         }
     }

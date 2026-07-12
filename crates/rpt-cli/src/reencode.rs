@@ -98,7 +98,7 @@ fn parse_hex(s: &str) -> Option<Vec<u8>> {
         .strip_prefix("0x")
         .or_else(|| s.strip_prefix("0X"))
         .unwrap_or(s);
-    if s.is_empty() || s.len() % 2 != 0 {
+    if s.is_empty() || !s.len().is_multiple_of(2) {
         return None;
     }
     (0..s.len())

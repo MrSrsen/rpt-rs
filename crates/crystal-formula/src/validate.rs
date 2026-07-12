@@ -379,7 +379,7 @@ fn arity_error(name: &str, id: u16, n: usize) -> Option<String> {
     };
     match super::types::return_rule(id) {
         R::Iif => (n != 3).then(|| format!("`{name}` expects 3 arguments, got {n}")),
-        R::Switch => (n < 2 || n % 2 != 0)
+        R::Switch => (n < 2 || !n.is_multiple_of(2))
             .then(|| format!("`{name}` expects an even number of arguments (≥2), got {n}")),
         R::Choose => too_few(2),
         R::AggNumeric | R::MaxMinArg | R::DeArray | R::CopyArg => too_few(1),

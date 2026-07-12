@@ -147,7 +147,7 @@ pub(crate) fn decode_batch_at(
 
 /// The 4-byte zlib flag bytes that follow a `0x78` CMF byte (`(0x7800 | FLG) % 31 == 0`).
 fn is_zlib_flag(second: u8) -> bool {
-    (0x7800u16 | second as u16) % 31 == 0
+    (0x7800u16 | second as u16).is_multiple_of(31)
 }
 
 /// Cheap block-0 zlib-header gate: decrypt the first two bytes with `iv`'s keystream and test for a
