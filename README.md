@@ -2,7 +2,7 @@
   <img src="docs/rpt-rs.png" alt="rpt-rs logo" width="180" />
   <p>
     <a href="LICENSE"><img alt="License: MPL-2.0" src="https://img.shields.io/badge/license-MPL--2.0-blue.svg"></a>
-    <img alt="Rust 1.85+" src="https://img.shields.io/badge/rust-1.85%2B-orange.svg">
+    <img alt="Rust 1.89+" src="https://img.shields.io/badge/rust-1.89%2B-orange.svg">
   </p>
 </div>
 

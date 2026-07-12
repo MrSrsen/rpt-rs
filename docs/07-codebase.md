@@ -143,6 +143,6 @@ Every consumer that needs the formula engine (`rpt-data`, `rpt-layout`, `rpt-que
 ## Conventions
 
 - The `rpt` crate forbids `unsafe` code.
-- The minimum supported Rust version is 1.85.
+- The minimum supported Rust version is 1.89.
 - Dependencies are deliberately minimal: the CFB container, a zlib inflater, an XML writer, an error derive, and serde
   for the CLI's JSON output. The cipher is implemented in-crate with no cryptography dependency.

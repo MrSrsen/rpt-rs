@@ -72,7 +72,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       # Verify the crate still builds on its declared minimum supported Rust version.
-      - uses: dtolnay/rust-toolchain@1.85.0
+      - uses: dtolnay/rust-toolchain@1.89.0
       - name: Build (MSRV)
         run: cargo build --all-features
 

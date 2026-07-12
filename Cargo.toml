@@ -32,7 +32,7 @@ repository = "https://github.com/MrSrsen/rpt-rs"
 readme = "README.md"
 keywords = ["crystal-reports", "rpt", "parser", "report", "renderer"]
 categories = ["parser-implementations", "encoding"]
-rust-version = "1.85"
+rust-version = "1.89"
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

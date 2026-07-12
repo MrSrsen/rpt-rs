@@ -4,7 +4,7 @@ Thanks for your interest in improving rpt-rs. This document covers how to build,
 
 ## Getting started
 
-You need a Rust toolchain (the minimum supported version is **1.85**). Then:
+You need a Rust toolchain (the minimum supported version is **1.89**). Then:
 
 ```sh
 cargo build            # build the workspace
