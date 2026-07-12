@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+TBD.
+
+## [0.2.0]
+
 This release turns `rpt-rs` from a reader/exporter into a full reporting engine: a complete render pipeline
 (data → layout → Page IR → HTML/SVG/PDF/PNG), a formula evaluator, live-database support, saved-data decoding,
 a byte-faithful writer, and the test corpus to validate it all against the native Crystal engine.
