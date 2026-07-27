@@ -53,7 +53,7 @@ impl StreamId {
         let comps: Vec<String> = path
             .components()
             .filter_map(|c| c.as_os_str().to_str().map(str::to_owned))
-            .filter(|s| !s.is_empty() && s != "/")
+            .filter(|s| !s.is_empty() && s != "/" && s != "\\")
             .collect();
 
         let Some(top) = comps.first() else {
@@ -159,5 +159,17 @@ mod tests {
             id("/Embedding 1/CONTENTS"),
             StreamId::Embedding("Embedding 1/CONTENTS".into())
         );
+    }
+
+    /// The OLE root component is platform-dependent: `Path::components()`
+    /// renders it as `/` on Unix but `\` on Windows. Both must be dropped, or
+    /// every top-level stream gains a phantom leading component, takes the
+    /// nested-entry branch, and is misclassified as `Other` — which on Windows
+    /// left `Contents` unrecognised and nothing decodable.
+    #[test]
+    fn root_component_is_dropped_on_every_platform() {
+        for path in ["/Contents", r"\Contents", "Contents"] {
+            assert_eq!(id(path), StreamId::Contents, "path {path:?}");
+        }
     }
 }
