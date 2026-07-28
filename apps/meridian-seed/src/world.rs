@@ -331,8 +331,8 @@ impl World {
     /// A synthetic person name: `(first, last)`.
     pub(crate) fn person(&mut self) -> (&'static str, &'static str) {
         (
-            self.rng.pick(pools::FIRST_NAMES),
-            self.rng.pick(pools::LAST_NAMES),
+            *self.rng.pick(pools::FIRST_NAMES),
+            *self.rng.pick(pools::LAST_NAMES),
         )
     }
 

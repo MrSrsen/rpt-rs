@@ -6,7 +6,18 @@
 
 [advisories]
 # Fail on any RUSTSEC vulnerability. Add advisory IDs here to record a reviewed, time-boxed waiver.
-ignore = []
+ignore = [
+  # `rustybuzz` is unmaintained (no vulnerability). It is a transitive dependency of krilla's
+  # `simple-text` feature, which is how the PDF backend shapes text; there is no version of krilla
+  # that drops it. Upstream's replacement is harfrust, which krilla has not migrated to. Nothing we
+  # can fix from here — waived until krilla switches shapers.
+  "RUSTSEC-2026-0206",
+  # `ttf-parser` is unmaintained (no vulnerability). Reached twice and only transitively: fontdb /
+  # rustybuzz pull 0.25, fontdue pulls 0.21. Both are font parsing in dependencies we do not
+  # control, and the replacement (skrifa) is an upstream migration, not ours. Waived until the font
+  # stack's dependencies move.
+  "RUSTSEC-2026-0192",
+]
 # A dependency pinned to a yanked crates.io release is a warning, not a hard failure.
 yanked = "warn"
 

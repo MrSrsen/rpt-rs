@@ -27,13 +27,34 @@
 //! `CharacterSpacing`) are tracked as their own tickets. A baseline changing when one of those is
 //! implemented is the expected, correct signal — re-bless it then.
 //!
-//! Like the other committed render baselines, these are blessed against the project's font
-//! environment: text geometry comes from the host font stack via `rpt-text`, so a machine with a
-//! different set of installed faces will legitimately differ.
+//! Unlike the data-driven baselines, this harness renders through a **bundled-only font stack**
+//! ([`FontProvider::bundled`]) rather than the host's fonts. Text geometry comes from whichever face
+//! a family resolves to, so rendering `font_faces` against the OS font registry pins the blessing
+//! machine's installed faces into the baseline — the same commit then passes on a developer box with
+//! the MS core fonts and fails on a bare CI runner without them, which is an environment artifact
+//! rather than a render regression. The compiled-in Liberation/DejaVu set is identical everywhere, so
+//! these baselines mean the same thing on every machine (and are the stack a WASM host runs anyway).
+//!
+//! The trade-off is that `font_faces` currently exercises the *fallback* path rather than face
+//! variety: [`CosmicLayout`] routes any family that is not in the DB through the sans-serif generic,
+//! so with only the bundled faces loaded, `Times New Roman` and `Courier New` resolve to Liberation
+//! Sans instead of the metric-compatible Liberation Serif/Mono. Fixing that mapping is tracked
+//! separately; it will move these baselines, and that diff is the point.
+
+// The baselines are font-accurate geometry, so they only mean anything against the cosmic-text
+// stack; without it there is no `CosmicLayout` to pin and the harness compiles away.
+#![cfg(feature = "cosmic")]
 
 use std::path::{Path, PathBuf};
 
+use rpt_data::EmptySource;
+use rpt_render::{CosmicLayout, DateTimeSpecials, FontProvider, HtmlBackend, HtmlOptions, Locale};
 use rpt_test_support::workspace_root;
+
+/// A frozen as-of instant, so a fixture that reads `CurrentDate`/`CurrentTime` cannot make the
+/// baseline depend on the wall clock. (The typography fixtures are static text today; this keeps a
+/// future one honest.)
+const AS_OF_UNIX: i64 = 1_700_000_000;
 
 /// Fixture directory, relative to the workspace root.
 const REPORTS: &str = "tests/fixtures/reports/typography";
@@ -106,9 +127,21 @@ fn typography_render_matches_baselines() {
         let rpt = rpt::Rpt::open(path).expect("open typography fixture");
         let report = rpt.report();
 
+        // Render once, through the hermetic font stack, and serialize that one document both ways —
+        // so the HTML and the Page IR always describe the same render (rather than two renders that
+        // could, in principle, disagree).
+        let dataset = rpt_data::build_dataset(&EmptySource, &report.data_definition);
+        let doc = rpt_render::render_dataset_with(
+            report,
+            &dataset,
+            Box::new(CosmicLayout::new(FontProvider::bundled())),
+            Locale::default(),
+            None,
+            Some(DateTimeSpecials::from_unix_seconds(AS_OF_UNIX)),
+        );
+
         // These fixtures bind no datasource, so a page must still be produced from the static text
         // alone — a zero-page render would make both baselines vacuously "match".
-        let doc = rpt_render::render(report);
         assert!(
             !doc.pages.is_empty(),
             "{name}: data-free report produced no pages"
@@ -118,15 +151,18 @@ fn typography_render_matches_baselines() {
             "{name}: rendered pages carry no draw-ops"
         );
 
-        let html = rpt_render::render_html(report).replace("\r\n", "\n");
+        let html =
+            rpt_render::render_backend(&doc, &HtmlBackend, &HtmlOptions).replace("\r\n", "\n");
         if let Some(d) = check(name, &html_dir.join(format!("{name}.html")), &html, bless) {
             failures.push(d);
         }
 
         // One JSON document per page, concatenated with a page marker so a page count change is a
         // visible diff rather than a silently truncated comparison.
-        let ir = rpt_render::render_ir_json(report)
+        let ir = doc
+            .pages
             .iter()
+            .map(|p| p.to_normalized_json())
             .enumerate()
             .map(|(i, p)| format!("// page {}\n{p}\n", i + 1))
             .collect::<String>();

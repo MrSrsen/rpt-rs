@@ -38,6 +38,19 @@ impl FontProvider {
         }
     }
 
+    /// The bundled fallback faces only — no OS fonts, no local dirs. Every family a report names
+    /// resolves through the generic defaults to a compiled-in Liberation face, so the same report
+    /// lays out **identically on every machine**. That makes it the right stack for a WASM host with
+    /// no font registry, a minimal container, and any render whose geometry is compared against a
+    /// committed baseline (where a difference in the host's installed faces would otherwise read as
+    /// a layout regression).
+    pub fn bundled() -> FontProvider {
+        FontProvider {
+            local_dirs: Vec::new(),
+            use_system_fonts: false,
+        }
+    }
+
     /// Local override dirs plus the OS fonts (the recommended deployment default: pinned report
     /// fonts win, but the system library is still available).
     pub fn from_font_dirs(dirs: impl IntoIterator<Item = PathBuf>) -> FontProvider {
