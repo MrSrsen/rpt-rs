@@ -2,11 +2,11 @@
 //! batch, so each index batch is decoded with its own on-disk `item_size` and per-column slot
 //! widths resolved from its `0x6d` directory entry's column table.
 
-use crate::codec::tree::{parse_tree_qe, RecordNode};
+use crate::codec::tree::RecordNode;
 use crate::model::FieldValueType;
 
 use super::crack::decode_batch_at;
-use super::schema::{SavedFieldDesc, INDEX_BATCH_SIZE};
+use super::schema::{dsm_batch_leaves, SavedFieldDesc, INDEX_BATCH_SIZE};
 
 /// How a saved inline field is stored on disk in a packed record, from its declared value type:
 /// a variable UTF-16LE string, or a fixed-width little-endian scalar of a given byte size read as a
@@ -158,60 +158,34 @@ struct PackedBatchLayout {
 /// the per-string boundaries are `col_table[3k + 2]`. Entries with a zero `item_size` (memo-value
 /// batches) are skipped. Used only for the memo-less packed path (all `0x6d` entries are index
 /// batches there).
-fn packed_index_layouts(dsm_logical: &[u8]) -> Vec<PackedBatchLayout> {
+fn packed_index_layouts(tree: &[RecordNode], logical: &[u8]) -> Vec<PackedBatchLayout> {
     let be32 = |b: &[u8]| u32::from_be_bytes([b[0], b[1], b[2], b[3]]);
-    let tree = parse_tree_qe(dsm_logical);
-    let mut out = Vec::new();
-    fn walk(
-        n: &RecordNode,
-        lg: &[u8],
-        out: &mut Vec<PackedBatchLayout>,
-        be32: &impl Fn(&[u8]) -> u32,
-    ) {
-        if n.rtype == 0x6d {
-            let leaf = n.leaf_bytes(lg);
-            if leaf.len() >= 18 {
-                let item_size = be32(&leaf[4..8]);
-                if item_size > 0 && item_size < 0x1_0000 {
-                    let count = be32(&leaf[0..4]);
-                    let n_entries = u16::from_be_bytes([leaf[16], leaf[17]]) as usize;
-                    let mut next_offsets = Vec::with_capacity(n_entries / 3);
-                    for k in 0..n_entries / 3 {
-                        let off = 18 + (3 * k + 2) * 4;
-                        if off + 4 <= leaf.len() {
-                            next_offsets.push(be32(&leaf[off..off + 4]) as usize);
-                        }
-                    }
-                    out.push(PackedBatchLayout {
-                        count,
-                        item_size,
-                        next_offsets,
-                    });
+    dsm_batch_leaves(tree, logical)
+        .into_iter()
+        .filter_map(|leaf| {
+            if leaf.len() < 18 {
+                return None;
+            }
+            let item_size = be32(&leaf[4..8]);
+            if !(item_size > 0 && item_size < 0x1_0000) {
+                return None;
+            }
+            let count = be32(&leaf[0..4]);
+            let n_entries = u16::from_be_bytes([leaf[16], leaf[17]]) as usize;
+            let mut next_offsets = Vec::with_capacity(n_entries / 3);
+            for k in 0..n_entries / 3 {
+                let off = 18 + (3 * k + 2) * 4;
+                if off + 4 <= leaf.len() {
+                    next_offsets.push(be32(&leaf[off..off + 4]) as usize);
                 }
             }
-        }
-        for c in &n.children {
-            walk(c, lg, out, be32);
-        }
-    }
-    fn under_2d(
-        n: &RecordNode,
-        lg: &[u8],
-        out: &mut Vec<PackedBatchLayout>,
-        be32: &impl Fn(&[u8]) -> u32,
-    ) {
-        if n.rtype == 0x2d {
-            walk(n, lg, out, be32);
-        } else {
-            for c in &n.children {
-                under_2d(c, lg, out, be32);
-            }
-        }
-    }
-    for r in &tree {
-        under_2d(r, dsm_logical, &mut out, &be32);
-    }
-    out
+            Some(PackedBatchLayout {
+                count,
+                item_size,
+                next_offsets,
+            })
+        })
+        .collect()
 }
 
 /// Resolve one packed batch's on-disk layout: per-field slot widths, per-field on-disk read kind
@@ -285,13 +259,14 @@ fn packed_ondisk_layout(
 /// IV. Batches sit back-to-back in `SavedRecordsStream` (walked by consumed length, IV tail = the
 /// 0-based batch sequence). Returns `(rows, record_count)`; `None` when nothing decodes.
 pub(crate) fn decode_packed_index(
+    tree: &[RecordNode],
     dsm_logical: &[u8],
     srs_raw: &[u8],
     schema: &[SavedFieldDesc],
     field_types: &[FieldValueType],
     persistent: usize,
 ) -> Option<(Vec<Vec<Option<String>>>, u32)> {
-    let layouts = packed_index_layouts(dsm_logical);
+    let layouts = packed_index_layouts(tree, dsm_logical);
     let mut rows: Vec<Vec<Option<String>>> = Vec::new();
     let mut record_count = 0u32;
     let mut cursor = 0usize;

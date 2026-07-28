@@ -5,6 +5,7 @@
 //! the original framing (the `raw` safety net) for any record type not yet delimited
 //! canonically.
 
+mod aes128;
 mod archive;
 mod crypto;
 mod digest;
@@ -20,8 +21,8 @@ pub(crate) use archive::ReadArchive;
 pub(crate) use digest::md5_base64;
 pub use header::StreamHeader;
 pub(crate) use saved::{
-    decode_index_stream, decode_saved_rows, index_directory, inspect_saved_batches,
-    saved_iv_search, saved_record_count, saved_schema, SavedFieldDesc,
+    decode_index_stream, decode_saved_data, index_directory, inspect_saved_batches,
+    saved_record_count, saved_schema,
 };
 pub(crate) use tile::{tile, TiledRecord};
 pub use tree::RecordNode;
@@ -42,9 +43,25 @@ pub(crate) fn decode_stream_header(bytes: &[u8]) -> Result<StreamHeader> {
 pub(crate) fn decode_contents(bytes: &[u8]) -> Result<Vec<u8>> {
     let mut archive = ReadArchive::new(bytes);
     let header = archive.load_stream_header()?;
-    let body = &bytes[archive.top_record_end()..];
+    // The payload starts where the header record's own declared length ends — a length read from the
+    // stream, so on a damaged or non-report stream it can point past the end. Report that as a
+    // decode error rather than slicing out of bounds.
+    let body_start = archive.top_record_end();
+    let body = bytes.get(body_start..).ok_or_else(|| {
+        CodecError::new(format!(
+            "the stream header declares a payload starting at {body_start}, past the end of the \
+             {}-byte stream",
+            bytes.len()
+        ))
+        .at(body_start)
+    })?;
 
     let deflate = if header.is_encrypted {
+        // The header's `useFixed` flag is deliberately NOT consulted here: the engine ignores it too.
+        // The cipher always uses the same universal built-in key regardless of the flag — a report
+        // whose only change is `useFixed` cleared to 0 opens normally in the designer, with no
+        // password prompt. Branching on the flag here would make us refuse a file the engine reads
+        // happily.
         let iv: [u8; 16] = header.iv.as_slice().try_into().map_err(|_| {
             CryptoError::new(
                 "stream header",
@@ -57,9 +74,39 @@ pub(crate) fn decode_contents(bytes: &[u8]) -> Result<Vec<u8>> {
     };
 
     miniz_oxide::inflate::decompress_to_vec_zlib(&deflate).map_err(|e| {
-        CodecError::new(format!("zlib inflate of Contents payload failed: {e:?}"))
-            .in_stream("Contents")
-            .into()
+        // An encrypted stream that decrypts to non-zlib data almost always means the payload was not
+        // keyed with the universal built-in key. Crystal itself never produces such a file — but a
+        // third-party application with its own copy of the encryption library can key a report under
+        // its own key and round-trip it, and those are unreadable here because that key lives in the
+        // application, not in the file. Say so, instead of blaming zlib for a key problem.
+        //
+        // The header's `useFixed` flag is reported as a hint but is NOT the test: it and the key are
+        // independent setters, so a foreign key can perfectly well arrive with the flag still set.
+        if header.is_encrypted {
+            let hint = if header.use_fixed_key {
+                "the header claims the built-in key"
+            } else {
+                "the header declares a non-built-in key (useFixed = 0)"
+            };
+            return CryptoError::new(
+                "Contents",
+                format!(
+                    "decrypted payload is not zlib data ({hint}) — the stream is most likely \
+                     encrypted with a key this reader does not have. Crystal never writes such a \
+                     file; a third-party application with its own copy of the encryption key can, \
+                     and that key is not stored in the report. Underlying inflate status: {:?}",
+                    e.status
+                ),
+            )
+            .into();
+        }
+        // `DecompressError`'s Debug carries the whole partial output buffer — log only the status.
+        CodecError::new(format!(
+            "zlib inflate of Contents payload failed: {:?}",
+            e.status
+        ))
+        .in_stream("Contents")
+        .into()
     })
 }
 

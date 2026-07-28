@@ -1,0 +1,24 @@
+[package]
+name = "rpt-json"
+description = "Export a Crystal Reports .rpt file to an exhaustive, deterministic JSON document — the decode regression surface"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+# The decoder + its re-exported model (`rpt::model`); `serde` enables the model's derives the dump
+# serializes through. The dump is a pure projection of the model, so nothing else is needed — no
+# formula engine, no locale/format layer.
+rpt = { workspace = true, features = ["serde"] }
+serde.workspace = true
+serde_json.workspace = true
+thiserror = { workspace = true }
+
+[lints]
+workspace = true

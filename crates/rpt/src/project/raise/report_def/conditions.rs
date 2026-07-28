@@ -24,7 +24,7 @@ pub(in crate::project::raise) fn condition_formula_bodies(
             continue;
         };
         if let Some((name, _)) = read_lp_string(&n.leaf_bytes(logical)) {
-            if cond_attr(&name).is_some() {
+            if is_modeled_condition(&name) {
                 map.insert(idx, (name, body));
             }
         }
@@ -41,30 +41,45 @@ pub(super) fn cond_formula_body(node: &RecordNode, logical: &[u8]) -> String {
     longest_lp(&node.leaf_bytes(logical)).unwrap_or_default()
 }
 
-/// Map a reserved conditional-format formula name to the XML attribute emitted for it (on the
-/// element selected by the owning record type). Only mapped properties carry an emitted attribute;
-/// other reserved names carry none.
-pub(super) fn cond_attr(name: &str) -> Option<&'static str> {
-    Some(match name {
-        "Object_Visibility" | "Section_Visibility" => "EnableSuppress",
-        "Section_Back_Color" | "Background_Color" | "Back_Color" => "BackgroundColor",
-        "New_Page_After" => "EnableNewPageAfter",
-        "Font_Color" => "Color",
-        "Font_Style" => "Style",
-        // Display-string format formula on a field/text object's `0xfd` condition slots.
-        "Display_String" => "DisplayString",
-        // Dynamic-image location formula on a PictureObject's `0xfd` condition slots.
-        "Graphic_Location" => "GraphicLocation",
-        // Border foreground colour condition formula (lives on the `0xed` border wrapper, alongside
-        // `Back_Color` → BackgroundColor). The border's *foreground* is its line/border colour.
-        "Fore_Color" => "BorderColor",
-        _ => return None,
-    })
+/// The reserved conditional-format formula names this reader carries onto the model — the full set
+/// the engine exposes as an editable per-property condition on an object, section, font or border.
+/// Each corresponds to a member of one of the SDK `Cr…ConditionFormulaTypeEnum` vocabularies (object
+/// visibility/display-string/graphic-location; section visibility/new-page-before/after/keep-together/
+/// suppress-if-blank/reset-page-number/underlay/print-at-bottom/background; font colour/style; border
+/// colours). A slot naming a string outside this reserved set is not carried (it is not a condition
+/// slot). These are the stored formula names as they appear in the bytes; how (and whether) each maps
+/// to an output surface is the consumer's concern.
+pub(super) fn is_modeled_condition(name: &str) -> bool {
+    matches!(
+        name,
+        // object-format conditions
+        "Object_Visibility"
+            | "Display_String"
+            | "Graphic_Location"
+            // section-area conditions
+            | "Section_Visibility"
+            | "New_Page_After"
+            | "New_Page_Before"
+            | "Reset_Page_Number_After"
+            | "Keep_Together"
+            | "Suppress_if_Blank"
+            | "Underlay_Following_Sections"
+            | "Print_at_Bottom_of_Page"
+            | "Hide_for_Drilldown"
+            | "Section_Back_Color"
+            | "Background_Color"
+            | "Back_Color"
+            // font-colour conditions
+            | "Font_Color"
+            | "Font_Style"
+            // border conditions
+            | "Fore_Color"
+    )
 }
 
 /// The conditional-format formula references (`@<name>`, with the `@` stripped) carried by an
 /// object/section condition-slot record (`0xfd`/`0xff`/`0x0101`): an occupied slot inlines a
-/// length-prefixed `@`-name, an empty one is a fixed sentinel. Only references to mapped reserved
+/// length-prefixed `@`-name, an empty one is a fixed sentinel. Only references to modeled reserved
 /// names are returned, in record order.
 pub(super) fn condition_refs(node: &RecordNode, logical: &[u8]) -> Vec<(String, usize)> {
     let bytes = node.leaf_bytes(logical);
@@ -73,18 +88,16 @@ pub(super) fn condition_refs(node: &RecordNode, logical: &[u8]) -> Vec<(String, 
     while i + 4 <= bytes.len() {
         if let Some((s, consumed)) = read_lp_string(&bytes[i..]) {
             if let Some(name) = s.strip_prefix('@') {
-                if cond_attr(name).is_some() {
-                    // After the `@name` LP-string: a u16 LE syntax word, then the global formula
-                    // index. The index width differs by owner (`0xfd` object slots leave a 2-byte
-                    // index; `0xed` border slots leave a 1-byte index immediately abutting the next
-                    // slot's length prefix), so the per-slot stride is NOT fixed. Read the index from
-                    // the +2..+4 window (the small index value sits in the low byte regardless), then
-                    // advance only past the string and let the byte-scan find the next `@`-name —
-                    // never assume a trailer width, or a short index would skip the following slot.
-                    // The index is a little-endian value at `+2` (low) / `+3` (high). Read it
-                    // byte-wise with missing bytes = 0, not as a fixed 2-byte slice: a slot that ends
-                    // the record (a 1-byte index as the leaf's last byte) has no `+3` byte, so a
-                    // slice read would fail out-of-bounds and default the index to 0.
+                if is_modeled_condition(name) {
+                    // Occupied slot layout: [u32 BE nameLen]['@'+name+NUL][u16 LE syntax = 0x0001]
+                    // [index], so the formula index's low byte sits at `string_end + 2`. The index's
+                    // byte width is the one owner-dependent detail: `0xfd` object slots store a
+                    // 2-byte (u16 LE) index; `0xed` border slots store a 1-byte index abutting the
+                    // next slot's u32-BE length prefix — but that prefix's leading byte is `0x00`, so
+                    // the value read at `+3` is `0x00` either way. Reading the index as a u16 LE at
+                    // `+2`/`+3` is therefore exact for both; advance only past the string and let the
+                    // byte-scan re-anchor on the next `@`-name rather than assume a trailer width
+                    // (missing bytes read as 0, since a 1-byte index at the leaf's end has no `+3`).
                     let lo = bytes.get(i + consumed + 2).copied().unwrap_or(0);
                     let hi = bytes.get(i + consumed + 3).copied().unwrap_or(0);
                     let fml_idx = usize::from(u16::from_le_bytes([lo, hi]));
@@ -99,18 +112,19 @@ pub(super) fn condition_refs(node: &RecordNode, logical: &[u8]) -> Vec<(String, 
     refs
 }
 
-/// Resolve each condition reference on an owner record to its `(attribute, formula text)` pair,
+/// Resolve each condition reference on an owner record to its `(reserved name, formula text)` pair,
 /// picking the exact formula body by the slot's global formula index. An empty body means the slot
-/// referenced a placeholder, so it is skipped (emitting `attr=""` would be a wrong value).
+/// referenced a placeholder, so it is skipped (carrying an empty formula would be a wrong value).
+/// The key is the stored reserved formula name (`refs` is already filtered to modeled names).
 pub(super) fn resolve_conditions(
     refs: &[(String, usize)],
     bodies: &BTreeMap<usize, (String, String)>,
 ) -> Vec<(String, String)> {
     let mut out = Vec::new();
     for (name, fml_idx) in refs {
-        if let (Some(attr), Some((_, body))) = (cond_attr(name), bodies.get(fml_idx)) {
+        if let Some((_, body)) = bodies.get(fml_idx) {
             if !body.is_empty() {
-                out.push((attr.to_string(), body.clone()));
+                out.push((name.clone(), body.clone()));
             }
         }
     }

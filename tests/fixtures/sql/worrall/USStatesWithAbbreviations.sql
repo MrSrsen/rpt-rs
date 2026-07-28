@@ -1,5 +1,5 @@
 -- Fixture for worrall_USStatesWithAbbreviations.rpt (PUBLIC; worrallbrian/crystal_reports).
--- SYNTHETIC invented "province" rows (nothing real, nothing from samples/). Portable DDL seeds both
+-- SYNTHETIC invented "province" rows (nothing real). Portable DDL seeds both
 -- the SQLite test DB and the postgres DB the Crystal engine re-queries. Table/columns match the report's
 -- stored ODBC bindings (table `provinces_all`: id/country_id Int32s; name_short/name_long text).
 -- NOTE: the report's stored RecordSelectionFormula is `{provinces_all.country_id} = 2`, which

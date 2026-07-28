@@ -2,16 +2,23 @@
 //! field catalog — the stored facts about how the cached rows are laid out.
 
 use crate::codec::tree::{parse_tree_qe, RecordNode};
+use crate::records::rtype::{
+    DSM_BATCH_ENTRY, DSM_FIELD_CONTAINER, DSM_FIELD_DESC, DSM_FIELD_HEADER, DSM_STRUCTURE,
+};
 
 /// Batch size (row capacity) of the record-index batch (`SavedRecordsStream`) — a fixed 1000-row cap.
 pub(crate) const INDEX_BATCH_SIZE: u32 = 1000;
+
+/// Fixed byte width of one memo-descriptor cell: `[u16 col][u16 flag][u32 heap_offset][u32 byte_length]`.
+pub(crate) const MEMO_CELL_SIZE: u32 = 12;
 
 /// The byte budget a memo-descriptor batch fills: its row capacity (the IV's first
 /// word) is `DESC_BATCH_BYTE_BUDGET / item_size` (e.g. an item size of 72 gives a row capacity of
 /// 142).
 pub(crate) const DESC_BATCH_BYTE_BUDGET: u32 = 10224;
 
-/// One saved-data batch descriptor from the `DataSourceManager` directory.
+/// One saved-data batch descriptor from the `DataSourceManager` directory: row `count` and fixed
+/// per-item byte width.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct BatchDesc {
     /// Number of items (records) in the batch.
@@ -20,42 +27,70 @@ pub(crate) struct BatchDesc {
     pub item_size: u32,
 }
 
-/// Parse the saved-data batch directory from a decoded `DataSourceManager` stream. Returns the batch
-/// headers in file order, or empty when the stream carries no saved-data structure.
-pub(crate) fn batch_directory(dsm_logical: &[u8]) -> Vec<BatchDesc> {
-    let tree = parse_tree_qe(dsm_logical);
-    let mut out = Vec::new();
-    fn walk(n: &RecordNode, lg: &[u8], out: &mut Vec<BatchDesc>) {
-        // Batch headers are `0x6d` records: `count` (big-endian u32) at [0..4], `item_size` at [4..8].
-        if n.rtype == 0x6d {
-            let leaf = n.leaf_bytes(lg);
-            if leaf.len() >= 8 {
-                let count = u32::from_be_bytes([leaf[0], leaf[1], leaf[2], leaf[3]]);
-                let item_size = u32::from_be_bytes([leaf[4], leaf[5], leaf[6], leaf[7]]);
-                // A batch header has a positive item width; guard against spurious `0x6d` matches.
-                if item_size > 0 && item_size < 0x1_0000 && count < 0x0100_0000 {
-                    out.push(BatchDesc { count, item_size });
-                }
-            }
+/// The leaf bytes of every batch-directory entry (`0x6d`) under a saved-records structure record
+/// (`0x2d`) in a parsed `DataSourceManager` tree, in file order. The one traversal the batch-directory
+/// readers share; callers parse the tree once and thread it in.
+pub(crate) fn dsm_batch_leaves(tree: &[RecordNode], logical: &[u8]) -> Vec<Vec<u8>> {
+    fn collect(n: &RecordNode, lg: &[u8], out: &mut Vec<Vec<u8>>) {
+        if n.rtype == DSM_BATCH_ENTRY {
+            out.push(n.leaf_bytes(lg));
         }
         for c in &n.children {
-            walk(c, lg, out);
+            collect(c, lg, out);
         }
     }
-    // Batch headers live under the saved-records structure record (`0x2d`).
-    fn under_2d(n: &RecordNode, lg: &[u8], out: &mut Vec<BatchDesc>) {
-        if n.rtype == 0x2d {
-            walk(n, lg, out);
+    // Batch entries live under the saved-records structure record (`0x2d`).
+    fn under_structure(n: &RecordNode, lg: &[u8], out: &mut Vec<Vec<u8>>) {
+        if n.rtype == DSM_STRUCTURE {
+            collect(n, lg, out);
         } else {
             for c in &n.children {
-                under_2d(c, lg, out);
+                under_structure(c, lg, out);
             }
         }
     }
-    for r in &tree {
-        under_2d(r, dsm_logical, &mut out);
+    let mut out = Vec::new();
+    for r in tree {
+        under_structure(r, logical, &mut out);
     }
     out
+}
+
+/// Read a batch entry leaf's `count` (big-endian u32 at `[0..4]`) and `item_size` (`[4..8]`).
+fn batch_desc(leaf: &[u8]) -> Option<BatchDesc> {
+    (leaf.len() >= 8).then(|| BatchDesc {
+        count: u32::from_be_bytes([leaf[0], leaf[1], leaf[2], leaf[3]]),
+        item_size: u32::from_be_bytes([leaf[4], leaf[5], leaf[6], leaf[7]]),
+    })
+}
+
+/// The saved-data batch directory, guarded: every `0x6d` entry whose `item_size` is a plausible
+/// positive width (dropping spurious matches). Returns the entries in file order.
+pub(crate) fn batch_directory(tree: &[RecordNode], logical: &[u8]) -> Vec<BatchDesc> {
+    dsm_batch_leaves(tree, logical)
+        .into_iter()
+        .filter_map(|leaf| batch_desc(&leaf))
+        .filter(|b| b.item_size > 0 && b.item_size < 0x1_0000 && b.count < 0x0100_0000)
+        .collect()
+}
+
+/// The full saved-data batch directory (unguarded): every `0x6d` entry in file order — index batches
+/// (`item_size` = the fixed record width), then memo-descriptor batches (`item_size` =
+/// `memo_cols * MEMO_CELL_SIZE`), then memo-value batches (`item_size` = 0).
+pub(crate) fn saved_batches(tree: &[RecordNode], logical: &[u8]) -> Vec<BatchDesc> {
+    dsm_batch_leaves(tree, logical)
+        .into_iter()
+        .filter_map(|leaf| batch_desc(&leaf))
+        .collect()
+}
+
+/// The full `0x6d` directory-entry leaves (each `>= 8` bytes), in the same order as [`saved_batches`].
+/// Surfaces the whole entry (including a packed index batch's column table) for byte-level inspection.
+pub(crate) fn saved_batch_dir_leaves(tree: &[RecordNode], logical: &[u8]) -> Vec<Vec<u8>> {
+    dsm_batch_leaves(tree, logical)
+        .into_iter()
+        .filter(|l| l.len() >= 8)
+        .collect()
 }
 
 /// The record-index batches from a `DataSourceManager` directory: the leading run of entries that
@@ -65,7 +100,8 @@ pub(crate) fn batch_directory(dsm_logical: &[u8]) -> Vec<BatchDesc> {
 /// across several batches (`SavedRecordsStream` is itself multi-batch), so the record count is the
 /// **sum** of these, not the max.
 pub(crate) fn index_directory(dsm_logical: &[u8]) -> Vec<BatchDesc> {
-    let dir = batch_directory(dsm_logical);
+    let tree = parse_tree_qe(dsm_logical);
+    let dir = batch_directory(&tree, dsm_logical);
     let Some(first) = dir.first().copied() else {
         return Vec::new();
     };
@@ -87,9 +123,9 @@ pub(crate) fn saved_record_count(dsm_logical: &[u8]) -> Option<u32> {
 /// **inline** it is larger than the directory's on-disk `item_size` (the packed record width). It
 /// equals the on-disk width when no columns are packed (e.g. the memo-heap reports). The value is
 /// echoed in each decoded batch's own header (`[type u16][count u32][item_size u32][batch_size u32]`).
-pub(crate) fn persistent_item_size(dsm_logical: &[u8]) -> Option<u32> {
+pub(crate) fn persistent_item_size(tree: &[RecordNode], logical: &[u8]) -> Option<u32> {
     fn find(n: &RecordNode, lg: &[u8]) -> Option<u32> {
-        if n.rtype == 0x2d {
+        if n.rtype == DSM_STRUCTURE {
             let l = n.leaf_bytes(lg);
             if l.len() >= 2 {
                 return Some(u16::from_be_bytes([l[0], l[1]]) as u32);
@@ -97,9 +133,7 @@ pub(crate) fn persistent_item_size(dsm_logical: &[u8]) -> Option<u32> {
         }
         n.children.iter().find_map(|c| find(c, lg))
     }
-    parse_tree_qe(dsm_logical)
-        .iter()
-        .find_map(|r| find(r, dsm_logical))
+    tree.iter().find_map(|r| find(r, logical))
 }
 
 /// A stored saved-record field descriptor from the `DataSourceManager` catalog.
@@ -123,13 +157,13 @@ pub(crate) fn saved_schema(dsm_logical: &[u8]) -> Vec<SavedFieldDesc> {
     // Only `0x41` headers directly under a `0x07` container describe stored database-field slots
     // (formula `0x08` / special `0x17` fields carry offsets in an unrelated space).
     fn walk(n: &RecordNode, lg: &[u8], parent: u16, out: &mut Vec<SavedFieldDesc>) {
-        if n.rtype == 0x41 && parent == 0x07 {
+        if n.rtype == DSM_FIELD_HEADER && parent == DSM_FIELD_CONTAINER {
             let hdr = n.leaf_bytes(lg);
             if hdr.len() >= 4 {
                 // The field's byte offset in the (in-memory) record is a big-endian u16 at [2..4] —
                 // wide records place fields past offset 255, so the low byte alone is not enough.
                 let rec_offset = u16::from_be_bytes([hdr[2], hdr[3]]) as usize;
-                if let Some(desc) = n.children.iter().find(|c| c.rtype == 0x40) {
+                if let Some(desc) = n.children.iter().find(|c| c.rtype == DSM_FIELD_DESC) {
                     let leaf = desc.leaf_bytes(lg);
                     if leaf.len() >= 4 {
                         let nl = u32::from_be_bytes([leaf[0], leaf[1], leaf[2], leaf[3]]) as usize;
@@ -155,82 +189,6 @@ pub(crate) fn saved_schema(dsm_logical: &[u8]) -> Vec<SavedFieldDesc> {
     }
     for r in &tree {
         walk(r, dsm_logical, 0, &mut out);
-    }
-    out
-}
-
-/// A saved-data batch directory entry (`0x6d` record): row `count` and fixed `item_size`.
-#[derive(Debug, Clone, Copy)]
-pub(crate) struct SavedBatchEntry {
-    pub count: u32,
-    pub item_size: u32,
-}
-
-/// The saved-data batch directory — every `0x6d` record under the `0x2d` structure record, in file
-/// order. The directory lists, in order: the record-**index** batches (`item_size` = the fixed record
-/// width), then the memo-**descriptor** batches (`item_size` = `memo_cols * 12`), then the memo-value
-/// batches (`item_size` = 0). Each entry also carries a physical offset/length, but batches are stored
-/// back-to-back so decode walks by consumed length instead (self-verifying).
-pub(crate) fn saved_batches(dsm_logical: &[u8]) -> Vec<SavedBatchEntry> {
-    let tree = parse_tree_qe(dsm_logical);
-    let mut out = Vec::new();
-    fn walk(n: &RecordNode, lg: &[u8], out: &mut Vec<SavedBatchEntry>) {
-        if n.rtype == 0x6d {
-            let l = n.leaf_bytes(lg);
-            if l.len() >= 8 {
-                out.push(SavedBatchEntry {
-                    count: u32::from_be_bytes([l[0], l[1], l[2], l[3]]),
-                    item_size: u32::from_be_bytes([l[4], l[5], l[6], l[7]]),
-                });
-            }
-        }
-        for c in &n.children {
-            walk(c, lg, out);
-        }
-    }
-    fn under_2d(n: &RecordNode, lg: &[u8], out: &mut Vec<SavedBatchEntry>) {
-        if n.rtype == 0x2d {
-            walk(n, lg, out);
-        } else {
-            for c in &n.children {
-                under_2d(c, lg, out);
-            }
-        }
-    }
-    for r in &tree {
-        under_2d(r, dsm_logical, &mut out);
-    }
-    out
-}
-
-/// The full `0x6d` directory-entry leaves under the `0x2d` structure record, in the same order as
-/// [`saved_batches`]. Surfaces the whole entry (including a packed index batch's column table) for
-/// byte-level inspection, which the `count`/`item_size` summary alone hides.
-pub(crate) fn saved_batch_dir_leaves(dsm_logical: &[u8]) -> Vec<Vec<u8>> {
-    let tree = parse_tree_qe(dsm_logical);
-    let mut out = Vec::new();
-    fn walk(n: &RecordNode, lg: &[u8], out: &mut Vec<Vec<u8>>) {
-        if n.rtype == 0x6d {
-            let l = n.leaf_bytes(lg);
-            if l.len() >= 8 {
-                out.push(l);
-            }
-        }
-        for c in &n.children {
-            walk(c, lg, out);
-        }
-    }
-    fn under_2d(n: &RecordNode, lg: &[u8], out: &mut Vec<Vec<u8>>) {
-        if n.rtype == 0x2d {
-            walk(n, lg, out);
-        } else {
-            for c in &n.children {
-                under_2d(c, lg, out);
-            }
-        }
-    }
-    for r in &tree {
-        under_2d(r, dsm_logical, &mut out);
     }
     out
 }

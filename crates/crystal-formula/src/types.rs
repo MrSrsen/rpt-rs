@@ -6,7 +6,7 @@
 //! node can carry the engine's kind; downstream crates map a scalar [`ResultKind`] to their own
 //! field-value-type enum.
 
-use super::ast::Node;
+use super::ast::{Node, NodeKind};
 use super::token::{op, RefKind};
 
 /// Crystal's max string field length: 32767 chars × 2 bytes = 65534 (`0xfffe`), which is also the
@@ -263,6 +263,53 @@ pub(super) enum StrLenRule {
     Unbounded,
 }
 
+/// A builtin's **argument-count signature** — the shape its argument count must satisfy, keyed by
+/// funcID in [`sig`]. Checked in one place per evaluator: [`crate::validate`] (an editor diagnostic)
+/// and `eval::builtins::dispatch` (a runtime [`EvalError::Arity`](crate::eval::EvalError)).
+///
+/// `Any` opts a name out of checking — used where the true signature isn't confidently known, so a
+/// valid call is never wrongly rejected (a wrong tight bound is worse than no bound).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum Sig {
+    /// Exactly `n` arguments.
+    Exact(usize),
+    /// Between `lo` and `hi` arguments, inclusive.
+    Range(usize, usize),
+    /// At least `min` arguments, no upper bound (a variadic / optional-tail form).
+    AtLeast(usize),
+    /// An even count of at least `min` arguments — the paired-argument form (`Switch`).
+    EvenAtLeast(usize),
+    /// Unconstrained: the count is not checked.
+    Any,
+}
+
+impl Sig {
+    /// Whether an argument count of `n` satisfies this signature.
+    pub(super) fn accepts(self, n: usize) -> bool {
+        match self {
+            Sig::Exact(k) => n == k,
+            Sig::Range(lo, hi) => (lo..=hi).contains(&n),
+            Sig::AtLeast(min) => n >= min,
+            Sig::EvenAtLeast(min) => n >= min && n.is_multiple_of(2),
+            Sig::Any => true,
+        }
+    }
+
+    /// A human phrase for the expected count (`"3 arguments"`, `"at least 1 argument"`,
+    /// `"an even number of arguments (≥2)"`, `"2 to 4 arguments"`), for diagnostics and
+    /// [`EvalError::Arity`](crate::eval::EvalError). `Any` has no expectation and returns `"any"`.
+    pub(super) fn expected(self) -> String {
+        let args = |n: usize| if n == 1 { "argument" } else { "arguments" };
+        match self {
+            Sig::Exact(k) => format!("{k} {}", args(k)),
+            Sig::Range(lo, hi) => format!("{lo} to {hi} arguments"),
+            Sig::AtLeast(min) => format!("at least {min} {}", args(min)),
+            Sig::EvenAtLeast(min) => format!("an even number of arguments (≥{min})"),
+            Sig::Any => "any".to_string(),
+        }
+    }
+}
+
 /// Look up a builtin/function/special-field name (case-insensitive) → funcID.
 pub fn func_id(name: &str) -> Option<u16> {
     let lname = name.to_ascii_lowercase();
@@ -282,23 +329,23 @@ pub fn deduce_type(
     ref_lookup: &dyn Fn(RefKind, &str) -> Option<ResultKind>,
 ) -> ResultKind {
     use ResultKind as K;
-    match node {
-        Node::Number(_) => K::Number,
-        Node::Str(_) => K::String,
-        Node::Bool(_) => K::Boolean,
-        Node::DateLit(s) => classify_date_lit(s),
-        Node::Reference { kind, name } => ref_lookup(*kind, name).unwrap_or(K::Unknown),
+    match &node.kind {
+        NodeKind::Number(_) => K::Number,
+        NodeKind::Str(_) => K::String,
+        NodeKind::Bool(_) => K::Boolean,
+        NodeKind::DateLit(s) => classify_date_lit(s),
+        NodeKind::Reference { kind, name } => ref_lookup(*kind, name).unwrap_or(K::Unknown),
         // A bare identifier is a 0-ary builtin/special-field if known, else an (undeclared) variable.
-        Node::Ident(name) => match func_id(name) {
+        NodeKind::Ident(name) => match func_id(name) {
             Some(id) => apply_return_rule(return_rule(id), &[], ref_lookup),
             None => K::Unknown,
         },
-        Node::Call { name, args } => match func_id(name) {
+        NodeKind::Call { name, args } => match func_id(name) {
             Some(id) => apply_return_rule(return_rule(id), args, ref_lookup),
             None => K::Unknown, // custom function — declared return type not modelled here
         },
-        Node::Index { base, .. } => deduce_type(base, ref_lookup).to_scalar(),
-        Node::Array(items) => {
+        NodeKind::Index { base, .. } => deduce_type(base, ref_lookup).to_scalar(),
+        NodeKind::Array(items) => {
             // array kind = element scalar + 0xe; empty/unknown -> Unknown.
             let elem = items
                 .iter()
@@ -307,14 +354,14 @@ pub fn deduce_type(
                 .unwrap_or(K::Unknown);
             elem.to_array()
         }
-        Node::Unary { op, expr } => match *op {
+        NodeKind::Unary { op, expr } => match *op {
             op::DOLLAR => K::Currency, // `$` currency prefix
             op::UNARY_PLUS | op::UNARY_MINUS => deduce_type(expr, ref_lookup),
             op::NOT => K::Boolean,
             _ => deduce_type(expr, ref_lookup),
         },
-        Node::Binary { op, left, right } => deduce_binary(*op, left, right, ref_lookup),
-        Node::If {
+        NodeKind::Binary { op, left, right } => deduce_binary(*op, left, right, ref_lookup),
+        NodeKind::If {
             then, elifs, els, ..
         } => {
             let mut acc = deduce_type(then, ref_lookup);
@@ -326,13 +373,13 @@ pub fn deduce_type(
             }
             acc
         }
-        Node::Assign { value, .. } => deduce_type(value, ref_lookup),
-        Node::Seq(stmts) => stmts
+        NodeKind::Assign { value, .. } => deduce_type(value, ref_lookup),
+        NodeKind::Seq(stmts) => stmts
             .last()
             .map(|n| deduce_type(n, ref_lookup))
             .unwrap_or(K::Unknown),
         // A declaration's value is the declared variable's — its declared type.
-        Node::Declare { kind, array, .. } => {
+        NodeKind::Declare { kind, array, .. } => {
             let scalar = var_kind_result(*kind);
             if *array {
                 scalar.to_array()
@@ -341,8 +388,8 @@ pub fn deduce_type(
             }
         }
         // Loops and `Exit` are statements; their value is Null.
-        Node::While { .. } | Node::For { .. } | Node::Exit(_) => K::Unknown,
-        Node::Unparsed(_) | Node::Error | Node::Empty => K::Unknown,
+        NodeKind::While { .. } | NodeKind::For { .. } | NodeKind::Exit(_) => K::Unknown,
+        NodeKind::Unparsed(_) | NodeKind::Error | NodeKind::Empty => K::Unknown,
     }
 }
 
@@ -393,7 +440,7 @@ fn deduce_binary(
         op::EQ | op::NE | op::LT | op::GT | op::GE | op::LE => K::Boolean,
         op::IN | op::LIKE | op::STARTS_WITH => K::Boolean,
         // `And` `Or` `Xor` `Eqv` `Imp`
-        op::AND..=op::IMP => K::Boolean,
+        c if op::is_bool_op(c) => K::Boolean,
         _ => K::Unknown,
     }
 }
@@ -530,11 +577,11 @@ fn string_max_bytes_raw(
     ref_type: &dyn Fn(RefKind, &str) -> Option<ResultKind>,
     ref_bytes: &dyn Fn(RefKind, &str) -> Option<i32>,
 ) -> i32 {
-    match node {
+    match &node.kind {
         // String literal: (chars + 1) * sizeof(NCHAR=2) — UTF-16 + null.
-        Node::Str(s) => (s.chars().count() as i32 + 1) * 2,
-        Node::Reference { kind, name } => ref_bytes(*kind, name).unwrap_or(MAX_STRING_BYTES),
-        Node::Binary { op, left, right } => match *op {
+        NodeKind::Str(s) => (s.chars().count() as i32 + 1) * 2,
+        NodeKind::Reference { kind, name } => ref_bytes(*kind, name).unwrap_or(MAX_STRING_BYTES),
+        NodeKind::Binary { op, left, right } => match *op {
             // `&` concat: strByteLen(L) + strByteLen(R) − 2 (drop one UTF-16 null). Operands coerced.
             op::AMP => {
                 coerce_str_bytes(left, ref_type, ref_bytes)
@@ -550,12 +597,12 @@ fn string_max_bytes_raw(
             _ => MAX_STRING_BYTES,
         },
         // Array literal / branches: max element width.
-        Node::Array(items) => items
+        NodeKind::Array(items) => items
             .iter()
             .map(|n| string_max_bytes_raw(n, ref_type, ref_bytes))
             .max()
             .unwrap_or(MAX_STRING_BYTES),
-        Node::If {
+        NodeKind::If {
             then, elifs, els, ..
         } => {
             let mut m = string_max_bytes_raw(then, ref_type, ref_bytes);
@@ -567,7 +614,7 @@ fn string_max_bytes_raw(
             }
             m
         }
-        Node::Index { base, .. } => {
+        NodeKind::Index { base, .. } => {
             // String-array element → one wide char (6); else copy base.
             if deduce_type(base, ref_type) == ResultKind::StringArray {
                 6
@@ -575,20 +622,20 @@ fn string_max_bytes_raw(
                 string_max_bytes_raw(base, ref_type, ref_bytes)
             }
         }
-        Node::Call { name, args } => {
+        NodeKind::Call { name, args } => {
             let id = match func_id(name) {
                 Some(i) => i,
                 None => return MAX_STRING_BYTES,
             };
             call_str_bytes(str_len_rule(id), args, ref_type, ref_bytes)
         }
-        Node::Seq(stmts) => stmts
+        NodeKind::Seq(stmts) => stmts
             .last()
             .map(|n| string_max_bytes_raw(n, ref_type, ref_bytes))
             .unwrap_or(MAX_STRING_BYTES),
-        Node::Assign { value, .. } => string_max_bytes_raw(value, ref_type, ref_bytes),
+        NodeKind::Assign { value, .. } => string_max_bytes_raw(value, ref_type, ref_bytes),
         // A string declaration's width is its initialiser's; uninitialised → unbounded.
-        Node::Declare {
+        NodeKind::Declare {
             init: Some(init), ..
         } => string_max_bytes_raw(init, ref_type, ref_bytes),
         // Non-string-producing nodes shouldn't reach here when deduce_type==String, but be safe.
@@ -664,8 +711,8 @@ fn call_str_bytes(
 /// The wide-char length of a string-literal argument, or `None` if the arg is absent / not a string
 /// literal.
 fn str_lit_len(node: Option<&Node>) -> Option<i32> {
-    match node {
-        Some(Node::Str(s)) => Some(s.chars().count() as i32),
+    match node.map(|n| &n.kind) {
+        Some(NodeKind::Str(s)) => Some(s.chars().count() as i32),
         _ => None,
     }
 }
@@ -675,8 +722,8 @@ fn str_lit_len(node: Option<&Node>) -> Option<i32> {
 fn number_chars(args: &[Node], currency: bool) -> i32 {
     let tail = if currency { 12 } else { 7 }; // sign + padding (Number +7, Currency +12)
                                               // Form A vs B depends on whether arg1 is a string literal (the `'#'`-style format string).
-    match args.get(1) {
-        Some(Node::Str(fmt)) => {
+    match args.get(1).map(|n| &n.kind) {
+        Some(NodeKind::Str(fmt)) => {
             // Form A: explicit format string. Thousand/decimal separators come from args[2]/args[3].
             let chars: Vec<char> = fmt.chars().collect();
             let dot = chars.iter().position(|&c| c == '.').map(|p| p as i32);
@@ -690,12 +737,10 @@ fn number_chars(args: &[Node], currency: bool) -> i32 {
             let dec_sep = str_lit_len(args.get(3)).unwrap_or(15); // default 15
             groups * thou_sep + dec_digits + int_digits + dec_sep + tail
         }
-        a1 => {
+        _ => {
             // Form B: numeric / absent places arg. intDigits is always 18; groups always 5.
-            let dec_digits = match a1 {
-                Some(n) => const_number(Some(n)).unwrap_or(10), // numeric-literal value
-                None => 10,                                     // default
-            };
+            // A numeric-literal places arg gives its value; anything else (absent/non-number) → 10.
+            let dec_digits = const_number(args.get(1)).unwrap_or(10);
             let thou_sep = str_lit_len(args.get(2)).unwrap_or(5);
             let dec_sep = str_lit_len(args.get(3)).unwrap_or(15);
             5 * thou_sep + dec_digits + 18 + dec_sep + tail
@@ -705,8 +750,8 @@ fn number_chars(args: &[Node], currency: bool) -> i32 {
 
 /// A literal non-negative integer arg, for the const-folded length rules (Left/Right/Space/…).
 fn const_number(node: Option<&Node>) -> Option<i32> {
-    match node {
-        Some(Node::Number(s)) => s.trim().parse::<f64>().ok().map(|v| v.max(0.0) as i32),
+    match node.map(|n| &n.kind) {
+        Some(NodeKind::Number(s)) => s.trim().parse::<f64>().ok().map(|v| v.max(0.0) as i32),
         _ => None,
     }
 }

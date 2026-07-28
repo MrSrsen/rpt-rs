@@ -1,13 +1,11 @@
 //! Structural decode test for an object hyperlink (`ObjectFormat.hyperlink`, from the `0x00fc`
-//! CSArchive tail). RptToXml never emits a hyperlink, so this is verified against the decoded model
-//! (cross-checked against RAS `Format.HyperlinkText`/`HyperlinkType`). Skips if the fixture is absent.
+//! CSArchive tail), mirroring RAS `Format.HyperlinkText` / `HyperlinkType`. Skips if the fixture is
+//! absent.
 
 use rpt::model::HyperlinkType;
-use std::path::Path;
 
 fn open(name: &str) -> Option<rpt::Rpt> {
-    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join(format!("../../tests/fixtures/reports/synthetic/{name}.rpt"));
+    let path = rpt_test_support::fixture(format!("tests/fixtures/reports/synthetic/{name}.rpt"));
     rpt::Rpt::open(&path).ok()
 }
 
@@ -29,8 +27,8 @@ fn decodes_object_hyperlink_text_and_type() {
 
     assert_eq!(links.len(), 1, "one object carries a hyperlink");
     assert_eq!(links[0].text, "https://google.com");
-    // RAS: crHyperlinkTypeWebsite → AFileOrWebSite.
-    assert_eq!(links[0].kind, HyperlinkType::AFileOrWebSite);
+    // RAS: crHyperlinkTypeWebsite → Website (distinct from Html in the RAS model).
+    assert_eq!(links[0].kind, HyperlinkType::Website);
 }
 
 #[test]

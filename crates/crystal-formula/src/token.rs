@@ -41,10 +41,12 @@ pub fn split_reference(inner: &str) -> (RefKind, &str) {
     }
 }
 
-/// Trim surrounding whitespace and `{ }` braces from a display reference:
-/// `" {Table.field} "` → `"Table.field"`. The shared first step of reference-name normalization.
+/// Trim the `{ }` braces and both the surrounding and the inner-adjacent whitespace from a display
+/// reference: `" { Table.field } "` → `"Table.field"`. The shared first step of reference-name
+/// normalization, so a sigil sits at index 0 for [`split_reference`] even when the brace has padding
+/// (`"{ @f }"` → `"@f"`).
 pub fn strip_braces(s: &str) -> &str {
-    s.trim().trim_matches(['{', '}'])
+    s.trim().trim_matches(['{', '}']).trim()
 }
 
 /// The bare name after the last `.` of a reference — the segment a table-qualified field is matched
@@ -162,6 +164,21 @@ pub mod op {
     /// Unary prefix `-`.
     pub const UNARY_MINUS: u8 = 0x7a;
 
+    /// Whether `code` is one of the four `To` range operators. Referencing the constants by name
+    /// keeps callers independent of the (currently contiguous) numbering.
+    pub const fn is_range(code: u8) -> bool {
+        matches!(
+            code,
+            RANGE_TO | RANGE_LO_EXCL | RANGE_HI_EXCL | RANGE_BOTH_EXCL
+        )
+    }
+
+    /// Whether `code` is one of the five boolean word operators (`And`/`Or`/`Xor`/`Eqv`/`Imp`).
+    /// Referencing the constants by name keeps callers independent of the numbering.
+    pub const fn is_bool_op(code: u8) -> bool {
+        matches!(code, AND | OR | XOR | EQV | IMP)
+    }
+
     /// A printable symbol for an operator code, for diagnostic messages. `?` for a non-operator code.
     pub fn symbol(code: u8) -> &'static str {
         match code {
@@ -244,6 +261,118 @@ impl Token {
             start,
             end,
             text: text.into(),
+        }
+    }
+
+    /// This token's source span `[start, end)`.
+    pub fn span(&self) -> Span {
+        Span {
+            start: self.start,
+            end: self.end,
+        }
+    }
+}
+
+/// A source span `[start, end)` in byte offsets — the region of formula text a token, AST node, or
+/// diagnostic covers. A default (`0..0`) span is the "unset" sentinel used by synthetic nodes.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub struct Span {
+    /// Byte offset of the span's first byte in the source.
+    pub start: usize,
+    /// Byte offset one past the span's last byte in the source.
+    pub end: usize,
+}
+
+impl Span {
+    /// A span covering `[start, end)`.
+    pub fn new(start: usize, end: usize) -> Self {
+        Span { start, end }
+    }
+
+    /// Whether this is the unset sentinel span (`0..0`).
+    pub fn is_unset(self) -> bool {
+        self.start == 0 && self.end == 0
+    }
+
+    /// The smallest span covering both `self` and `other`. An unset (`0..0`) operand is ignored so
+    /// unioning a synthetic child never drags a composite node's start back to `0`.
+    pub fn to(self, other: Span) -> Span {
+        if self.is_unset() {
+            return other;
+        }
+        if other.is_unset() {
+            return self;
+        }
+        Span {
+            start: self.start.min(other.start),
+            end: self.end.max(other.end),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{brace_groups, op, split_reference, strip_braces, RefKind};
+
+    /// `strip_braces` removes braces plus surrounding and inner-adjacent whitespace, and preserves a
+    /// quoted identifier's own content.
+    #[test]
+    fn strip_braces_trims_inner_whitespace() {
+        assert_eq!(strip_braces("{ Command.days }"), "Command.days");
+        assert_eq!(strip_braces("  {Table.field}  "), "Table.field");
+        assert_eq!(strip_braces("{Table.'my field'}"), "Table.'my field'");
+    }
+
+    /// A brace-padded sigil still classifies correctly once the inner whitespace is trimmed.
+    #[test]
+    fn split_reference_after_strip_braces_handles_padding() {
+        assert_eq!(
+            split_reference(strip_braces("{ @f }")),
+            (RefKind::Formula, "f")
+        );
+        assert_eq!(
+            split_reference(strip_braces("{ ?Name }")),
+            (RefKind::Parameter, "Name")
+        );
+        assert_eq!(
+            split_reference(strip_braces("{ Table.field }")),
+            (RefKind::Field, "Table.field")
+        );
+    }
+
+    /// `brace_groups` yields each `{…}` group (braces included) in order.
+    #[test]
+    fn brace_groups_over_call_args() {
+        let groups: Vec<&str> = brace_groups("f({a}, {b})").collect();
+        assert_eq!(groups, vec!["{a}", "{b}"]);
+    }
+
+    /// `is_range` accepts exactly the four range operators and nothing else — including the
+    /// codes immediately adjacent to the range block, so a future renumber that overlaps a
+    /// neighbouring operator into the range fails here loudly.
+    #[test]
+    fn is_range_membership() {
+        for code in [
+            op::RANGE_TO,
+            op::RANGE_LO_EXCL,
+            op::RANGE_HI_EXCL,
+            op::RANGE_BOTH_EXCL,
+        ] {
+            assert!(op::is_range(code), "0x{code:02x} should be a range op");
+        }
+        for code in [op::MINUS, op::DOLLAR, op::LT, op::IN, op::AND] {
+            assert!(!op::is_range(code), "0x{code:02x} is not a range op");
+        }
+    }
+
+    /// `is_bool_op` accepts exactly the five boolean word operators and nothing else.
+    #[test]
+    fn is_bool_op_membership() {
+        for code in [op::AND, op::OR, op::XOR, op::EQV, op::IMP] {
+            assert!(op::is_bool_op(code), "0x{code:02x} should be a bool op");
+        }
+        for code in [op::EQ, op::NE, op::IN, op::RANGE_BOTH_EXCL, op::LIKE] {
+            assert!(!op::is_bool_op(code), "0x{code:02x} is not a bool op");
         }
     }
 }

@@ -1,4 +1,4 @@
-//! Phase-6 gate: the full stack on a real report — decode → data → layout → Page IR → SVG.
+//! Exercises the full stack on a real report — decode → data → layout → Page IR → SVG.
 //! Runs on a committed public-demo fixture, so the full render path is always exercised in CI.
 
 use rpt_test_support::fixture;

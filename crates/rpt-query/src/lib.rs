@@ -17,21 +17,22 @@
 //!
 //! Scope: `INNER`/`LEFT`/`RIGHT` joins over the link graph, multi-field link conditions, self-joins
 //! (each table is aliased), command tables (`FROM (<sql>) AS alias`), and — via
-//! [`build_query_with_selection`] — pushing the translatable subset of the record-selection formula
-//! into `WHERE`. Non-equijoin link operators (`>`/`<`/`<>`) render as inner joins with
-//! that operator. Full outer joins are not a decoded variant.
+//! [`build_query_full`] — pushing the translatable subset of the record-selection formula
+//! into `WHERE`. A link's outer-ness and its comparison operator are stored separately, so any
+//! combination renders (a left outer `>=` join is expressible); a full outer join has no
+//! sea-query/keyword counterpart here and degrades to an inner join.
 
 mod selection;
 mod used_fields;
 
-pub use selection::{push_down_selection, push_down_selection_with_params, PushDown};
+pub use selection::{push_down_selection_with_params, PushDown};
 pub use used_fields::{prune_database, used_database_fields};
 
 /// Re-exported so callers can name the parameter-value type used by [`build_query_full`] /
 /// [`push_down_selection_with_params`] without depending on `crystal-formula` directly.
 pub use crystal_formula::eval::Value;
 
-use rpt_model::{Database, FieldValueType, Report, Table, TableJoinType};
+use rpt_model::{Database, FieldValueType, Report, Table, TableJoinKind, TableLinkOperator};
 use sea_query::{
     Alias, Asterisk, BinOper, Condition, Expr, JoinType, MysqlQueryBuilder, PostgresQueryBuilder,
     Query, SimpleExpr, SqliteQueryBuilder,
@@ -91,6 +92,13 @@ pub struct SqlQuery {
     pub sql: String,
     /// The selected columns in result order (result position `i` is `columns[i]`).
     pub columns: Vec<QueryColumn>,
+    /// Selection conjuncts that could **not** be translated into the `WHERE` clause and are therefore
+    /// applied locally, per row, after the fetch.
+    ///
+    /// The result is the same either way, but the query fetches more rows than the report shows —
+    /// which is the answer to "why is this slow / why did it read a million rows". Carried here so a
+    /// caller can report it without the user knowing to re-run under `-v`.
+    pub not_pushed: Vec<String>,
 }
 
 impl SqlQuery {
@@ -101,6 +109,30 @@ impl SqlQuery {
     pub fn result_columns(&self) -> Vec<rpt_data::Column> {
         self.columns.iter().map(rpt_data::Column::from).collect()
     }
+
+    /// Prepend a tracking comment as a leading SQL block comment (`/* … */`), so a query surfacing in
+    /// the database's own logs (e.g. slow-query log) is traceable back to the report that issued it.
+    /// The text is sanitized to keep the comment well-formed and single-line (control chars removed,
+    /// any `*/`/`/*` broken up). A no-op for an empty (or all-whitespace) comment.
+    pub fn with_comment(mut self, comment: &str) -> SqlQuery {
+        let clean = sanitize_sql_comment(comment);
+        if !clean.is_empty() {
+            self.sql = format!("/* {clean} */ {}", self.sql);
+        }
+        self
+    }
+}
+
+/// Flatten a tracking comment to a single line that cannot terminate or nest the enclosing `/* … */`:
+/// control characters (incl. newlines) are dropped and the comment delimiters `*/` and `/*` are
+/// broken with a space.
+fn sanitize_sql_comment(s: &str) -> String {
+    let flattened: String = s.chars().filter(|c| !c.is_control()).collect();
+    flattened
+        .replace("*/", "* /")
+        .replace("/*", "/ *")
+        .trim()
+        .to_string()
 }
 
 /// The SQL dialect a generated query targets. The cast-to-text syntax differs across the backends
@@ -128,6 +160,20 @@ impl Dialect {
             Dialect::Sqlite => format!("CAST({expr} AS TEXT)"),
             Dialect::Mysql => format!("CAST({expr} AS CHAR)"),
         }
+    }
+
+    /// Quote a SQL identifier for this dialect, escaping the embedded quote character by doubling it.
+    /// MySQL uses backticks (`` `…` ``); every other dialect uses ANSI double quotes (`"…"`).
+    pub(crate) fn quote_ident(self, ident: &str) -> String {
+        match self {
+            Dialect::Mysql => format!("`{}`", ident.replace('`', "``")),
+            _ => format!("\"{}\"", ident.replace('"', "\"\"")),
+        }
+    }
+
+    /// `alias.field` — a column reference with both identifiers quoted for this dialect.
+    pub(crate) fn qualify(self, alias: &str, field: &str) -> String {
+        format!("{}.{}", self.quote_ident(alias), self.quote_ident(field))
     }
 }
 
@@ -159,36 +205,37 @@ fn cast_raw_expr(dialect: Dialect, raw: &str) -> SimpleExpr {
     }
 }
 
-/// Build the joined `SELECT` for a report's whole table graph. `None` when the database has no
-/// tables. Equivalent to [`build_query_with_selection`] with no selection formula.
-pub fn build_query(database: &Database) -> Option<SqlQuery> {
-    build_query_with_selection(database, None)
+/// Why no query could be built.
+///
+/// Typed rather than a bare `None` so a caller reports the actual cause instead of inventing one:
+/// every caller used to synthesize "report has no database table to query", which was a guess that
+/// happened to be right for the only case that existed and would silently become wrong for the next.
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[non_exhaustive]
+pub enum QueryError {
+    /// The report binds no database table, so there is nothing to select from. A report rendered
+    /// purely from saved data or from static text is the legitimate case.
+    #[error("the report binds no database table, so there is no query to run")]
+    NoTables,
+}
+
+/// Build the joined `SELECT` for a report's whole table graph. Equivalent to [`build_query_full`]
+/// with no SQL Expression fields, selection, or bound parameters, targeting the Postgres dialect.
+///
+/// # Errors
+///
+/// [`QueryError::NoTables`] if the database binds no table.
+pub fn build_query(database: &Database) -> Result<SqlQuery, QueryError> {
+    build_query_full(database, &[], None, &[], Dialect::Postgres)
 }
 
 /// Like [`build_query`] but for an explicit SQL [`Dialect`] (no selection push-down).
-pub fn build_query_in(database: &Database, dialect: Dialect) -> Option<SqlQuery> {
-    build_query_with_selection_in(database, None, dialect)
-}
-
-/// Like [`build_query`] but also pushes the translatable part of `selection` (a Crystal
-/// record-selection formula) into a `WHERE` clause. The untranslatable remainder is
-/// still applied per-row by the pipeline, so the result set is identical — just fewer rows fetched.
-pub fn build_query_with_selection(
-    database: &Database,
-    selection: Option<&str>,
-) -> Option<SqlQuery> {
-    build_query_with_selection_in(database, selection, Dialect::Postgres)
-}
-
-/// [`build_query_with_selection`] targeting an explicit SQL [`Dialect`]. The `WHERE` push-down is
-/// only emitted for the Postgres dialect (its predicate SQL is Postgres-flavoured); other dialects
-/// fetch the full table and rely on the pipeline applying the selection formula per row.
-pub fn build_query_with_selection_in(
-    database: &Database,
-    selection: Option<&str>,
-    dialect: Dialect,
-) -> Option<SqlQuery> {
-    build_query_full(database, &[], selection, &[], dialect)
+///
+/// # Errors
+///
+/// As [`build_query`].
+pub fn build_query_in(database: &Database, dialect: Dialect) -> Result<SqlQuery, QueryError> {
+    build_query_full(database, &[], None, &[], dialect)
 }
 
 /// The full builder: joins + optional SQL Expression fields + optional selection
@@ -200,15 +247,19 @@ pub fn build_query_with_selection_in(
 ///   bare name so `{%name}` resolves against it.
 /// - `params` — parameter current-values (`{?Name}` → literal); only consulted by the Postgres
 ///   `WHERE` push-down, so a selection formula comparing a field to a parameter binds the literal.
+///
+/// # Errors
+///
+/// [`QueryError::NoTables`] if the database binds no table.
 pub fn build_query_full(
     database: &Database,
     sql_exprs: &[(String, String)],
     selection: Option<&str>,
     params: &[(String, Value)],
     dialect: Dialect,
-) -> Option<SqlQuery> {
+) -> Result<SqlQuery, QueryError> {
     if database.tables.is_empty() {
-        return None;
+        return Err(QueryError::NoTables);
     }
     let order = join_order(database);
 
@@ -239,11 +290,23 @@ pub fn build_query_full(
 
     // The push-down predicate SQL is Postgres-flavoured; other dialects fetch the full table and let
     // the pipeline apply the selection formula per row (identical result set, just more rows fetched).
+    // A predicate that cannot be translated is applied locally after the fetch — correct, but it means
+    // the query returns more rows than the report shows. Carried on the result so a caller can say so
+    // without the user having to re-run under `-v`.
+    let mut not_pushed: Vec<String> = Vec::new();
     let where_sql: Option<String> = if dialect == Dialect::Postgres {
         selection.and_then(|formula| {
-            push_down_selection_with_params(formula, &columns, params).where_sql
+            let pushed = push_down_selection_with_params(formula, &columns, params);
+            not_pushed = pushed.not_pushed.clone();
+            pushed.where_sql
         })
     } else {
+        // Only the Postgres path translates predicates, so on any other dialect the whole selection
+        // is applied locally.
+        not_pushed = selection
+            .filter(|f| !f.trim().is_empty())
+            .map(|f| vec![f.to_string()])
+            .unwrap_or_default();
         None
     };
 
@@ -264,7 +327,11 @@ pub fn build_query_full(
         build_sql_seaquery(database, &order, &columns, dialect, where_sql.as_deref())
     };
 
-    Some(SqlQuery { sql, columns })
+    Ok(SqlQuery {
+        sql,
+        columns,
+        not_pushed,
+    })
 }
 
 /// The report-aware builder: like [`build_query_full`] but first prunes the database to the tables
@@ -275,13 +342,17 @@ pub fn build_query_full(
 ///
 /// `sql_exprs` / `selection` / `params` behave exactly as in [`build_query_full`] — SQL Expression
 /// fields are always projected, and the selection push-down (Postgres) sees the pruned columns.
+///
+/// # Errors
+///
+/// [`QueryError::NoTables`] if the report binds no database table.
 pub fn build_query_for_report(
     report: &Report,
     sql_exprs: &[(String, String)],
     selection: Option<&str>,
     params: &[(String, Value)],
     dialect: Dialect,
-) -> Option<SqlQuery> {
+) -> Result<SqlQuery, QueryError> {
     let used = used_database_fields(report);
     let pruned = prune_database(&report.database, &used);
     build_query_full(&pruned, sql_exprs, selection, params, dialect)
@@ -314,6 +385,11 @@ fn build_sql_seaquery(
             match &c.expr {
                 // A SQL Expression field: the raw fragment cast to text, aliased by its field name.
                 Some(e) => q.expr_as(cast_raw_expr(dialect, e), Alias::new(&c.field)),
+                // A binary (blob/bytea) column is selected raw so its bytes survive; a text cast would
+                // corrupt it (Postgres would return a `\x…` hex string). Everything else casts to text.
+                None if c.value_type.is_binary() => {
+                    q.expr(Expr::col((Alias::new(&c.alias), Alias::new(&c.field))))
+                }
                 None => q.expr(cast_expr(dialect, &c.alias, &c.field)),
             };
         }
@@ -369,29 +445,33 @@ enum JoinKind {
 enum LinkOp {
     Eq,
     Gt,
+    Ge,
     Lt,
+    Le,
     Ne,
 }
 
-/// Resolve a link's stored join type + placement reversal to the neutral [`JoinKind`]. `reversed`
+/// Resolve a link's stored join kind + placement reversal to the neutral [`JoinKind`]. `reversed`
 /// (the link's *source* is the newly-reached table) flips `LEFT`↔`RIGHT` so the intended table stays
-/// the preserved side of an outer join. Inner and non-outer variants are `Inner`.
-fn resolve_join_kind(join_type: &TableJoinType, reversed: bool) -> JoinKind {
-    match (join_type, reversed) {
-        (TableJoinType::LeftOuter, false) | (TableJoinType::RightOuter, true) => JoinKind::Left,
-        (TableJoinType::RightOuter, false) | (TableJoinType::LeftOuter, true) => JoinKind::Right,
+/// the preserved side of an outer join. A full outer join has no `JoinKind` and degrades to `Inner`.
+fn resolve_join_kind(join_kind: &TableJoinKind, reversed: bool) -> JoinKind {
+    match (join_kind, reversed) {
+        (TableJoinKind::LeftOuter, false) | (TableJoinKind::RightOuter, true) => JoinKind::Left,
+        (TableJoinKind::RightOuter, false) | (TableJoinKind::LeftOuter, true) => JoinKind::Right,
         _ => JoinKind::Inner,
     }
 }
 
-/// Map a link's stored join type to the neutral comparison [`LinkOp`] for its ON condition. Only the
-/// inequality variants carry a distinct operator; everything else is an equijoin (`=`).
-fn resolve_link_op(join_type: &TableJoinType) -> LinkOp {
-    match join_type {
-        TableJoinType::GreaterThan => LinkOp::Gt,
-        TableJoinType::LessThan => LinkOp::Lt,
-        TableJoinType::NotEqual => LinkOp::Ne,
-        _ => LinkOp::Eq,
+/// Map a link's stored comparison operator to the neutral [`LinkOp`] for its ON condition. An
+/// unmapped stored code degrades to an equijoin, which is what nearly every link is.
+fn resolve_link_op(operator: &TableLinkOperator) -> LinkOp {
+    match operator {
+        TableLinkOperator::GreaterThan => LinkOp::Gt,
+        TableLinkOperator::GreaterOrEqual => LinkOp::Ge,
+        TableLinkOperator::LessThan => LinkOp::Lt,
+        TableLinkOperator::LessOrEqual => LinkOp::Le,
+        TableLinkOperator::NotEqual => LinkOp::Ne,
+        TableLinkOperator::Equal | TableLinkOperator::Other(_) => LinkOp::Eq,
     }
 }
 
@@ -399,15 +479,17 @@ fn resolve_link_op(join_type: &TableJoinType) -> LinkOp {
 /// LEFT/RIGHT/INNER choice and the comparison operator from the shared [`resolve_join_kind`] /
 /// [`resolve_link_op`]. No field pairs → `ON TRUE` (an empty `Condition::all()`).
 fn join_spec(link: &rpt_model::TableLink, reversed: bool) -> (JoinType, Condition) {
-    let kind = match resolve_join_kind(&link.join_type, reversed) {
+    let kind = match resolve_join_kind(&link.join_kind, reversed) {
         JoinKind::Inner => JoinType::Join,
         JoinKind::Left => JoinType::LeftJoin,
         JoinKind::Right => JoinType::RightJoin,
     };
-    let op = match resolve_link_op(&link.join_type) {
+    let op = match resolve_link_op(&link.operator) {
         LinkOp::Eq => BinOper::Equal,
         LinkOp::Gt => BinOper::GreaterThan,
+        LinkOp::Ge => BinOper::GreaterThanOrEqual,
         LinkOp::Lt => BinOper::SmallerThan,
+        LinkOp::Le => BinOper::SmallerThanOrEqual,
         LinkOp::Ne => BinOper::NotEqual,
     };
     let mut cond = Condition::all();
@@ -421,7 +503,8 @@ fn join_spec(link: &rpt_model::TableLink, reversed: bool) -> (JoinType, Conditio
 
 /// Build the `SELECT` for a report that contains at least one command table, by hand (sea-query
 /// cannot wrap the author's raw SQL as a structured source). The command SQL is emitted verbatim as
-/// `(<command_text>) AS "alias"` by [`from_source`]; the joins/casts use ANSI double-quote quoting.
+/// `(<command_text>) AS "alias"` by [`from_source`]; identifiers in the joins/casts are quoted per
+/// `dialect` (backticks for MySQL, ANSI double quotes otherwise).
 fn build_sql_raw(
     database: &Database,
     order: &JoinOrder,
@@ -441,9 +524,11 @@ fn build_sql_raw(
                 Some(e) => format!(
                     "{} AS {}",
                     dialect.cast_text(&format!("({e})")),
-                    quote_ident(&c.field)
+                    dialect.quote_ident(&c.field)
                 ),
-                None => dialect.cast_text(&qualify(&c.alias, &c.field)),
+                // A binary (blob/bytea) column is selected raw so its bytes survive a text cast.
+                None if c.value_type.is_binary() => dialect.qualify(&c.alias, &c.field),
+                None => dialect.cast_text(&dialect.qualify(&c.alias, &c.field)),
             })
             .collect::<Vec<_>>()
             .join(", ")
@@ -451,7 +536,7 @@ fn build_sql_raw(
 
     let mut sql = format!(
         "SELECT {select} FROM {}",
-        from_source(&tables[order.placed[0]])
+        from_source(&tables[order.placed[0]], dialect)
     );
     for step in &order.steps {
         sql.push(' ');
@@ -460,8 +545,12 @@ fn build_sql_raw(
                 &tables[step.table],
                 &database.links[li],
                 step.reversed,
+                dialect,
             )),
-            None => sql.push_str(&format!("CROSS JOIN {}", from_source(&tables[step.table]))),
+            None => sql.push_str(&format!(
+                "CROSS JOIN {}",
+                from_source(&tables[step.table], dialect)
+            )),
         }
     }
 
@@ -493,9 +582,26 @@ struct JoinStep {
 /// Order the tables by walking the link graph out from the primary (`tables[0]`), emitting a join
 /// step for each newly-reached table. Tables not reachable through any link are appended as a
 /// `CROSS JOIN` (a cartesian product — a linkless report, rare; the pipeline still filters).
+///
+/// Links are directional (`source.field = target.field` means the target is a lookup joined *onto*
+/// the source, a many-to-one). When a table is reachable by more than one stored link (a cycle /
+/// redundant link), which link is used is chosen by [`link_priority`] so the join follows link
+/// direction: a lookup is reached from its own fact via the forward link, never routed backwards
+/// through a dimension-to-dimension edge (which would join one dimension row to many fact rows — a
+/// cartesian blow-up). See [`link_priority`] for the exact precedence.
 fn join_order(database: &Database) -> JoinOrder {
     let tables = &database.tables;
     let index_of = |alias: &str| tables.iter().position(|t| t.alias == alias);
+
+    // A table alias that is the *target* of at least one link can potentially be reached by a
+    // forward (source→target) join, so it should not be pulled in backwards while any such link is
+    // still pending. Aliases absent from this set are pure sources (fact/detail tables) reachable
+    // only by reversing a link.
+    let target_aliases: HashSet<&str> = database
+        .links
+        .iter()
+        .map(|l| l.target_table_alias.as_str())
+        .collect();
 
     let mut placed: Vec<usize> = vec![0];
     let mut placed_aliases: HashSet<String> = HashSet::new();
@@ -508,9 +614,11 @@ fn join_order(database: &Database) -> JoinOrder {
     // linked to an already-placed one is attached via that link, regardless of which component the
     // primary (tables[0]) fell in; only genuine cross-component bridges become a cartesian.
     loop {
-        // Repeatedly attach a link with exactly one endpoint already placed, until a pass adds none.
+        // Repeatedly attach the single best-priority link with exactly one endpoint already placed,
+        // until none remains. Picking one at a time (rather than every eligible link in a pass) lets
+        // a higher-priority link that only becomes eligible after this step still win the table.
         loop {
-            let mut progressed = false;
+            let mut best: Option<(u8, usize, usize, bool)> = None; // (priority, link index, new table, reversed)
             for (li, link) in database.links.iter().enumerate() {
                 let src_placed = placed_aliases.contains(&link.source_table_alias);
                 let dst_placed = placed_aliases.contains(&link.target_table_alias);
@@ -522,17 +630,22 @@ fn join_order(database: &Database) -> JoinOrder {
                 let Some(ni) = index_of(new_alias) else {
                     continue;
                 };
-                steps.push(JoinStep {
-                    table: ni,
-                    link: Some(li),
-                    reversed,
-                });
-                placed.push(ni);
-                placed_aliases.insert(new_alias.clone());
-                progressed = true;
+                let prio = link_priority(reversed, &target_aliases, new_alias);
+                if best.is_none_or(|(bp, bl, _, _)| (prio, li) < (bp, bl)) {
+                    best = Some((prio, li, ni, reversed));
+                }
             }
-            if !progressed {
-                break;
+            match best {
+                Some((_, li, ni, reversed)) => {
+                    steps.push(JoinStep {
+                        table: ni,
+                        link: Some(li),
+                        reversed,
+                    });
+                    placed.push(ni);
+                    placed_aliases.insert(tables[ni].alias.clone());
+                }
+                None => break,
             }
         }
 
@@ -558,20 +671,50 @@ fn join_order(database: &Database) -> JoinOrder {
     JoinOrder { placed, steps }
 }
 
+/// Precedence for which pending link attaches the next table, lower is preferred (ties broken by
+/// stored link index). Encodes that a link `source.field = target.field` reaches the *target* from
+/// the *source*, so joins follow link direction:
+///
+/// - `0` — a **forward** link (the source is already placed, so its lookup target is joined on).
+///   Always preferred: it is the direction the link was authored in.
+/// - `1` — a **reversed** link reaching a **pure-source** table (an alias that is never any link's
+///   target: a fact/detail table). Such a table can only ever be reached by reversing a link, so
+///   pulling it in unlocks its own forward links to the dimensions hanging off it.
+/// - `2` — a **reversed** link reaching a table that *is* some link's target (a dimension reachable
+///   forward from its fact). Deferred to last so it is normally reached forward instead; used only
+///   to break a deadlock when nothing else makes progress. Routing through such an edge backwards is
+///   the dimension-to-dimension cartesian this ordering exists to avoid.
+fn link_priority(reversed: bool, target_aliases: &HashSet<&str>, new_alias: &str) -> u8 {
+    if !reversed {
+        0
+    } else if !target_aliases.contains(new_alias) {
+        1
+    } else {
+        2
+    }
+}
+
 /// The `[LEFT|RIGHT] JOIN <source> ON …` clause attaching `new_table` to already-placed tables via
 /// `link`. `reversed` = the link's *source* is the new table (we reached it from the target side),
 /// which flips `LEFT`↔`RIGHT` so the intended table stays the preserved side of an outer join. Shares
 /// [`resolve_join_kind`] / [`resolve_link_op`] with the structured [`join_spec`] path.
-fn join_clause(new_table: &Table, link: &rpt_model::TableLink, reversed: bool) -> String {
-    let kind = match resolve_join_kind(&link.join_type, reversed) {
+fn join_clause(
+    new_table: &Table,
+    link: &rpt_model::TableLink,
+    reversed: bool,
+    dialect: Dialect,
+) -> String {
+    let kind = match resolve_join_kind(&link.join_kind, reversed) {
         JoinKind::Inner => "JOIN",
         JoinKind::Left => "LEFT JOIN",
         JoinKind::Right => "RIGHT JOIN",
     };
-    let op = match resolve_link_op(&link.join_type) {
+    let op = match resolve_link_op(&link.operator) {
         LinkOp::Eq => "=",
         LinkOp::Gt => ">",
+        LinkOp::Ge => ">=",
         LinkOp::Lt => "<",
+        LinkOp::Le => "<=",
         LinkOp::Ne => "<>",
     };
     // The ON condition references each side by its fixed alias.field, independent of placement order.
@@ -582,8 +725,8 @@ fn join_clause(new_table: &Table, link: &rpt_model::TableLink, reversed: bool) -
         .map(|(sf, tf)| {
             format!(
                 "{} {op} {}",
-                qualify(&link.source_table_alias, sf),
-                qualify(&link.target_table_alias, tf)
+                dialect.qualify(&link.source_table_alias, sf),
+                dialect.qualify(&link.target_table_alias, tf)
             )
         })
         .collect();
@@ -593,36 +736,67 @@ fn join_clause(new_table: &Table, link: &rpt_model::TableLink, reversed: bool) -
     } else {
         conds.join(" AND ")
     };
-    format!("{kind} {} ON {on}", from_source(new_table))
+    format!("{kind} {} ON {on}", from_source(new_table, dialect))
 }
 
 /// The `FROM`/`JOIN` source for a table: `"name" AS "alias"`, or `(<command sql>) AS "alias"` for a
-/// command table.
-fn from_source(table: &Table) -> String {
+/// command table. Identifiers are quoted for `dialect`.
+fn from_source(table: &Table, dialect: Dialect) -> String {
     match &table.command_text {
-        Some(cmd) if !cmd.trim().is_empty() => format!("({cmd}) AS {}", quote_ident(&table.alias)),
+        Some(cmd) if !cmd.trim().is_empty() => {
+            format!("({cmd}) AS {}", dialect.quote_ident(&table.alias))
+        }
         _ => format!(
             "{} AS {}",
-            quote_ident(&table.name),
-            quote_ident(&table.alias)
+            dialect.quote_ident(&table.name),
+            dialect.quote_ident(&table.alias)
         ),
     }
-}
-
-/// `"alias"."field"` — a column reference with both identifiers quoted.
-fn qualify(alias: &str, field: &str) -> String {
-    format!("{}.{}", quote_ident(alias), quote_ident(field))
-}
-
-/// Double-quote a SQL identifier, escaping embedded quotes (Postgres-safe).
-pub(crate) fn quote_ident(ident: &str) -> String {
-    format!("\"{}\"", ident.replace('"', "\"\""))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use rpt_model::{Database, DbFieldDef, Table, TableLink};
+
+    #[test]
+    fn with_comment_prepends_a_block_comment() {
+        let q = SqlQuery {
+            not_pushed: Vec::new(),
+            sql: "SELECT 1".into(),
+            columns: vec![],
+        };
+        let out = q.with_comment(r#"rpt-rs report="x.rpt" scope=main"#);
+        assert_eq!(
+            out.sql,
+            r#"/* rpt-rs report="x.rpt" scope=main */ SELECT 1"#
+        );
+    }
+
+    #[test]
+    fn with_comment_sanitizes_delimiters_and_newlines() {
+        let q = SqlQuery {
+            not_pushed: Vec::new(),
+            sql: "SELECT 1".into(),
+            columns: vec![],
+        };
+        // A stray `*/` cannot terminate the comment early, and newlines are flattened.
+        let out = q.with_comment("evil */ DROP\nTABLE /* x");
+        assert!(out.sql.starts_with("/* "), "has a leading comment");
+        assert!(!out.sql[3..].contains("*/ DROP"), "no early terminator");
+        assert!(out.sql.contains("SELECT 1"));
+        assert!(!out.sql.contains('\n'), "flattened to one line");
+    }
+
+    #[test]
+    fn with_comment_empty_is_noop() {
+        let q = SqlQuery {
+            not_pushed: Vec::new(),
+            sql: "SELECT 1".into(),
+            columns: vec![],
+        };
+        assert_eq!(q.with_comment("   ").sql, "SELECT 1");
+    }
 
     fn table(name: &str, fields: &[(&str, FieldValueType)]) -> Table {
         Table {
@@ -641,14 +815,33 @@ mod tests {
     }
 
     fn link(
-        join_type: TableJoinType,
+        join_kind: TableJoinKind,
+        src: &str,
+        tgt: &str,
+        src_fields: &[&str],
+        tgt_fields: &[&str],
+    ) -> TableLink {
+        link_with_op(
+            join_kind,
+            TableLinkOperator::Equal,
+            src,
+            tgt,
+            src_fields,
+            tgt_fields,
+        )
+    }
+
+    fn link_with_op(
+        join_kind: TableJoinKind,
+        operator: TableLinkOperator,
         src: &str,
         tgt: &str,
         src_fields: &[&str],
         tgt_fields: &[&str],
     ) -> TableLink {
         TableLink {
-            join_type,
+            join_kind,
+            operator,
             source_table_alias: src.into(),
             target_table_alias: tgt.into(),
             source_fields: src_fields.iter().map(|s| s.to_string()).collect(),
@@ -696,7 +889,7 @@ mod tests {
                 table("dim", &[("id", FieldValueType::Int32s)]),
             ],
             links: vec![link(
-                TableJoinType::Equal,
+                TableJoinKind::Inner,
                 "fact",
                 "dim",
                 &["dim_id"],
@@ -740,7 +933,7 @@ mod tests {
                 ),
             ],
             links: vec![link(
-                TableJoinType::Equal,
+                TableJoinKind::Inner,
                 "orders",
                 "customers",
                 &["cust"],
@@ -767,7 +960,7 @@ mod tests {
                 table("a", &[("k", FieldValueType::Int32s)]),
                 table("b", &[("k", FieldValueType::Int32s)]),
             ],
-            links: vec![link(TableJoinType::LeftOuter, "a", "b", &["k"], &["k"])],
+            links: vec![link(TableJoinKind::LeftOuter, "a", "b", &["k"], &["k"])],
         };
         let q = build_query(&db).unwrap();
         assert!(
@@ -787,7 +980,7 @@ mod tests {
                 table("a", &[("k", FieldValueType::Int32s)]),
                 table("b", &[("k", FieldValueType::Int32s)]),
             ],
-            links: vec![link(TableJoinType::LeftOuter, "b", "a", &["k"], &["k"])],
+            links: vec![link(TableJoinKind::LeftOuter, "b", "a", &["k"], &["k"])],
         };
         let q = build_query(&db).unwrap();
         assert!(
@@ -812,7 +1005,7 @@ mod tests {
                 ),
             ],
             links: vec![link(
-                TableJoinType::Equal,
+                TableJoinKind::Inner,
                 "a",
                 "b",
                 &["x", "y"],
@@ -830,7 +1023,7 @@ mod tests {
 
     #[test]
     fn no_tables_is_none() {
-        assert!(build_query(&Database::default()).is_none());
+        assert_eq!(build_query(&Database::default()), Err(QueryError::NoTables));
     }
 
     #[test]
@@ -897,7 +1090,7 @@ mod tests {
                 table("customers", &[("id", FieldValueType::Int32s)]),
             ],
             links: vec![link(
-                TableJoinType::Equal,
+                TableJoinKind::Inner,
                 "orders",
                 "customers",
                 &["cust"],
@@ -951,35 +1144,114 @@ mod tests {
         db.tables = vec![t];
         for d in [Dialect::Postgres, Dialect::Sqlite, Dialect::Mysql] {
             let q = build_query_in(&db, d).unwrap();
-            assert!(
-                q.sql.contains(r#"FROM (SELECT foo FROM bar) AS "cmd""#),
-                "{d:?}: {}",
-                q.sql
-            );
+            // The alias is quoted per dialect: backticks for MySQL, ANSI double quotes otherwise.
+            let expected = match d {
+                Dialect::Mysql => "FROM (SELECT foo FROM bar) AS `cmd`",
+                _ => r#"FROM (SELECT foo FROM bar) AS "cmd""#,
+            };
+            assert!(q.sql.contains(expected), "{d:?}: {}", q.sql);
         }
+    }
+
+    #[test]
+    fn cycle_prefers_fact_link_over_dimension_dimension() {
+        // A fact table (`fact`) is a pure source: it links to two dimensions, `dim` and `look`.
+        // `dim` ALSO links to `look` (a dimension→dimension edge). Starting from the dimension
+        // `look` as primary, `dim` must be reached via the fact (fact.dim_id = dim.id), NOT routed
+        // backwards through `dim`.look_id = `look`.id — the latter joins one `look` row to many
+        // `dim` rows (a cartesian). The fact must be pulled in first, then `dim` reached forward.
+        let db = Database {
+            tables: vec![
+                table("look", &[("id", FieldValueType::Int32s)]), // primary: a leaf dimension
+                table(
+                    "fact",
+                    &[
+                        ("dim_id", FieldValueType::Int32s),
+                        ("look_id", FieldValueType::Int32s),
+                    ],
+                ),
+                table(
+                    "dim",
+                    &[
+                        ("id", FieldValueType::Int32s),
+                        ("look_id", FieldValueType::Int32s),
+                    ],
+                ),
+            ],
+            links: vec![
+                // dimension→dimension edge (would be a cartesian if traversed backwards to reach dim).
+                link(TableJoinKind::Inner, "dim", "look", &["look_id"], &["id"]),
+                // fact→dimension edges (the correct way to reach dim and look).
+                link(TableJoinKind::Inner, "fact", "dim", &["dim_id"], &["id"]),
+                link(TableJoinKind::Inner, "fact", "look", &["look_id"], &["id"]),
+            ],
+        };
+        let q = build_query(&db).unwrap();
+        // `dim` is joined on the fact link, not the dimension→dimension link.
+        assert!(
+            q.sql.contains(r#"ON "fact"."dim_id" = "dim"."id""#),
+            "dim must be reached via the fact link; sql was: {}",
+            q.sql
+        );
+        assert!(
+            !q.sql.contains(r#"ON "dim"."look_id" = "look"."id""#),
+            "dimension→dimension edge must not be used to reach a table; sql was: {}",
+            q.sql
+        );
+        // No cartesian: every non-primary table is joined via a real link (no ON TRUE).
+        assert!(
+            !q.sql.contains("ON TRUE"),
+            "no cross join; sql was: {}",
+            q.sql
+        );
     }
 
     #[test]
     fn join_kind_resolution_flips_with_reversal() {
         use JoinKind::*;
         // Non-reversed: the stored side is preserved as-is.
-        assert_eq!(resolve_join_kind(&TableJoinType::LeftOuter, false), Left);
-        assert_eq!(resolve_join_kind(&TableJoinType::RightOuter, false), Right);
-        assert_eq!(resolve_join_kind(&TableJoinType::Equal, false), Inner);
+        assert_eq!(resolve_join_kind(&TableJoinKind::LeftOuter, false), Left);
+        assert_eq!(resolve_join_kind(&TableJoinKind::RightOuter, false), Right);
+        assert_eq!(resolve_join_kind(&TableJoinKind::Inner, false), Inner);
         // Reversed (reached from the target side): LEFT↔RIGHT swap; inner is unaffected.
-        assert_eq!(resolve_join_kind(&TableJoinType::LeftOuter, true), Right);
-        assert_eq!(resolve_join_kind(&TableJoinType::RightOuter, true), Left);
-        assert_eq!(resolve_join_kind(&TableJoinType::Equal, true), Inner);
+        assert_eq!(resolve_join_kind(&TableJoinKind::LeftOuter, true), Right);
+        assert_eq!(resolve_join_kind(&TableJoinKind::RightOuter, true), Left);
+        assert_eq!(resolve_join_kind(&TableJoinKind::Inner, true), Inner);
     }
 
+    /// Every stored comparison operator maps to its own [`LinkOp`]; an unmapped stored code falls
+    /// back to the equijoin.
     #[test]
-    fn link_op_resolution_maps_only_inequalities() {
+    fn link_op_resolution_covers_every_operator() {
         use LinkOp::*;
-        assert_eq!(resolve_link_op(&TableJoinType::GreaterThan), Gt);
-        assert_eq!(resolve_link_op(&TableJoinType::LessThan), Lt);
-        assert_eq!(resolve_link_op(&TableJoinType::NotEqual), Ne);
-        assert_eq!(resolve_link_op(&TableJoinType::Equal), Eq);
-        // An outer-join link with no explicit operator is still an equijoin.
-        assert_eq!(resolve_link_op(&TableJoinType::LeftOuter), Eq);
+        use TableLinkOperator as Op;
+        assert_eq!(resolve_link_op(&Op::Equal), Eq);
+        assert_eq!(resolve_link_op(&Op::NotEqual), Ne);
+        assert_eq!(resolve_link_op(&Op::GreaterThan), Gt);
+        assert_eq!(resolve_link_op(&Op::GreaterOrEqual), Ge);
+        assert_eq!(resolve_link_op(&Op::LessThan), Lt);
+        assert_eq!(resolve_link_op(&Op::LessOrEqual), Le);
+        assert_eq!(resolve_link_op(&Op::Other(3)), Eq);
+    }
+
+    /// Outer-ness and comparison are independent: a left-outer `>=` link keeps both halves.
+    #[test]
+    fn outer_join_and_comparison_operator_compose() {
+        let l = link_with_op(
+            TableJoinKind::LeftOuter,
+            TableLinkOperator::GreaterOrEqual,
+            "a",
+            "b",
+            &["k"],
+            &["k"],
+        );
+        let sql = join_clause(
+            &table("b", &[("k", FieldValueType::Int32s)]),
+            &l,
+            false,
+            Dialect::Postgres,
+        );
+        assert!(sql.starts_with("LEFT JOIN"), "{sql}");
+        assert!(sql.contains(r#""a"."k" >= "b"."k""#), "{sql}");
     }
 }

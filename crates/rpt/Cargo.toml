@@ -21,7 +21,7 @@ rpt-model.workspace = true
 cfb.workspace = true
 miniz_oxide.workspace = true
 thiserror.workspace = true
-serde = { version = "1", features = ["derive"], optional = true }
+serde = { workspace = true, optional = true }
 
 [dev-dependencies]
 rpt-test-support = { workspace = true }

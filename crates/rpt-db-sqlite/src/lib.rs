@@ -7,106 +7,204 @@
 //! live `rpt-db-postgres` path. So the same report renders from a real database with no change to
 //! the pipeline or layout engine.
 //!
-//! Because SQLite runs in-process, this is the datasource for **full-stack render tests in CI and on
-//! localhost** with no external processes to spin up. SQL generation lives in the pure,
+//! SQLite runs in-process, so this path needs no server to provision — a file or `:memory:` is the
+//! whole datasource. SQL generation lives in the pure,
 //! WASM-safe [`rpt_query`] crate; this crate only executes the string and re-types the result. Every
 //! column is fetched as text (`CAST(x AS TEXT)`) and re-typed via [`rpt_data::cell_to_value`] against
 //! the report's declared [`FieldValueType`](rpt_model::FieldValueType), so there is no
 //! per-SQLite-type extraction code.
 
-use rpt_data::{rows_from_cells, Column, Row, RowSource};
-use rpt_model::Database;
-use rpt_query::{build_query_full, Dialect, SqlQuery};
+use rpt_data::{Cell, Column, Row, RowData, RowSource};
+use rpt_model::{Database, Report};
+use rpt_query::{build_query_for_report, build_query_full, Dialect, SqlQuery, Value};
 use rusqlite::Connection;
 
-/// A failure of the SQLite path, typed so a caller can tell a report with no bound table apart from a
-/// genuine open or query failure (the previous `Box<dyn Error>` erased that).
-#[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
-pub enum DbError {
-    /// The report has no bound database table, so no query can be built.
-    #[error("report has no database table to query")]
-    NoTable,
-    /// Opening the database file/connection failed.
-    #[error("open failed: {0}")]
-    Open(#[source] rusqlite::Error),
-    /// Preparing or executing a query failed.
-    #[error("query failed: {0}")]
-    Query(#[source] rusqlite::Error),
-}
-
-impl From<rusqlite::Error> for DbError {
-    fn from(e: rusqlite::Error) -> DbError {
-        DbError::Query(e)
-    }
-}
+/// A failure of the SQLite path — the shared [`rpt_data::DbError`] aliased to this driver's error
+/// type, so a caller can tell a report with no bound table apart from a genuine open or query
+/// failure. Constructed through its `no_query` / `connect` / `query` helpers.
+pub type DbError = rpt_data::DbError<rusqlite::Error>;
 
 /// A [`RowSource`] backed by a SQLite query over a report's linked tables.
 #[derive(Debug, Clone)]
-pub struct SqliteSource {
-    columns: Vec<Column>,
-    rows: Vec<Row>,
-}
+pub struct SqliteSource(RowData);
 
 impl SqliteSource {
     /// Open the database at `url` and fetch the report's tables (joined per the link graph),
     /// re-typing every value against the report's declared field types. `url` accepts
     /// `sqlite:///abs/path.db`, `sqlite://rel/path.db`, `sqlite::memory:`, or a bare filesystem path.
-    /// `sql_exprs` are the report's SQL Expression fields (`(name, text)`), each selected as
-    /// `(<text>) AS "<name>"` so a `{%name}` reference resolves against the fetched column.
-    /// Errors on open/query failure or a report with no table.
+    ///
+    /// The full driver constructor, shared with the Postgres path: `sql_exprs` are the report's SQL
+    /// Expression fields (`(name, text)`), each selected as `(<text>) AS "<name>"` so a `{%name}`
+    /// reference resolves against the fetched column; `selection`/`params` are the record-selection
+    /// push-down (the SQLite dialect emits no `WHERE`, so it fetches the full table and the pipeline
+    /// applies the formula per row — the result set is identical either way); and `comment`, when
+    /// set, is prepended as a `/* … */` tracking comment for the DB's query logs. Errors on
+    /// open/query failure or a report with no table.
+    ///
+    /// # Errors
+    ///
+    /// - [`DbError::NoQuery`] — no query could be built for the report (it binds no table).
+    /// - [`DbError::Connect`] — the database could not be opened or reached.
+    /// - [`DbError::Query`] — the statement failed; the error carries the SQL and, for a missing
+    ///   table or column, a pointer at `rpt sql` (see [`DbError::hint`]).
     pub fn fetch(
         url: &str,
         database: &Database,
         sql_exprs: &[(String, String)],
+        selection: Option<&str>,
+        params: &[(String, Value)],
+        comment: Option<&str>,
     ) -> Result<SqliteSource, DbError> {
-        let conn = open(url).map_err(DbError::Open)?;
-        // SQLite has no WHERE push-down (Postgres-only), so no selection/params are passed.
-        let query = build_query_full(database, sql_exprs, None, &[], Dialect::Sqlite)
-            .ok_or(DbError::NoTable)?;
+        let query = build_query_full(database, sql_exprs, selection, params, Dialect::Sqlite)
+            .map_err(|e| DbError::no_query(e.to_string()))?;
+        Self::open_and_run(url, query, comment)
+    }
+
+    /// Like [`fetch`](Self::fetch) but prunes the query to the tables and columns the `report`
+    /// actually references ([`build_query_for_report`]), so declared-but-unused tables are not
+    /// cross-joined into the `FROM`. Prefer it whenever the full [`Report`] is available.
+    ///
+    /// # Errors
+    ///
+    /// - [`DbError::NoQuery`] — no query could be built for the report (it binds no table).
+    /// - [`DbError::Connect`] — the database could not be opened or reached.
+    /// - [`DbError::Query`] — the statement failed; the error carries the SQL and, for a missing
+    ///   table or column, a pointer at `rpt sql` (see [`DbError::hint`]).
+    pub fn fetch_for_report(
+        url: &str,
+        report: &Report,
+        selection: Option<&str>,
+        sql_exprs: &[(String, String)],
+        params: &[(String, Value)],
+    ) -> Result<SqliteSource, DbError> {
+        let query = build_query_for_report(report, sql_exprs, selection, params, Dialect::Sqlite)
+            .map_err(|e| DbError::no_query(e.to_string()))?;
+        Self::open_and_run(url, query, None)
+    }
+
+    /// Open `url`, optionally stamp `comment` onto `query`, and run it.
+    fn open_and_run(
+        url: &str,
+        mut query: SqlQuery,
+        comment: Option<&str>,
+    ) -> Result<SqliteSource, DbError> {
+        if let Some(c) = comment {
+            query = query.with_comment(c);
+        }
+        let conn = open(url).map_err(DbError::connect)?;
         Self::run_query(&conn, &query)
     }
 
-    /// Execute an already-generated [`SqlQuery`] on an existing connection (exposed for tests / custom
-    /// callers). Rows are keyed by each column's `alias.field` name (how formulas reference them).
+    /// Execute an already-generated [`SqlQuery`] on an existing connection, for a caller that manages
+    /// the connection itself. Rows are keyed by each column's `alias.field` name (how formulas
+    /// reference them).
+    ///
+    /// # Errors
+    ///
+    /// [`DbError::Query`] if the statement fails. The error carries the SQL and, for a missing table
+    /// or column, a pointer at `rpt sql` (see [`DbError::hint`]).
     pub fn run_query(conn: &Connection, query: &SqlQuery) -> Result<SqliteSource, DbError> {
+        // Attach the failing statement once here rather than at each `map_err(DbError::query)` below:
+        // without it the driver's "no such table: x" arrives with no way to see what was actually sent.
+        Self::run_query_inner(conn, query).map_err(|e| e.in_context(None, Some(&query.sql)))
+    }
+
+    fn run_query_inner(conn: &Connection, query: &SqlQuery) -> Result<SqliteSource, DbError> {
         let columns: Vec<Column> = query.result_columns();
         let n = columns.len();
-        let mut stmt = conn.prepare(&query.sql)?;
-        let mut sqlite_rows = stmt.query([])?;
-        // Each column was CAST to text (or is NULL); read them positionally. The shared
-        // `rows_from_cells` keys and re-types every cell — this closure supplies only the driver's
-        // text-cell accessor (advancing the forward-only cursor one row at a time).
-        let rows = rows_from_cells(&columns, || -> Result<_, DbError> {
-            match sqlite_rows.next()? {
+        // A binary column is selected raw and read as bytes; every other column is CAST to text.
+        // Snapshot the per-column choice before `columns` is moved into `from_cells`.
+        let binary: Vec<bool> = columns.iter().map(|c| c.value_type.is_binary()).collect();
+        let mut stmt = conn.prepare(&query.sql).map_err(DbError::query)?;
+        let mut sqlite_rows = stmt.query([]).map_err(DbError::query)?;
+        // `RowData::from_cells` keys and re-types every cell — this closure supplies only the driver's
+        // cell accessor (advancing the forward-only cursor one row at a time). Every read failure is
+        // classified explicitly as `DbError::Query`, so open and query failures stay distinguishable.
+        let data = RowData::from_cells(columns, || -> Result<_, DbError> {
+            match sqlite_rows.next().map_err(DbError::query)? {
                 Some(sr) => {
                     let mut cells = Vec::with_capacity(n);
-                    for i in 0..n {
-                        cells.push(sr.get::<_, Option<String>>(i)?);
+                    for (i, &is_binary) in binary.iter().enumerate() {
+                        let cell = if is_binary {
+                            sr.get::<_, Option<Vec<u8>>>(i)
+                                .map_err(DbError::query)?
+                                .map(Cell::Bytes)
+                        } else {
+                            sr.get::<_, Option<String>>(i)
+                                .map_err(DbError::query)?
+                                .map(Cell::Text)
+                        };
+                        cells.push(cell);
                     }
                     Ok(Some(cells))
                 }
                 None => Ok(None),
             }
         })?;
-        Ok(SqliteSource { columns, rows })
+        Ok(SqliteSource(data))
     }
 }
 
 impl RowSource for SqliteSource {
     fn columns(&self) -> &[Column] {
-        &self.columns
+        self.0.columns()
     }
     fn rows(&self) -> Vec<Row> {
-        self.rows.clone()
+        self.0.rows()
     }
 }
 
-/// Create/open the database at `url` and run a batch of SQL (schema + seed data). A convenience for
-/// tests and fixture builders so callers don't depend on `rusqlite` directly.
+/// An open SQLite connection, split from the fetch so a caller (e.g. the render CLI) can order the
+/// steps itself: [`open`](Self::open) → build+log the SQL → [`run`](Self::run). Keeps every
+/// `rusqlite` specific inside this crate; callers deal only in [`SqlQuery`] / [`SqliteSource`]. This
+/// mirrors `rpt-db-postgres`'s `PostgresConn`, so the CLI runs the *same* query it logged instead of
+/// building the SQL string a second time.
+pub struct SqliteConn {
+    conn: Connection,
+}
+
+impl std::fmt::Debug for SqliteConn {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        // `rusqlite::Connection` is not Debug; nothing here is useful to print.
+        f.debug_struct("SqliteConn").finish_non_exhaustive()
+    }
+}
+
+impl SqliteConn {
+    /// Open the database at `url` (`sqlite:///abs`, `sqlite://rel`, `sqlite::memory:`, or a bare
+    /// path). Errors on open failure.
+    ///
+    /// # Errors
+    ///
+    /// [`DbError::Connect`] if the database cannot be opened or reached.
+    pub fn open(url: &str) -> Result<SqliteConn, DbError> {
+        Ok(SqliteConn {
+            conn: open(url).map_err(DbError::connect)?,
+        })
+    }
+
+    /// Execute an already-built [`SqlQuery`] and materialize the [`SqliteSource`].
+    ///
+    /// # Errors
+    ///
+    /// [`DbError::Query`] if the statement fails. The error carries the SQL and, for a missing table
+    /// or column, a pointer at `rpt sql` (see [`DbError::hint`]).
+    pub fn run(&self, query: &SqlQuery) -> Result<SqliteSource, DbError> {
+        SqliteSource::run_query(&self.conn, query)
+    }
+}
+
+/// Create/open the database at `url` and run a batch of SQL (schema + seed data), so a caller can
+/// populate a database without depending on `rusqlite` directly.
+///
+/// # Errors
+///
+/// [`DbError::Connect`] if the database cannot be opened or reached.
+///
+/// [`DbError::Query`] if a statement in `sql` fails.
 pub fn seed(url: &str, sql: &str) -> Result<(), DbError> {
-    let conn = open(url).map_err(DbError::Open)?;
-    conn.execute_batch(sql)?;
+    let conn = open(url).map_err(DbError::connect)?;
+    conn.execute_batch(sql).map_err(DbError::query)?;
     Ok(())
 }
 
@@ -205,6 +303,24 @@ mod tests {
         assert_eq!(rows.len(), 1);
         // Keyed by the bare SQL-expression name.
         assert_eq!(rows[0].get("tax"), Some(&Value::Str("200".into())));
+    }
+
+    #[test]
+    fn leading_tracking_comment_does_not_break_execution() {
+        // A `/* … */` tracking comment prepended to the SQL is valid and returns the same rows.
+        let conn = open("sqlite::memory:").unwrap();
+        conn.execute_batch(
+            "CREATE TABLE cities(name TEXT, pop INTEGER);
+             INSERT INTO cities VALUES ('Toronto', 5);",
+        )
+        .unwrap();
+        let db = one_table_db();
+        let q = build_query_in(&db, Dialect::Sqlite)
+            .unwrap()
+            .with_comment(r#"rpt-rs report="x.rpt" scope=main"#);
+        assert!(q.sql.starts_with("/* rpt-rs"), "{}", q.sql);
+        let src = SqliteSource::run_query(&conn, &q).unwrap();
+        assert_eq!(src.rows().len(), 1);
     }
 
     #[test]

@@ -5,29 +5,31 @@
 //! are not.
 
 use super::bar::bar_chart;
+#[cfg(test)]
+use super::common::AxisTitles;
 use super::common::{
-    category_stride, compute_frame, emit_value_axis, fmt_val, nice_scale, value_label, AxisTitles,
-    LABEL, PALETTE,
+    category_stride, compute_frame, emit_value_axis, fmt_val, nice_scale, value_frac, value_label,
+    ChartCtx, LABEL, LABEL_PT, PALETTE,
 };
 use rpt_model::{Rect, Twips};
-use rpt_pages::{DrawOp, FontSpec, ObjectKind, ObjectRef, RectOp, TextAlign, TextRun};
+use rpt_pages::{DrawOp, FontSpec, RectOp, TextAlign, TextRun};
 
 /// Build the draw-ops for a numeric-axis chart of `series` (category label → value). If every
 /// category label parses as a number the bars are placed along a continuous 0..nice_max X scale;
 /// otherwise the ordinal [`bar_chart`] is used unchanged. `show_labels` gates the per-bar value
 /// labels. Returns an empty vec if `series` is empty.
-pub(crate) fn numeric_axis_chart(
-    rect: Rect,
-    title: &str,
-    axis_titles: AxisTitles,
-    series: &[(String, f64)],
-    show_labels: bool,
-    section_name: &str,
-    obj_name: &str,
-) -> Vec<DrawOp> {
+pub(crate) fn numeric_axis_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp> {
     if series.is_empty() {
         return Vec::new();
     }
+    let &ChartCtx {
+        def,
+        rect,
+        title,
+        axis_titles,
+        show_labels,
+        ..
+    } = cx;
     // Numeric only when every category key parses as a number; else ordinal fallback.
     let keys: Option<Vec<f64>> = series
         .iter()
@@ -35,37 +37,27 @@ pub(crate) fn numeric_axis_chart(
         .collect();
     let keys = match keys {
         Some(k) => k,
-        None => {
-            return bar_chart(
-                rect,
-                title,
-                axis_titles,
-                series,
-                show_labels,
-                section_name,
-                obj_name,
-            )
-        }
+        None => return bar_chart(cx, series),
     };
 
-    let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(obj_name));
+    let src = || cx.src();
     let mut ops: Vec<DrawOp> = Vec::new();
     // Reuse the shared value-axis frame for the Y scale, title, axes, and gridlines.
     let f = compute_frame(rect, title, axis_titles, series);
-    emit_value_axis(&mut ops, &f, rect, title, axis_titles, series, &src);
+    emit_value_axis(def, &mut ops, &f, rect, title, axis_titles, &src);
 
     // Numeric X scale: 0..nice_max over the parsed keys, mapped into the plot rectangle.
     let key_max = keys.iter().copied().fold(0.0_f64, f64::max);
     let (x_max, _) = nice_scale(key_max);
-    let plot_w = (f.plot_right() - f.plot_left).max(1) as f64;
+    let plot_w = (f.plot_right - f.plot_left).max(1) as f64;
     let x_at = |k: f64| f.plot_left + ((k.max(0.0) / x_max) * plot_w) as i32;
 
     let bar_w = (f.slot / 2).max(15);
     let stride = category_stride(&f, series.len());
     for (idx, ((label, val), key)) in series.iter().zip(&keys).enumerate() {
-        let h = ((val.max(0.0) / f.max_val) * f.plot_h as f64) as i32;
-        let cx = x_at(*key);
-        let bx = (cx - bar_w / 2).max(f.plot_left);
+        let h = (value_frac(*val, f.max_val) * f.plot_h as f64) as i32;
+        let px = x_at(*key);
+        let bx = (px - bar_w / 2).max(f.plot_left);
         let by = f.plot_bottom - h;
         ops.push(DrawOp::Rect(RectOp {
             bounds: Rect {
@@ -81,7 +73,7 @@ pub(crate) fn numeric_axis_chart(
         }));
         if show_labels {
             ops.push(value_label(
-                cx,
+                px,
                 (by - 230).max(f.plot_top()),
                 &fmt_val(*val),
                 LABEL,
@@ -94,7 +86,7 @@ pub(crate) fn numeric_axis_chart(
         }
         ops.push(DrawOp::Text(TextRun {
             bounds: Rect {
-                left: Twips(cx - f.slot / 2),
+                left: Twips(px - f.slot / 2),
                 top: Twips(f.plot_bottom + 30),
                 width: Twips(f.slot),
                 height: Twips(f.cat_h),
@@ -102,7 +94,7 @@ pub(crate) fn numeric_axis_chart(
             text: label.clone(),
             font: FontSpec {
                 family: "Arial".into(),
-                size_pt: 7.0,
+                size_pt: LABEL_PT,
                 ..Default::default()
             },
             color: LABEL,
@@ -140,9 +132,11 @@ mod tests {
 
     #[test]
     fn empty_series_yields_no_ops() {
-        assert!(
-            numeric_axis_chart(rect(), "T", AxisTitles::default(), &[], true, "S", "G").is_empty()
-        );
+        assert!(numeric_axis_chart(
+            &ChartCtx::test(rect(), "T", AxisTitles::default(), true),
+            &[]
+        )
+        .is_empty());
     }
 
     /// Numeric keys → one bar per value, placed at increasing X positions with the gap proportional to
@@ -150,7 +144,10 @@ mod tests {
     #[test]
     fn numeric_keys_place_bars_at_scaled_x() {
         let s = vec![("10".into(), 12.0), ("20".into(), 27.0), ("40".into(), 6.0)];
-        let ops = numeric_axis_chart(rect(), "N", AxisTitles::default(), &s, false, "RH", "G");
+        let ops = numeric_axis_chart(
+            &ChartCtx::test(rect(), "N", AxisTitles::default(), false),
+            &s,
+        );
         let lefts = bar_lefts(&ops);
         assert_eq!(lefts.len(), 3, "one bar per value");
         assert!(
@@ -167,7 +164,10 @@ mod tests {
     #[test]
     fn non_numeric_keys_fall_back_to_ordinal() {
         let s = vec![("Alpha".into(), 12.0), ("Beta".into(), 27.0)];
-        let ops = numeric_axis_chart(rect(), "N", AxisTitles::default(), &s, false, "RH", "G");
+        let ops = numeric_axis_chart(
+            &ChartCtx::test(rect(), "N", AxisTitles::default(), false),
+            &s,
+        );
         assert_eq!(
             bar_lefts(&ops).len(),
             2,
@@ -179,7 +179,10 @@ mod tests {
     #[test]
     fn show_labels_false_omits_value_labels() {
         let s = vec![("10".into(), 12.0), ("20".into(), 27.0), ("40".into(), 6.0)];
-        let ops = numeric_axis_chart(rect(), "N", AxisTitles::default(), &s, false, "RH", "G");
+        let ops = numeric_axis_chart(
+            &ChartCtx::test(rect(), "N", AxisTitles::default(), false),
+            &s,
+        );
         let texts: Vec<String> = ops
             .iter()
             .filter_map(|o| match o {

@@ -38,6 +38,12 @@ pub struct Area {
     pub kind: AreaSectionKind,
     /// The area's name (SDK `Area.Name`).
     pub name: String,
+    /// For a group header/footer area, its 0-based group nesting level (outermost group = 0),
+    /// decoded from the `SectionCodeAreaType` (`0x9b`) leaf byte 2. `None` for non-group areas.
+    /// This is the authoritative source of a group area's level: the area *name* is user-renameable
+    /// and the binary storage order of group areas need not match the group sequence, so neither can
+    /// be relied on to derive nesting.
+    pub group_level: Option<usize>,
     /// Formatting shared by all sections in the area.
     pub format: AreaFormat,
     /// The sections that make up this area (usually one; groups repeat per instance).
@@ -54,7 +60,9 @@ pub struct Section {
     pub name: String,
     /// The section's design height, in twips.
     pub height: Twips,
-    /// The section's design width, in twips.
+    /// The section's width, in twips. Not a stored fact: the engine reports the page content width
+    /// (page width minus the left/right margins), resolved at layout time from the print options.
+    /// Left `0` by the decoder — it is populated only where a layout has the page geometry.
     pub width: Twips,
     /// Numeric id that report objects reference (SDK: SectionCode).
     pub section_code: i32,
@@ -62,8 +70,9 @@ pub struct Section {
     pub format: SectionFormat,
     /// The report objects placed in this section.
     pub objects: Vec<ReportObject>,
-    /// Conditional-format formulas attached to this section, as `(attribute name, formula text)`
-    /// pairs in `<SectionAreaConditionFormulas>` emit order (e.g. `("EnableSuppress", "…")`).
+    /// Conditional-format formulas attached to this section, as `(reserved formula name, formula
+    /// text)` pairs in record order (e.g. `("Section_Visibility", "…")`, `("New_Page_After", "…")`).
+    /// The key is the stored Crystal reserved formula name, not any output-surface attribute name.
     pub condition_formulas: Vec<(String, String)>,
 }
 
@@ -85,7 +94,7 @@ pub struct SectionAreaFormatBase {
     pub suppress: bool,
 }
 
-/// SDK: `IAreaFormat` (XML `<AreaFormat>`).
+/// SDK: `IAreaFormat`.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct AreaFormat {
@@ -101,7 +110,7 @@ pub struct AreaFormat {
     pub group: Option<GroupAreaFormat>,
 }
 
-/// SDK: `IGroupAreaFormat` (XML `<GroupAreaFormat>`).
+/// SDK: `IGroupAreaFormat`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct GroupAreaFormat {
@@ -113,7 +122,7 @@ pub struct GroupAreaFormat {
     pub visible_groups_per_page: i32,
 }
 
-/// SDK: `ISectionFormat` (XML `<SectionFormat>`).
+/// SDK: `ISectionFormat`.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct SectionFormat {

@@ -21,6 +21,7 @@
 use crate::value_order::value_key;
 use crate::SummaryAccumulator;
 use crystal_formula::eval::{EvalContext, Value};
+use crystal_formula::token::{split_reference, strip_braces};
 use crystal_formula::RefKind;
 use rpt_model::{
     DataDefinition, EvaluationConditionType, FieldKindData, ResetConditionType, RunningTotalField,
@@ -194,11 +195,10 @@ fn driver_value(ctx: &dyn EvalContext, reference: &str) -> Option<Value> {
 
 /// Resolve a bare reference (`table.field` or `@formula`) to a [`Value`] through `ctx`.
 fn resolve_ref(ctx: &dyn EvalContext, reference: &str) -> Value {
-    let r = reference.trim().trim_matches(['{', '}']);
-    if let Some(name) = r.strip_prefix('@') {
-        ctx.resolve(RefKind::Formula, name).unwrap_or(Value::Null)
-    } else {
-        ctx.resolve(RefKind::Field, r).unwrap_or(Value::Null)
+    let (kind, name) = split_reference(strip_braces(reference));
+    match kind {
+        RefKind::Formula => ctx.resolve(RefKind::Formula, name).unwrap_or(Value::Null),
+        _ => ctx.resolve(RefKind::Field, name).unwrap_or(Value::Null),
     }
 }
 

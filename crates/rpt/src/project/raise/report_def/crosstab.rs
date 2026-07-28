@@ -1,7 +1,6 @@
 //! Cross-tab grid formatting decode — the `0x0143 CrossTabGridFormat` word and the `0x0145
 //! CrossTabGridCellFormat` per-region records, plus the per-axis option words on the `0x00ce` /
-//! `0x00d2` level records. STRUCTURAL only (RptToXml never exports cross-tabs); verified against the
-//! record tree, not an XML oracle.
+//! `0x00d2` level records.
 
 use super::*;
 use crate::model::{Color, CrossTabCellFormat, CrossTabGridFormat, CrossTabGridOptions};
@@ -87,27 +86,24 @@ pub(super) fn collect_crosstab_grid(
 /// (Big-endian, unlike the `0x0145` region colour which is a trailing-zero little-endian COLORREF.)
 pub(super) fn decode_grandtotal_color(leaf: &[u8]) -> Option<Color> {
     let c = u32_be(leaf, 0)?;
-    (c != 0xFFFF_FFFF).then_some(Color {
-        a: 255,
-        r: (c & 0xff) as u8,
-        g: ((c >> 8) & 0xff) as u8,
-        b: ((c >> 16) & 0xff) as u8,
-    })
+    (c != 0xFFFF_FFFF).then(|| colorref(c))
 }
 
 /// Decode a `0x0145 CrossTabGridCellFormat` leaf (11 bytes):
 /// `[0..4]` format-override flags (big-endian; `0x28` on regions carrying explicit formatting),
-/// `[4]`/`[5]` fixed, `[6..10]` the region background colour as a little-endian `COLORREF`
+/// `[4]`/`[5]` a fixed `01 00` sub-record header (invariant, not per-region data), `[6..10]` the region background colour as a little-endian `COLORREF`
 /// (`[R, G, B, 0]` — the trailing zero marks it little-endian, unlike the pad-first `0x0100`
 /// FontColor), `[10]` the region enabled flag. The colour is not exposed by RAS/the HTML render
 /// (the cross-tab grid-region template is engine-internal), so the `[R,G,B]` order is inferred from
-/// the trailing-zero COLORREF layout, not oracle-verified.
+/// the trailing-zero COLORREF layout.
 fn decode_cell_format(leaf: &[u8]) -> CrossTabCellFormat {
     let flags = u32_be(leaf, 0).unwrap_or(0);
     // Background colour: a little-endian `COLORREF` at `[6..10]` = `[R, G, B, 0]`. A region with no
     // explicit background reads all-zero.
     let background_color = match (leaf.get(6), leaf.get(7), leaf.get(8)) {
-        (Some(&r), Some(&g), Some(&b)) if (r, g, b) != (0, 0, 0) => Some(Color { a: 255, r, g, b }),
+        (Some(&r), Some(&g), Some(&b)) if (r, g, b) != (0, 0, 0) => {
+            Some(colorref(u32::from_le_bytes([r, g, b, 0])))
+        }
         _ => None,
     };
     CrossTabCellFormat {
@@ -136,8 +132,8 @@ fn trailing_lp_string(leaf: &[u8]) -> String {
 /// (its generated field objects are named `Column #N`); one nested under a `0x00d2 CrossTabRecord`
 /// is a **row** (`Row #N`). Levels are emitted in the stream as all columns then all rows; the first
 /// level of each axis is the grand-total level (empty field reference). Distinct from
-/// [`super::grid::collect_grid_bindings`], which reads the `0xe5` grid groups for `Field.UseCount`;
-/// this preserves the row/column split and grand-total levels for the model.
+/// [`super::grid::collect_grid_bindings`], which reads the `0xe5` grid groups into one flat binding
+/// list; this preserves the row/column split and grand-total levels for the model.
 pub(super) fn collect_crosstab_dimensions(
     tree: &[RecordNode],
     logical: &[u8],
@@ -157,7 +153,15 @@ pub(super) fn collect_crosstab_dimensions(
                 if let Some(name) = &current {
                     let leaf = node.leaf_bytes(logical);
                     let field_ref = trailing_lp_string(&leaf);
-                    let dim = crate::model::CrossTabDimension { field_ref };
+                    // Neither the grouping period nor the two suppress flags are on the `0x00cb`
+                    // level record; both are filled from the dimension's `0x00e5` grid group in
+                    // [`super::grid::attach_grid_bindings`].
+                    let dim = crate::model::CrossTabDimension {
+                        field_ref,
+                        period: None,
+                        suppress_subtotal: false,
+                        suppress_label: false,
+                    };
                     let s = out.entry(name.clone()).or_default();
                     s.dimensions.push(dim.clone());
                     if is_column {
@@ -200,34 +204,21 @@ pub(super) struct CrossTabStructure {
 /// data-cell summary. These are the report's pre-layout `0x7e SummaryFieldDefinition` records (the
 /// operation byte at leaf offset 0, the summarized field the first `Table.field`/`@formula` string
 /// in the leaf), excluding running totals (a `0x7e` immediately preceded by its `0x80` reset). In
-/// the corpus (single-cross-tab budget reports) every report summary is a cross-tab measure and the
-/// count matches the measure count stored in the `0x00db CrossTabFieldGrid` record; a report with a
-/// cross-tab *and* an unrelated group summary can't be disambiguated from the corpus, so all report
-/// summaries are attributed to the cross-tab.
+/// a report with one cross-tab and no unrelated group summary, every report summary is a cross-tab
+/// measure and the count matches the measure count stored in the `0x00db CrossTabFieldGrid` record.
+/// A cross-tab *and* an unrelated group summary cannot be told apart, so all report summaries are
+/// attributed to the cross-tab.
 ///
 /// Boundary note: this all-summaries attribution is a derived **inference**, not a stored fact.
-/// It is admissible here only because cross-tab measures have no XML/render surface today (STRUCTURAL
-/// — no XML/oracle surface). If cross-tabs gain one, the attribution must move to the derive layer (the
+/// It is admissible here only because cross-tab measures have no output/render surface today
+/// (STRUCTURAL — no output surface). If cross-tabs gain one, the attribution must move to the derive layer (the
 /// stored-vs-derived boundary), leaving `rpt` to decode only what the bytes state.
 pub(super) fn collect_crosstab_measures(
     tree: &[RecordNode],
     logical: &[u8],
 ) -> Vec<crate::model::CrossTabMeasure> {
-    let nodes = flatten(tree);
     let mut out = Vec::new();
-    for i in 0..nodes.len() {
-        let node = nodes[i];
-        // The layout region begins at the first area marker; summary definitions all precede it.
-        if node.rtype == AREA_MARKER {
-            break;
-        }
-        if node.rtype != SUMMARY_DEF {
-            continue;
-        }
-        // A running total is a `0x7e` immediately preceded by its `0x80` reset record — not a measure.
-        if i > 0 && nodes[i - 1].rtype == RT_RESET {
-            continue;
-        }
+    for node in summary_def_nodes(tree, true) {
         let leaf = node.leaf_bytes(logical);
         let operation = crate::model::SummaryOperation::from_code(i32::from(
             leaf.first().copied().unwrap_or(0),

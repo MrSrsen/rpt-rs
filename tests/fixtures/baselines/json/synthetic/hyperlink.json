@@ -1,0 +1,515 @@
+{
+  "model": {
+    "data_definition": {
+      "condition_formula_bodies": [],
+      "custom_functions": [],
+      "field_definitions": [],
+      "field_manager_census": {
+        "database_fields": 0,
+        "formula_bodies": 3
+      },
+      "formula_variables": [],
+      "group_selection": "",
+      "groups": [],
+      "record_selection": "",
+      "record_sorts": [],
+      "running_total_condition_formulas": [],
+      "saved_data_filter": "",
+      "summary_binding_fields": []
+    },
+    "database": {
+      "links": [],
+      "tables": []
+    },
+    "designer_state": {
+      "connections": [],
+      "guidelines": []
+    },
+    "embeds": [],
+    "has_saved_data": true,
+    "print_options": {
+      "content_height": 15120,
+      "content_width": 11520,
+      "driver_name": null,
+      "margins": {
+        "bottom": 360,
+        "left": 360,
+        "right": 360,
+        "top": 360
+      },
+      "multi_column": null,
+      "paper_orientation": "Portrait",
+      "paper_size": "DefaultPaperSize",
+      "paper_source": "FormSource",
+      "port_name": null,
+      "printer_duplex": "Default",
+      "printer_name": "",
+      "saved_printer_name": ""
+    },
+    "reimport": {
+      "imported_at": {
+        "julian_day": 2451471,
+        "time_fraction": 72148
+      },
+      "reimport_when_opening": 1,
+      "source_path": "",
+      "source_saved_at": {
+        "julian_day": 0,
+        "time_fraction": 0
+      }
+    },
+    "report_definition": {
+      "areas": [
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": true,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "ReportHeader",
+          "name": "Area1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 585,
+              "kind": "ReportHeader",
+              "name": "Section1",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 226,
+                    "left": 4830,
+                    "top": 180,
+                    "width": 1911
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": {
+                      "kind": "Website",
+                      "text": "https://google.com"
+                    },
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": {
+                      "Other": 29812
+                    },
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "google link",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              },
+                              "text": "google link"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "google link"
+                    }
+                  },
+                  "name": "Text1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 6000
+                }
+              ],
+              "section_code": 6000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": true,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "PageHeader",
+          "name": "Area2",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 600,
+              "kind": "PageHeader",
+              "name": "Section2",
+              "objects": [],
+              "section_code": 12000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "Detail",
+          "name": "Area3",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 220,
+              "kind": "Detail",
+              "name": "Section3",
+              "objects": [],
+              "section_code": 24000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": true,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "ReportFooter",
+          "name": "Area4",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 600,
+              "kind": "ReportFooter",
+              "name": "Section4",
+              "objects": [],
+              "section_code": 48000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": true,
+              "new_page_after": true,
+              "new_page_before": false,
+              "print_at_bottom_of_page": true,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "PageFooter",
+          "name": "Area5",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 600,
+              "kind": "PageFooter",
+              "name": "Section5",
+              "objects": [],
+              "section_code": 42000,
+              "width": 0
+            }
+          ]
+        }
+      ]
+    },
+    "report_options": {
+      "convert_null_field_to_default": false,
+      "convert_other_nulls_to_default": false,
+      "enable_verify_on_every_print": false,
+      "initial_data_context": null,
+      "initial_report_part_name": null,
+      "save_data_with_report": true,
+      "save_preview_picture": false,
+      "save_summaries_with_report": true,
+      "use_dummy_data": false
+    },
+    "save_metadata": [
+      {
+        "key": "Saved Date",
+        "value": "2005.09.20 09:59:29 Pacific Standard Time"
+      },
+      {
+        "key": "Build Version",
+        "value": "11.5.0.240"
+      },
+      {
+        "key": "Print Engine",
+        "value": "CRW"
+      },
+      {
+        "key": "OS",
+        "value": "Windows Server 2003 family"
+      },
+      {
+        "key": "Architecture",
+        "value": "x86"
+      },
+      {
+        "key": "Saved Date",
+        "value": "2007.07.25 11:07:35 Pacific Standard Time"
+      },
+      {
+        "key": "Build Version",
+        "value": "12.0.0.321"
+      },
+      {
+        "key": "Print Engine",
+        "value": "CRVBD"
+      },
+      {
+        "key": "OS",
+        "value": "Windows XP"
+      },
+      {
+        "key": "Architecture",
+        "value": "x86"
+      },
+      {
+        "key": "Saved Date",
+        "value": "2026.07.11 20:33:20 +0100"
+      },
+      {
+        "key": "Build Version",
+        "value": "13.0.40.5789"
+      },
+      {
+        "key": "Print Engine",
+        "value": "CRVBD"
+      },
+      {
+        "key": "OS",
+        "value": "Windows Vista"
+      },
+      {
+        "key": "Architecture",
+        "value": "x86"
+      }
+    ],
+    "saved_data": null,
+    "subreports": [],
+    "summary_info": {
+      "author": "",
+      "comments": "",
+      "keywords": "",
+      "last_saved_by": "",
+      "revision_number": "10",
+      "save_with_preview": false,
+      "subject": "",
+      "title": ""
+    },
+    "version": 1
+  }
+}

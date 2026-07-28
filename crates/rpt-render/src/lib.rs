@@ -20,15 +20,22 @@
 //! ```
 
 use rpt::model::Report;
-use rpt_data::{build_dataset, compile_formulas, Dataset, EmptySource, RowSource, SavedDataSource};
+use rpt_data::{
+    build_dataset_opts, compile_formulas_at, CollectingSink, Dataset, DatasetOptions, EmptySource,
+    RowSource, SavedDataSource,
+};
 use rpt_pages::PagedDocument;
 use std::path::Path;
 
-pub use rpt_data::{Parameters, ScopeData};
+pub use rpt_data::{DateTimeSpecials, Parameters, ScopeData};
 
 // Text-layout stack: the trait + dependency-free default from rpt-layout, and (with the `cosmic`
 // feature) the font-accurate cosmic-text impl + font configuration, re-exported for callers who
 // want to build their own layout for `render_dataset_with`.
+/// The bridge from the data pipeline's diagnostics to the Page IR's one vocabulary, re-exported so a
+/// caller that builds its own [`Dataset`] (and so collects its own pipeline diagnostics) can convert
+/// them without depending on `rpt-layout` directly.
+pub use rpt_layout::diagnostics as data_diagnostics;
 pub use rpt_layout::{ApproxLayout, Locale, TextLayout};
 #[cfg(feature = "cosmic")]
 pub use rpt_text::{CosmicLayout, FontProvider};
@@ -56,6 +63,11 @@ impl ReportDocument {
     /// let _report = doc.report();
     /// # Ok::<(), Box<dyn std::error::Error>>(())
     /// ```
+    ///
+    /// # Errors
+    ///
+    /// Whatever [`rpt::Rpt::open`] returns: [`rpt::Error::Io`] (naming `path`),
+    /// [`rpt::Error::Container`], [`rpt::Error::Codec`], or [`rpt::Error::Crypto`].
     pub fn load(path: impl AsRef<Path>) -> rpt::Result<ReportDocument> {
         Ok(ReportDocument {
             rpt: rpt::Rpt::open(path)?,
@@ -100,30 +112,39 @@ impl ReportDocument {
     /// let doc = ReportDocument::load("report.rpt")?;
     ///
     /// // Default: render the report's own saved data.
-    /// let from_saved = doc.render_with(RenderOptions::default())?;
+    /// let from_saved = doc.render_with(RenderOptions::default());
     ///
     /// // Or feed rows from a custom `RowSource` (a live DB feed, an in-memory source, …).
     /// let source = EmptySource;
     /// let from_rows = doc.render_with(RenderOptions {
     ///     datasource: RenderSource::Rows(&source),
     ///     ..Default::default()
-    /// })?;
+    /// });
     /// # let _ = (from_saved, from_rows);
     /// # Ok(())
     /// # }
     /// ```
-    pub fn render_with(&self, opts: RenderOptions) -> Result<PagedDocument, RenderError> {
+    pub fn render_with(&self, opts: RenderOptions) -> PagedDocument {
         render_with(self.report(), opts)
     }
 
     /// SDK: `ExportToDisk(ExportFormatType.PortableDocFormat, path)`.
-    pub fn export_pdf_to_disk(&self, path: impl AsRef<Path>) -> std::io::Result<()> {
-        std::fs::write(path, render_pdf(self.report()))
+    ///
+    /// # Errors
+    ///
+    /// [`rpt::Error::Io`] if `path` cannot be written — naming the path, unlike a bare
+    /// [`std::io::Error`]. Rendering itself is infallible.
+    pub fn export_pdf_to_disk(&self, path: impl AsRef<Path>) -> rpt::Result<()> {
+        write_to_disk(path.as_ref(), &render_pdf(self.report()))
     }
 
     /// SDK: `ExportToDisk(ExportFormatType.HTML40, path)` (single self-contained document).
-    pub fn export_html_to_disk(&self, path: impl AsRef<Path>) -> std::io::Result<()> {
-        std::fs::write(path, render_html(self.report()))
+    ///
+    /// # Errors
+    ///
+    /// [`rpt::Error::Io`] if `path` cannot be written, naming the path. Rendering is infallible.
+    pub fn export_html_to_disk(&self, path: impl AsRef<Path>) -> rpt::Result<()> {
+        write_to_disk(path.as_ref(), render_html(self.report()).as_bytes())
     }
 
     /// The full report as PDF bytes (SDK: `ExportToStream(PortableDocFormat)`).
@@ -149,6 +170,13 @@ impl ReportDocument {
     pub fn export_svg_pages(&self) -> Vec<String> {
         render_svg_pages(self.report())
     }
+}
+
+/// Write exported bytes to `path`, attaching the path to any I/O failure so an embedding caller
+/// gets the same "which file?" answer the CLI does.
+fn write_to_disk(path: &Path, bytes: &[u8]) -> rpt::Result<()> {
+    std::fs::write(path, bytes).map_err(|e| rpt::IoError::at("write", path, e))?;
+    Ok(())
 }
 
 /// Where [`render_with`] gets its rows.
@@ -198,6 +226,11 @@ pub struct RenderOptions<'a> {
     /// A [`ScopeData`] provider so subreports render from live data (their scope's rows) instead of
     /// only their saved data. `None` keeps the offline behaviour.
     pub scope: Option<&'a dyn ScopeData>,
+    /// The render's as-of instant, resolving the date/time specials (`CurrentDate`/`Today`/
+    /// `CurrentDateTime`/`CurrentTime`) that a formula may read. `None` = capture the system clock
+    /// once at render start (see [`default_as_of`]); set it explicitly to make the render fully
+    /// reproducible against a frozen baseline.
+    pub as_of: Option<DateTimeSpecials>,
 }
 
 impl std::fmt::Debug for RenderOptions<'_> {
@@ -207,6 +240,7 @@ impl std::fmt::Debug for RenderOptions<'_> {
             .field("params", &self.params)
             .field("locale", &self.locale)
             .field("scope", &self.scope.map(|_| "..").unwrap_or("None"))
+            .field("as_of", &self.as_of)
             .finish()
     }
 }
@@ -220,30 +254,33 @@ pub fn render(report: &Report) -> PagedDocument {
 /// The single options-driven entry point: render a report with an explicit datasource, parameters,
 /// locale, and/or subreport scope (see [`RenderOptions`]).
 ///
-/// Fallible because the datasource can fail: the built-in [`RenderSource`] variants (saved data, an
-/// already-materialized [`RowSource`], a pre-built [`Dataset`]) always succeed, and the render CLI's
-/// live-DB fetch surfaces its failures through the same [`RenderError`]. For the always-infallible
-/// zero-config render use [`render`].
-pub fn render_with(report: &Report, opts: RenderOptions) -> Result<PagedDocument, RenderError> {
-    Ok(render_options(report, opts))
+/// Infallible: every built-in [`RenderSource`] variant (saved data, an already-materialized
+/// [`RowSource`], a pre-built [`Dataset`]) always succeeds. A live datasource can fail, but that
+/// happens *before* this call — the caller fetches its rows into a [`RowSource`]/[`Dataset`] and
+/// surfaces any fetch failure itself, then hands the ready rows here.
+pub fn render_with(report: &Report, opts: RenderOptions) -> PagedDocument {
+    render_options(report, opts)
 }
 
-/// The shared body behind [`render`], [`render_with`], and the deprecated wrappers: resolve the
-/// datasource to a [`Dataset`] (attaching parameters), then lay it out. Infallible — the built-in
-/// sources cannot fail.
+/// The shared body behind [`render`] and [`render_with`]: resolve the datasource to a [`Dataset`]
+/// (attaching parameters), then lay it out. Infallible — the built-in sources cannot fail.
 fn render_options(report: &Report, opts: RenderOptions) -> PagedDocument {
     let RenderOptions {
         datasource,
         params,
         locale,
         scope,
+        as_of,
     } = opts;
+    // Resolve the render's as-of instant once, so the record pipeline and the layout pass share a
+    // single fixed value for `CurrentDate`/… (deterministic across the whole render).
+    let as_of = as_of.unwrap_or_else(default_as_of);
     match datasource {
-        RenderSource::Dataset(dataset) => layout_dataset(report, dataset, scope, locale),
+        // A caller-supplied dataset was built outside this function, so its pipeline diagnostics (if
+        // any were collected) belong to that caller.
+        RenderSource::Dataset(dataset) => layout_dataset(report, dataset, scope, locale, as_of),
         RenderSource::Rows(source) => {
-            let mut dataset = build_dataset(source, &report.data_definition);
-            dataset.params = params;
-            layout_dataset(report, &dataset, scope, locale)
+            build_and_lay_out(report, source, params, scope, locale, as_of)
         }
         RenderSource::Saved => {
             let saved_holder;
@@ -254,10 +291,62 @@ fn render_options(report: &Report, opts: RenderOptions) -> PagedDocument {
                 }
                 None => &EmptySource,
             };
-            let mut dataset = build_dataset(source, &report.data_definition);
-            dataset.params = params;
-            layout_dataset(report, &dataset, scope, locale)
+            build_and_lay_out(report, source, params, scope, locale, as_of)
         }
+    }
+}
+
+/// Build the dataset **with a diagnostic sink attached**, lay it out, and merge the pipeline's
+/// diagnostics into the document's.
+///
+/// The record pipeline is fail-open: a selection formula that errors drops the row, a `{@formula}` that
+/// errors resolves to `Null`. Without a sink those failures are simply invisible — a report can render
+/// zero rows from non-empty data and report success. Attaching the sink here, on the one path every
+/// render takes, is what makes them reach [`PagedDocument::diagnostics`] and so the caller.
+fn build_and_lay_out(
+    report: &Report,
+    source: &dyn RowSource,
+    params: Parameters,
+    scope: Option<&dyn ScopeData>,
+    locale: Locale,
+    as_of: DateTimeSpecials,
+) -> PagedDocument {
+    let sink = CollectingSink::new();
+    let mut dataset = build_dataset_opts(
+        source,
+        &report.data_definition,
+        DatasetOptions {
+            params: Some(&params),
+            sink: Some(&sink),
+            datetime: Some(as_of),
+            ..Default::default()
+        },
+    );
+    dataset.params = params;
+    let mut doc = layout_dataset(report, &dataset, scope, locale, as_of);
+    // Pipeline diagnostics come first: a selection failure explains an empty page, so it should be
+    // read before the layout consequences of that emptiness.
+    let mut diagnostics = rpt_layout::diagnostics::from_evals(&sink.into_diagnostics());
+    diagnostics.append(&mut doc.diagnostics);
+    doc.diagnostics = diagnostics;
+    doc
+}
+
+/// The default render as-of instant: the system clock captured once at render start (UTC). A WASM
+/// (`wasm32`) build has no wall clock, so it falls back to the Unix epoch — a WASM host that needs a
+/// real date supplies [`RenderOptions::as_of`] explicitly.
+pub fn default_as_of() -> DateTimeSpecials {
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        let secs = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_secs() as i64)
+            .unwrap_or(0);
+        DateTimeSpecials::from_unix_seconds(secs)
+    }
+    #[cfg(target_arch = "wasm32")]
+    {
+        DateTimeSpecials::from_unix_seconds(0)
     }
 }
 
@@ -268,8 +357,9 @@ fn layout_dataset(
     dataset: &Dataset,
     scope: Option<&dyn ScopeData>,
     locale: Locale,
+    as_of: DateTimeSpecials,
 ) -> PagedDocument {
-    let formulas = compile_formulas(&report.data_definition);
+    let formulas = compile_formulas_at(&report.data_definition, as_of);
     rpt_layout::layout_scoped(
         report,
         dataset,
@@ -283,14 +373,20 @@ fn layout_dataset(
 /// Render a pre-built [`Dataset`] with an explicit [`TextLayout`] (font stack). Lets a caller reuse
 /// a `CosmicLayout` (avoids re-scanning fonts per render) or inject host-supplied fonts on WASM. This
 /// is the bring-your-own-layout entry [`RenderOptions`] does not model, so it stays as a free
-/// function.
+/// function — but it still carries the same reproducibility knobs [`RenderOptions`] does: the render
+/// `locale`, an optional subreport `scope`, and the `as_of` instant (`None` captures the system clock
+/// once, like [`default_as_of`]; set it to freeze the date/time specials for a reproducible render).
 pub fn render_dataset_with(
     report: &Report,
     dataset: &Dataset,
     text_layout: Box<dyn TextLayout>,
+    locale: Locale,
+    scope: Option<&dyn ScopeData>,
+    as_of: Option<DateTimeSpecials>,
 ) -> PagedDocument {
-    let formulas = compile_formulas(&report.data_definition);
-    rpt_layout::layout_with(report, dataset, &formulas, text_layout)
+    let as_of = as_of.unwrap_or_else(default_as_of);
+    let formulas = compile_formulas_at(&report.data_definition, as_of);
+    rpt_layout::layout_scoped(report, dataset, &formulas, text_layout, scope, locale)
 }
 
 /// The default text layout for this build: font-accurate cosmic-text (feature `cosmic`, on by
@@ -353,44 +449,4 @@ pub fn render_ir_json(report: &Report) -> Vec<String> {
         .iter()
         .map(|p| p.to_normalized_json())
         .collect()
-}
-
-/// A render failure with a typed cause, so a caller can tell a datasource problem from a parameter,
-/// database, or output failure — instead of matching on message strings. `#[from] rpt::Error` lets a
-/// decode error propagate with `?`; the live-DB driver errors ([`rpt_db_postgres::DbError`] /
-/// [`rpt_db_sqlite::DbError`]) are absorbed into [`Db`](RenderError::Db) so the portable core stays
-/// free of the native DB crates when their features are off.
-#[derive(Debug, thiserror::Error)]
-#[non_exhaustive]
-pub enum RenderError {
-    /// Opening or decoding the `.rpt` failed.
-    #[error(transparent)]
-    Rpt(#[from] rpt::Error),
-    /// Resolving the datasource failed: a connection URL's scheme/format, a missing connection URL,
-    /// an unimplemented driver, or a scope with no live table.
-    #[error("datasource error: {0}")]
-    Datasource(String),
-    /// A report parameter value could not be coerced to its declared type.
-    #[error("parameter error: {0}")]
-    Params(String),
-    /// A database driver failed (connection, healthcheck, or query).
-    #[error("database error: {0}")]
-    Db(String),
-    /// Writing the rendered output failed.
-    #[error("output error: {0}")]
-    Io(String),
-}
-
-#[cfg(feature = "db-postgres")]
-impl From<rpt_db_postgres::DbError> for RenderError {
-    fn from(e: rpt_db_postgres::DbError) -> RenderError {
-        RenderError::Db(e.to_string())
-    }
-}
-
-#[cfg(feature = "db-sqlite")]
-impl From<rpt_db_sqlite::DbError> for RenderError {
-    fn from(e: rpt_db_sqlite::DbError) -> RenderError {
-        RenderError::Db(e.to_string())
-    }
 }

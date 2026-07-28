@@ -133,7 +133,7 @@ mod tests {
 
     #[test]
     fn julian_serial_round_trips_saved_data_dates() {
-        // Serials observed in a real saved-data batch: 2460312 → 2024-01-03, +2 → 2024-01-05.
+        // A representative saved-data date serial: 2460312 → 2024-01-03, +2 → 2024-01-05.
         assert_eq!(Date::from_julian_serial(2_460_312), Date::new(2024, 1, 3));
         assert_eq!(Date::from_julian_serial(2_460_314), Date::new(2024, 1, 5));
         assert_eq!(Date::new(2024, 1, 3).to_julian_serial(), 2_460_312);

@@ -3,7 +3,7 @@
 //! Node kind = enum variant; operator nodes carry the operator's token code in `op`. Result-type
 //! deduction is a separate pass ([`super::types`]); the AST itself carries no result type.
 
-use super::token::RefKind;
+use super::token::{RefKind, Span};
 
 /// The scope keyword of a variable declaration. Crystal's default (no keyword) is `Global`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -48,20 +48,40 @@ pub enum VarKind {
     String,
 }
 
-/// A parsed formula node. `Error`/`Empty` keep the tree total so the parser never panics and an
-/// LSP can still walk a partial parse.
+/// A parsed formula node: its [`NodeKind`] plus the source [`Span`] it covers.
 ///
-/// # Spans
-///
-/// A `Node` carries **no source span**. Syntactic diagnostics recover exact offsets from the token
-/// stream ([`parser::Diagnostic`](super::parser::Diagnostic) carries `start`/`end`, and
-/// [`validate::validate_str`](super::validate::validate_str) re-tokenizes to point each diagnostic
-/// at its token); an [`EvalError`](super::eval::EvalError), however, cannot be underlined at its
-/// originating node because the span is not threaded here. Threading an `Option<Span>` onto every
-/// variant is deferred until an LSP/playground consumer needs node-level eval underlines — today
-/// evaluation runs only on trusted, already-parsed stored formulas, where the error text suffices.
+/// The span lets diagnostics and evaluation errors underline the exact sub-expression they concern
+/// without re-tokenizing the source. It is populated by the [`parser`](super::parser) at every
+/// construction (a composite node unions its children's spans; a leaf takes its token's span) and
+/// deliberately **excluded from equality** — two nodes are equal when their `kind`s are, so
+/// whitespace-insensitivity holds and structural tests need not spell spans out.
+#[derive(Debug, Clone)]
+pub struct Node {
+    /// The node's syntactic kind and children.
+    pub kind: NodeKind,
+    /// The source region this node covers (`0..0` when synthetic / unset).
+    pub span: Span,
+}
+
+impl Node {
+    /// A node of `kind` covering `span`.
+    pub fn new(kind: NodeKind, span: Span) -> Self {
+        Node { kind, span }
+    }
+}
+
+/// Equality ignores [`span`](Node::span): nodes are equal when their [`kind`](Node::kind)s are, so a
+/// formula's AST is invariant under whitespace/offset changes.
+impl PartialEq for Node {
+    fn eq(&self, other: &Self) -> bool {
+        self.kind == other.kind
+    }
+}
+
+/// A parsed formula node's kind. `Error`/`Empty` keep the tree total so the parser never panics and
+/// an LSP can still walk a partial parse.
 #[derive(Debug, Clone, PartialEq)]
-pub enum Node {
+pub enum NodeKind {
     /// Numeric literal (number or currency).
     Number(String),
     /// String literal.

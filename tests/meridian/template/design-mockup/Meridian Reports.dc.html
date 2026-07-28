@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #DDE3EA; font-family: Arial, Helvetica, sans-serif; }
+  a { color: #2C8C99; text-decoration: none; }
+  a:hover { color: #1F3A5F; }
+  .page { background: #fff; box-shadow: 0 8px 30px rgba(31,58,95,.18); position: relative; display: flex; flex-direction: column; color: #222; }
+  svg text { font-family: Arial, Helvetica, sans-serif; }
+</style>
+</helmet>
+<div style="padding: 60px; display: flex; flex-wrap: wrap; gap: 64px; align-items: flex-start; justify-content: center; max-width: 1780px; margin: 0 auto;">
+
+  <!-- ============ R01 · CUSTOMER ACCOUNT STATEMENT ============ -->
+  <div class="page" style="width: 794px; min-height: 1123px; padding: 48px;">
+    <!-- header -->
+    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+      <div style="display: flex; gap: 14px; align-items: flex-start;">
+        <img src="uploads/mgl_logo.png" alt="MGL" style="width: 53px; height: 53px; border-radius: 9px;">
+        <div style="padding-top: 3px;">
+          <div style="color: #1F3A5F; font-size: 15px; font-weight: 700; letter-spacing: .3px;">MERIDIAN GLOBAL LOGISTICS</div>
+          <div style="color: #6B7683; font-size: 10px; margin-top: 3px;">Weena 340 · 3012 NJ Rotterdam · Netherlands</div>
+        </div>
+      </div>
+      <div style="text-align: right;">
+        <div style="color: #1F3A5F; font-size: 22px; font-weight: 700; letter-spacing: .2px;">STATEMENT OF ACCOUNT</div>
+        <div style="color: #6B7683; font-size: 11px; line-height: 1.55; margin-top: 6px;">
+          Statement date: 30-Jun-2026<br>Account: CUST-000142<br>Currency: EUR
+        </div>
+      </div>
+    </div>
+    <div style="height: 2px; background: #2C8C99; margin-top: 14px;"></div>
+
+    <!-- bill-to + summary -->
+    <div style="display: flex; justify-content: space-between; gap: 32px; margin-top: 28px;">
+      <div>
+        <div style="color: #2C8C99; font-size: 11px; font-weight: 700; letter-spacing: 1px;">BILL TO</div>
+        <div style="color: #222; font-size: 12.5px; line-height: 1.6; margin-top: 8px;">
+          Nordwind Distribution GmbH<br>Hafenstraße 12<br>20457 Hamburg, Germany<br>
+          <span style="color: #6B7683;">Attn: Katrin Vogel, Accounts Payable</span>
+        </div>
+      </div>
+      <div style="background: #F2F5F8; border-radius: 10px; padding: 16px 22px; min-width: 232px;">
+        <div style="color: #6B7683; font-size: 10px; font-weight: 700; letter-spacing: 1.2px;">BALANCE DUE</div>
+        <div style="color: #1F3A5F; font-size: 26px; font-weight: 700; margin-top: 4px;">€ 48,275.00</div>
+        <div style="color: #6B7683; font-size: 10.5px; margin-top: 8px; line-height: 1.5;">Credit limit € 120,000.00<br>Available € 71,725.00</div>
+      </div>
+    </div>
+
+    <!-- table with watermark -->
+    <div style="position: relative; margin-top: 26px;">
+      <img src="uploads/mgl_logo.png" alt="" style="position: absolute; width: 300px; height: 300px; left: 50%; top: 130px; transform: translateX(-50%); opacity: .05; pointer-events: none;">
+      <table style="width: 100%; border-collapse: collapse; position: relative;">
+        <thead>
+          <tr style="background: #1F3A5F; color: #fff; font-size: 10.5px;">
+            <th style="text-align: left; padding: 8px 10px; font-weight: 700;">Invoice #</th>
+            <th style="text-align: left; padding: 8px 10px; font-weight: 700;">Invoice date</th>
+            <th style="text-align: left; padding: 8px 10px; font-weight: 700;">Due date</th>
+            <th style="text-align: left; padding: 8px 10px; font-weight: 700;">Status</th>
+            <th style="text-align: right; padding: 8px 10px; font-weight: 700;">Charges (€)</th>
+            <th style="text-align: right; padding: 8px 10px; font-weight: 700;">Payments (€)</th>
+            <th style="text-align: right; padding: 8px 10px; font-weight: 700;">Balance (€)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <sc-for list="{{ r01Rows }}" as="row" hint-placeholder-count="4">
+            <tr style="font-size: 12px; background: {{ row.bg }};">
+              <td style="padding: 8px 10px; color: #222;">{{ row.inv }}</td>
+              <td style="padding: 8px 10px; color: #222;">{{ row.idate }}</td>
+              <td style="padding: 8px 10px; color: #222;">{{ row.ddate }}</td>
+              <td style="padding: 8px 10px; font-weight: 700; color: {{ row.statusColor }};">{{ row.status }}</td>
+              <td style="padding: 8px 10px; text-align: right; color: #222;">{{ row.charges }}</td>
+              <td style="padding: 8px 10px; text-align: right; color: #222;">{{ row.payments }}</td>
+              <td style="padding: 8px 10px; text-align: right; color: #222; font-weight: 700;">{{ row.balance }}</td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- total -->
+    <div style="height: 1.5px; background: #2C8C99; margin-top: 20px;"></div>
+    <div style="text-align: right; color: #1F3A5F; font-size: 16px; font-weight: 700; margin-top: 10px;">TOTAL DUE&nbsp;&nbsp;&nbsp;€ 48,275.00</div>
+
+    <!-- aging strip -->
+    <div style="margin-top: 30px;">
+      <div style="color: #2C8C99; font-size: 11px; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px;">AGING</div>
+      <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;">
+        <sc-for list="{{ r01Aging }}" as="cell" hint-placeholder-count="5">
+          <div style="border: 1px solid {{ cell.border }}; background: {{ cell.bg }}; border-radius: 6px; padding: 12px 10px; text-align: center;">
+            <div style="font-size: 10px; color: #6B7683; letter-spacing: .3px;">{{ cell.label }}</div>
+            <div style="font-size: 15px; font-weight: 700; color: {{ cell.txt }}; margin-top: 6px;">{{ cell.amount }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- contacts subreport -->
+    <div style="margin-top: 26px; border: 1px solid #D6DEE7; border-radius: 8px; overflow: hidden;">
+      <div style="background: #F2F5F8; padding: 8px 14px; color: #1F3A5F; font-size: 12px; font-weight: 700;">Primary contacts</div>
+      <sc-for list="{{ r01Contacts }}" as="c" hint-placeholder-count="3">
+        <div style="display: flex; padding: 8px 14px; font-size: 11.5px; border-top: 1px solid #EAEFF4;">
+          <div style="width: 34%; color: #222; font-weight: 700;">{{ c.name }}</div>
+          <div style="width: 30%; color: #6B7683;">{{ c.role }}</div>
+          <div style="width: 36%; color: #2C8C99;">{{ c.email }}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <!-- footer -->
+    <div style="margin-top: auto; padding-top: 18px;">
+      <div style="height: 1px; background: #C9D3DD;"></div>
+      <div style="display: flex; justify-content: space-between; color: #6B7683; font-size: 9.5px; padding-top: 6px;">
+        <span>Confidential · Meridian Global Logistics · synthetic demo data</span>
+        <span>Printed 30-Jun-2026</span>
+        <span>Page 1 of 3</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ R09 · CARRIER SCORECARD ============ -->
+  <div class="page" style="width: 794px; min-height: 1123px; padding: 48px;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+      <div style="display: flex; gap: 14px; align-items: flex-start;">
+        <img src="uploads/mgl_logo.png" alt="MGL" style="width: 53px; height: 53px; border-radius: 9px;">
+        <div style="padding-top: 3px;">
+          <div style="color: #1F3A5F; font-size: 15px; font-weight: 700; letter-spacing: .3px;">MERIDIAN GLOBAL LOGISTICS</div>
+          <div style="color: #6B7683; font-size: 10px; margin-top: 3px;">Weena 340 · 3012 NJ Rotterdam · Netherlands</div>
+        </div>
+      </div>
+      <div style="text-align: right;">
+        <div style="color: #1F3A5F; font-size: 21px; font-weight: 700; max-width: 320px;">CARRIER PERFORMANCE SCORECARD</div>
+        <div style="color: #6B7683; font-size: 11px; margin-top: 6px;">Period: Q2 2026 · All modes · 40 carriers</div>
+      </div>
+    </div>
+    <div style="height: 2px; background: #2C8C99; margin-top: 14px;"></div>
+
+    <!-- KPI tiles -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 26px;">
+      <sc-for list="{{ r09Kpis }}" as="k" hint-placeholder-count="4">
+        <div style="background: #fff; border-top: 3px solid #2C8C99; border-radius: 8px; box-shadow: 0 3px 12px rgba(31,58,95,.10); padding: 16px 14px;">
+          <div style="color: #6B7683; font-size: 9.5px; font-weight: 700; letter-spacing: .8px;">{{ k.label }}</div>
+          <div style="font-size: 30px; font-weight: 700; color: {{ k.color }}; margin-top: 10px;">{{ k.value }}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <!-- charts row -->
+    <div style="display: flex; gap: 24px; margin-top: 34px;">
+      <!-- radar -->
+      <div style="flex: 1;">
+        <div style="color: #1F3A5F; font-size: 12.5px; font-weight: 700; margin-bottom: 8px;">Metric profile (top vs. worst)</div>
+        <svg viewBox="0 0 260 250" style="width: 100%;">
+          <sc-for list="{{ r09RadarRings }}" as="ring" hint-placeholder-count="4">
+            <polygon points="{{ ring }}" fill="none" stroke="#E1E7EE" stroke-width="1"></polygon>
+          </sc-for>
+          <sc-for list="{{ r09RadarSpokes }}" as="sp" hint-placeholder-count="5">
+            <line x1="120" y1="118" x2="{{ sp.x }}" y2="{{ sp.y }}" stroke="#E1E7EE" stroke-width="1"></line>
+          </sc-for>
+          <sc-for list="{{ r09RadarSeries }}" as="s" hint-placeholder-count="3">
+            <polygon points="{{ s.points }}" fill="{{ s.fill }}" stroke="{{ s.stroke }}" stroke-width="1.8"></polygon>
+          </sc-for>
+          {{ r09RadarLabelsEl }}
+        </svg>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px;">
+          <sc-for list="{{ r09RadarSeries }}" as="s" hint-placeholder-count="3">
+            <div style="display: flex; align-items: center; gap: 6px; font-size: 10px; color: #222;">
+              <span style="width: 11px; height: 11px; background: {{ s.stroke }}; border-radius: 2px; display: inline-block;"></span>{{ s.name }}
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <!-- gauge -->
+      <div style="flex: 1;">
+        <div style="color: #1F3A5F; font-size: 12.5px; font-weight: 700; margin-bottom: 8px;">On-time — worst carrier</div>
+        <svg viewBox="0 0 200 132" style="width: 100%;">
+          <sc-for list="{{ r09GaugeSegs }}" as="seg" hint-placeholder-count="3">
+            <path d="{{ seg.d }}" fill="none" stroke="{{ seg.color }}" stroke-width="15"></path>
+          </sc-for>
+          <line x1="{{ r09Target.x1 }}" y1="{{ r09Target.y1 }}" x2="{{ r09Target.x2 }}" y2="{{ r09Target.y2 }}" stroke="#1F3A5F" stroke-width="2"></line>
+          <line x1="100" y1="100" x2="{{ r09Needle.x }}" y2="{{ r09Needle.y }}" stroke="#222" stroke-width="2.5" stroke-linecap="round"></line>
+          <circle cx="100" cy="100" r="5" fill="#222"></circle>
+          <text x="100" y="126" text-anchor="middle" fill="#9E2B25" font-size="20" font-weight="700">67.9%</text>
+        </svg>
+        <div style="text-align: center; color: #6B7683; font-size: 10.5px; margin-top: 2px;">Target 95% · Redstar Transport</div>
+      </div>
+    </div>
+
+    <!-- ranked table -->
+    <div style="margin-top: 32px;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="background: #1F3A5F; color: #fff; font-size: 10.5px;">
+            <th style="text-align: left; padding: 8px 10px; font-weight: 700;">Carrier</th>
+            <th style="text-align: left; padding: 8px 10px; font-weight: 700;">Mode</th>
+            <th style="text-align: right; padding: 8px 10px; font-weight: 700;">On-time %</th>
+            <th style="text-align: right; padding: 8px 10px; font-weight: 700;">Damage %</th>
+            <th style="text-align: right; padding: 8px 10px; font-weight: 700;">Cost idx</th>
+            <th style="text-align: right; padding: 8px 10px; font-weight: 700;">Util %</th>
+            <th style="text-align: right; padding: 8px 10px; font-weight: 700;">Claims</th>
+          </tr>
+        </thead>
+        <tbody>
+          <sc-for list="{{ r09Carriers }}" as="c" hint-placeholder-count="4">
+            <tr style="font-size: 12px; background: {{ c.bg }};">
+              <td style="padding: 8px 10px; color: {{ c.txt }}; font-weight: {{ c.weight }};">
+                <span style="display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: {{ c.dot }}; margin-right: 8px;"></span>{{ c.name }}
+              </td>
+              <td style="padding: 8px 10px; color: {{ c.txt }};">{{ c.mode }}</td>
+              <td style="padding: 8px 10px; text-align: right; color: {{ c.txt }}; font-weight: {{ c.weight }};">{{ c.ontime }}</td>
+              <td style="padding: 8px 10px; text-align: right; color: {{ c.txt }};">{{ c.dmg }}</td>
+              <td style="padding: 8px 10px; text-align: right; color: {{ c.txt }};">{{ c.cost }}</td>
+              <td style="padding: 8px 10px; text-align: right; color: {{ c.txt }};">{{ c.util }}</td>
+              <td style="padding: 8px 10px; text-align: right; color: {{ c.txt }};">{{ c.claims }}</td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+      <div style="display: flex; gap: 18px; margin-top: 12px; font-size: 10px; color: #6B7683;">
+        <span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#2C8C99;margin-right:5px;"></span>On-time ≥ 92</span>
+        <span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#D89A2E;margin-right:5px;"></span>85–92</span>
+        <span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:#9E2B25;margin-right:5px;"></span>&lt; 85</span>
+      </div>
+    </div>
+
+    <div style="margin-top: auto; padding-top: 18px;">
+      <div style="height: 1px; background: #C9D3DD;"></div>
+      <div style="display: flex; justify-content: space-between; color: #6B7683; font-size: 9.5px; padding-top: 6px;">
+        <span>Confidential · Meridian Global Logistics · synthetic demo data</span>
+        <span>Printed 30-Jun-2026</span>
+        <span>Page 1 of 2</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ R13 · FUEL PRICE & REVENUE ============ -->
+  <div class="page" style="width: 794px; min-height: 1123px; padding: 48px;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+      <div style="display: flex; gap: 14px; align-items: flex-start;">
+        <img src="uploads/mgl_logo.png" alt="MGL" style="width: 53px; height: 53px; border-radius: 9px;">
+        <div style="padding-top: 3px;">
+          <div style="color: #1F3A5F; font-size: 15px; font-weight: 700; letter-spacing: .3px;">MERIDIAN GLOBAL LOGISTICS</div>
+          <div style="color: #6B7683; font-size: 10px; margin-top: 3px;">Weena 340 · 3012 NJ Rotterdam · Netherlands</div>
+        </div>
+      </div>
+      <div style="text-align: right;">
+        <div style="color: #1F3A5F; font-size: 20px; font-weight: 700; max-width: 330px;">FUEL PRICE INDEX &amp; FREIGHT REVENUE</div>
+        <div style="color: #6B7683; font-size: 11px; margin-top: 6px;">Jan 2021 – Dec 2024 · USD</div>
+      </div>
+    </div>
+    <div style="height: 2px; background: #2C8C99; margin-top: 14px;"></div>
+
+    <!-- candlestick -->
+    <div style="margin-top: 30px;">
+      <div style="display: flex; justify-content: space-between; align-items: baseline;">
+        <div style="color: #2C8C99; font-size: 12.5px; font-weight: 700;">Diesel — monthly open/high/low/close (USD per gallon)</div>
+        <div style="display: flex; gap: 8px;">
+          <span style="background: #F2F5F8; border-radius: 4px; padding: 3px 8px; font-size: 10px; color: #1F3A5F;">High 4.28</span>
+          <span style="background: #F2F5F8; border-radius: 4px; padding: 3px 8px; font-size: 10px; color: #1F3A5F;">Low 2.31</span>
+          <span style="background: #F2F5F8; border-radius: 4px; padding: 3px 8px; font-size: 10px; color: #1F3A5F;">Latest 3.10</span>
+        </div>
+      </div>
+      <svg viewBox="0 0 700 300" style="width: 100%; margin-top: 8px;">
+        <sc-for list="{{ r13GridY }}" as="g" hint-placeholder-count="6">
+          <line x1="46" y1="{{ g.y }}" x2="678" y2="{{ g.y }}" stroke="#EDF1F5" stroke-width="1"></line>
+        </sc-for>
+        <sc-for list="{{ r13Quarters }}" as="q" hint-placeholder-count="16">
+          <line x1="{{ q.x }}" y1="18" x2="{{ q.x }}" y2="264" stroke="#F4F7FA" stroke-width="1"></line>
+        </sc-for>
+        <sc-for list="{{ r13Candles }}" as="c" hint-placeholder-count="48">
+          <line x1="{{ c.cx }}" y1="{{ c.yHigh }}" x2="{{ c.cx }}" y2="{{ c.yLow }}" stroke="{{ c.color }}" stroke-width="1"></line>
+          <rect x="{{ c.bx }}" y="{{ c.bodyTop }}" width="{{ c.bodyW }}" height="{{ c.bodyH }}" fill="{{ c.color }}"></rect>
+        </sc-for>
+        {{ r13CandleAxisEl }}
+        <circle cx="{{ r13Spike.cx }}" cy="{{ r13Spike.cy }}" r="4" fill="#2C8C99"></circle>
+        <text x="{{ r13Spike.tx }}" y="{{ r13Spike.ty }}" text-anchor="middle" fill="#2C8C99" font-size="10" font-weight="700">2022 fuel spike</text>
+      </svg>
+    </div>
+
+    <!-- 3D revenue bars -->
+    <div style="margin-top: 46px;">
+      <div style="color: #2C8C99; font-size: 12.5px; font-weight: 700;">Freight revenue by region × month (USD, 000s)</div>
+      <svg viewBox="0 0 760 320" style="width: 100%; margin-top: 8px;">
+        <sc-for list="{{ r13FloorLines }}" as="fl" hint-placeholder-count="10">
+          <line x1="{{ fl.x1 }}" y1="{{ fl.y1 }}" x2="{{ fl.x2 }}" y2="{{ fl.y2 }}" stroke="#E7ECF1" stroke-width="1"></line>
+        </sc-for>
+        <sc-for list="{{ r13BarFaces }}" as="f" hint-placeholder-count="60">
+          <polygon points="{{ f.points }}" fill="{{ f.fill }}" stroke="rgba(255,255,255,.25)" stroke-width=".5"></polygon>
+        </sc-for>
+        {{ r13Bar3dLabelsEl }}
+      </svg>
+    </div>
+
+    <div style="margin-top: auto; padding-top: 18px;">
+      <div style="height: 1px; background: #C9D3DD;"></div>
+      <div style="display: flex; justify-content: space-between; color: #6B7683; font-size: 9.5px; padding-top: 6px;">
+        <span>Confidential · Meridian Global Logistics · synthetic demo data</span>
+        <span>Printed 30-Jun-2026</span>
+        <span>Page 1 of 1</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ R17 · CAPITAL PROJECTS GANTT (landscape) ============ -->
+  <div class="page" style="width: 1123px; min-height: 794px; padding: 48px;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+      <div style="display: flex; gap: 14px; align-items: flex-start;">
+        <img src="uploads/mgl_logo.png" alt="MGL" style="width: 53px; height: 53px; border-radius: 9px;">
+        <div style="padding-top: 3px;">
+          <div style="color: #1F3A5F; font-size: 15px; font-weight: 700; letter-spacing: .3px;">MERIDIAN GLOBAL LOGISTICS</div>
+          <div style="color: #6B7683; font-size: 10px; margin-top: 3px;">Weena 340 · 3012 NJ Rotterdam · Netherlands</div>
+        </div>
+      </div>
+      <div style="text-align: right;">
+        <div style="color: #1F3A5F; font-size: 21px; font-weight: 700;">CAPITAL PROJECTS — PORTFOLIO SCHEDULE</div>
+        <div style="color: #6B7683; font-size: 11px; margin-top: 6px;">2021 – 2025 · 10 projects · €82.4 M total budget</div>
+      </div>
+    </div>
+    <div style="height: 2px; background: #2C8C99; margin-top: 14px;"></div>
+
+    <!-- summary chips -->
+    <div style="display: flex; gap: 14px; margin-top: 20px;">
+      <div style="background: #F2F5F8; border-radius: 7px; padding: 10px 16px; font-size: 12px; color: #1F3A5F; font-weight: 700;">Portfolio 61% complete</div>
+      <div style="background: #F2F5F8; border-radius: 7px; padding: 10px 16px; font-size: 12px; color: #1F3A5F; font-weight: 700;">On track 7 · At risk 2 · <span style="color: #9E2B25;">Late 1</span></div>
+      <div style="background: #F2F5F8; border-radius: 7px; padding: 10px 16px; font-size: 12px; color: #1F3A5F; font-weight: 700;">Budget used €50.3 M / €82.4 M</div>
+    </div>
+
+    <!-- gantt -->
+    <div style="margin-top: 22px;">
+      <svg viewBox="0 0 1027 470" style="width: 100%;">
+        <defs>
+          <marker id="dep-arrow" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0 0 L6 3 L0 6 z" fill="#9AA6B2"></path>
+          </marker>
+        </defs>
+        <sc-for list="{{ r17Zebra }}" as="z" hint-placeholder-count="9">
+          <rect x="0" y="{{ z.y }}" width="1027" height="{{ z.h }}" fill="#F7F9FB"></rect>
+        </sc-for>
+        <sc-for list="{{ r17Years }}" as="y" hint-placeholder-count="6">
+          <line x1="{{ y.x }}" y1="14" x2="{{ y.x }}" y2="464" stroke="#DCE3EA" stroke-width="1"></line>
+        </sc-for>
+        <sc-for list="{{ r17Quarters }}" as="q" hint-placeholder-count="20">
+          <line x1="{{ q.x }}" y1="34" x2="{{ q.x }}" y2="464" stroke="#EEF2F6" stroke-width="1"></line>
+        </sc-for>
+        <sc-for list="{{ r17Deps }}" as="d" hint-placeholder-count="12">
+          <path d="{{ d }}" fill="none" stroke="#9AA6B2" stroke-width="1" marker-end="url(#dep-arrow)"></path>
+        </sc-for>
+        <sc-for list="{{ r17Bars }}" as="b" hint-placeholder-count="15">
+          <rect x="{{ b.x }}" y="{{ b.y }}" width="{{ b.w }}" height="12" rx="3" fill="{{ b.base }}"></rect>
+          <rect x="{{ b.x }}" y="{{ b.y }}" width="{{ b.doneW }}" height="12" rx="3" fill="{{ b.doneFill }}"></rect>
+        </sc-for>
+        <sc-for list="{{ r17Milestones }}" as="m" hint-placeholder-count="3">
+          <rect x="{{ m.x }}" y="{{ m.y }}" width="9" height="9" fill="#2C8C99" transform="rotate(45 {{ m.cx }} {{ m.cy }})"></rect>
+        </sc-for>
+        <sc-for list="{{ r17GroupRows }}" as="g" hint-placeholder-count="3">
+          <line x1="6" y1="{{ g.uy }}" x2="332" y2="{{ g.uy }}" stroke="#2C8C99" stroke-width="1"></line>
+        </sc-for>
+        {{ r17TextEl }}
+        <line x1="{{ r17TodayX }}" y1="14" x2="{{ r17TodayX }}" y2="464" stroke="#9E2B25" stroke-width="1.5" stroke-dasharray="4 3"></line>
+        <text x="{{ r17TodayLabelX }}" y="12" fill="#9E2B25" font-size="10" font-weight="700" text-anchor="middle">Today</text>
+      </svg>
+      <div style="display: flex; gap: 18px; margin-top: 10px; font-size: 10.5px; color: #6B7683;">
+        <span><span style="display:inline-block;width:16px;height:9px;border-radius:2px;background:#2C8C99;margin-right:5px;vertical-align:middle;"></span>On track</span>
+        <span><span style="display:inline-block;width:16px;height:9px;border-radius:2px;background:#D89A2E;margin-right:5px;vertical-align:middle;"></span>At risk</span>
+        <span><span style="display:inline-block;width:16px;height:9px;border-radius:2px;background:#9E2B25;margin-right:5px;vertical-align:middle;"></span>Late</span>
+        <span><span style="display:inline-block;width:16px;height:9px;border-radius:2px;background:#1F3A5F;margin-right:5px;vertical-align:middle;"></span>% complete</span>
+        <span style="color:#2C8C99;">◆ Milestone</span>
+      </div>
+    </div>
+
+    <div style="margin-top: auto; padding-top: 18px;">
+      <div style="height: 1px; background: #C9D3DD;"></div>
+      <div style="display: flex; justify-content: space-between; color: #6B7683; font-size: 9.5px; padding-top: 6px;">
+        <span>Confidential · Meridian Global Logistics · synthetic demo data</span>
+        <span>Printed 30-Jun-2026</span>
+        <span>Page 1 of 2</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const NAVY = '#1F3A5F', TEAL = '#2C8C99', RED = '#9E2B25', AMBER = '#D89A2E';
+    const money = n => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const mkRand = seed => { let s = seed; return () => { s = (s * 1103515245 + 12345) & 0x7fffffff; return s / 0x7fffffff; }; };
+
+    /* ---------- R01 statement ---------- */
+    const raw = [
+      { inv: 'INV-004821', idate: '02-Apr-2026', ddate: '02-May-2026', status: 'Paid', charges: 12400, payments: 12400 },
+      { inv: 'INV-004907', idate: '20-Apr-2026', ddate: '20-May-2026', status: 'Paid', charges: 8900, payments: 8900 },
+      { inv: 'INV-004990', idate: '18-May-2026', ddate: '17-Jun-2026', status: 'Overdue', charges: 18275, payments: 0 },
+      { inv: 'INV-005034', idate: '05-Jun-2026', ddate: '05-Jul-2026', status: 'Open', charges: 30000, payments: 0 },
+    ];
+    let run = 0;
+    const r01Rows = raw.map((r, i) => {
+      run += r.charges - r.payments;
+      return {
+        ...r, charges: money(r.charges), payments: money(r.payments), balance: money(run),
+        bg: i % 2 ? '#F2F5F8' : '#FFFFFF',
+        statusColor: r.status === 'Overdue' ? RED : (r.status === 'Open' ? NAVY : '#222'),
+      };
+    });
+    const r01Aging = [
+      { label: 'Current', amount: '30,000' },
+      { label: '1–30 days', amount: '18,275', red: true },
+      { label: '31–60', amount: '0' },
+      { label: '61–90', amount: '0' },
+      { label: '90+', amount: '0' },
+    ].map(c => ({ ...c, bg: c.red ? '#F7E7E6' : '#FFFFFF', border: c.red ? '#E3B7B4' : '#D6DEE7', txt: c.red ? RED : NAVY }));
+    const r01Contacts = [
+      { name: 'Katrin Vogel', role: 'Accounts Payable', email: 'k.vogel@nordwind-demo.example' },
+      { name: 'Lars Bäcker', role: 'Treasury', email: 'l.baecker@nordwind-demo.example' },
+      { name: 'Meridian AR', role: 'Your MGL contact', email: 'ar@mgl-demo.example' },
+    ];
+
+    /* ---------- R09 scorecard ---------- */
+    const r09Kpis = [
+      { label: 'FLEET ON-TIME', value: '93.1%', color: NAVY },
+      { label: 'AVG DAMAGE RATE', value: '0.42%', color: NAVY },
+      { label: 'AVG COST INDEX', value: '1.03', color: NAVY },
+      { label: 'CARRIERS AT RISK', value: '1', color: RED },
+    ];
+    // radar
+    const rc = 120, ry = 118, R = 92, axes = 5;
+    const ang = k => (-90 + k * (360 / axes)) * Math.PI / 180;
+    const pt = (k, v) => [rc + R * v * Math.cos(ang(k)), ry + R * v * Math.sin(ang(k))];
+    const ringPts = t => Array.from({ length: axes }, (_, k) => pt(k, t).map(n => n.toFixed(1)).join(',')).join(' ');
+    const r09RadarRings = [0.25, 0.5, 0.75, 1].map(ringPts);
+    const r09RadarSpokes = Array.from({ length: axes }, (_, k) => { const [x, y] = pt(k, 1); return { x: x.toFixed(1), y: y.toFixed(1) }; });
+    const seriesDef = [
+      { name: 'Blue Marlin Shipping', stroke: TEAL, fill: 'rgba(44,140,153,.22)', v: [0.95, 0.9, 0.9, 0.85, 0.92] },
+      { name: 'Continental Haulage', stroke: NAVY, fill: 'rgba(31,58,95,.18)', v: [0.9, 0.82, 0.8, 0.75, 0.78] },
+      { name: 'Redstar Transport', stroke: RED, fill: 'rgba(158,43,37,.20)', v: [0.55, 0.35, 0.6, 0.6, 0.3] },
+    ];
+    const r09RadarSeries = seriesDef.map(s => ({
+      name: s.name, stroke: s.stroke, fill: s.fill,
+      points: s.v.map((vv, k) => pt(k, vv).map(n => n.toFixed(1)).join(',')).join(' '),
+    }));
+    const radarLabelText = ['On-time', 'Reliability', 'Cost efficiency', 'Utilization', 'Low claims'];
+    const r09RadarLabels = radarLabelText.map((text, k) => {
+      const [x, y] = pt(k, 1.18);
+      const anchor = Math.abs(x - rc) < 8 ? 'middle' : (x > rc ? 'start' : 'end');
+      return { x: x.toFixed(1), y: (y + 3).toFixed(1), text, anchor };
+    });
+    // gauge
+    const gc = 100, gcy = 100, gr = 78;
+    const polar = (r, deg) => { const a = deg * Math.PI / 180; return [gc + r * Math.cos(a), gcy + r * Math.sin(a)]; };
+    const arc = (r, d0, d1) => { const [x0, y0] = polar(r, d0), [x1, y1] = polar(r, d1); const lg = (d1 - d0) > 180 ? 1 : 0; return `M${x0.toFixed(2)} ${y0.toFixed(2)} A${r} ${r} 0 ${lg} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`; };
+    const gdeg = p => 180 + p * 1.8;
+    const r09GaugeSegs = [
+      { d: arc(gr, gdeg(0), gdeg(85)), color: RED },
+      { d: arc(gr, gdeg(85), gdeg(92)), color: AMBER },
+      { d: arc(gr, gdeg(92), gdeg(100)), color: TEAL },
+    ];
+    const [nx, nyv] = polar(gr * 0.82, gdeg(67.9));
+    const r09Needle = { x: nx.toFixed(2), y: nyv.toFixed(2) };
+    const [tx1, ty1] = polar(gr - 9, gdeg(95)), [tx2, ty2] = polar(gr + 9, gdeg(95));
+    const r09Target = { x1: tx1.toFixed(2), y1: ty1.toFixed(2), x2: tx2.toFixed(2), y2: ty2.toFixed(2) };
+    const carrierDot = ot => ot >= 92 ? TEAL : (ot >= 85 ? AMBER : RED);
+    const r09Carriers = [
+      { name: 'Blue Marlin Shipping', mode: 'Ocean', ontime: '94.2', dmg: '0.30', cost: '0.98', util: '81', claims: '2' },
+      { name: 'Continental Haulage', mode: 'Road', ontime: '92.8', dmg: '0.55', cost: '1.05', util: '74', claims: '5' },
+      { name: 'AeroCargo Express', mode: 'Air', ontime: '91.4', dmg: '0.61', cost: '1.34', util: '69', claims: '7' },
+      { name: 'Redstar Transport', mode: 'Road', ontime: '67.9', dmg: '1.90', cost: '1.21', util: '63', claims: '14', bad: true },
+    ].map((c, i) => ({
+      ...c, dot: carrierDot(parseFloat(c.ontime)),
+      bg: c.bad ? '#F7E7E6' : (i % 2 ? '#F2F5F8' : '#FFFFFF'),
+      txt: c.bad ? RED : '#222', weight: c.bad ? '700' : '400',
+    }));
+
+    /* ---------- R13 candlestick ---------- */
+    const plotL = 46, plotT = 18, plotW = 632, plotH = 246, pMin = 2.0, pMax = 4.5;
+    const mapY = p => plotT + (pMax - p) / (pMax - pMin) * plotH;
+    const step = plotW / 48;
+    const rnd = mkRand(7);
+    let price = 2.35;
+    const r13Candles = [];
+    for (let i = 0; i < 48; i++) {
+      const open = price;
+      let drift = (rnd() - 0.45) * 0.13;
+      if (i >= 15 && i <= 20) drift += 0.19;
+      else if (i > 20 && i <= 25) drift -= 0.16;
+      let close = Math.max(2.31, Math.min(4.28, open + drift));
+      const high = Math.min(4.4, Math.max(open, close) + rnd() * 0.08 + 0.03);
+      const low = Math.max(2.1, Math.min(open, close) - rnd() * 0.08 - 0.03);
+      const cx = plotL + step * (i + 0.5);
+      const bodyTop = mapY(Math.max(open, close));
+      const bodyBot = mapY(Math.min(open, close));
+      const bodyW = step * 0.52;
+      r13Candles.push({
+        cx: cx.toFixed(2), yHigh: mapY(high).toFixed(2), yLow: mapY(low).toFixed(2),
+        bx: (cx - bodyW / 2).toFixed(2), bodyTop: bodyTop.toFixed(2),
+        bodyH: Math.max(1.2, bodyBot - bodyTop).toFixed(2), bodyW: bodyW.toFixed(2),
+        color: close >= open ? TEAL : NAVY,
+      });
+      price = close;
+    }
+    const r13GridY = [2.0, 2.5, 3.0, 3.5, 4.0, 4.5].map(p => ({ y: mapY(p).toFixed(1), ty: (mapY(p) + 3).toFixed(1), label: p.toFixed(1) }));
+    const r13Quarters = Array.from({ length: 17 }, (_, k) => ({ x: (plotL + step * k * 3).toFixed(1) }));
+    const r13YearTicks = [0, 12, 24, 36].map((i, k) => ({ x: (plotL + step * (i + 6)).toFixed(1), label: String(2021 + k) }));
+    const spikeC = r13Candles[18];
+    const r13Spike = { cx: spikeC.cx, cy: (parseFloat(spikeC.yHigh) - 6).toFixed(1), tx: spikeC.cx, ty: (parseFloat(spikeC.yHigh) - 14).toFixed(1) };
+
+    /* ---------- R13 3D revenue bars ---------- */
+    const regions = ['EMEA', 'APAC', 'AMER', 'LATAM', 'MEAF'];
+    const monthsShort = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+    const rnd2 = mkRand(11);
+    const ox = 92, oy = 262, dxM = 40, dyM = 5, dxR = 30, dyR = -16, fw = 0.6;
+    const regBase = [1.0, 0.85, 0.95, 0.55, 0.45];
+    const grid = [];
+    let maxV = 0;
+    for (let r = 0; r < 5; r++) for (let m = 0; m < 12; m++) {
+      const season = (m >= 9 ? 0.55 : 0.1) + (m === 5 ? 0.15 : 0);
+      const v = regBase[r] * (0.6 + season) + rnd2() * 0.18;
+      grid.push({ r, m, v });
+      if (v > maxV) maxV = v;
+    }
+    const hScale = 108 / maxV;
+    const mix = (c1, c2, t) => `rgb(${Math.round(c1[0] + (c2[0] - c1[0]) * t)},${Math.round(c1[1] + (c2[1] - c1[1]) * t)},${Math.round(c1[2] + (c2[2] - c1[2]) * t)})`;
+    const tealRGB = [44, 140, 153], navyRGB = [31, 58, 95];
+    const P = (m, r) => [ox + m * dxM + r * dxR, oy + m * dyM + r * dyR];
+    // floor grid lines
+    const r13FloorLines = [];
+    for (let r = 0; r <= 5; r++) { const [x1, y1] = P(0, r), [x2, y2] = P(12, r); r13FloorLines.push({ x1: x1.toFixed(1), y1: y1.toFixed(1), x2: x2.toFixed(1), y2: y2.toFixed(1) }); }
+    for (let m = 0; m <= 12; m++) { const [x1, y1] = P(m, 0), [x2, y2] = P(m, 5); r13FloorLines.push({ x1: x1.toFixed(1), y1: y1.toFixed(1), x2: x2.toFixed(1), y2: y2.toFixed(1) }); }
+    // bars painter-sorted: far first (high r, low m)
+    grid.sort((a, b) => (b.r - a.r) || (a.m - b.m));
+    const r13BarFaces = [];
+    grid.forEach(({ m, r, v }) => {
+      const h = v * hScale, ratio = v / maxV;
+      const top = mix(tealRGB, navyRGB, ratio);
+      const darken = (c, t) => `rgb(${Math.round(parseInt(c.slice(4)) )})`; // unused
+      const [ax, ay] = P(m + (1 - fw) / 2, r + (1 - fw) / 2);
+      const em = [dxM * fw, dyM * fw], er = [dxR * fw, dyR * fw], up = [0, -h];
+      const A = [ax, ay], B = [ax + em[0], ay + em[1]], C = [ax + em[0] + er[0], ay + em[1] + er[1]], D = [ax + er[0], ay + er[1]];
+      const At = [A[0], A[1] + up[1]], Bt = [B[0], B[1] + up[1]], Ct = [C[0], C[1] + up[1]], Dt = [D[0], D[1] + up[1]];
+      const poly = arr => arr.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+      const shade = (rgbStr, f) => { const n = rgbStr.match(/\d+/g).map(Number); return `rgb(${n.map(x => Math.round(x * f)).join(',')})`; };
+      // B is the front corner; visible external walls meet there: A-B (left) and B-C (right); top on top
+      r13BarFaces.push({ points: poly([A, B, Bt, At]), fill: shade(top, 0.7) });
+      r13BarFaces.push({ points: poly([B, C, Ct, Bt]), fill: shade(top, 0.85) });
+      r13BarFaces.push({ points: poly([At, Bt, Ct, Dt]), fill: top });
+    });
+    const r13MonthLabels = [0, 2, 4, 6, 8, 10].map(m => { const [x, y] = P(m + 0.5, 0); return { x: x.toFixed(1), y: (y + 14).toFixed(1), text: monthsShort[m] }; });
+    const r13RegionLabels = regions.map((text, r) => { const [x, y] = P(12.1, r + 0.5); return { x: x.toFixed(1), y: (y + 3).toFixed(1), text }; });
+
+    /* ---------- R17 gantt ---------- */
+    const tlLeft = 344, tlW = 675, y0 = 2021, y1 = 2026.5, headerH = 40, rowH = 24;
+    const xg = y => tlLeft + (y - y0) / (y1 - y0) * tlW;
+    const groups = [
+      { name: 'Rotterdam DC Expansion — €14.2 M — 68%', tasks: [
+        { t: 'Site preparation', s: 2021.0, e: 2021.4, p: 1, st: 'ok' },
+        { t: 'Foundation & drainage', s: 2021.4, e: 2021.9, p: 1, st: 'ok' },
+        { t: 'Steel erection', s: 2021.9, e: 2022.4, p: 0.9, st: 'ok', ms: true },
+        { t: 'Cladding & roofing', s: 2022.3, e: 2022.85, p: 0.7, st: 'ok' },
+        { t: 'MEP fit-out', s: 2022.7, e: 2023.2, p: 0.4, st: 'ok' },
+        { t: 'Commissioning', s: 2023.1, e: 2023.5, p: 0.1, st: 'ok' },
+      ]},
+      { name: 'Singapore Cross-Dock Hub — €21.8 M — 40%', tasks: [
+        { t: 'Site preparation', s: 2022.2, e: 2022.6, p: 1, st: 'ok' },
+        { t: 'Piling', s: 2022.6, e: 2023.1, p: 0.9, st: 'ok', ms: true },
+        { t: 'Superstructure', s: 2023.0, e: 2023.8, p: 0.6, st: 'risk' },
+        { t: 'Dock equipment', s: 2023.7, e: 2024.2, p: 0.25, st: 'risk' },
+        { t: 'Systems integration', s: 2024.0, e: 2024.6, p: 0.1, st: 'ok' },
+      ]},
+      { name: 'Santos Port Terminal — €18.0 M — 12%', tasks: [
+        { t: 'Permitting', s: 2024.0, e: 2024.6, p: 1, st: 'ok', ms: true },
+        { t: 'Dredging', s: 2024.5, e: 2025.7, p: 0.3, st: 'late' },
+        { t: 'Quay wall', s: 2025.4, e: 2026.05, p: 0.05, st: 'ok' },
+        { t: 'Yard paving', s: 2025.9, e: 2026.4, p: 0, st: 'ok' },
+      ]},
+    ];
+    const stColor = { ok: TEAL, risk: AMBER, late: RED };
+    const r17Zebra = [], r17GroupRows = [], r17TaskLabels = [], r17Bars = [], r17Milestones = [], r17Deps = [];
+    let row = 0;
+    groups.forEach(g => {
+      const gy = headerH + row * rowH;
+      r17GroupRows.push({ ty: (gy + 16).toFixed(0), uy: (gy + 21).toFixed(0), text: g.name });
+      row++;
+      let prev = null;
+      g.tasks.forEach((tk, ti) => {
+        const ry = headerH + row * rowH;
+        if (row % 2 === 0) r17Zebra.push({ y: ry.toFixed(0), h: rowH });
+        r17TaskLabels.push({ ty: (ry + 16).toFixed(0), text: tk.t });
+        const bx = xg(tk.s), bw = xg(tk.e) - xg(tk.s), by = ry + 6;
+        r17Bars.push({
+          x: bx.toFixed(1), y: by.toFixed(0), w: bw.toFixed(1),
+          doneW: (bw * tk.p).toFixed(1), base: stColor[tk.st], doneFill: NAVY,
+        });
+        if (tk.ms) { const mx = xg(tk.e), my = by + 6; r17Milestones.push({ x: (mx - 4.5).toFixed(1), y: (my - 4.5).toFixed(1), cx: mx.toFixed(1), cy: my.toFixed(1) }); }
+        if (prev) {
+          const px = xg(prev.e), py = prev.by + 6, cx0 = xg(tk.s), cy0 = by + 6;
+          r17Deps.push(`M${px.toFixed(1)} ${py.toFixed(1)} H${(cx0 - 8).toFixed(1)} V${cy0.toFixed(1)} H${(cx0 - 2).toFixed(1)}`);
+        }
+        prev = { e: tk.e, by };
+        row++;
+      });
+    });
+    const r17Years = [2021, 2022, 2023, 2024, 2025, 2026].map(yy => ({ x: xg(yy).toFixed(1), labelX: (xg(yy) + (xg(yy + 1) - xg(yy)) / 2).toFixed(1), label: String(yy) }));
+    const r17Quarters = [];
+    for (let yy = y0; yy < y1; yy += 0.25) r17Quarters.push({ x: xg(yy).toFixed(1) });
+    const todayX = xg(2026 + 5 / 12);
+    const r17TodayX = todayX.toFixed(1);
+    const r17TodayLabelX = todayX.toFixed(1);
+
+    /* ---------- SVG text labels (built as React nodes; hole-interpolated text breaks SVG <text> layout) ---------- */
+    const RC = React.createElement, FR = React.Fragment;
+    const r09RadarLabelsEl = RC(FR, null, ...r09RadarLabels.map((lb, i) => RC('text', { key: i, x: lb.x, y: lb.y, fill: '#6B7683', fontSize: 9, textAnchor: lb.anchor }, lb.text)));
+    const r13CandleAxisEl = RC(FR, null,
+      ...r13GridY.map((g, i) => RC('text', { key: 'g' + i, x: 40, y: g.ty, textAnchor: 'end', fill: '#6B7683', fontSize: 9 }, g.label)),
+      ...r13YearTicks.map((t, i) => RC('text', { key: 'y' + i, x: t.x, y: 280, textAnchor: 'middle', fill: '#6B7683', fontSize: 10 }, t.label)),
+    );
+    const r13Bar3dLabelsEl = RC(FR, null,
+      ...r13MonthLabels.map((m, i) => RC('text', { key: 'm' + i, x: m.x, y: m.y, fill: '#6B7683', fontSize: 8.5, textAnchor: 'middle' }, m.text)),
+      ...r13RegionLabels.map((r, i) => RC('text', { key: 'r' + i, x: r.x, y: r.y, fill: NAVY, fontSize: 9, fontWeight: 700, textAnchor: 'start' }, r.text)),
+    );
+    const r17TextEl = RC(FR, null,
+      ...r17Years.map((y, i) => RC('text', { key: 'yr' + i, x: y.labelX, y: 26, fill: NAVY, fontSize: 11, fontWeight: 700, textAnchor: 'middle' }, y.label)),
+      ...r17GroupRows.map((g, i) => RC('text', { key: 'gr' + i, x: 6, y: g.ty, fill: NAVY, fontSize: 11.5, fontWeight: 700 }, g.text)),
+      ...r17TaskLabels.map((t, i) => RC('text', { key: 'tk' + i, x: 22, y: t.ty, fill: '#222', fontSize: 9.5 }, t.text)),
+    );
+
+    return {
+      r01Rows, r01Aging, r01Contacts,
+      r09RadarLabelsEl, r13CandleAxisEl, r13Bar3dLabelsEl, r17TextEl,
+      r09Kpis, r09RadarRings, r09RadarSpokes, r09RadarSeries, r09RadarLabels,
+      r09GaugeSegs, r09Needle, r09Target, r09Carriers,
+      r13Candles, r13GridY, r13Quarters, r13YearTicks, r13Spike,
+      r13FloorLines, r13BarFaces, r13MonthLabels, r13RegionLabels,
+      r17Zebra, r17GroupRows, r17TaskLabels, r17Bars, r17Milestones, r17Deps,
+      r17Years, r17Quarters, r17TodayX, r17TodayLabelX,
+    };
+  }
+}
+</script>
+</body>
+</html>

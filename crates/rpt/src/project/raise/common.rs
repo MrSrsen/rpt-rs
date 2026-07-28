@@ -8,8 +8,8 @@
 use super::*;
 
 pub(super) use crate::bytes::{
-    first_lp, i32_be, longest_lp, lp_scan, lp_string_at, read_be_lp_string_lossy, read_lp_string,
-    u16_be, u16_le, u32_be, Cursor, Scan,
+    first_lp, i32_be, longest_lp, lp_scan, lp_string_at, read_be_lp_string_lossy,
+    read_be_lp_string_lossy_at, read_lp_string, u16_be, u16_le, u32_be, Cursor, Scan,
 };
 
 /// All nodes of the tree (pre-order) satisfying `pred`.
@@ -63,29 +63,47 @@ pub(super) fn summary_op_full(token: &str) -> &str {
     match token {
         "Max" => "Maximum",
         "Min" => "Minimum",
+        "Avg" => "Average",
         other => other,
     }
 }
 
-/// The trailing run of ASCII decimal digits of `s` (`"GroupHeaderArea4"` → `"4"`,
-/// `"PageHeader"` → `""`) — used to link a group header to its matching footer.
-pub(super) fn trailing_digits(s: &str) -> String {
-    let digits: String = s.chars().rev().take_while(char::is_ascii_digit).collect();
-    digits.chars().rev().collect()
+/// Whether a string is an engine field reference: a database field (`Table.field`) or a formula
+/// (`@name`). Excludes literals like `Others` and localized order/name marker strings.
+pub(super) fn is_field_ref(s: &str) -> bool {
+    s.starts_with('@') || s.contains('.')
 }
 
-/// Decode a `COLORREF` (`0x00BBGGRR`, big-endian) into a [`Color`]; `0xffffffff` is the
-/// "default / no colour" sentinel, treated as White.
-pub(super) fn raise_colorref(b: &[u8]) -> Color {
-    let v = u32_be(b, 0).unwrap_or(0);
-    if v == 0xffff_ffff {
-        return Color::WHITE;
-    }
+/// A three-byte `BGR` colour triple at `off` — the on-disk order of an object border/background
+/// colour (byte `off` = Blue, `off+1` = Green, `off+2` = Red). `None` if the triple runs past the end.
+pub(super) fn bgr(b: &[u8], off: usize) -> Option<Color> {
+    Some(Color {
+        a: 255,
+        r: *b.get(off + 2)?,
+        g: *b.get(off + 1)?,
+        b: *b.get(off)?,
+    })
+}
+
+/// Decode a `COLORREF` value (`0x00BBGGRR`) into a [`Color`]: red in the low byte, then green, then
+/// blue. The caller reads the `u32` in the record's own endianness and applies its own sentinel.
+pub(super) fn colorref(v: u32) -> Color {
     Color {
         a: 255,
         r: (v & 0xff) as u8,
         g: ((v >> 8) & 0xff) as u8,
         b: ((v >> 16) & 0xff) as u8,
+    }
+}
+
+/// Decode a big-endian `COLORREF` (`0x00BBGGRR`) at a leaf's start into a [`Color`]; `0xffffffff` is
+/// the "default / no colour" sentinel, treated as White.
+pub(super) fn raise_colorref(b: &[u8]) -> Color {
+    let v = u32_be(b, 0).unwrap_or(0);
+    if v == 0xffff_ffff {
+        Color::WHITE
+    } else {
+        colorref(v)
     }
 }
 
@@ -95,6 +113,25 @@ pub(super) fn flatten(tree: &[RecordNode]) -> Vec<&RecordNode> {
     let mut out = Vec::new();
     for root in tree {
         root.walk(&mut |n| out.push(n));
+    }
+    out
+}
+
+/// The summary-definition records (`0x7e` **not** immediately preceded by its `0x80` running-total
+/// reset), in document order. When `until_area`, the scan stops at the first area marker (summary
+/// definitions all precede the layout region); otherwise the whole tree is scanned (a superset that
+/// also picks up definitions inside the layout).
+pub(super) fn summary_def_nodes(tree: &[RecordNode], until_area: bool) -> Vec<&RecordNode> {
+    let mut out = Vec::new();
+    let mut prev = 0u16;
+    for n in flatten(tree) {
+        if until_area && n.rtype == AREA_MARKER {
+            break;
+        }
+        if n.rtype == SUMMARY_DEF && prev != RT_RESET {
+            out.push(n);
+        }
+        prev = n.rtype;
     }
     out
 }
@@ -121,4 +158,37 @@ pub(super) fn all_strings(node: &RecordNode, logical: &[u8]) -> Vec<String> {
         out.extend(lp_scan(&n.leaf_bytes(logical), Scan::Consume).map(|(_, s, _)| s));
     });
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{read_coord, summary_op_full};
+
+    #[test]
+    fn read_coord_plain_and_escaped() {
+        // Below 32768: a plain big-endian u16, consuming 2 bytes.
+        assert_eq!(read_coord(&[0x01, 0x00], 0), Some((256, 2)));
+        assert_eq!(read_coord(&[0x7f, 0xff], 0), Some((0x7fff, 2)));
+        // High bit set: escape — value is (word & 0x7fff) << 16 | next u16, consuming 4 bytes.
+        // 0x8001 << 16 masked = 0x0001_0000, plus 0x0002 low word = 0x0001_0002.
+        assert_eq!(
+            read_coord(&[0x80, 0x01, 0x00, 0x02], 0),
+            Some((0x0001_0002, 4))
+        );
+        // Respects the offset and reports the post-coordinate cursor.
+        assert_eq!(read_coord(&[0xaa, 0x01, 0x00], 1), Some((256, 3)));
+        // Truncated inputs yield None rather than panicking.
+        assert_eq!(read_coord(&[0x00], 0), None);
+        assert_eq!(read_coord(&[0x80, 0x01], 0), None); // escape needs a second word
+    }
+
+    #[test]
+    fn summary_op_full_expands_only_min_max() {
+        assert_eq!(summary_op_full("Max"), "Maximum");
+        assert_eq!(summary_op_full("Min"), "Minimum");
+        assert_eq!(summary_op_full("Avg"), "Average");
+        // Any other token passes through unchanged.
+        assert_eq!(summary_op_full("Sum"), "Sum");
+        assert_eq!(summary_op_full("DistinctCount"), "DistinctCount");
+    }
 }

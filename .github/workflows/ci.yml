@@ -19,13 +19,21 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
+      # Fail if any member crate re-declares a [workspace.dependencies] crate with a bare version
+      # instead of inheriting it via { workspace = true } — which risks two compiled copies drifting.
+      - name: Workspace dependency drift guard
+        run: bash scripts/check-workspace-deps.sh
+      # Error-handling invariants clippy cannot express: discarded formula parse diagnostics, and an
+      # error variant that both interpolates its source and marks it #[source] (which makes every
+      # chain-printing reporter emit the cause twice).
+      - name: Error-handling guard
+        run: bash scripts/check-error-handling.sh
       - name: Format
         run: cargo fmt --all --check
       - name: Clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
-      # --all-targets compiles every binary (rpt, rpt-render), example
-      # (record_bytes), and test/bench target, so a broken build in any of them
-      # fails CI here rather than only when that target is exercised.
+      # --all-targets compiles every binary (rpt, rpt-render) and test/bench target, so a broken
+      # build in any of them fails CI here rather than only when that target is exercised.
       - name: Build (all features, all targets)
         run: cargo build --all-features --all-targets
 
@@ -85,26 +93,55 @@ jobs:
         run: cargo build -p rpt --no-default-features
       - name: Build with serde
         run: cargo build -p rpt --no-default-features --features serde
+      # rpt-text's default `cosmic` feature swaps in the whole cosmic-text shaping stack; with it off,
+      # only the fontdb face resolver compiles. Exercise both so neither path bit-rots.
+      - name: Build rpt-text without default features
+        run: cargo build -p rpt-text --no-default-features
+      # rpt-model's serde is optional; the pure-data path must build without it.
+      - name: Build rpt-model without default features
+        run: cargo build -p rpt-model --no-default-features
 
   baseline:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - name: Install bubblewrap
-        run: sudo apt-get update && sudo apt-get install -y bubblewrap
-      # Ubuntu 24.04 (ubuntu-latest) ships an AppArmor profile that blocks unprivileged user
-      # namespaces, which Bubblewrap needs to set up its uid map ("setting up uid map:
-      # Permission denied"). Re-enable them so bwrap can run without privileges.
-      - name: Allow unprivileged user namespaces
-        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-      # Build the exporter, dump each fixture's XML in a Bubblewrap sandbox (fixed filesystem
-      # path), and require an exact match against the committed baselines. RPT_REQUIRE_SANDBOX
-      # makes the test fail rather than skip if the sandbox is unavailable.
-      - name: XML baseline regression
-        env:
-          RPT_REQUIRE_SANDBOX: "1"
-        run: cargo test -p rpt-cli --test baseline
+      # The decode regression net: `rpt json-dump` is the full serde serialization of the decoded
+      # model, so every decoded field is observed, not just the subset a curated export projects.
+      # Needs no sandbox — the dump depends on nothing outside the .rpt, so it is reproducible on
+      # any machine and this job stays a plain cargo test.
+      - name: JSON baseline regression
+        run: cargo test -p rpt-cli --test json_baseline
+
+  # Enforce the WASM-safety boundary at compile time. The render/data pipeline is meant to build
+  # for a target with no OS, filesystem, or threads; this job fails if a native-only dependency
+  # (tokio, a filesystem/DB crate) sneaks into one of the portable crates, rather than letting the
+  # regression surface only in a downstream WASM consumer. The native-only DB backends
+  # (rpt-db-postgres / rpt-db-sqlite), the decoder (rpt), and the physical backends
+  # (rpt-render-pdf / rpt-render-raster, which link fontdb/tiny-skia) are intentionally excluded.
+  wasm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - name: Build portable crates for wasm32
+        run: >-
+          cargo build --target wasm32-unknown-unknown
+          -p rpt-model -p rpt-pages -p rpt-layout -p rpt-data -p rpt-query
+          -p rpt-format-value -p rpt-render-html -p rpt-render-svg -p rpt-kdl
+
+  # Supply-chain gate: RUSTSEC advisories, duplicate-version drift, and crate sources. Licenses are
+  # intentionally out of scope here (owned by a separate ticket); deny.toml configures only the
+  # advisories/bans/sources checks and the job runs exactly those.
+  cargo-deny:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          command: check advisories bans sources
 
   # Create the GitHub Release once, before the matrix upload jobs. The upload
   # action only uploads assets to an existing release; if the per-target jobs

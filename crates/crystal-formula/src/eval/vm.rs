@@ -11,10 +11,14 @@
 use std::collections::HashMap;
 
 use super::builtins;
-use super::{apply_binary, apply_index, apply_unary};
-use crate::ast::{Node, VarKind, VarScope};
-use crate::eval::{EvalContext, EvalError, Value};
-use crate::token::{op, RefKind};
+use super::lazy::{summary_needs_context, LazyForm, SummaryCall};
+use super::ops::{
+    apply_binary, apply_index, apply_unary, branch_default, exit_outside_loop, parse_date_literal,
+    type_mismatch, var_default, LOOP_LIMIT,
+};
+use crate::ast::{Node, NodeKind, VarKind, VarScope};
+use crate::eval::{EvalContext, EvalError, SpannedEvalError, Value};
+use crate::token::{op, RefKind, Span};
 
 /// How a conditional treats a `Null` condition value.
 #[derive(Debug, Clone, Copy)]
@@ -44,6 +48,14 @@ enum Op {
     DeclareDefault(String, Value),
     /// Pop `argc` args (in order) and call a builtin.
     Call(String, usize),
+    /// Resolve a summary-function reference (`Op({field}[, {group}])`) against the context's computed
+    /// summaries and push its value. Carries the operation name, summarized field, and optional group
+    /// scope — the operands are references, not evaluated onto the stack.
+    Summary {
+        op: String,
+        field: String,
+        group: Option<String>,
+    },
     /// Pop rhs, lhs; push `apply_binary`.
     Bin(u8),
     /// Pop operand; push `apply_unary`.
@@ -86,7 +98,7 @@ enum Op {
 
 /// A live loop's unwind target: the value- and guard-stack depths at loop entry and the op index to
 /// jump to when the loop exits (used by [`Op::Break`]). `iters` counts this loop's back-edges so the
-/// VM aborts a runaway loop at the same per-loop [`LOOP_LIMIT`](super::LOOP_LIMIT) as the tree-walker.
+/// VM aborts a runaway loop at the same per-loop [`LOOP_LIMIT`](super::ops::LOOP_LIMIT) as the tree-walker.
 #[derive(Debug, Clone, Copy)]
 struct LoopFrame {
     exit: usize,
@@ -102,6 +114,9 @@ struct LoopFrame {
 #[derive(Debug, Clone)]
 pub struct Chunk {
     ops: Vec<Op>,
+    /// The source span of the AST node each op was compiled from, parallel to `ops`. Used only by
+    /// [`run_spanned`] to attach a span to a runtime error; `0..0` when the op has no source origin.
+    spans: Vec<Span>,
     scopes: HashMap<String, VarScope>,
 }
 
@@ -110,27 +125,35 @@ pub struct Chunk {
 pub fn compile(node: &Node) -> Chunk {
     let mut c = Compiler {
         ops: Vec::new(),
+        spans: Vec::new(),
         scopes: HashMap::new(),
         loop_seq: 0,
+        cur_span: Span::default(),
     };
     c.node(node);
     Chunk {
         ops: c.ops,
+        spans: c.spans,
         scopes: c.scopes,
     }
 }
 
 struct Compiler {
     ops: Vec<Op>,
+    /// Span of the node currently being compiled, stamped onto every op [`emit`](Compiler::emit)ted.
+    spans: Vec<Span>,
     /// Lowercased variable name → declared scope, for the non-`Local` declarations in this formula.
     scopes: HashMap<String, VarScope>,
     /// Counter for the hidden per-`For`-loop bookkeeping variables (limit/step/direction).
     loop_seq: usize,
+    /// The span attached to the next emitted op (the node currently being compiled).
+    cur_span: Span,
 }
 
 impl Compiler {
     fn emit(&mut self, op: Op) -> usize {
         self.ops.push(op);
+        self.spans.push(self.cur_span);
         self.ops.len() - 1
     }
 
@@ -147,13 +170,21 @@ impl Compiler {
             | Op::GuardJump(t)
             | Op::CondJumpFalse(t)
             | Op::LoopEnter(t) => *t = to,
-            _ => panic!("patch of non-jump op"),
+            // The compiler only ever patches an op it emitted as a jump, so reaching this is a bug
+            // in `compile`, not in the formula. `compile` has no error channel and this crate must
+            // not abort its host, so in release the patch is skipped: the chunk is wrong either way,
+            // but a wrong value beats killing an LSP or a WASM sandbox.
+            other => debug_assert!(false, "patch of non-jump op: {other:?}"),
         }
     }
 
     fn node(&mut self, node: &Node) {
-        match node {
-            Node::Number(s) => match s.trim().parse::<f64>() {
+        // Stamp every op emitted for this node with the node's span. Re-asserted before an operator
+        // op that follows child compilation, since recursing into a child overwrites `cur_span`.
+        let span = node.span;
+        self.cur_span = span;
+        match &node.kind {
+            NodeKind::Number(s) => match s.trim().parse::<f64>() {
                 Ok(n) => {
                     self.emit(Op::Push(Value::Number(n)));
                 }
@@ -161,13 +192,13 @@ impl Compiler {
                     self.emit(Op::Fail(format!("number literal `{s}`")));
                 }
             },
-            Node::Str(s) => {
+            NodeKind::Str(s) => {
                 self.emit(Op::Push(Value::Str(s.clone())));
             }
-            Node::Bool(b) => {
+            NodeKind::Bool(b) => {
                 self.emit(Op::Push(Value::Bool(*b)));
             }
-            Node::DateLit(s) => match super::parse_date_literal(s) {
+            NodeKind::DateLit(s) => match parse_date_literal(s) {
                 Ok(v) => {
                     self.emit(Op::Push(v));
                 }
@@ -175,51 +206,56 @@ impl Compiler {
                     self.emit(Op::Fail(format!("{e}")));
                 }
             },
-            Node::Reference { kind, name } => {
+            NodeKind::Reference { kind, name } => {
                 self.emit(Op::LoadRef(*kind, name.clone()));
             }
-            Node::Ident(name) => {
+            NodeKind::Ident(name) => {
                 self.emit(Op::LoadIdent(name.clone()));
             }
-            Node::Unary { op, expr } => {
+            NodeKind::Unary { op, expr } => {
                 self.node(expr);
+                self.cur_span = span;
                 self.emit(Op::Un(*op));
             }
-            Node::Binary { op, left, right } => {
+            NodeKind::Binary { op, left, right } => {
                 self.node(left);
                 self.node(right);
+                self.cur_span = span;
                 self.emit(Op::Bin(*op));
             }
-            Node::Index { base, index } => {
+            NodeKind::Index { base, index } => {
                 self.node(base);
                 self.node(index);
+                self.cur_span = span;
                 self.emit(Op::Index);
             }
-            Node::Array(items) => {
+            NodeKind::Array(items) => {
                 for it in items {
                     self.node(it);
                 }
+                self.cur_span = span;
                 self.emit(Op::MakeArray(items.len()));
             }
-            Node::Call { name, args } => self.call(name, args),
-            Node::If {
+            NodeKind::Call { name, args } => self.call(name, args, span),
+            NodeKind::If {
                 cond,
                 then,
                 elifs,
                 els,
             } => self.compile_if(cond, then, elifs, els.as_deref()),
-            Node::Assign { name, value } => {
+            NodeKind::Assign { name, value } => {
                 self.node(value);
+                self.cur_span = span;
                 self.emit(Op::StoreVar(name.to_lowercase()));
             }
-            Node::Declare {
+            NodeKind::Declare {
                 scope,
                 kind,
                 names,
                 init,
                 ..
             } => self.compile_declare(*scope, *kind, names, init.as_deref()),
-            Node::Seq(stmts) => {
+            NodeKind::Seq(stmts) => {
                 if stmts.is_empty() {
                     self.emit(Op::Push(Value::Null));
                 } else {
@@ -231,39 +267,52 @@ impl Compiler {
                     }
                 }
             }
-            Node::While {
+            NodeKind::While {
                 cond,
                 body,
                 test_after,
             } => self.compile_while(cond, body, *test_after),
-            Node::For {
+            NodeKind::For {
                 var,
                 from,
                 to,
                 step,
                 body,
             } => self.compile_for(var, from, to, step.as_deref(), body),
-            Node::Exit(_) => {
+            NodeKind::Exit(_) => {
                 // Every loop leaves a Null on the stack; `Break` unwinds to that point at runtime,
                 // erroring if there is no enclosing loop frame.
                 self.emit(Op::Break);
             }
-            Node::Empty => {
+            NodeKind::Empty => {
                 self.emit(Op::Push(Value::Null));
             }
-            Node::Unparsed(_) => {
+            NodeKind::Unparsed(_) => {
                 self.emit(Op::Fail("unparsed construct".into()));
             }
-            Node::Error => {
+            NodeKind::Error => {
                 self.emit(Op::Fail("parse error in formula".into()));
             }
         }
     }
 
-    fn call(&mut self, name: &str, args: &[Node]) {
-        match name.to_lowercase().as_str() {
-            // Lazy forms compiled to jumps (only the selected branch runs).
-            "iif" if args.len() == 3 => {
+    fn call(&mut self, name: &str, args: &[Node], span: Span) {
+        // A summary function over a `{...}` reference resolves against the report's computed
+        // summaries; its operands are names, not stack values, so it never evaluates its args.
+        if let Some(sc) = SummaryCall::from_call(name, args) {
+            self.cur_span = span;
+            self.emit(Op::Summary {
+                op: sc.op,
+                field: sc.field,
+                group: sc.group,
+            });
+            return;
+        }
+        // Lazy forms compiled to jumps (only the selected branch runs). A lazy name with an
+        // unexpected arity (IIf not-3, Choose empty) falls through to the eager path, matching the
+        // tree-walker.
+        match LazyForm::from_name(name) {
+            Some(LazyForm::IIf) if args.len() == 3 => {
                 // cond ? a : b ; Null -> Null
                 self.node(&args[0]);
                 let to_a = self.emit(Op::CondJump(0, NullMode::ToNull(0)));
@@ -276,12 +325,13 @@ impl Compiler {
                 self.ops[to_a] = Op::CondJump(a_at, NullMode::ToNull(end));
                 self.patch(over, end);
             }
-            "switch" => self.compile_switch(args),
-            "choose" if !args.is_empty() => self.compile_choose(args),
+            Some(LazyForm::Switch) => self.compile_switch(args),
+            Some(LazyForm::Choose) if !args.is_empty() => self.compile_choose(args),
             _ => {
                 for a in args {
                     self.node(a);
                 }
+                self.cur_span = span;
                 self.emit(Op::Call(name.to_lowercase(), args.len()));
             }
         }
@@ -301,7 +351,7 @@ impl Compiler {
         match els {
             Some(e) => self.node(e),
             None => {
-                self.emit(Op::Push(super::branch_default(then)));
+                self.emit(Op::Push(branch_default(then)));
             }
         }
         let over_null = self.emit(Op::Jump(0));
@@ -510,7 +560,7 @@ impl Compiler {
             }
             return;
         }
-        let default = super::var_default(kind);
+        let default = var_default(kind);
         for name in names {
             self.emit(Op::DeclareDefault(name.to_lowercase(), default.clone()));
         }
@@ -525,207 +575,306 @@ impl Compiler {
     }
 }
 
-/// Run a compiled [`Chunk`] against an evaluation context.
+/// Run a compiled [`Chunk`] against an evaluation context (null fields propagate — the engine
+/// default; see [`NullTreatment::Exception`](super::NullTreatment::Exception)).
+///
+/// # Errors
+///
+/// [`EvalError`] on any evaluation failure — see [`eval`](super::eval).
 pub fn run(chunk: &Chunk, ctx: &dyn EvalContext) -> Result<Value, EvalError> {
-    run_with_loop_limit(chunk, ctx, super::LOOP_LIMIT)
+    run_with_loop_limit(chunk, ctx, super::NullTreatment::Exception, LOOP_LIMIT)
 }
 
-/// [`run`] with an explicit per-loop iteration cap (so tests can trip the guard cheaply). Production
-/// callers use [`run`], which passes the shared [`LOOP_LIMIT`](super::LOOP_LIMIT).
+/// [`run`] with an explicit [`NullTreatment`](super::NullTreatment): under `DefaultValue`, a null
+/// `{...}` field is replaced by [`EvalContext::null_default`] before it enters the computation.
+///
+/// # Errors
+///
+/// As [`run`].
+pub fn run_with(
+    chunk: &Chunk,
+    ctx: &dyn EvalContext,
+    nulls: super::NullTreatment,
+) -> Result<Value, EvalError> {
+    run_with_loop_limit(chunk, ctx, nulls, LOOP_LIMIT)
+}
+
+/// [`run`] that, on failure, reports the source [`Span`] of the failing op's originating node — for
+/// an LSP/playground that wants to underline the offending sub-expression. The value and underlying
+/// [`EvalError`] are identical to [`run`].
+///
+/// # Errors
+///
+/// As [`run`], wrapped in a [`SpannedEvalError`] carrying the failing op's span.
+pub fn run_spanned(chunk: &Chunk, ctx: &dyn EvalContext) -> Result<Value, SpannedEvalError> {
+    run_loop(chunk, ctx, super::NullTreatment::Exception, LOOP_LIMIT)
+}
+
+/// [`run`] with an explicit per-loop iteration cap (so tests can trip the guard cheaply) and
+/// [`NullTreatment`](super::NullTreatment). Production callers use [`run`] / [`run_with`], which pass
+/// the shared [`LOOP_LIMIT`](super::ops::LOOP_LIMIT).
 pub(crate) fn run_with_loop_limit(
     chunk: &Chunk,
     ctx: &dyn EvalContext,
+    nulls: super::NullTreatment,
     loop_limit: usize,
 ) -> Result<Value, EvalError> {
-    let mut stack: Vec<Value> = Vec::new();
-    let mut guards: Vec<bool> = Vec::new();
-    let mut loops: Vec<LoopFrame> = Vec::new();
-    let mut vars: HashMap<String, Value> = HashMap::new();
-    let mut ip = 0;
-    let underflow = || EvalError::Unsupported("VM stack underflow".into());
+    run_loop(chunk, ctx, nulls, loop_limit).map_err(EvalError::from)
+}
 
+/// The VM's mutable state for one [`Chunk`] run: the value stack, the null-guard stack, the live
+/// loop frames, and the per-run `Local` variable store.
+struct VmState {
+    stack: Vec<Value>,
+    guards: Vec<bool>,
+    loops: Vec<LoopFrame>,
+    vars: HashMap<String, Value>,
+}
+
+/// The shared interpreter loop. Each runtime error is paired with the failing op's span (from the
+/// chunk's parallel `spans`); the non-spanned entries discard it via [`EvalError::from`].
+fn run_loop(
+    chunk: &Chunk,
+    ctx: &dyn EvalContext,
+    nulls: super::NullTreatment,
+    loop_limit: usize,
+) -> Result<Value, SpannedEvalError> {
+    let mut st = VmState {
+        stack: Vec::new(),
+        guards: Vec::new(),
+        loops: Vec::new(),
+        vars: HashMap::new(),
+    };
+    let mut ip = 0;
+    let span_at = |ip: usize| chunk.spans.get(ip).copied().unwrap_or_default();
     while ip < chunk.ops.len() {
-        let mut next = ip + 1;
-        match &chunk.ops[ip] {
-            Op::Push(v) => stack.push(v.clone()),
-            Op::LoadRef(kind, name) => {
-                let v = ctx
-                    .resolve(*kind, name)
-                    .ok_or_else(|| EvalError::UnknownName(format!("{{{name}}}")))?;
-                stack.push(v);
-            }
-            Op::LoadIdent(name) => {
-                let lname = name.to_lowercase();
-                let scoped = chunk
-                    .scopes
-                    .get(&lname)
-                    .and_then(|&s| ctx.var_get(s, &lname));
-                if let Some(v) = scoped {
-                    stack.push(v);
-                } else if let Some(v) = vars.get(&lname) {
-                    stack.push(v.clone());
-                } else {
-                    stack.push(builtins::resolve(name, &[], ctx)?);
-                }
-            }
-            Op::LoadVar(name) => {
-                let scoped = chunk.scopes.get(name).and_then(|&s| ctx.var_get(s, name));
-                stack.push(
-                    scoped
-                        .or_else(|| vars.get(name).cloned())
-                        .unwrap_or(Value::Null),
-                );
-            }
-            Op::StoreVar(name) => {
-                let v = stack.last().ok_or_else(underflow)?.clone();
-                // A `Global`/`Shared` write goes to the persistent store; if there is none (default
-                // context), it falls back to the per-run locals — identical to the old behavior.
-                let persisted = match chunk.scopes.get(name) {
-                    Some(&scope) => ctx.var_set(scope, name, v.clone()),
-                    None => false,
-                };
-                if !persisted {
-                    vars.insert(name.clone(), v);
-                }
-            }
-            Op::DeclareDefault(name, default) => {
-                // A persistent var initialises only when unset, so an accumulated value survives
-                // re-declaration on the next record/formula; a `Local` (or store-less) var defaults
-                // in the per-run map.
-                match chunk.scopes.get(name) {
-                    Some(&scope) if ctx.var_get(scope, name).is_some() => {}
-                    Some(&scope) if ctx.var_set(scope, name, default.clone()) => {}
-                    _ => {
-                        vars.entry(name.clone()).or_insert_with(|| default.clone());
-                    }
-                }
-            }
-            Op::Call(name, argc) => {
-                if stack.len() < *argc {
-                    return Err(underflow());
-                }
-                let args = stack.split_off(stack.len() - argc);
-                stack.push(builtins::resolve(name, &args, ctx)?);
-            }
-            Op::Bin(code) => {
-                let r = stack.pop().ok_or_else(underflow)?;
-                let l = stack.pop().ok_or_else(underflow)?;
-                stack.push(apply_binary(*code, l, r)?);
-            }
-            Op::Un(code) => {
-                let v = stack.pop().ok_or_else(underflow)?;
-                stack.push(apply_unary(*code, v)?);
-            }
-            Op::Index => {
-                let i = stack.pop().ok_or_else(underflow)?;
-                let b = stack.pop().ok_or_else(underflow)?;
-                stack.push(apply_index(b, i)?);
-            }
-            Op::MakeArray(n) => {
-                if stack.len() < *n {
-                    return Err(underflow());
-                }
-                let items = stack.split_off(stack.len() - n);
-                stack.push(Value::Array(items));
-            }
-            Op::Jump(t) => next = *t,
-            Op::CondJump(t, null_mode) => {
-                let cond = stack.pop().ok_or_else(underflow)?;
-                match cond {
-                    Value::Bool(true) => next = *t,
-                    Value::Bool(false) => {}
-                    Value::Null => match null_mode {
-                        NullMode::Skip => {}
-                        NullMode::Guard => {
-                            if let Some(g) = guards.last_mut() {
-                                *g = true;
-                            }
-                        }
-                        NullMode::ToNull(end) => {
-                            stack.push(Value::Null);
-                            next = *end;
-                        }
-                    },
-                    // Match the tree-walker's per-construct label so both evaluators report
-                    // the same `what` on a non-Bool condition.
-                    v => {
-                        let what = match null_mode {
-                            NullMode::Guard => "If condition",
-                            NullMode::ToNull(_) => "IIf condition",
-                            NullMode::Skip => "Switch condition",
-                        };
-                        return Err(super::type_mismatch(what, &v));
-                    }
-                }
-            }
-            Op::CondJumpFalse(t) => {
-                let cond = stack.pop().ok_or_else(underflow)?;
-                match cond {
-                    Value::Bool(true) => {}
-                    Value::Bool(false) | Value::Null => next = *t,
-                    v => return Err(super::type_mismatch("loop condition", &v)),
-                }
-            }
-            Op::PushGuard => guards.push(false),
-            Op::GuardJump(t) => {
-                if guards.pop().ok_or_else(underflow)? {
-                    next = *t;
-                }
-            }
-            Op::PopGuard => {
-                guards.pop();
-            }
-            Op::ChooseJump { branches, end } => {
-                let idx = stack.pop().ok_or_else(underflow)?;
-                // A null index propagates to null (the whole Choose is null), matching the walker.
-                if idx.is_null() {
-                    stack.push(Value::Null);
-                    next = *end;
-                } else {
-                    let i = idx
-                        .as_number()
-                        .ok_or_else(|| super::type_mismatch("Choose index", &idx))?
-                        .trunc() as i64;
-                    if i < 1 || i as usize > branches.len() {
-                        return Err(EvalError::BadArg(format!("Choose index {i} out of range")));
-                    }
-                    next = branches[i as usize - 1];
-                }
-            }
-            Op::Pop => {
-                stack.pop();
-            }
-            Op::LoopEnter(exit) => loops.push(LoopFrame {
-                exit: *exit,
-                stack: stack.len(),
-                guards: guards.len(),
-                iters: 0,
-            }),
-            Op::LoopExit => {
-                loops.pop();
-            }
-            Op::Break => match loops.last() {
-                Some(frame) => {
-                    stack.truncate(frame.stack);
-                    guards.truncate(frame.guards);
-                    next = frame.exit;
-                }
-                None => return Err(super::exit_outside_loop()),
-            },
-            Op::Fail(msg) => return Err(EvalError::Unsupported(msg.clone())),
-        }
+        let next = exec_op(&mut st, chunk, ctx, nulls, ip).map_err(|error| SpannedEvalError {
+            error,
+            span: span_at(ip),
+        })?;
         // A backward jump is a loop's back-edge — the only way `next` moves up. Count it against the
         // innermost loop's per-iteration budget, matching the tree-walker's per-loop `LOOP_LIMIT`
         // (each loop resets its own count, so N sequential loops are independent).
         if next < ip {
-            if let Some(frame) = loops.last_mut() {
+            if let Some(frame) = st.loops.last_mut() {
                 frame.iters += 1;
                 if frame.iters > loop_limit {
-                    return Err(super::loop_limit());
+                    return Err(SpannedEvalError {
+                        error: super::ops::loop_limit(),
+                        span: span_at(ip),
+                    });
                 }
             }
         }
         ip = next;
     }
-    Ok(stack.pop().unwrap_or(Value::Null))
+    Ok(st.stack.pop().unwrap_or(Value::Null))
+}
+
+/// Execute the single op at `ip`, returning the next instruction pointer. All mutable state lives in
+/// `st`; loop-limit accounting and error-span attachment are the caller's ([`run_loop`]).
+fn exec_op(
+    st: &mut VmState,
+    chunk: &Chunk,
+    ctx: &dyn EvalContext,
+    nulls: super::NullTreatment,
+    ip: usize,
+) -> Result<usize, EvalError> {
+    let VmState {
+        stack,
+        guards,
+        loops,
+        vars,
+    } = st;
+    let mut next = ip + 1;
+    let underflow = || EvalError::Unsupported("VM stack underflow".into());
+    match &chunk.ops[ip] {
+        Op::Push(v) => stack.push(v.clone()),
+        Op::LoadRef(kind, name) => {
+            let v = ctx
+                .resolve(*kind, name)
+                .ok_or_else(|| EvalError::UnknownName(format!("{{{name}}}")))?;
+            // Under DefaultValue null-treatment, a null field is replaced by its type default
+            // (0 / "" / False / zero date) before it enters the computation; the context supplies
+            // the typed default, so a context without type info leaves the null in place.
+            let v = if nulls == super::NullTreatment::DefaultValue && v.is_null() {
+                ctx.null_default(*kind, name).unwrap_or(v)
+            } else {
+                v
+            };
+            stack.push(v);
+        }
+        Op::LoadIdent(name) => {
+            let lname = name.to_lowercase();
+            let scoped = chunk
+                .scopes
+                .get(&lname)
+                .and_then(|&s| ctx.var_get(s, &lname));
+            if let Some(v) = scoped {
+                stack.push(v);
+            } else if let Some(v) = vars.get(&lname) {
+                stack.push(v.clone());
+            } else {
+                stack.push(builtins::resolve(name, &[], ctx)?);
+            }
+        }
+        Op::LoadVar(name) => {
+            let scoped = chunk.scopes.get(name).and_then(|&s| ctx.var_get(s, name));
+            stack.push(
+                scoped
+                    .or_else(|| vars.get(name).cloned())
+                    .unwrap_or(Value::Null),
+            );
+        }
+        Op::StoreVar(name) => {
+            let v = stack.last().ok_or_else(underflow)?.clone();
+            // A `Global`/`Shared` write goes to the persistent store; if there is none (default
+            // context), it falls back to the per-run locals — identical to the old behavior.
+            let persisted = match chunk.scopes.get(name) {
+                Some(&scope) => ctx.var_set(scope, name, v.clone()),
+                None => false,
+            };
+            if !persisted {
+                vars.insert(name.clone(), v);
+            }
+        }
+        Op::DeclareDefault(name, default) => {
+            // A persistent var initialises only when unset, so an accumulated value survives
+            // re-declaration on the next record/formula; a `Local` (or store-less) var defaults
+            // in the per-run map.
+            match chunk.scopes.get(name) {
+                Some(&scope) if ctx.var_get(scope, name).is_some() => {}
+                Some(&scope) if ctx.var_set(scope, name, default.clone()) => {}
+                _ => {
+                    vars.entry(name.clone()).or_insert_with(|| default.clone());
+                }
+            }
+        }
+        Op::Call(name, argc) => {
+            if stack.len() < *argc {
+                return Err(underflow());
+            }
+            let args = stack.split_off(stack.len() - argc);
+            stack.push(builtins::resolve(name, &args, ctx)?);
+        }
+        Op::Summary { op, field, group } => {
+            let v = ctx
+                .resolve_summary(op, field, group.as_deref())
+                .ok_or_else(|| {
+                    summary_needs_context(&SummaryCall {
+                        op: op.clone(),
+                        field: field.clone(),
+                        group: group.clone(),
+                    })
+                })?;
+            stack.push(v);
+        }
+        Op::Bin(code) => {
+            let r = stack.pop().ok_or_else(underflow)?;
+            let l = stack.pop().ok_or_else(underflow)?;
+            stack.push(apply_binary(*code, l, r)?);
+        }
+        Op::Un(code) => {
+            let v = stack.pop().ok_or_else(underflow)?;
+            stack.push(apply_unary(*code, v)?);
+        }
+        Op::Index => {
+            let i = stack.pop().ok_or_else(underflow)?;
+            let b = stack.pop().ok_or_else(underflow)?;
+            stack.push(apply_index(b, i)?);
+        }
+        Op::MakeArray(n) => {
+            if stack.len() < *n {
+                return Err(underflow());
+            }
+            let items = stack.split_off(stack.len() - n);
+            stack.push(Value::Array(items));
+        }
+        Op::Jump(t) => next = *t,
+        Op::CondJump(t, null_mode) => {
+            let cond = stack.pop().ok_or_else(underflow)?;
+            match cond {
+                Value::Bool(true) => next = *t,
+                Value::Bool(false) => {}
+                Value::Null => match null_mode {
+                    NullMode::Skip => {}
+                    NullMode::Guard => {
+                        if let Some(g) = guards.last_mut() {
+                            *g = true;
+                        }
+                    }
+                    NullMode::ToNull(end) => {
+                        stack.push(Value::Null);
+                        next = *end;
+                    }
+                },
+                // Match the tree-walker's per-construct label so both evaluators report
+                // the same `what` on a non-Bool condition.
+                v => {
+                    let what = match null_mode {
+                        NullMode::Guard => "If condition",
+                        NullMode::ToNull(_) => "IIf condition",
+                        NullMode::Skip => "Switch condition",
+                    };
+                    return Err(type_mismatch(what, &v));
+                }
+            }
+        }
+        Op::CondJumpFalse(t) => {
+            let cond = stack.pop().ok_or_else(underflow)?;
+            match cond {
+                Value::Bool(true) => {}
+                Value::Bool(false) | Value::Null => next = *t,
+                v => return Err(type_mismatch("loop condition", &v)),
+            }
+        }
+        Op::PushGuard => guards.push(false),
+        Op::GuardJump(t) => {
+            if guards.pop().ok_or_else(underflow)? {
+                next = *t;
+            }
+        }
+        Op::PopGuard => {
+            guards.pop();
+        }
+        Op::ChooseJump { branches, end } => {
+            let idx = stack.pop().ok_or_else(underflow)?;
+            // A null index propagates to null (the whole Choose is null), matching the walker.
+            if idx.is_null() {
+                stack.push(Value::Null);
+                next = *end;
+            } else {
+                let i = idx
+                    .as_number()
+                    .ok_or_else(|| type_mismatch("Choose index", &idx))?
+                    .trunc() as i64;
+                if i < 1 || i as usize > branches.len() {
+                    return Err(EvalError::BadArg(format!("Choose index {i} out of range")));
+                }
+                next = branches[i as usize - 1];
+            }
+        }
+        Op::Pop => {
+            stack.pop();
+        }
+        Op::LoopEnter(exit) => loops.push(LoopFrame {
+            exit: *exit,
+            stack: stack.len(),
+            guards: guards.len(),
+            iters: 0,
+        }),
+        Op::LoopExit => {
+            loops.pop();
+        }
+        Op::Break => match loops.last() {
+            Some(frame) => {
+                stack.truncate(frame.stack);
+                guards.truncate(frame.guards);
+                next = frame.exit;
+            }
+            None => return Err(exit_outside_loop()),
+        },
+        Op::Fail(msg) => return Err(EvalError::Unsupported(msg.clone())),
+    }
+    Ok(next)
 }

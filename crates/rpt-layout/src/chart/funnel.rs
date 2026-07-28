@@ -3,25 +3,20 @@
 //! width and whose bottom edge is the next value's width, so a descending series tapers to a tip.
 //! No axes.
 
-use super::common::{fmt_val, truncate, LABEL, PALETTE, TITLE_PT, WHITE};
-use rpt_model::{Rect, Twips};
-use rpt_pages::{
-    DrawOp, FontSpec, ObjectKind, ObjectRef, Point, PolygonOp, Stroke, TextAlign, TextRun,
+#[cfg(test)]
+use super::common::AxisTitles;
+use super::common::{
+    fmt_val, title_op, truncate, ChartCtx, LABEL_PT, PALETTE, SLICE_BORDER_W, WHITE,
 };
+use rpt_model::{Rect, Twips};
+use rpt_pages::{DrawOp, FontSpec, Point, PolygonOp, Stroke, TextAlign, TextRun};
 
 /// Build the draw-ops for a funnel chart of `series` (category label → value): stacked proportional
 /// bands, widest at the top and tapering down, each band a centered trapezoid from this value's width
 /// (top edge) to the next value's width (bottom edge). Bands are palette-cycled with a thin white
 /// separator. The category label always draws; `show_labels` gates the per-band value label. Returns
 /// an empty vec if `series` is empty or every value is ≤ 0.
-pub(crate) fn funnel_chart(
-    rect: Rect,
-    title: &str,
-    series: &[(String, f64)],
-    show_labels: bool,
-    section_name: &str,
-    obj_name: &str,
-) -> Vec<DrawOp> {
+pub(crate) fn funnel_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp> {
     let max = series
         .iter()
         .map(|(_, v)| v.max(0.0))
@@ -29,7 +24,14 @@ pub(crate) fn funnel_chart(
     if series.is_empty() || max <= 0.0 {
         return Vec::new();
     }
-    let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(obj_name));
+    let &ChartCtx {
+        def,
+        rect,
+        title,
+        show_labels,
+        ..
+    } = cx;
+    let src = || cx.src();
     let mut ops: Vec<DrawOp> = Vec::new();
     let (rl, rt, rw, rh) = (rect.left.0, rect.top.0, rect.width.0, rect.height.0);
     let pad = 60;
@@ -40,26 +42,7 @@ pub(crate) fn funnel_chart(
         (rh / 8).clamp(180, 360)
     };
     if !title.is_empty() {
-        ops.push(DrawOp::Text(TextRun {
-            bounds: Rect {
-                left: Twips(rl),
-                top: Twips(rt + pad / 2),
-                width: Twips(rw),
-                height: Twips(title_h),
-            },
-            text: title.to_string(),
-            font: FontSpec {
-                family: "Arial".into(),
-                size_pt: TITLE_PT,
-                bold: true,
-                ..Default::default()
-            },
-            color: LABEL,
-            align: TextAlign::Center,
-            rotation: 0.0,
-            metrics: None,
-            source: src(),
-        }));
+        ops.push(title_op(def, rl, rt + pad / 2, rw, title_h, title, &src));
     }
 
     let cx = rl + rw / 2;
@@ -107,7 +90,7 @@ pub(crate) fn funnel_chart(
             fill: Some(PALETTE[i % PALETTE.len()].into()),
             stroke: Some(Stroke {
                 color: WHITE,
-                width: Twips(20),
+                width: SLICE_BORDER_W,
                 style: rpt_pages::LineStyle::Single,
             }),
             source: src(),
@@ -130,7 +113,7 @@ pub(crate) fn funnel_chart(
             text,
             font: FontSpec {
                 family: "Arial".into(),
-                size_pt: 7.0,
+                size_pt: LABEL_PT,
                 ..Default::default()
             },
             color: WHITE,
@@ -171,7 +154,11 @@ mod tests {
 
     #[test]
     fn empty_series_yields_no_ops() {
-        assert!(funnel_chart(rect(), "T", &[], true, "S", "G").is_empty());
+        assert!(funnel_chart(
+            &ChartCtx::test(rect(), "T", AxisTitles::default(), true),
+            &[]
+        )
+        .is_empty());
     }
 
     /// n values → n trapezoid bands whose top widths decrease monotonically as the values decrease.
@@ -183,7 +170,10 @@ mod tests {
             ("Proposals".into(), 25.0),
             ("Won".into(), 10.0),
         ];
-        let ops = funnel_chart(rect(), "Sales", &s, true, "RH", "G");
+        let ops = funnel_chart(
+            &ChartCtx::test(rect(), "Sales", AxisTitles::default(), true),
+            &s,
+        );
         let widths = band_top_widths(&ops);
         assert_eq!(widths.len(), s.len(), "one trapezoid per value");
         for w in widths.windows(2) {
@@ -195,8 +185,14 @@ mod tests {
     #[test]
     fn show_labels_false_omits_value_labels() {
         let s = vec![("Leads".into(), 100.0), ("Won".into(), 12.0)];
-        let with = funnel_chart(rect(), "T", &s, true, "RH", "G");
-        let without = funnel_chart(rect(), "T", &s, false, "RH", "G");
+        let with = funnel_chart(
+            &ChartCtx::test(rect(), "T", AxisTitles::default(), true),
+            &s,
+        );
+        let without = funnel_chart(
+            &ChartCtx::test(rect(), "T", AxisTitles::default(), false),
+            &s,
+        );
         let has_value = |ops: &[DrawOp], v: &str| {
             ops.iter().any(|o| match o {
                 DrawOp::Text(t) => t.text.contains(v),

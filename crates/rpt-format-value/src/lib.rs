@@ -86,6 +86,10 @@ pub struct Locale {
     pub date_sep: char,
     /// Component order for a system-default date.
     pub date_order: DateOrder,
+    /// Whether the locale's system-default *short* date pads the numeric day and month to two digits.
+    /// The Windows short date is padded in most locales (`dd/MM/yyyy`) but not en-US, whose short date
+    /// is `M/d/yyyy` (no leading zeros).
+    pub short_date_leading_zero: bool,
     /// Full month names, January … December.
     pub months: &'static [&'static str; 12],
     /// Abbreviated month names, Jan … Dec.
@@ -143,6 +147,7 @@ impl Locale {
             decimal_sep: self.decimal_sep,
             negative: NegativeStyle::LeadingMinus,
             leading_zero: true,
+            suppress_if_zero: false,
         }
     }
 }
@@ -293,6 +298,7 @@ pub const EN_US: Locale = Locale {
     thousands_sep: ',',
     date_sep: '/',
     date_order: DateOrder::MonthDayYear,
+    short_date_leading_zero: false,
     months: &EN_MONTHS,
     months_abbrev: &EN_MONTHS_ABBR,
     days: &EN_DAYS,
@@ -311,6 +317,7 @@ const EN_GB: Locale = Locale {
     thousands_sep: ',',
     date_sep: '/',
     date_order: DateOrder::DayMonthYear,
+    short_date_leading_zero: true,
     months: &EN_MONTHS,
     months_abbrev: &EN_MONTHS_ABBR,
     days: &EN_DAYS,
@@ -329,6 +336,7 @@ const DE_DE: Locale = Locale {
     thousands_sep: '.',
     date_sep: '.',
     date_order: DateOrder::DayMonthYear,
+    short_date_leading_zero: true,
     months: &DE_MONTHS,
     months_abbrev: &DE_MONTHS_ABBR,
     days: &DE_DAYS,
@@ -347,6 +355,7 @@ const FR_FR: Locale = Locale {
     thousands_sep: '\u{202f}', // narrow no-break space
     date_sep: '/',
     date_order: DateOrder::DayMonthYear,
+    short_date_leading_zero: true,
     months: &FR_MONTHS,
     months_abbrev: &FR_MONTHS_ABBR,
     days: &FR_DAYS,
@@ -365,6 +374,7 @@ const ES_ES: Locale = Locale {
     thousands_sep: '.',
     date_sep: '/',
     date_order: DateOrder::DayMonthYear,
+    short_date_leading_zero: true,
     months: &ES_MONTHS,
     months_abbrev: &ES_MONTHS_ABBR,
     days: &ES_DAYS,
@@ -383,6 +393,7 @@ const IT_IT: Locale = Locale {
     thousands_sep: '.',
     date_sep: '/',
     date_order: DateOrder::DayMonthYear,
+    short_date_leading_zero: true,
     months: &IT_MONTHS,
     months_abbrev: &IT_MONTHS_ABBR,
     days: &IT_DAYS,
@@ -395,7 +406,7 @@ const IT_IT: Locale = Locale {
     default_decimals: 2,
 };
 
-/// The built-in locale table (the corpus locales + a documented en-US fallback).
+/// The built-in locale table, with a documented en-US fallback.
 pub const BUILTIN: &[Locale] = &[EN_US, EN_GB, DE_DE, FR_FR, ES_ES, IT_IT];
 
 /// Number formatting spec (SDK `INumericFieldFormat`).
@@ -414,6 +425,8 @@ pub struct NumberFormat {
     pub negative: NegativeStyle,
     /// Show a leading zero for values in (-1, 1) (`0.50` vs `.50`).
     pub leading_zero: bool,
+    /// Render an empty string when the value rounds to zero (SDK `EnableSuppressIfZero`).
+    pub suppress_if_zero: bool,
 }
 
 impl Default for NumberFormat {
@@ -425,6 +438,7 @@ impl Default for NumberFormat {
             decimal_sep: '.',
             negative: NegativeStyle::LeadingMinus,
             leading_zero: true,
+            suppress_if_zero: false,
         }
     }
 }
@@ -526,8 +540,9 @@ pub enum FormatSpec {
     Date(DateFormat),
     /// Time formatting.
     Time(TimeFormat),
-    /// Combined date-and-time formatting.
-    DateTime(DateFormat, TimeFormat),
+    /// Combined date-and-time formatting; the third element is the stored `DateTimeSeparator`
+    /// placed between the date and time parts.
+    DateTime(DateFormat, TimeFormat, String),
     /// Boolean formatting.
     Bool(BoolFormat),
     /// String values pass through unchanged.
@@ -539,6 +554,9 @@ pub fn format_number(value: f64, spec: &NumberFormat) -> String {
     let neg = value < 0.0;
     let scale = 10f64.powi(spec.decimals as i32);
     let scaled = (value.abs() * scale).round();
+    if spec.suppress_if_zero && scaled == 0.0 {
+        return String::new();
+    }
     let int_part = (scaled / scale).trunc() as u128;
     let frac_part = (scaled % scale) as u128;
 
@@ -571,6 +589,10 @@ pub fn format_currency(value: f64, spec: &CurrencyFormat) -> String {
             ..spec.number.clone()
         },
     );
+    // A suppressed zero blanks the whole field, symbol included.
+    if magnitude.is_empty() {
+        return String::new();
+    }
     let with_symbol = match spec.position {
         CurrencyPosition::LeadingNoSpace => format!("{}{}", spec.symbol, magnitude),
         CurrencyPosition::LeadingSpace => format!("{} {}", spec.symbol, magnitude),
@@ -630,6 +652,28 @@ pub fn format_datetime_in(
         format_date_in(date, dspec, loc),
         format_time_in(time, tspec, loc)
     )
+}
+
+/// Render a single Crystal date/time **picture string** against an optional date and/or time,
+/// resolving date tokens then time tokens from one pattern — the form `ToText(value, "pattern")`
+/// uses (en-US names/designators). Date and time tokens are case-distinct (`M` month vs `m` minute,
+/// `H`/`h` hour vs `d` day), so a single pattern can mix both. Non-alphabetic runs and quoted
+/// literals pass through verbatim.
+pub fn format_picture(date: Option<Date>, time: Option<Time>, pattern: &str) -> String {
+    format_picture_in(date, time, pattern, &EN_US)
+}
+
+/// Like [`format_picture`] but takes month/day names and AM/PM designators from `loc`.
+pub fn format_picture_in(
+    date: Option<Date>,
+    time: Option<Time>,
+    pattern: &str,
+    loc: &Locale,
+) -> String {
+    render_pattern(pattern, |tok| {
+        date.and_then(|d| date_token(d, tok, loc))
+            .or_else(|| time.and_then(|t| time_token(t, tok, loc)))
+    })
 }
 
 // --- helpers ---

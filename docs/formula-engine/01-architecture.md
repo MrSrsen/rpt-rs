@@ -19,22 +19,23 @@ flowchart LR
     ty -.-> kind([ResultKind])
 ```
 
-The solid path is evaluation; the dashed branch is the static type pass (`types::deduce_type`), which reads the same
-AST to deduce a node's `ResultKind` but is not required to evaluate.
+The solid path is evaluation; the dashed branch is the static type pass (`types::deduce_type`), which reads the same AST
+to deduce a node's `ResultKind` but is not required to evaluate.
 
 - **Lexer** (`lexer::tokenize`) — turns source into `Token`s. It is error-tolerant (unrecognised bytes become
   `TokenKind::Unknown`, an unterminated string runs to EOF) and never panics. Two syntaxes differ only in comment,
   string-delimiter, and statement-separator handling (see [Language reference](02-language.md)).
-- **Parser** (`parser::parse`) — a recursive-descent parser over the 17-level precedence ladder. On an
-  unexpected token it records a `Diagnostic` and recovers, always returning a total `Node` tree, so it is safe to run on
-  any input (the foundation for evaluation, type deduction, and a future LSP).
-- **Type system** (`types::deduce_type` / `types::string_max_bytes`) — a separate static pass over the AST that deduces a
-  node's `ResultKind` (and, for string results, a maximum byte width), keyed by the engine's funcID tables in
-  `types_table.rs`. Used by the exporter and validation; not required to evaluate.
-- **Compiler + VM** (`eval::vm`) — the default runtime. `compile` lowers the AST to a flat `Chunk` of bytecode;
-  `run` executes it on a stack machine. The tree-walking `Evaluator` (`eval::mod`) is kept as a reference implementation
-  and differential-test oracle; both share the same value-level operations (`apply_binary`/`apply_unary`/`apply_index`),
-  builtin dispatch, and reference resolution, so they produce identical results.
+- **Parser** (`parser::parse`) — a recursive-descent parser over the 17-level precedence ladder. On an unexpected token
+  it records a `Diagnostic` and recovers, always returning a total `Node` tree, so it is safe to run on any input (the
+  foundation for evaluation, type deduction, and a future LSP).
+- **Type system** (`types::deduce_type` / `types::string_max_bytes`) — a separate static pass over the AST that deduces
+  a node's `ResultKind` (and, for string results, a maximum byte width), keyed by the engine's funcID tables in
+  `types_table.rs`. Used by validation; not required to evaluate.
+- **Compiler + VM** (`eval::vm`) — the **sole** production runtime. `compile` lowers the AST to a flat `Chunk` of
+  bytecode; `run` executes it on a stack machine. The tree-walking `Evaluator` (`eval::tree`) is kept only as the
+  differential-test reference and is compiled out of a normal build (gated behind `cfg(test)` / the `differential`
+  feature); both share the same value-level operations (`eval::ops`), builtin dispatch, and reference resolution, so they
+  produce identical results.
 
 The free function `eval::eval(node, ctx)` compiles then runs. For a formula evaluated once per row, compile once with
 `vm::compile` and reuse the `Chunk`.
@@ -90,53 +91,53 @@ assert_eq!(eval(&ast, &MapContext::default()).unwrap(), Value::Str("ABC 3.00".to
 
 A runtime value is `eval::value::Value`:
 
-| Variant | Notes |
-| ------- | ----- |
-| `Number(f64)` | The default numeric type. |
-| `Currency(f64)` | A distinct numeric type; arithmetic promotes to `Currency` if either operand is currency. |
-| `Str(String)` | Case-sensitive; string comparison is byte-lexicographic. |
-| `Bool(bool)` | |
-| `Date(Date)` / `Time(Time)` / `DateTime(Date, Time)` | Calendar types from `rpt_format_value::civil` — one calendar across the workspace. |
-| `Array(Vec<Value>)` | 1-based subscripting (`a[1]` is the first element). |
-| `Range { lo, hi, lo_incl, hi_incl }` | A `To` range; the `_To`/`To_` operators mark an excluded bound. |
-| `Null` | A null database/parameter value. |
+| Variant                                              | Notes                                                                                     |
+|------------------------------------------------------|-------------------------------------------------------------------------------------------|
+| `Number(f64)`                                        | The default numeric type.                                                                 |
+| `Currency(f64)`                                      | A distinct numeric type; arithmetic promotes to `Currency` if either operand is currency. |
+| `Str(String)`                                        | Case-sensitive; string comparison is byte-lexicographic.                                  |
+| `Bool(bool)`                                         |                                                                                           |
+| `Date(Date)` / `Time(Time)` / `DateTime(Date, Time)` | Calendar types from `rpt_format_value::civil` — one calendar across the workspace.        |
+| `Array(Vec<Value>)`                                  | 1-based subscripting (`a[1]` is the first element).                                       |
+| `Range { lo, hi, lo_incl, hi_incl }`                 | A `To` range; the `_To`/`To_` operators mark an excluded bound.                           |
+| `Null`                                               | A null database/parameter value.                                                          |
 
 **Null propagation.** Null flows through operators and most builtins (any null argument yields `Null`), matching the
 engine's default null mode. Exceptions: comparisons against null are `false`; range constructors accept null bounds; and
-a few builtins (`IsNull`, `HasValue`, `ToText`) opt in to *seeing* null rather than propagating it. The engine's "convert
-null values to default" report option is a caller-level concern, not baked into the evaluator.
+a few builtins (`IsNull`, `HasValue`, `ToText`) opt in to *seeing* null rather than propagating it. The engine's
+"convert null values to default" report option is a caller-level concern, not baked into the evaluator.
 
 **Numeric/currency promotion.** `*`, `/`, `\`, `Mod`, `+`, `-` yield `Currency` when either operand is `Currency`, else
-`Number`. `&`/bare `ToText` coerce operands to text using `rpt_format_value` defaults (grouped 2-decimal numbers, default
-date/time patterns).
+`Number`. `&`/bare `ToText` coerce operands to text using `rpt_format_value` defaults (grouped 2-decimal numbers,
+default date/time patterns).
 
 ## Bytecode & the stack VM
 
 `compile` produces a `Chunk { ops, scopes }`. `ops` is a flat `Vec<Op>`; jump targets are op indices back-patched after
 compilation. `scopes` records the declared scope of each non-`Local` variable (see below). The VM (`vm::run`) is a stack
-machine: it maintains a value stack, a null-guard stack (for `If`), and a per-run local-variable map. Every node compiles
-to code that leaves exactly one value on the stack; a statement sequence pops between statements.
+machine: it maintains a value stack, a null-guard stack (for `If`), and a per-run local-variable map. Every node
+compiles to code that leaves exactly one value on the stack; a statement sequence pops between statements.
 
 The instruction set:
 
-| Op | Effect |
-| -- | ------ |
-| `Push(v)` | Push a constant. |
-| `LoadRef(kind, name)` | Resolve a `{ref}` via the context and push it. |
-| `LoadIdent(name)` | Resolve a bare identifier: a variable, else a 0-ary builtin/constant. |
-| `LoadVar(name)` / `StoreVar(name)` | Read / write a variable (assignment is an expression: `StoreVar` leaves the value on the stack). |
-| `DeclareDefault(name, v)` | Bring a declared variable into scope with a default if unset (no stack effect). |
-| `Call(name, argc)` | Pop `argc` args and dispatch a builtin. |
-| `Bin(code)` / `Un(code)` | Apply a binary / unary operator. |
-| `Index` | Apply a 1-based subscript. |
-| `MakeArray(n)` | Pop `n` values into an array. |
-| `Jump(t)` | Unconditional jump. |
-| `CondJump(t, nullmode)` | Pop a condition: true → jump; false → fall through; null → per the null mode (used by `If`/`IIf`/`Switch`, and the back-edge of a post-test loop). |
-| `CondJumpFalse(t)` | Pop a loop condition: false or null → jump (exit); true → continue (the loop entry test). |
-| `PushGuard` / `GuardJump(t)` / `PopGuard` | The null-guard protocol for `If` (a later true branch wins; if no branch fires but a condition was null, the result is null). |
-| `ChooseJump(targets)` | Pop a 1-based index and jump to the matching branch (`Choose`). |
-| `Pop` | Discard the top of stack. |
-| `Fail(msg)` | Raise a fixed `Unsupported` error (an `Unparsed`/parse-error node). |
+| Op                                        | Effect                                                                                                                                             |
+|-------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Push(v)`                                 | Push a constant.                                                                                                                                   |
+| `LoadRef(kind, name)`                     | Resolve a `{ref}` via the context and push it.                                                                                                     |
+| `LoadIdent(name)`                         | Resolve a bare identifier: a variable, else a 0-ary builtin/constant.                                                                              |
+| `LoadVar(name)` / `StoreVar(name)`        | Read / write a variable (assignment is an expression: `StoreVar` leaves the value on the stack).                                                   |
+| `DeclareDefault(name, v)`                 | Bring a declared variable into scope with a default if unset (no stack effect).                                                                    |
+| `Call(name, argc)`                        | Pop `argc` args and dispatch a builtin.                                                                                                            |
+| `Bin(code)` / `Un(code)`                  | Apply a binary / unary operator.                                                                                                                   |
+| `Index`                                   | Apply a 1-based subscript.                                                                                                                         |
+| `MakeArray(n)`                            | Pop `n` values into an array.                                                                                                                      |
+| `Jump(t)`                                 | Unconditional jump.                                                                                                                                |
+| `CondJump(t, nullmode)`                   | Pop a condition: true → jump; false → fall through; null → per the null mode (used by `If`/`IIf`/`Switch`, and the back-edge of a post-test loop). |
+| `CondJumpFalse(t)`                        | Pop a loop condition: false or null → jump (exit); true → continue (the loop entry test).                                                          |
+| `PushGuard` / `GuardJump(t)` / `PopGuard` | The null-guard protocol for `If` (a later true branch wins; if no branch fires but a condition was null, the result is null).                      |
+| `ChooseJump(targets)`                     | Pop a 1-based index and jump to the matching branch (`Choose`).                                                                                    |
+| `Pop`                                     | Discard the top of stack.                                                                                                                          |
+| `Fail(msg)`                               | Raise a fixed `Unsupported` error (an `Unparsed`/parse-error node).                                                                                |
 
 **Control-flow lowering.** `If`/`IIf`/`Switch`/`Choose` lower to conditional jumps that preserve the engine's laziness
 (only the selected branch runs). `Select … Case` is lowered at *parse* time to an `If`/`ElseIf` chain, so it needs no
@@ -155,10 +156,11 @@ Declarations carry a `VarScope`: `Local` (default for Basic `Dim`), `Global` (Cr
 
 - **`Local`** variables live in the VM's per-run map and vanish when the formula finishes.
 - **`Global`/`Shared`** variables route through the `EvalContext`'s persistent store via `var_get`/`var_set`. A
-  report-lifetime context (the data pipeline's evaluation context in `rpt-data`) implements these so the variables retain
-  their value across every formula and record of the run — this is how running totals and accumulator formulas work. With
-  the default context (no persistent store) they fall back to per-run locals, identical to a single flattened scope. A
-  re-declaration does not reset an already-set persistent variable, so an accumulated value survives across records.
+  report-lifetime context (the data pipeline's evaluation context in `rpt-data`) implements these so the variables
+  retain their value across every formula and record of the run — this is how running totals and accumulator formulas
+  work. With the default context (no persistent store) they fall back to per-run locals, identical to a single flattened
+  scope. A re-declaration does not reset an already-set persistent variable, so an accumulated value survives across
+  records.
 
 ## References and the evaluation context
 
@@ -179,9 +181,10 @@ trait EvalContext {
 - **Print-state specials** (`PageNumber`, `TotalPageCount`, `CurrentDate`, `RecordNumber`, `GroupNumber`, …) route
   through `special`; without a context that supplies them they fail with a clear `Unsupported` "needs print/record
   context" error.
-- **Record-navigation** (`Previous`, `Next`, `PreviousValue`, …) and the **`WhilePrintingRecords`/`WhileReadingRecords`**
-  markers are recognised: the markers are no-ops here (the data pipeline interprets them as cache-refresh boundaries), and
-  the navigation functions report that they need the record stream.
+- **Record-navigation** (`Previous`, `Next`, `PreviousValue`, …) and the **`WhilePrintingRecords`/
+  `WhileReadingRecords`**
+  markers are recognised: the markers are no-ops here (the data pipeline interprets them as cache-refresh boundaries),
+  and the navigation functions report that they need the record stream.
 
 `MapContext` is the workhorse test/driver context (fields keyed by `(RefKind, lowercase name)`, specials by name);
 `EmptyContext` resolves nothing, for literal-only formulas.
@@ -191,21 +194,35 @@ trait EvalContext {
 A `{@formula}` reference resolves through `resolve`, which the data-pipeline context backs with a **per-record value
 cache**: a formula evaluates at most once per record, and its dependents read the cached value. Combined with the
 persistent `Global`/`Shared` store, this reproduces the engine's "evaluate once per record, accumulate across records"
-model. The formula engine itself is stateless across calls except for its variable store; the caching and lifetime policy
-live in the context (`rpt-data`), not in the evaluator.
+model. The formula engine itself is stateless across calls except for its variable store; the caching and lifetime
+policy live in the context (`rpt-data`), not in the evaluator.
 
 ## Error handling
 
 Evaluation returns `Result<Value, EvalError>`:
 
-| Variant | Meaning |
-| ------- | ------- |
-| `Unsupported(String)` | A recognised builtin or construct the evaluator does not implement (the honest "known-but-unimplemented" failure), or a construct that needs context the evaluator lacks (record navigation, print-state specials). |
-| `UnknownName(String)` | An unresolved identifier or `{reference}`. |
-| `TypeMismatch { what, got }` | An operator/builtin applied to the wrong value type. |
-| `DivideByZero` | `/`, `\`, `Mod`, `%`, or `Remainder` by zero. |
-| `BadArg(String)` | A bad argument: wrong count, out-of-range value, or an unparseable literal. |
+| Variant                      | Meaning                                                                                                                                                                                                             |
+|------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Unsupported(String)`        | A recognised builtin or construct the evaluator does not implement (the honest "known-but-unimplemented" failure), or a construct that needs context the evaluator lacks (record navigation, print-state specials). |
+| `UnknownName(String)`        | An unresolved identifier or `{reference}`.                                                                                                                                                                          |
+| `TypeMismatch { what, got }` | An operator/builtin applied to the wrong value type.                                                                                                                                                                |
+| `DivideByZero`               | `/`, `\`, `Mod`, `%`, or `Remainder` by zero.                                                                                                                                                                       |
+| `BadArg(String)`             | A bad argument: wrong count, out-of-range value, or an unparseable literal.                                                                                                                                         |
+| `Internal(&'static str)`     | An invariant of the evaluator itself was violated — a bug in this crate, not in the formula.                                                                                                                        |
 
 The design principle is *fail loudly, never silently wrong*: an unimplemented function is `Unsupported`, not a guessed
-value. The distinction between `Unsupported` (a known Crystal function we haven't built) and `UnknownName` (not a Crystal
-function at all) comes from the funcID table in `types_table.rs`.
+value. The distinction between `Unsupported` (a known Crystal function we haven't built) and `UnknownName` (not a
+Crystal function at all) comes from the funcID table in `types_table.rs`.
+
+`Internal` exists because **this crate must never abort its host**. Formula text comes from an arbitrary `.rpt`, and the
+engine is meant to be embeddable in an LSP, a validator, or a WASM sandbox — places where a panic takes the host down
+instead of producing a diagnostic. Internal invariants are therefore `debug_assert!` (loud in development) plus a
+reported `Internal` in release, rather than `panic!`/`unreachable!`. Parsing and evaluation are fuzz-covered against
+arbitrary input on that contract (`tests/fuzz_parse_eval.rs`).
+
+An evaluation error is not a render error: `rpt-layout` catches it, draws what it can, and records a
+[diagnostic](../12-rendering.md#diagnostics) on the paged document.
+
+---
+
+← [Overview](README.md) · [Index](../README.md) · **Next:** [Language reference](02-language.md) →

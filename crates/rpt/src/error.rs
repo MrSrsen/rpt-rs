@@ -1,13 +1,33 @@
 //! The single error type shared across every layer.
 //!
-//! Variants are *layer-tagged* (`Container`, `Codec`, `Crypto`, `Record`, `Project`, `Io`)
+//! Variants are *layer-tagged* (`Container`, `Codec`, `Crypto`, `NotAReport`, `Project`, `Io`)
 //! so a caller can tell "the CFB container is malformed" from "the record framing is
 //! malformed" from "this edit can't be safely written yet". Each layer error carries
 //! **structured context** — the stream, byte offset, and/or record type it failed at — so a
 //! bug report says *where* and *what* failed, not just a sentence. Context is best-effort: a
 //! construction site fills in only what it genuinely has and never fabricates an offset.
+//!
+//! # Projection does not fail
+//!
+//! There is deliberately no variant for "a record could not be interpreted". The `raise` layer
+//! (records → semantic model) is **infallible by design**: it returns defaults for anything it
+//! cannot interpret, so a report the Crystal engine opens happily is never refused here over a
+//! record this reader does not yet model. That is the right trade for a reader of an undocumented
+//! format — but it means a decode gap is *invisible* in the error type, so it is
+//! reported as a **diagnostic** instead (see [`Rpt::decode_coverage`](crate::Rpt::decode_coverage)).
+//!
+//! `Project` therefore covers only the write path, where refusing is the whole point.
+//!
+//! # Displaying an error
+//!
+//! A variant that carries a [`source`](std::error::Error::source) **never interpolates it** into
+//! its own `Display`, so printing `{e}` alone shows this layer's message and printing the
+//! `source()` chain shows each cause exactly once. Use
+//! [`error_chain`](crate::error_chain) to render the whole chain — a bare `{e}` on a
+//! wrapping variant is the layer's message *without* the underlying cause.
 
 use std::fmt;
+use std::path::{Path, PathBuf};
 
 /// Convenience alias used throughout the crate.
 pub type Result<T> = std::result::Result<T, Error>;
@@ -28,12 +48,8 @@ pub enum Error {
     #[error(transparent)]
     Crypto(#[from] CryptoError),
 
-    /// L1 — a record's logical content was malformed for its (known) tag.
-    #[error(transparent)]
-    Record(#[from] RecordError),
-
-    /// L2 — projecting records ⇄ model failed. `kind` distinguishes a genuine failure
-    /// from an edit we refuse to write because the record type isn't cleared yet.
+    /// L2 — the write path refused an edit. `kind` says which rule refused it; `detail` says why in
+    /// terms the caller can act on.
     #[error("project: {kind}: {detail}")]
     Project {
         /// What kind of projection problem this is.
@@ -42,18 +58,139 @@ pub enum Error {
         detail: String,
     },
 
-    /// Underlying I/O failure.
-    #[error("io: {0}")]
-    Io(#[from] std::io::Error),
+    /// L0 — the input is not a Crystal Reports report at all. Carries a diagnosis of what it
+    /// appears to be instead, so the commonest mistake (the wrong file) answers itself.
+    ///
+    /// Boxed to keep [`Error`] — and so every `Result` in the crate — small; the diagnosis is the
+    /// one variant that carries several strings.
+    #[error(transparent)]
+    NotAReport(#[from] Box<NotAReportError>),
+
+    /// Underlying I/O failure, naming the operation and (when one was in scope) the path.
+    #[error(transparent)]
+    Io(#[from] IoError),
 }
 
-/// Distinguishes projection failures so callers can match on "can't safely write this yet"
-/// versus genuine corruption.
+impl From<NotAReportError> for Error {
+    fn from(e: NotAReportError) -> Error {
+        Error::NotAReport(Box::new(e))
+    }
+}
+
+impl Error {
+    /// Attach `path` to a diagnosis raised without one.
+    ///
+    /// [`Rpt::from_bytes`](crate::Rpt) works on bytes and has no path to name; [`Rpt::open`] does,
+    /// and fills it in on the way out.
+    pub(crate) fn at_path(mut self, path: &Path) -> Error {
+        if let Error::NotAReport(e) = &mut self {
+            e.path = Some(path.to_path_buf());
+        }
+        self
+    }
+}
+
+/// The input is not a Crystal Reports report, with a diagnosis of what it is instead.
+///
+/// Every field beyond `reason` is best-effort and omitted when the reader genuinely cannot tell —
+/// a wrong guess about the format is worse than no guess.
+#[derive(Debug)]
+pub struct NotAReportError {
+    /// The file that was opened, when a path was in scope (absent for the byte/reader entry points).
+    pub path: Option<PathBuf>,
+    /// Why the input was rejected.
+    pub reason: String,
+    /// What the leading bytes suggest the file actually is (e.g. `a PDF document`), if recognized.
+    pub looks_like: Option<&'static str>,
+    /// What the user can do next, when there is something concrete to suggest.
+    pub hint: Option<String>,
+    /// The underlying container failure, kept only where its message is the useful detail (a file
+    /// that really is a compound file, but a malformed one).
+    pub source: Option<ContainerError>,
+}
+
+impl fmt::Display for NotAReportError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match &self.path {
+            Some(path) => write!(f, "`{}` is not a Crystal Reports report", path.display())?,
+            None => write!(f, "the input is not a Crystal Reports report")?,
+        }
+        write!(f, ": {}", self.reason)?;
+        if let Some(looks_like) = self.looks_like {
+            write!(f, "; it looks like {looks_like}")?;
+        }
+        if let Some(hint) = &self.hint {
+            write!(f, ". {hint}")?;
+        }
+        Ok(())
+    }
+}
+
+impl std::error::Error for NotAReportError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        self.source
+            .as_ref()
+            .map(|e| e as &(dyn std::error::Error + 'static))
+    }
+}
+
+/// An I/O failure that names *what* was being done and *which path* it targeted, so the most
+/// common user error — a wrong or missing filename — produces a message that identifies the file.
+///
+/// `path` is `None` only where there genuinely is no path: [`Rpt::read`](crate::Rpt::read) and
+/// [`Rpt::write`](crate::Rpt::write) take a caller-supplied reader/writer.
+#[derive(Debug)]
+pub struct IoError {
+    /// The operation that failed, as an infinitive phrase (`read`, `write`).
+    pub op: &'static str,
+    /// The path the operation targeted, when one was in scope.
+    pub path: Option<PathBuf>,
+    /// The underlying I/O error. Also reported as this error's [`source`](std::error::Error::source),
+    /// so it is never interpolated into `Display`.
+    pub source: std::io::Error,
+}
+
+impl IoError {
+    /// An I/O failure for `op` against `path`.
+    pub fn at(op: &'static str, path: impl AsRef<Path>, source: std::io::Error) -> Self {
+        IoError {
+            op,
+            path: Some(path.as_ref().to_path_buf()),
+            source,
+        }
+    }
+
+    /// An I/O failure for `op` with no path in scope (a caller-supplied reader or writer).
+    pub fn new(op: &'static str, source: std::io::Error) -> Self {
+        IoError {
+            op,
+            path: None,
+            source,
+        }
+    }
+}
+
+impl fmt::Display for IoError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match &self.path {
+            Some(path) => write!(f, "cannot {} `{}`", self.op, path.display()),
+            None => write!(f, "cannot {}", self.op),
+        }
+    }
+}
+
+impl std::error::Error for IoError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(&self.source)
+    }
+}
+
+/// Which write-path rule refused an edit, so a caller can match on the reason rather than on a
+/// message string. `#[non_exhaustive]`: more rules will be added as more of the format is cleared for
+/// editing.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[non_exhaustive]
 pub enum ProjectErrorKind {
-    /// `raise` met a record it could not interpret where it expected a known one.
-    UnknownRecord,
     /// An edit would touch in-record offset tables/counts/checksums of a record type that is
     /// not yet cleared for safe editing. Refused, never written.
     UnclearedRecordEdit,
@@ -62,7 +199,6 @@ pub enum ProjectErrorKind {
 impl fmt::Display for ProjectErrorKind {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let s = match self {
-            ProjectErrorKind::UnknownRecord => "unknown record",
             ProjectErrorKind::UnclearedRecordEdit => "uncleared record edit",
         };
         f.write_str(s)
@@ -235,12 +371,6 @@ located_error!(
     "codec"
 );
 
-located_error!(
-    /// L1 — a record's logical content was malformed for its (known) tag.
-    RecordError,
-    "record"
-);
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -291,5 +421,41 @@ mod tests {
     fn located_error_converts_into_error_via_from() {
         let err: Error = CodecError::new("boom").record(0x10).into();
         assert!(matches!(err, Error::Codec(_)));
+    }
+
+    fn not_found() -> std::io::Error {
+        std::io::Error::new(std::io::ErrorKind::NotFound, "No such file or directory")
+    }
+
+    #[test]
+    fn io_error_names_the_path_and_the_operation() {
+        let e = IoError::at("read", "/nope/missing.rpt", not_found());
+        assert_eq!(e.to_string(), "cannot read `/nope/missing.rpt`");
+    }
+
+    #[test]
+    fn io_error_without_a_path_still_names_the_operation() {
+        let e = IoError::new("read the report from the supplied reader", not_found());
+        assert_eq!(
+            e.to_string(),
+            "cannot read the report from the supplied reader"
+        );
+    }
+
+    // The convention this module documents: a variant carrying a `source` never interpolates it, so
+    // the cause appears exactly once when the chain is walked.
+    #[test]
+    fn io_error_keeps_the_cause_as_a_source_and_never_interpolates_it() {
+        let err: Error = IoError::at("read", "/nope/missing.rpt", not_found()).into();
+        let top = err.to_string();
+        assert_eq!(top, "cannot read `/nope/missing.rpt`");
+        assert!(!top.contains("No such file"), "cause leaked into Display");
+
+        let cause = std::error::Error::source(&err).expect("the io::Error is the source");
+        assert_eq!(cause.to_string(), "No such file or directory");
+        assert_eq!(
+            crate::error_chain(&err),
+            "cannot read `/nope/missing.rpt`: No such file or directory"
+        );
     }
 }

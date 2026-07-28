@@ -29,9 +29,9 @@ pub struct SavedColumn {
 
 /// A view of a report's saved-data batch substrate: the decoded catalog schema,
 /// the batch directory, and, per batch, the derived decrypt IV and whether it decrypts to a zlib
-/// header. This is the RE instrument behind `rpt dump --saved` — it surfaces the encrypted-batch
-/// layer the plain `dump` cannot reach, so a new batch class can be cracked without scratch code.
-#[derive(Debug, Clone, Default)]
+/// header. This is the data behind `rpt dump --saved` — it surfaces the encrypted-batch layer the
+/// plain `dump` cannot reach, including batch classes the decoder does not model.
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct SavedBatchInspection {
     /// The stored field catalog (record-layout order), with each field's inline byte offset.
@@ -71,7 +71,7 @@ pub enum SavedBatchKind {
 }
 
 /// One saved-data batch, its derived decrypt IV, and the outcome of trying it.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct SavedBatchInfo {
     /// The batch's role (index / descriptor / memo-value).
@@ -110,21 +110,4 @@ pub struct SavedBatchInfo {
     /// column table (`3 × string_columns` entries; every third value is the on-disk offset of the
     /// field after a compacted string). Surfaced so per-column packing is visible, not hidden.
     pub dir_leaf: Vec<u8>,
-}
-
-/// One IV-search hit: a `(batch_size, item_count, item_size, seq)` tuple whose IV both passes the
-/// zlib-magic gate and inflates the ciphertext.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-pub struct SavedIvHit {
-    /// The IV batch-size word that produced the hit.
-    pub batch_size: u32,
-    /// The IV item-count word that produced the hit.
-    pub item_count: u32,
-    /// The IV persistent-item-size word that produced the hit.
-    pub item_size: u32,
-    /// The IV's 4th word (the batch's sequence index within its kind).
-    pub seq: u32,
-    /// The resulting inflated byte length.
-    pub inflated_len: usize,
 }

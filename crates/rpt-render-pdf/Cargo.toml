@@ -15,20 +15,28 @@ rust-version.workspace = true
 # The krilla backend (real font subset embedding, Type0/CID Unicode, /FlateDecode) is on by default.
 # Disable it (`--no-default-features`) to fall back to the zero-dependency hand-rolled writer.
 default = ["krilla-backend"]
-krilla-backend = ["dep:krilla", "dep:fontdb", "dep:rpt-text"]
+krilla-backend = ["dep:krilla", "dep:rustybuzz", "dep:fontdb", "dep:rpt-text"]
 
 [dependencies]
 rpt-model = { workspace = true }
 rpt-pages = { workspace = true }
 rpt-render-util = { workspace = true }
-krilla = { version = "0.6.0", default-features = false, features = [
+krilla = { workspace = true, default-features = false, features = [
     "raster-images",
     "simple-text",
 ], optional = true }
-fontdb = { version = "0.23", optional = true }
+# Per-glyph shaping of each single-face segment for font fallback (⚠ etc.): matches krilla's own
+# shaper so mixed-face runs position identically. Same version krilla depends on.
+rustybuzz = { workspace = true, optional = true }
+fontdb = { workspace = true, optional = true }
 # Shared face resolution (FontSpec → OS face); `default-features = false` takes only the fontdb-based
 # resolver, not the cosmic-text shaping stack. Only needed by the krilla writer's font embedding.
 rpt-text = { workspace = true, default-features = false, optional = true }
+
+[dev-dependencies]
+# Inflate the krilla backend's /FlateDecode content streams in tests to assert on the emitted ops.
+miniz_oxide = { workspace = true }
+rpt-test-support = { workspace = true }
 
 [lints]
 workspace = true

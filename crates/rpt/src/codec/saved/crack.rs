@@ -1,5 +1,5 @@
 //! The saved-batch cipher layer: build a batch's decrypt IV, gate on the zlib magic, CFB-decrypt,
-//! and inflate — plus the brute-force IV search used to crack an undecoded batch class.
+//! and inflate.
 //!
 //! The batch IV is four little-endian words:
 //! `[batch_size | item_count | persistent_item_size | u16 batch_sequence]`. Batches of
@@ -10,6 +10,10 @@
 use crate::codec::crypto::{cfb_decrypt, encrypt_block};
 
 use super::schema::{BatchDesc, INDEX_BATCH_SIZE};
+
+/// The zlib CMF byte (deflate, 32 KiB window) that opens every saved-data batch's decrypted stream —
+/// the cheap gate that a batch's decrypt IV is correct before the full CFB-decrypt + inflate.
+pub(crate) const ZLIB_CMF: u8 = 0x78;
 
 pub(crate) fn batch_iv(batch_size: u32, item_count: u32, item_size: u32) -> [u8; 16] {
     batch_iv4(batch_size, item_count, item_size, 0)
@@ -45,7 +49,7 @@ pub(crate) fn decode_saved_batch(
     let iv = batch_iv(batch_size, item_count, item_size);
     // Cheap block-0 zlib-magic check before the full decrypt + inflate.
     let ks = encrypt_block(&iv);
-    if ciphertext[0] ^ ks[0] != 0x78 {
+    if ciphertext[0] ^ ks[0] != ZLIB_CMF {
         return None;
     }
     let plain = cfb_decrypt(&iv, ciphertext);
@@ -72,7 +76,7 @@ pub(crate) fn decode_index_stream(srs_raw: &[u8], index_batches: &[BatchDesc]) -
         // The k-th index batch's IV tail is its 0-based sequence number.
         let iv = batch_iv4(INDEX_BATCH_SIZE, b.count, b.item_size, k as u32);
         let ks = encrypt_block(&iv);
-        if ct.first().copied().map(|c| c ^ ks[0]) != Some(0x78) {
+        if ct.first().copied().map(|c| c ^ ks[0]) != Some(ZLIB_CMF) {
             break;
         }
         let plain = cfb_decrypt(&iv, ct);
@@ -138,7 +142,7 @@ pub(crate) fn decode_batch_at(
     let ct = raw.get(cursor..)?;
     let iv = batch_iv4(batch_size, item_count, item_size, seq);
     let ks = encrypt_block(&iv);
-    if *ct.first()? ^ ks[0] != 0x78 {
+    if *ct.first()? ^ ks[0] != ZLIB_CMF {
         return None;
     }
     let plain = cfb_decrypt(&iv, ct);
@@ -157,49 +161,7 @@ pub(crate) fn block0_is_zlib(iv: &[u8; 16], ct: &[u8]) -> bool {
         return false;
     }
     let ks = encrypt_block(iv);
-    ct[0] ^ ks[0] == 0x78 && is_zlib_flag(ct[1] ^ ks[1])
-}
-
-/// Brute-force the saved-batch IV metadata `(batch_size, item_count, item_size, seq)` over the given
-/// candidate values, returning every tuple whose IV both passes the zlib-magic gate and fully
-/// inflates `ct`. This is the instrument that cracks an undecoded batch class: when the directory's
-/// item metadata does not match the real IV words, search the neighbourhood to recover them. Stops
-/// after `limit` hits (`0` = unbounded).
-pub(crate) fn saved_iv_search(
-    ct: &[u8],
-    batch_sizes: &[u32],
-    item_counts: &[u32],
-    item_sizes: &[u32],
-    seqs: &[u32],
-    limit: usize,
-) -> Vec<crate::model::SavedIvHit> {
-    let mut hits = Vec::new();
-    for &bs in batch_sizes {
-        for &ic in item_counts {
-            for &is in item_sizes {
-                for &seq in seqs {
-                    let iv = batch_iv4(bs, ic, is, seq);
-                    if !block0_is_zlib(&iv, ct) {
-                        continue;
-                    }
-                    let plain = cfb_decrypt(&iv, ct);
-                    if let Some((inflated, _consumed)) = inflate_zlib_counted(&plain) {
-                        hits.push(crate::model::SavedIvHit {
-                            batch_size: bs,
-                            item_count: ic,
-                            item_size: is,
-                            seq,
-                            inflated_len: inflated.len(),
-                        });
-                        if limit != 0 && hits.len() >= limit {
-                            return hits;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    hits
+    ct[0] ^ ks[0] == ZLIB_CMF && is_zlib_flag(ct[1] ^ ks[1])
 }
 
 /// CFB-encrypt, for the round-trip tests only.

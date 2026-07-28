@@ -14,7 +14,17 @@ rust-version.workspace = true
 [dependencies]
 rpt-model = { workspace = true, features = ["serde"] }
 serde = { workspace = true }
+serde_json = { workspace = true, optional = true }
+
+[features]
+default = ["json"]
+# `Page::to_normalized_json` (the render-parity JSON surface); pulls in `serde_json`. On by default;
+# a backend that only consumes the IR types can drop it with `default-features = false`.
+json = ["dep:serde_json"]
+
+[dev-dependencies]
 serde_json = { workspace = true }
+rpt-test-support = { workspace = true }
 
 [lints]
 workspace = true

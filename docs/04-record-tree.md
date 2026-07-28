@@ -26,13 +26,14 @@ flowchart TD
 
 The record header shape is regular enough to distinguish a nested record from raw leaf bytes: a nested `Contents` record
 opens with a flag byte `0xF8` (the type packed inline) or `0xF9` (an extended little-endian type word follows), then a
-subtype word whose leading byte is `0x07`, then a 4-byte big-endian length — so the header is 8 bytes with an inline type
-and 10 with an extended one. The `0x07` subtype constraint is what rejects false headers in leaf data. A recursive reader
-matches that shape (under the current mask) to decide whether the next bytes open a child record or are leaf data,
-bounded by each record's declared length.
+subtype word whose leading byte is `0x07`, then a 4-byte big-endian length — so the header is 8 bytes with an inline
+type and 10 with an extended one. The `0x07` subtype constraint is what rejects false headers in leaf data. A recursive
+reader matches that shape (under the current mask) to decide whether the next bytes open a child record or are leaf
+data, bounded by each record's declared length.
 
 `QESession` streams nest with the same framing and stack-XOR mask, but their records use varied subtypes, so that reader
-relaxes the `0x07` constraint.
+relaxes the `0x07` constraint. The saved-data `DataSourceManager` stream uses the same relaxed ("QE") dialect — see
+[Saved data](06-saved-data.md).
 
 ## The content mask is a stack XOR
 
@@ -50,7 +51,7 @@ names, formula bodies, parameter references, and printer and SQL metadata all ap
 ## Length-prefixed strings
 
 Strings inside record content are length-prefixed: a **4-byte big-endian length**, then the bytes (NUL-terminated). This
-is the encoding for field names, object names, formula text, SQL, and so on. The [block catalog](06-block-catalog.md)
+is the encoding for field names, object names, formula text, SQL, and so on. The [block catalog](07-block-catalog.md)
 refers to these as "lp-strings".
 
 ## The lossless substrate
@@ -62,8 +63,9 @@ type. Each node carries:
 - its decoded **leaf values** (length-prefixed strings become text; the rest is kept as raw bytes);
 - its **child records**.
 
-This is exposed on the model as `Report::records` — a `Vec<Node>` where each `Node` is a typed record when recognized
-and a `Node::Unknown` (raw type, decoded leaf values, child nodes) otherwise. Because the substrate keeps unmodelled
+This is exposed by the reader as `Rpt::record_dom()` — a `Vec<Node>` (in `rpt::raw`) where each `Node` is a typed record
+when recognized and a `Node::Unknown` (raw type, decoded leaf values, child nodes) otherwise. It is projected on demand
+from the substrate the `Rpt` owns, not stored on the format-neutral model. Because the substrate keeps unmodelled
 records verbatim, the read path is total: nothing is dropped, and the report can be inspected even where it is not yet
 modelled.
 
@@ -77,3 +79,7 @@ The `rpt tree` command prints the decoded record tree for any report (add `--dep
 ```console
 $ rpt tree report.rpt
 ```
+
+---
+
+← [Stream decoding](03-stream-decoding.md) · [Index](README.md) · **Next:** [The semantic model](05-semantic-model.md) →

@@ -2,36 +2,37 @@
 //! over the shared Num+Ord axis frame.
 
 use super::common::{
-    category_label, category_stride, chart_frame, fmt_val, value_label, AxisTitles, LABEL, PALETTE,
+    category_label, category_stride, chart_frame, fmt_val, value_frac, value_label, ChartCtx,
+    LABEL, PALETTE,
 };
 use rpt_model::{Rect, Twips};
-use rpt_pages::{DrawOp, LineOp, ObjectKind, ObjectRef, Point, RectOp, Stroke};
+use rpt_pages::{DrawOp, LineOp, Point, RectOp, Stroke};
 
 /// Build the draw-ops for a line chart of `series` (category label → value): the shared axis frame
 /// plus a connecting polyline through the per-category points with a marker at each. Drawn with
 /// the existing `Line`/`Rect` ops — no new Page-IR primitive needed. `show_labels` gates the
 /// per-point data-value labels (the report's decoded "show value" flag). Returns an empty vec if
 /// `series` is empty.
-pub(crate) fn line_chart(
-    rect: Rect,
-    title: &str,
-    axis_titles: AxisTitles,
-    series: &[(String, f64)],
-    show_labels: bool,
-    section_name: &str,
-    obj_name: &str,
-) -> Vec<DrawOp> {
+pub(crate) fn line_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp> {
     if series.is_empty() {
         return Vec::new();
     }
-    let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(obj_name));
+    let &ChartCtx {
+        def,
+        rect,
+        title,
+        axis_titles,
+        show_labels,
+        ..
+    } = cx;
+    let src = || cx.src();
     let mut ops: Vec<DrawOp> = Vec::new();
-    let f = chart_frame(&mut ops, rect, title, axis_titles, series, &src);
+    let f = chart_frame(def, &mut ops, rect, title, axis_titles, series, &src);
 
     // Point per category, centered in its slot; y scales from the baseline like a bar's top.
     let point = |i: i32, val: f64| Point {
         x: Twips(f.plot_left + i * f.slot + f.slot / 2),
-        y: Twips(f.plot_bottom - ((val.max(0.0) / f.max_val) * f.plot_h as f64) as i32),
+        y: Twips(f.plot_bottom - (value_frac(val, f.max_val) * f.plot_h as f64) as i32),
     };
     let line_stroke = Stroke {
         color: PALETTE[0],

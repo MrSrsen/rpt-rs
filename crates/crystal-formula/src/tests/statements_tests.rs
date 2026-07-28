@@ -3,7 +3,7 @@
 //!
 //! Both parse structure (the AST the parser produces) and evaluation (the VM result) are checked.
 
-use crate::ast::Node;
+use crate::ast::NodeKind;
 use crate::eval::{eval, Date, EmptyContext, EvalError, Time, Value};
 use crate::{parse, Syntax};
 
@@ -63,7 +63,7 @@ fn basic_for_with_step_and_countdown() {
 fn for_parses_to_for_node() {
     let (ast, diags) = parse("For i = 1 To 3\nx = i\nNext", Syntax::Basic);
     assert!(diags.is_empty(), "{diags:?}");
-    assert!(matches!(ast, Node::For { .. }));
+    assert!(matches!(ast.kind, NodeKind::For { .. }));
 }
 
 // ---- While … Wend / Do … Loop ----
@@ -97,8 +97,8 @@ fn basic_bare_do_loop_is_infinite_exited_by_exit_do() {
         "bare Do…Loop should parse cleanly: {diags:?}"
     );
     assert!(matches!(
-        ast,
-        Node::While {
+        ast.kind,
+        NodeKind::While {
             test_after: false,
             ..
         }
@@ -125,16 +125,16 @@ fn basic_equals_in_condition_is_comparison_not_assignment() {
 fn while_parses_to_while_node() {
     let (ast, _) = parse("While n < 3\nn = n + 1\nWend", Syntax::Basic);
     assert!(matches!(
-        ast,
-        Node::While {
+        ast.kind,
+        NodeKind::While {
             test_after: false,
             ..
         }
     ));
     let (ast2, _) = parse("Do\nn = n + 1\nLoop While n < 3", Syntax::Basic);
     assert!(matches!(
-        ast2,
-        Node::While {
+        ast2.kind,
+        NodeKind::While {
             test_after: true,
             ..
         }
@@ -170,8 +170,8 @@ fn basic_if_block_parses_to_if_node() {
         Syntax::Basic,
     );
     assert!(diags.is_empty(), "{diags:?}");
-    match ast {
-        Node::If { elifs, .. } => assert_eq!(elifs.len(), 1),
+    match ast.kind {
+        NodeKind::If { elifs, .. } => assert_eq!(elifs.len(), 1),
         other => panic!("expected If, got {other:?}"),
     }
 }
@@ -224,7 +224,7 @@ fn crystal_select_expression() {
 #[test]
 fn select_lowers_to_if_chain() {
     let (ast, _) = parse("Select 1 Case 1 : \"a\" Default : \"b\"", Syntax::Crystal);
-    assert!(matches!(ast, Node::If { .. }));
+    assert!(matches!(ast.kind, NodeKind::If { .. }));
 }
 
 // ---- Crystal-syntax loops ----
@@ -305,7 +305,7 @@ fn textual_month_name_date_literals_parse() {
     // A month name with a missing year is malformed (diagnostic, not a panic).
     let (node, diags) = parse("#March 1#", Syntax::Crystal);
     assert!(!diags.is_empty(), "expected a diagnostic for a bad literal");
-    assert!(matches!(node, Node::DateLit(_)));
+    assert!(matches!(node.kind, NodeKind::DateLit(_)));
 }
 
 #[test]
@@ -316,7 +316,7 @@ fn malformed_date_literal_is_a_diagnostic_not_a_panic() {
         "expected a diagnostic for a bad date literal"
     );
     // The tree stays total (the node is still a DateLit carrying the raw text).
-    assert!(matches!(node, Node::DateLit(_)));
+    assert!(matches!(node.kind, NodeKind::DateLit(_)));
 }
 
 // ---- Exit (loop break) ----
@@ -368,7 +368,10 @@ fn exit_outside_loop_is_a_clean_error() {
 fn exit_parses_to_an_exit_node() {
     let (ast, diags) = parse("Exit While", Syntax::Basic);
     assert!(diags.is_empty(), "unexpected diagnostics: {diags:?}");
-    assert!(matches!(ast, Node::Exit(crate::ast::ExitKind::While)));
+    assert!(matches!(
+        ast.kind,
+        NodeKind::Exit(crate::ast::ExitKind::While)
+    ));
 }
 
 // ---- robustness ----

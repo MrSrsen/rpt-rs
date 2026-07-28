@@ -1,6 +1,6 @@
 //! Database model (SDK: `IDatabase`, `ITable`, `ITableLink`, `IConnectionInfo`).
 
-use super::enums::{ConnectionInfoKind, FieldValueType, TableJoinType};
+use super::enums::{ConnectionInfoKind, FieldValueType, TableJoinKind, TableLinkOperator};
 
 /// SDK: `IDatabase`.
 #[derive(Debug, Clone, PartialEq, Default)]
@@ -12,7 +12,7 @@ pub struct Database {
     pub links: Vec<TableLink>,
 }
 
-/// SDK: `ITable` / `ICommandTable` (XML `<Table>`).
+/// SDK: `ITable` / `ICommandTable`.
 #[derive(Debug, Clone, PartialEq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Table {
@@ -28,8 +28,24 @@ pub struct Table {
     pub connection: ConnectionInfo,
     /// The table's columns (SDK `Table.Fields`).
     pub data_fields: Vec<DbFieldDef>,
-    /// SDK `ICommandTable.CommandText` (XML `<Command>`).
+    /// SDK `ICommandTable.CommandText`.
     pub command_text: Option<String>,
+    /// The command's bind parameters (SDK `ICommandTable.Parameters` / the stored-procedure
+    /// parameters a command/stored-proc table declares). Empty for a plain database table.
+    pub parameters: Vec<CommandParameter>,
+}
+
+/// A SQL-command / stored-procedure bind parameter declared on a [`Table`] (SDK: a
+/// `ParameterFieldDefinition` exposed by `ICommandTable.Parameters`). Only the stored facts are
+/// modeled — the parameter's name and its declared value type; the runtime current/default values
+/// (report-instance data) are not retained.
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct CommandParameter {
+    /// The parameter's stored name (e.g. `cardCode` or a placeholder like `$[BOY_AB_FROMDATE]`).
+    pub name: String,
+    /// The parameter's declared value type.
+    pub value_type: FieldValueType,
 }
 
 /// A table's data field (the `<Field>` rows under `<Fields>`) — a thin DB-field descriptor.
@@ -51,7 +67,7 @@ pub struct DbFieldDef {
     pub description: Option<String>,
 }
 
-/// SDK: `IConnectionInfo` (XML `<ConnectionInfo>`).
+/// SDK: `IConnectionInfo`.
 ///
 /// **The password is intentionally not retained** (SDK `Password`) — the records may carry it,
 /// but it is never surfaced in the model.
@@ -66,12 +82,16 @@ pub struct ConnectionInfo {
     pub attributes: Vec<(String, String)>,
 }
 
-/// SDK: `ITableLink` (XML `<TableLink>`).
+/// SDK: `ITableLink`.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct TableLink {
-    /// The SQL join type used to link the two tables (inner / left / …).
-    pub join_type: TableJoinType,
+    /// The link's outer-ness (inner / left / right / full) — stored independently of
+    /// [`operator`](Self::operator).
+    pub join_kind: TableJoinKind,
+    /// The comparison the join predicate applies to the paired fields (`=`, `>`, `<>`, …) —
+    /// stored independently of [`join_kind`](Self::join_kind).
+    pub operator: TableLinkOperator,
     /// Alias of the table on the "from" side of the link.
     pub source_table_alias: String,
     /// Alias of the table on the "to" side of the link.

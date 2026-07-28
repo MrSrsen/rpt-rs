@@ -19,11 +19,16 @@ pub(super) struct Vec3 {
     pub(super) z: f64,
 }
 
+/// Shorthand for a scene-space point `(x, y, z)` — keeps the face-construction geometry readable.
+pub(super) fn p3(x: f64, y: f64, z: f64) -> Vec3 {
+    Vec3 { x, y, z }
+}
+
 /// A view angle: the elevation (about X) and rotation (about Y) that orient the scene, plus the
 /// pinhole `eye`/`plane` distances that drive the perspective divide. The native engine picks one of
 /// 16 presets per chart ([`rpt_model::ChartViewAngle`]); [`ViewAngle::for_preset`]
-/// maps each to its concrete angle. Only `Standard` ([`ViewAngle::DEPTH_EFFECT`]) is currently
-/// resolved from the stored bytes; other presets fall back to it.
+/// maps each to its concrete angle. The stored preset is decoded (`0x0121` `+0x4cc`), so a chart
+/// requesting a non-`Standard` angle resolves to that preset's angle here.
 #[derive(Debug, Clone, Copy)]
 pub(super) struct ViewAngle {
     pub(super) elevation_deg: f64,
@@ -39,8 +44,8 @@ pub(super) struct ViewAngle {
 }
 
 impl ViewAngle {
-    /// The engine's default 3-D preset, and the fallback for any preset whose disk selector isn't
-    /// decoded: elevation 36.1° about X, rotation 42.1° about Y, and a square floor
+    /// The engine's default 3-D preset (`Standard`), and the fallback for any out-of-range or
+    /// unrecognized preset code: elevation 36.1° about X, rotation 42.1° about Y, and a square floor
     /// (`depth_frac = 1.0`). Together these centre the near floor corner under the plot centre,
     /// matching the engine.
     pub(super) const DEPTH_EFFECT: ViewAngle = ViewAngle {
@@ -54,8 +59,9 @@ impl ViewAngle {
 
     /// The concrete view angle for a model [`ChartViewAngle`] preset. Elevation, rotation, and the
     /// floor `depth_frac` are the native engine's per-preset angles; `eye`/`plane`
-    /// and `fit_frac` are shared across presets. Only `Standard`'s disk selector is currently decoded,
-    /// so a chart requesting a non-default angle still resolves to `Standard`.
+    /// and `fit_frac` are shared across presets. The chart decoder reads the stored preset from the
+    /// `0x0121` `+0x4cc` enum (the 1-based `CrViewingAngleEnum`). `Standard` and `DistortedView` carry
+    /// the engine's own angles; the other presets' angles are reconstructed here.
     pub(super) fn for_preset(preset: rpt_model::ChartViewAngle) -> ViewAngle {
         use rpt_model::ChartViewAngle as P;
         // Shared reconstruction constants across all presets.
@@ -301,6 +307,12 @@ pub(super) fn face(
     });
     (op, depth)
 }
+
+/// Directional-lighting ladder: the top/cap face keeps the base colour, the front face is 0.8×,
+/// and the shadowed side/back face 0.6×.
+pub(super) const FRONT_SHADE: f32 = 0.8;
+pub(super) const SIDE_SHADE: f32 = 0.6;
+pub(super) const BACK_SHADE: f32 = 0.6;
 
 /// Shade `c` by `factor`: `factor > 1` lerps each channel toward white, `factor < 1` toward black,
 /// `factor == 1` is the colour unchanged. Alpha is preserved. Used to fake directional lighting on a

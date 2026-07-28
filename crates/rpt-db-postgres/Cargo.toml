@@ -15,7 +15,7 @@ rust-version.workspace = true
 rpt-model = { workspace = true, features = ["serde"] }
 rpt-data = { workspace = true }
 rpt-query = { workspace = true }
-postgres = "0.19"
+postgres = { workspace = true }
 thiserror = { workspace = true }
 
 [dev-dependencies]

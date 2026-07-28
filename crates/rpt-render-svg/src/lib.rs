@@ -4,26 +4,47 @@
 //! cross-backend coordinate reference.
 //!
 //! The simplest backend: a pure, dependency-light emit that maps each
-//! [`DrawOp`] to one SVG element. Vector output diffs cleanly against the oracle, so this is the
-//! first backend the render-parity harness targets before raster.
+//! [`DrawOp`] to one SVG element. Vector output diffs exactly (no rasterization tolerance needed),
+//! which makes it the easiest backend to verify.
 //!
 //! Coordinates are twips throughout: the `<svg>` `viewBox` is the page's twip extent, so 1 SVG
 //! user unit = 1 twip and every op keeps its native coordinates (a consumer scales via CSS or the
 //! `width`/`height` attributes). Font point sizes convert to twips (1pt = 20 twips) so text scales
 //! with the same coordinate system.
+//!
+//! # Images
+//! Each distinct image is embedded once per page as `<image>` in `<defs>`, keyed by a content hash of
+//! its bytes and referenced by `<use>` at every placement — so the repeated header logo and the
+//! shared product thumbnail each contribute a single `<defs>` entry. Bytes are inlined as a `data:`
+//! URI (`image/png`, `image/jpeg`, `image/gif`, and Crystal's embedded `image/bmp`, which browsers
+//! render), so the SVG stays self-contained. An image op with no matching asset draws a placeholder.
 
 use rpt_model::{Color, Rect};
 use rpt_pages::{
-    DrawOp, EllipseOp, Fill, HatchPattern, ImageOp, LineOp, Page, PolygonOp, RectOp, Stroke,
-    TextAlign, TextRun,
+    DrawOp, EllipseOp, Fill, HatchPattern, ImageAsset, ImageFit, ImageOp, LineOp, Page, PolygonOp,
+    RectOp, Stroke, TextAlign, TextRun,
 };
+use std::collections::{BTreeMap, HashMap};
 use std::fmt::Write;
 
 /// 1 typographic point = 20 twips (exact in `f32`).
 const TWIPS_PER_POINT: f32 = rpt_render_util::TWIPS_PER_POINT as f32;
+/// Symbol fallback family appended to every `font-family` so a viewer resolves glyphs the named
+/// family lacks (⚠ etc.). Matches the face `rpt-text` bundles for the PDF/raster backends (DejaVu
+/// Sans); SVG names families and lets the renderer resolve them, so naming it is enough.
+const SYMBOL_FALLBACK_FAMILY: &str = "DejaVu Sans";
 
-/// Render one [`Page`] to a standalone SVG document string.
+/// Render one [`Page`] to a standalone SVG document string. Image ops are drawn as placeholders (no
+/// bytes are available); use [`render_page_with_assets`] to embed images.
 pub fn render_page(page: &Page) -> String {
+    render_page_with_assets(page, &BTreeMap::new())
+}
+
+/// Like [`render_page`], but embeds each image op whose `image_id` resolves in `assets`. Each distinct
+/// image is inlined once into `<defs>` (keyed by a content hash of its bytes) and referenced by
+/// `<use>` at every placement, so identical bytes never embed more than once. An image op with no
+/// matching asset draws a placeholder box.
+pub fn render_page_with_assets(page: &Page, assets: &BTreeMap<String, ImageAsset>) -> String {
     let mut svg = String::new();
     let (w, h) = (page.size.width.0, page.size.height.0);
     let _ = writeln!(
@@ -31,6 +52,9 @@ pub fn render_page(page: &Page) -> String {
         "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 {w} {h}\" \
          width=\"{w}\" height=\"{h}\">"
     );
+    // Distinct images, embedded once in <defs>; the resolver maps each op's id to its shared def id.
+    let images = ImageDefs::collect(&page.ops, assets);
+    images.emit_defs(&mut svg);
     // Draw-op coordinates are printable-relative (0-based); on the physical page, shift them by the
     // page origin (the report's top-left margin) so content sits inside the margins.
     let (ox, oy) = (page.origin.x.0, page.origin.y.0);
@@ -42,7 +66,7 @@ pub fn render_page(page: &Page) -> String {
     };
     let mut ids: u32 = 0;
     for op in &page.ops {
-        emit_op(&mut svg, &mut ids, op);
+        emit_op(&mut svg, &mut ids, &images, op);
     }
     if close_g {
         svg.push_str("</g>\n");
@@ -68,22 +92,24 @@ pub fn render_fragment(ops: &[DrawOp], viewbox: Rect) -> String {
         "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"{x} {y} {w} {h}\" \
          width=\"100%\" height=\"100%\" preserveAspectRatio=\"none\">"
     );
+    // A fragment (chart island) carries no out-of-band assets; any image op draws a placeholder.
+    let images = ImageDefs::default();
     let mut ids: u32 = 0;
     for op in ops {
-        emit_op(&mut svg, &mut ids, op);
+        emit_op(&mut svg, &mut ids, &images, op);
     }
     svg.push_str("</svg>");
     svg
 }
 
-fn emit_op(svg: &mut String, ids: &mut u32, op: &DrawOp) {
+fn emit_op(svg: &mut String, ids: &mut u32, images: &ImageDefs, op: &DrawOp) {
     match op {
         DrawOp::Rect(r) => emit_rect(svg, ids, r),
         DrawOp::Ellipse(e) => emit_ellipse(svg, ids, e),
         DrawOp::Line(l) => emit_line(svg, l),
         DrawOp::Polygon(p) => emit_polygon(svg, ids, p),
         DrawOp::Text(t) => emit_text(svg, t),
-        DrawOp::Image(i) => emit_image(svg, i),
+        DrawOp::Image(i) => emit_image(svg, images, i),
     }
 }
 
@@ -237,16 +263,31 @@ fn emit_line(svg: &mut String, l: &LineOp) {
 fn emit_text(svg: &mut String, t: &TextRun) {
     let size_twips = (t.font.size_pt * TWIPS_PER_POINT).round() as i32;
     // SVG text anchors on the baseline = top + ascent. Use the run's resolved ascent when the layout
-    // engine measured it; else fall back to ~0.8 em. (Horizontal alignment stays on `text-anchor`,
-    // which SVG measures exactly, so the stored advance is not needed here.)
+    // engine measured it; else fall back to the shared em ratio. (Horizontal alignment stays on
+    // `text-anchor`, which SVG measures exactly, so the stored advance is not needed here.)
     let baseline = match &t.metrics {
         Some(m) => t.bounds.top.0 + m.ascent.0,
-        None => t.bounds.top.0 + (size_twips * 4 / 5),
+        None => t.bounds.top.0 + (size_twips as f64 * rpt_render_util::ASCENT_FALLBACK_EM) as i32,
     };
     let (anchor, x) = match t.align {
         TextAlign::Left | TextAlign::Justified => ("start", t.bounds.left.0),
         TextAlign::Center => ("middle", t.bounds.left.0 + t.bounds.width.0 / 2),
         TextAlign::Right => ("end", t.bounds.left.0 + t.bounds.width.0),
+    };
+    // Justified: stretch the run to fill its box width by widening the spacing (SVG measures the shaped
+    // width itself, so `textLength` + `lengthAdjust="spacing"` flushes both edges). Only when the line
+    // has an inter-word gap and its shaped width is under the box (the layout marks a paragraph's last
+    // line `Left`, so this only stretches the interior wrapped lines).
+    let justify = if matches!(t.align, TextAlign::Justified)
+        && rpt_render_util::word_gap_count(&t.text) > 0
+        && t.metrics.is_none_or(|m| m.advance.0 < t.bounds.width.0)
+    {
+        format!(
+            " textLength=\"{}\" lengthAdjust=\"spacing\"",
+            t.bounds.width.0
+        )
+    } else {
+        String::new()
     };
     let weight = if t.font.bold {
         " font-weight=\"bold\""
@@ -276,8 +317,8 @@ fn emit_text(svg: &mut String, t: &TextRun) {
     };
     let _ = writeln!(
         svg,
-        "  <text x=\"{x}\" y=\"{baseline}\" font-family=\"{}\" font-size=\"{size_twips}\" \
-         text-anchor=\"{anchor}\" fill=\"{}\"{weight}{style}{decoration}{rotate}{}>{}</text>",
+        "  <text x=\"{x}\" y=\"{baseline}\" font-family=\"{}, {SYMBOL_FALLBACK_FAMILY}\" font-size=\"{size_twips}\" \
+         text-anchor=\"{anchor}\" fill=\"{}\"{weight}{style}{decoration}{justify}{rotate}{}>{}</text>",
         escape_attr(&t.font.family),
         css_color(t.color),
         source_attr(t.source.as_ref()),
@@ -285,20 +326,111 @@ fn emit_text(svg: &mut String, t: &TextRun) {
     );
 }
 
-fn emit_image(svg: &mut String, i: &ImageOp) {
-    // The IR holds the image by id; a real backend resolves bytes to a data: URI. The scaffold
-    // emits a placeholder rect carrying the id so the layout is still visible/diffable.
-    let _ = writeln!(
-        svg,
-        "  <rect x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" fill=\"none\" \
-         stroke=\"#888\" stroke-dasharray=\"40 40\" data-image-id=\"{}\"{}/>",
-        i.bounds.left.0,
-        i.bounds.top.0,
-        i.bounds.width.0,
-        i.bounds.height.0,
-        escape_attr(&i.image_id),
-        source_attr(i.source.as_ref()),
-    );
+fn emit_image(svg: &mut String, images: &ImageDefs, i: &ImageOp) {
+    // A resolved image references its shared <defs> entry via <use>; an op with no asset (chart, or
+    // undecoded picture) draws a placeholder rect carrying the id so the layout is still diffable.
+    match images.def_id(&i.image_id) {
+        Some(def_id) => {
+            let _ = writeln!(
+                svg,
+                "  <use href=\"#{def_id}\" x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\"{}/>",
+                i.bounds.left.0,
+                i.bounds.top.0,
+                i.bounds.width.0,
+                i.bounds.height.0,
+                source_attr(i.source.as_ref()),
+            );
+        }
+        None => {
+            let _ = writeln!(
+                svg,
+                "  <rect x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" fill=\"none\" \
+                 stroke=\"#888\" stroke-dasharray=\"40 40\" data-image-id=\"{}\"{}/>",
+                i.bounds.left.0,
+                i.bounds.top.0,
+                i.bounds.width.0,
+                i.bounds.height.0,
+                escape_attr(&i.image_id),
+                source_attr(i.source.as_ref()),
+            );
+        }
+    }
+}
+
+/// The page's distinct images, each embedded once as `<image>` in `<defs>` and keyed by a content
+/// hash of its bytes, so identical placements (a per-page logo, a shared thumbnail) share one entry.
+#[derive(Default)]
+struct ImageDefs {
+    /// Distinct images in first-appearance order: `(def id, media type, bytes, fit)`.
+    defs: Vec<(String, String, Vec<u8>, ImageFit)>,
+    /// `<defs>` id for a (hash, fit) pair, so a later op with the same bytes and fit reuses the entry.
+    by_hash: HashMap<(u64, ImageFit), String>,
+    /// Maps an op's `image_id` to its `<defs>` id (only for resolved assets).
+    by_image_id: HashMap<String, String>,
+}
+
+impl ImageDefs {
+    /// Resolve every image op against `assets`, interning distinct byte strings by content hash and
+    /// fit mode (a shared entry carries the `preserveAspectRatio` its fit implies).
+    fn collect(ops: &[DrawOp], assets: &BTreeMap<String, ImageAsset>) -> ImageDefs {
+        let mut d = ImageDefs::default();
+        for op in ops {
+            let DrawOp::Image(i) = op else { continue };
+            if d.by_image_id.contains_key(&i.image_id) {
+                continue;
+            }
+            let Some(asset) = assets.get(&i.image_id) else {
+                continue;
+            };
+            let key = (rpt_render_util::content_hash(&asset.bytes), i.fit);
+            let def_id = match d.by_hash.get(&key) {
+                Some(def_id) => def_id.clone(),
+                None => {
+                    let suffix = if i.fit == ImageFit::Contain { "c" } else { "" };
+                    let def_id = format!("im-{:016x}{suffix}", key.0);
+                    d.by_hash.insert(key, def_id.clone());
+                    d.defs.push((
+                        def_id.clone(),
+                        asset.media_type.clone(),
+                        asset.bytes.clone(),
+                        i.fit,
+                    ));
+                    def_id
+                }
+            };
+            d.by_image_id.insert(i.image_id.clone(), def_id);
+        }
+        d
+    }
+
+    /// The `<defs>` id an op's `image_id` resolves to, or `None` for an unembeddable/missing asset.
+    fn def_id(&self, image_id: &str) -> Option<&str> {
+        self.by_image_id.get(image_id).map(String::as_str)
+    }
+
+    /// Emit the `<defs>` block: one `<image>` per distinct asset, bytes inlined as a `data:` URI.
+    /// The image's `preserveAspectRatio` follows its fit: `none` stretches to each `<use>` box
+    /// (`Fill`), `xMidYMid meet` letterboxes uniformly and centers within it (`Contain`).
+    fn emit_defs(&self, svg: &mut String) {
+        if self.defs.is_empty() {
+            return;
+        }
+        svg.push_str("<defs>\n");
+        for (def_id, media_type, bytes, fit) in &self.defs {
+            let par = match fit {
+                ImageFit::Fill => "none",
+                ImageFit::Contain => "xMidYMid meet",
+            };
+            let _ = writeln!(
+                svg,
+                "  <image id=\"{def_id}\" preserveAspectRatio=\"{par}\" \
+                 href=\"data:{media};base64,{data}\"/>",
+                media = escape_attr(media_type),
+                data = rpt_render_util::base64_encode(bytes),
+            );
+        }
+        svg.push_str("</defs>\n");
+    }
 }
 
 /// `(stroke_color, stroke_width, dash_attr)` for an optional stroke.
@@ -340,12 +472,6 @@ fn css_color(c: Color) -> String {
 
 use rpt_render_util::{escape_xml_attr as escape_attr, escape_xml_text as escape_text};
 
-/// A convenience for callers with a bare rect: not part of the render path, but handy for tests
-/// and tooling that build a one-op page.
-pub fn rect_area(bounds: Rect) -> (i32, i32, i32, i32) {
-    (bounds.left.0, bounds.top.0, bounds.width.0, bounds.height.0)
-}
-
 /// The SVG backend as a [`PageBackend`](rpt_pages::PageBackend): one standalone SVG string per page. `render_fragment` and
 /// the per-page [`render_page`] stay available as free functions for callers that want them.
 #[derive(Debug, Default, Clone, Copy)]
@@ -356,7 +482,10 @@ impl rpt_pages::PageBackend for SvgBackend {
     type Options = ();
 
     fn render(&self, doc: &rpt_pages::PagedDocument, _opts: &()) -> Vec<String> {
-        doc.pages.iter().map(render_page).collect()
+        doc.pages
+            .iter()
+            .map(|p| render_page_with_assets(p, &doc.assets))
+            .collect()
     }
 }
 
@@ -436,31 +565,13 @@ mod tests {
         p
     }
 
-    /// Compare `actual` against the committed golden at `tests/golden/<name>`, so a formatting change
-    /// (not just a missing probe substring) fails. Regenerate after an intentional change:
-    /// `RPT_BLESS=1 cargo test -p rpt-render-svg`.
-    fn assert_golden(name: &str, actual: &str) {
-        let dir = format!("{}/tests/golden", env!("CARGO_MANIFEST_DIR"));
-        let path = format!("{dir}/{name}");
-        if std::env::var_os("RPT_BLESS").is_some() {
-            std::fs::create_dir_all(&dir).unwrap();
-            std::fs::write(&path, actual).unwrap();
-            return;
-        }
-        let expected = std::fs::read_to_string(&path).unwrap_or_else(|_| {
-            panic!(
-                "missing golden {path}; regenerate with RPT_BLESS=1 cargo test -p rpt-render-svg"
-            )
-        });
-        assert_eq!(
-            actual, expected,
-            "golden mismatch for {name}; if intentional, regenerate with RPT_BLESS=1"
-        );
-    }
-
     #[test]
     fn golden_svg_page_snapshot() {
-        assert_golden("page.svg", &render_page(&page()));
+        rpt_test_support::assert_golden(
+            env!("CARGO_MANIFEST_DIR"),
+            "page.svg",
+            &render_page(&page()),
+        );
     }
 
     #[test]
@@ -632,6 +743,52 @@ mod tests {
     }
 
     #[test]
+    fn justified_run_stretches_with_textlength() {
+        use rpt_pages::{FontSpec, TextMetrics};
+        let run = |align, advance| {
+            let mut p = Page::new(
+                1,
+                PageSize {
+                    width: Twips(2000),
+                    height: Twips(1000),
+                },
+            );
+            p.push(DrawOp::Text(TextRun {
+                bounds: Rect {
+                    left: Twips(0),
+                    top: Twips(0),
+                    width: Twips(1000),
+                    height: Twips(240),
+                },
+                text: "two words".into(),
+                font: FontSpec::default(),
+                color: Color {
+                    a: 255,
+                    r: 0,
+                    g: 0,
+                    b: 0,
+                },
+                align,
+                rotation: 0.0,
+                metrics: Some(TextMetrics {
+                    advance: Twips(advance),
+                    ascent: Twips(160),
+                    line_height: Twips(240),
+                }),
+                source: None,
+            }));
+            render_page(&p)
+        };
+        // A justified run under its box width stretches to the full width via textLength.
+        assert!(
+            run(TextAlign::Justified, 600).contains("textLength=\"1000\" lengthAdjust=\"spacing\"")
+        );
+        // A left run never stretches; a justified run already at/over width does not compress.
+        assert!(!run(TextAlign::Left, 600).contains("textLength"));
+        assert!(!run(TextAlign::Justified, 1000).contains("textLength"));
+    }
+
+    #[test]
     fn linear_gradient_emits_gradient_def() {
         let mut p = Page::new(
             1,
@@ -714,5 +871,118 @@ mod tests {
         let svg = render_page(&p);
         assert!(svg.contains("fill=\"#0a141e\""));
         assert!(!svg.contains("<defs>"));
+    }
+
+    fn image_op(id: &str, left: i32, top: i32) -> DrawOp {
+        image_op_fit(id, left, top, ImageFit::Fill)
+    }
+
+    fn image_op_fit(id: &str, left: i32, top: i32, fit: ImageFit) -> DrawOp {
+        DrawOp::Image(ImageOp {
+            bounds: Rect {
+                left: Twips(left),
+                top: Twips(top),
+                width: Twips(720),
+                height: Twips(480),
+            },
+            image_id: id.to_string(),
+            fit,
+            source: Some(ObjectRef::new("Details", ObjectKind::Image).named(id)),
+        })
+    }
+
+    fn image_page(ops: Vec<DrawOp>) -> Page {
+        let mut p = Page::new(
+            1,
+            PageSize {
+                width: Twips(4000),
+                height: Twips(4000),
+            },
+        );
+        for op in ops {
+            p.push(op);
+        }
+        p
+    }
+
+    #[test]
+    fn image_without_asset_renders_placeholder_not_use() {
+        let svg = render_page(&image_page(vec![image_op("Picture1", 100, 100)]));
+        assert!(!svg.contains("<defs>"));
+        assert!(!svg.contains("<use "));
+        assert!(svg.contains("data-image-id=\"Picture1\""));
+    }
+
+    #[test]
+    fn contain_image_uses_meet_aspect_ratio_in_defs() {
+        let png: &[u8] = &[0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+        let mut assets = BTreeMap::new();
+        assets.insert(
+            "Picture1".to_string(),
+            ImageAsset {
+                media_type: "image/png".to_string(),
+                bytes: png.to_vec(),
+            },
+        );
+        // A Fill op stretches (`preserveAspectRatio="none"`); a Contain op letterboxes.
+        let fill = render_page_with_assets(&image_page(vec![image_op("Picture1", 0, 0)]), &assets);
+        assert!(fill.contains("preserveAspectRatio=\"none\""));
+        let contain = render_page_with_assets(
+            &image_page(vec![image_op_fit("Picture1", 0, 0, ImageFit::Contain)]),
+            &assets,
+        );
+        assert!(contain.contains("preserveAspectRatio=\"xMidYMid meet\""));
+        assert!(!contain.contains("preserveAspectRatio=\"none\""));
+    }
+
+    #[test]
+    fn image_with_asset_embeds_in_defs_and_references_via_use() {
+        let png: &[u8] = &[0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+        let mut assets = BTreeMap::new();
+        assets.insert(
+            "Picture1".to_string(),
+            ImageAsset {
+                media_type: "image/png".to_string(),
+                bytes: png.to_vec(),
+            },
+        );
+        let svg =
+            render_page_with_assets(&image_page(vec![image_op("Picture1", 100, 100)]), &assets);
+        assert!(svg.contains("<defs>"));
+        assert!(svg.contains("<image id=\"im-"));
+        assert!(svg.contains("href=\"data:image/png;base64,"));
+        assert!(svg.contains(&rpt_render_util::base64_encode(png)));
+        // Referenced by <use> at the placement box, not re-inlined.
+        assert!(svg.contains("<use href=\"#im-"));
+        assert!(svg.contains("width=\"720\" height=\"480\""));
+    }
+
+    #[test]
+    fn identical_bytes_embed_once_referenced_many() {
+        // The same image bytes under two ids (a per-page logo, a shared thumbnail) → one <defs>
+        // <image>, N <use> references.
+        let bytes: &[u8] = &[0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+        let mut assets = BTreeMap::new();
+        for id in ["Logo", "Thumb"] {
+            assets.insert(
+                id.to_string(),
+                ImageAsset {
+                    media_type: "image/png".to_string(),
+                    bytes: bytes.to_vec(),
+                },
+            );
+        }
+        let page = image_page(vec![
+            image_op("Logo", 0, 0),
+            image_op("Thumb", 0, 1000),
+            image_op("Thumb", 0, 2000),
+        ]);
+        let svg = render_page_with_assets(&page, &assets);
+        assert_eq!(svg.matches("<image ").count(), 1, "one shared <defs> entry");
+        assert_eq!(
+            svg.matches("<use ").count(),
+            3,
+            "three placements reference it"
+        );
     }
 }

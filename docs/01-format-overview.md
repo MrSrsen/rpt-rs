@@ -1,8 +1,8 @@
 # Format overview
 
-A Crystal Reports `.rpt` file stores a **report definition**: the data sources it reads, the parameters it prompts
-for, the formulas it computes, and the way it lays everything out on the page. The format is proprietary and
-undocumented; this document describes how it is structured and how `rpt-rs` decodes it.
+A Crystal Reports `.rpt` file stores a **report definition**: the data sources it reads, the parameters it prompts for,
+the formulas it computes, and the way it lays everything out on the page. The format is proprietary and undocumented;
+this document describes how it is structured and how `rpt-rs` decodes it.
 
 ## The big picture
 
@@ -75,13 +75,13 @@ understand. Stage 7 is a projection on top — it grows over time without ever r
 Almost everything in a report is a _record_ (also called a block): a small unit with a numeric **type**, a **length**,
 and a **value** (its content). Records nest. A report is one root record whose content contains section records, which
 contain object records, and so on. The numeric type identifies what the record is — a font, a text object, a formula, a
-database field. The [block catalog](06-block-catalog.md) documents each type.
+database field. The [block catalog](07-block-catalog.md) documents each type.
 
 ## A note on endianness
 
 The format mixes byte orders. The Crystal-defined record framing (lengths, IDs, geometry) tends to be **big-endian**,
 while value codes, flags, and embedded Windows structures tend to be **little-endian**. This is a property of the
-format, not a decode choice; see [Endianness](appendix-endianness.md).
+format, not a decode choice; see [Endianness](09-endianness.md).
 
 ## See it yourself
 
@@ -91,4 +91,8 @@ The `rpt` inspection CLI walks this whole pipeline and prints a one-screen summa
 $ rpt inspect report.rpt
 ```
 
-The following documents each drill into one stage; the [usage guide](08-usage.md) covers the full CLI.
+The following documents each drill into one stage; the [usage guide](11-usage.md) covers the full CLI.
+
+---
+
+[Index](README.md) · **Next:** [The container](02-container.md) →

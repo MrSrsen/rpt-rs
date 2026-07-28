@@ -2,11 +2,16 @@
 //! the outer disc arc and an inner-radius arc) rather than a centre-anchored wedge. The slice sweep
 //! math is identical to [`super::pie`] (`value / total × 360°`, starting at 12 o'clock).
 
-use super::common::{slice_color, truncate, value_label, LABEL, TITLE_PT, WHITE};
-use rpt_model::{Rect, Twips};
-use rpt_pages::{
-    DrawOp, FontSpec, ObjectKind, ObjectRef, Point, PolygonOp, Stroke, TextAlign, TextRun,
+#[cfg(test)]
+use super::common::AxisTitles;
+use super::common::{
+    centered_disc, disc_label, slice_color, title_op, truncate, value_label, ChartCtx,
+    SLICE_BORDER_W, WHITE,
 };
+#[cfg(test)]
+use rpt_model::Rect;
+use rpt_model::Twips;
+use rpt_pages::{DrawOp, Point, PolygonOp, Stroke};
 use std::f64::consts::{FRAC_PI_2, TAU};
 
 /// Fraction of the outer radius at which the doughnut hole begins (the inner ring edge).
@@ -18,19 +23,19 @@ const INNER_RATIO: f64 = 0.55;
 /// ≤ 0 are ignored. `show_labels` gates the per-slice percentage data labels (the report's decoded
 /// "show value" flag); the category label sits outside the ring like a pie. Returns an empty vec if
 /// there is nothing positive to plot.
-pub(crate) fn doughnut_chart(
-    rect: Rect,
-    title: &str,
-    series: &[(String, f64)],
-    show_labels: bool,
-    section_name: &str,
-    obj_name: &str,
-) -> Vec<DrawOp> {
+pub(crate) fn doughnut_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp> {
     let total: f64 = series.iter().map(|(_, v)| v.max(0.0)).sum();
     if series.is_empty() || total <= 0.0 {
         return Vec::new();
     }
-    let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(obj_name));
+    let &ChartCtx {
+        def,
+        rect,
+        title,
+        show_labels,
+        ..
+    } = cx;
+    let src = || cx.src();
     let mut ops: Vec<DrawOp> = Vec::new();
     let (rl, rt, rw, rh) = (rect.left.0, rect.top.0, rect.width.0, rect.height.0);
     let pad = 60;
@@ -41,35 +46,12 @@ pub(crate) fn doughnut_chart(
         (rh / 8).clamp(180, 360)
     };
     if !title.is_empty() {
-        ops.push(DrawOp::Text(TextRun {
-            bounds: Rect {
-                left: Twips(rl),
-                top: Twips(rt + pad / 2),
-                width: Twips(rw),
-                height: Twips(title_h),
-            },
-            text: title.to_string(),
-            font: FontSpec {
-                family: "Arial".into(),
-                size_pt: TITLE_PT,
-                bold: true,
-                ..Default::default()
-            },
-            color: LABEL,
-            align: TextAlign::Center,
-            rotation: 0.0,
-            metrics: None,
-            source: src(),
-        }));
+        ops.push(title_op(def, rl, rt + pad / 2, rw, title_h, title, &src));
     }
 
     // Centre the disc in the area below the title; leave a small margin for outer labels.
-    let box_top = rt + title_h + pad;
-    let box_h = (rt + rh - pad - box_top).max(1);
-    let box_w = (rw - 2 * pad).max(1);
-    let cx = rl + rw / 2;
-    let cy = box_top + box_h / 2;
-    let radius = (box_w.min(box_h) / 2 * 4 / 5).max(1) as f64;
+    let (cx, cy, radius) = centered_disc(rect, title_h);
+    let radius = radius as f64;
     let inner = radius * INNER_RATIO;
 
     let mut angle = -FRAC_PI_2; // first slice starts at 12 o'clock
@@ -101,7 +83,7 @@ pub(crate) fn doughnut_chart(
             // A thin white border separates adjacent slices.
             stroke: Some(Stroke {
                 color: WHITE,
-                width: Twips(20),
+                width: SLICE_BORDER_W,
                 style: rpt_pages::LineStyle::Single,
             }),
             source: src(),
@@ -123,25 +105,7 @@ pub(crate) fn doughnut_chart(
         let lr = radius * 1.02;
         let lx = cx + (lr * mid.cos()) as i32;
         let ly = cy + (lr * mid.sin()) as i32;
-        ops.push(DrawOp::Text(TextRun {
-            bounds: Rect {
-                left: Twips(lx - 700),
-                top: Twips(ly - 100),
-                width: Twips(1400),
-                height: Twips(200),
-            },
-            text: truncate(label, 16),
-            font: FontSpec {
-                family: "Arial".into(),
-                size_pt: 7.0,
-                ..Default::default()
-            },
-            color: LABEL,
-            align: TextAlign::Center,
-            rotation: 0.0,
-            metrics: None,
-            source: src(),
-        }));
+        ops.push(disc_label(lx, ly, &truncate(label, 16), &src));
         angle += sweep;
     }
 
@@ -189,7 +153,10 @@ mod tests {
             width: Twips(6000),
             height: Twips(6000),
         };
-        let ops = doughnut_chart(r, "", &series(), false, "RH", "Graph1");
+        let ops = doughnut_chart(
+            &ChartCtx::test(r, "", AxisTitles::default(), false),
+            &series(),
+        );
         let polys: Vec<&PolygonOp> = ops
             .iter()
             .filter_map(|o| match o {
@@ -219,7 +186,10 @@ mod tests {
             width: Twips(6000),
             height: Twips(6000),
         };
-        let ops = doughnut_chart(r, "Split", &series(), true, "RH", "Graph1");
+        let ops = doughnut_chart(
+            &ChartCtx::test(r, "Split", AxisTitles::default(), true),
+            &series(),
+        );
         let texts: Vec<String> = ops
             .iter()
             .filter_map(|o| match o {
@@ -245,7 +215,10 @@ mod tests {
             width: Twips(6000),
             height: Twips(6000),
         };
-        let ops = doughnut_chart(r, "Split", &series(), false, "RH", "Graph1");
+        let ops = doughnut_chart(
+            &ChartCtx::test(r, "Split", AxisTitles::default(), false),
+            &series(),
+        );
         let rings = ops
             .iter()
             .filter(|o| matches!(o, DrawOp::Polygon(_)))

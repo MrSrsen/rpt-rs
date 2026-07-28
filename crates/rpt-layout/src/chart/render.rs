@@ -8,7 +8,8 @@ use crate::chart;
 use crate::{push_diag, Formatter};
 use rpt_model::Rect;
 use rpt_model::ReportObject;
-use rpt_pages::{Diagnostic, DiagnosticKind, DrawOp, ObjectKind};
+use rpt_model::Twips;
+use rpt_pages::{Diagnostic, DiagnosticKind, DrawOp, ObjectKind, ObjectRef};
 
 impl Formatter<'_> {
     /// Render a chart object as native draw-ops from the group summaries: one bar per
@@ -107,12 +108,45 @@ impl Formatter<'_> {
         let per_category_legend = !matches!(chart.definition.graph_type, Gt::Area | Gt::Line);
         // Pie/doughnut legends match their per-slice fills; the axis families cycle the base palette.
         let per_slice = matches!(chart.definition.graph_type, Gt::Pie | Gt::Doughnut);
+        // The axis families draw the chart title alone on top (their axis titles go around the plot);
+        // the proportional families draw the `title` fallback to the group-axis title.
+        let axis_top = chart.definition.title.as_str();
+        let is_axis_family = matches!(
+            chart.definition.graph_type,
+            Gt::Bar | Gt::Line | Gt::Area | Gt::NumericAxis
+        );
+        // Reserve the subtitle band (under the title) and footnote band (at the bottom) for every
+        // family, drawing those decoded text elements centrally. With neither set (the common case),
+        // this is a no-op and the per-type renderer draws its own title unchanged. When present, the
+        // renderer is handed an empty title (drawn centrally above the subtitle) and the reduced rect.
+        let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(&obj.name));
+        let top_title = if is_axis_family {
+            axis_top
+        } else {
+            title.as_str()
+        };
+        let (caption_ops, chart_area, render_title, render_axis_top): (
+            Vec<DrawOp>,
+            Rect,
+            &str,
+            &str,
+        ) = match chart_captions(
+            &chart.definition,
+            rect,
+            top_title,
+            &chart.definition.subtitle,
+            &chart.definition.footnote,
+            &src,
+        ) {
+            Some((ops, body)) => (ops, body, "", ""),
+            None => (Vec::new(), rect, title.as_str(), axis_top),
+        };
         // Reserve a legend band and draw the chart body into the reduced rect, honouring the decoded
         // legend visibility + position (`0x0121` `+0x410`). A hidden or suppressed
         // legend gives the whole rect to the chart body.
         let (legend_ops, body) = resolve_legend(
             chart,
-            rect,
+            chart_area,
             chart.definition.legend_visible && per_category_legend,
             &series,
             per_slice,
@@ -122,97 +156,61 @@ impl Formatter<'_> {
         // Per-point data-value labels are drawn only when the report's decoded "show value" flag is
         // set (`0x0121` `+0x4a8` bit1); category labels and axes always draw.
         let show_labels = chart.definition.data_labels_show_value;
+        // The shared renderer context. The proportional families draw `render_title` on top; the axis
+        // families draw `render_axis_top` (their axis titles go around the plot), so those take a
+        // context with the axis-top title substituted.
+        let cx = chart::ChartCtx {
+            def: &chart.definition,
+            rect: body,
+            title: render_title,
+            axis_titles,
+            section_name,
+            obj_name: &obj.name,
+            show_labels,
+        };
+        let axis_cx = chart::ChartCtx {
+            title: render_axis_top,
+            ..cx
+        };
         // Every 2-D type dispatches on its shape (bar/line/area/pie); unknown 2-D types fall back to
-        // bars. Axis families draw the chart title alone on top (their axis titles go around the plot);
-        // the proportional families keep the `title` fallback to the group-axis title.
-        let axis_top = chart.definition.title.as_str();
+        // bars.
         let mut ops = match chart.definition.graph_type {
-            Gt::Line => chart::line_chart(
-                body,
-                axis_top,
-                axis_titles,
-                &series,
-                show_labels,
-                section_name,
-                &obj.name,
-            ),
-            Gt::Area => chart::area_chart(
-                body,
-                axis_top,
-                axis_titles,
-                &series,
-                show_labels,
-                section_name,
-                &obj.name,
-            ),
-            Gt::Pie => {
-                chart::pie_chart(body, &title, &series, show_labels, section_name, &obj.name)
+            Gt::Bar => chart::bar_chart(&axis_cx, &series),
+            Gt::Line => chart::line_chart(&axis_cx, &series),
+            Gt::Area => chart::area_chart(&axis_cx, &series),
+            Gt::Pie => chart::pie_chart(&cx, &series, chart.definition.has_depth_effect()),
+            Gt::Doughnut => chart::doughnut_chart(&cx, &series),
+            Gt::Radar => chart::radar_chart(&cx, &series),
+            Gt::Funnel => chart::funnel_chart(&cx, &series),
+            Gt::Gauge => chart::gauge_chart(&cx, &series),
+            Gt::NumericAxis => chart::numeric_axis_chart(&axis_cx, &series),
+            // Any type without a dedicated renderer falls back to a bar chart; this is the single
+            // source of truth for "unsupported", so the diagnostic is emitted right here.
+            _ => {
+                push_diag(
+                    &self.diagnostics,
+                    Diagnostic::warn(
+                        DiagnosticKind::UnsupportedObject,
+                        format!(
+                            "chart type {:?} is not yet supported; rendered as a bar chart",
+                            chart.definition.graph_type
+                        ),
+                    )
+                    .with_source(&obj.name),
+                );
+                chart::bar_chart(&axis_cx, &series)
             }
-            Gt::Doughnut => {
-                chart::doughnut_chart(body, &title, &series, show_labels, section_name, &obj.name)
-            }
-            Gt::Radar => {
-                chart::radar_chart(body, &title, &series, show_labels, section_name, &obj.name)
-            }
-            Gt::Funnel => {
-                chart::funnel_chart(body, &title, &series, show_labels, section_name, &obj.name)
-            }
-            Gt::Gauge => {
-                chart::gauge_chart(body, &title, &series, show_labels, section_name, &obj.name)
-            }
-            Gt::NumericAxis => chart::numeric_axis_chart(
-                body,
-                axis_top,
-                axis_titles,
-                &series,
-                show_labels,
-                section_name,
-                &obj.name,
-            ),
-            _ => chart::bar_chart(
-                body,
-                axis_top,
-                axis_titles,
-                &series,
-                show_labels,
-                section_name,
-                &obj.name,
-            ),
         };
         ops.extend(legend_ops);
-        for op in ops {
-            self.cur.push(op);
-        }
-        if !matches!(
-            chart.definition.graph_type,
-            Gt::Bar
-                | Gt::Line
-                | Gt::Area
-                | Gt::Pie
-                | Gt::Doughnut
-                | Gt::Radar
-                | Gt::Funnel
-                | Gt::Gauge
-                | Gt::NumericAxis
-        ) {
-            push_diag(
-                &self.diagnostics,
-                Diagnostic::warn(
-                    DiagnosticKind::UnsupportedObject,
-                    format!(
-                        "chart type {:?} is not yet supported; rendered as a bar chart",
-                        chart.definition.graph_type
-                    ),
-                )
-                .with_source(&obj.name),
-            );
-        }
+        self.cur.extend(caption_ops);
+        self.cur.extend(ops);
     }
 
     /// Render a 3-D riser chart: categories on X, each data binding a z-row receding into the scene,
     /// projected with the native perspective transform. A single-series chart legends its
-    /// categories (each a distinct colour); a multi-series chart legends its series names. Records
-    /// the view-angle-approximation diagnostic (the per-chart preset is not currently decoded).
+    /// categories (each a distinct colour); a multi-series chart legends its series names. Records the
+    /// view-angle-approximation diagnostic for a non-default preset (the preset is decoded, but most
+    /// presets' concrete angles are reconstructed approximations).
     fn emit_chart_3d(
         &mut self,
         chart: &rpt_model::ChartObject,
@@ -251,27 +249,19 @@ impl Formatter<'_> {
         // Riser3D draws shaded boxes; Surface3D draws a flat-shaded top-ribbon mesh over the same
         // scenery and perspective. Both recede their data series along Z.
         let view_angle = chart.definition.view_angle;
+        let cx = chart::ChartCtx {
+            def: &chart.definition,
+            rect: body,
+            title: &title,
+            axis_titles: chart::AxisTitles::default(),
+            section_name,
+            obj_name: &obj.name,
+            show_labels,
+        };
         let mut ops = if chart.definition.graph_type == rpt_model::ChartGraphType::Surface3D {
-            chart::chart3d::surface_3d(
-                body,
-                &title,
-                &categories,
-                &series,
-                view_angle,
-                section_name,
-                &obj.name,
-            )
+            chart::chart3d::surface_3d(&cx, &categories, &series, view_angle)
         } else {
-            chart::chart3d::riser_3d(
-                body,
-                &title,
-                &categories,
-                &series,
-                show_labels,
-                view_angle,
-                section_name,
-                &obj.name,
-            )
+            chart::chart3d::riser_3d(&cx, &categories, &series, view_angle)
         };
         if view_angle != rpt_model::ChartViewAngle::Standard {
             push_diag(
@@ -284,9 +274,7 @@ impl Formatter<'_> {
             );
         }
         ops.extend(legend_ops);
-        for op in ops {
-            self.cur.push(op);
-        }
+        self.cur.extend(ops);
     }
 
     /// Render a 3-D area ribbon chart: each data series an extruded area silhouette receding along Z,
@@ -326,16 +314,16 @@ impl Formatter<'_> {
         );
         let show_labels = chart.definition.data_labels_show_value;
         let view_angle = chart.definition.view_angle;
-        let mut ops = chart::chart3d::area_3d(
-            body,
-            &title,
-            &categories,
-            &series,
-            show_labels,
-            view_angle,
+        let cx = chart::ChartCtx {
+            def: &chart.definition,
+            rect: body,
+            title: &title,
+            axis_titles: chart::AxisTitles::default(),
             section_name,
-            &obj.name,
-        );
+            obj_name: &obj.name,
+            show_labels,
+        };
+        let mut ops = chart::chart3d::area_3d(&cx, &categories, &series, view_angle);
         if view_angle != rpt_model::ChartViewAngle::Standard {
             push_diag(
                 &self.diagnostics,
@@ -347,9 +335,7 @@ impl Formatter<'_> {
             );
         }
         ops.extend(legend_ops);
-        for op in ops {
-            self.cur.push(op);
-        }
+        self.cur.extend(ops);
     }
 
     /// Render a multi-series bar chart: one riser series per data binding, arranged clustered/stacked/
@@ -397,22 +383,24 @@ impl Formatter<'_> {
         let values: Vec<Vec<f64>> = (0..categories.len())
             .map(|ci| series.iter().map(|(_, vals)| vals[ci]).collect())
             .collect();
-        let mut ops = chart::bar_chart_multi(
-            body,
-            &title,
+        let cx = chart::ChartCtx {
+            def: &chart.definition,
+            rect: body,
+            title: &title,
             axis_titles,
+            section_name,
+            obj_name: &obj.name,
+            show_labels,
+        };
+        let mut ops = chart::bar_chart_multi(
+            &cx,
             &categories,
             &series_names,
             &values,
             chart.definition.arrangement(),
-            show_labels,
-            section_name,
-            &obj.name,
         );
         ops.extend(legend_ops);
-        for op in ops {
-            self.cur.push(op);
-        }
+        self.cur.extend(ops);
     }
 
     /// Render an XY scatter chart: a marker at each detail row's `(x, y)` over two numeric axes,
@@ -434,17 +422,11 @@ impl Formatter<'_> {
             );
             return;
         };
-        let (x_field, y_field) = (aggregate::inner_field(x_ref), aggregate::inner_field(y_ref));
-        let points: Vec<(f64, f64)> = self
-            .dataset
-            .iter_detail_rows()
-            .iter()
-            .filter_map(|r| {
-                let x = r.get(&x_field)?.as_number()?;
-                let y = r.get(&y_field)?.as_number()?;
-                Some((x, y))
-            })
-            .collect();
+        // The data bindings are group-scoped summaries (e.g. `Sum({weight}, {@Group})`): plot one
+        // (x, y) point per category group, x/y = each binding's per-group value. Falls back to one
+        // point per detail row (formula-aware) for an ungrouped point scatter.
+        let (xy, _sizes) = self.chart_xy_points(chart, &[x_ref, y_ref]);
+        let points: Vec<(f64, f64)> = xy.iter().map(|p| (p[0], p[1])).collect();
         if points.is_empty() {
             self.chart_empty(
                 rect,
@@ -459,18 +441,17 @@ impl Formatter<'_> {
             value: &chart.definition.data_axis_title,
             category: &chart.definition.group_axis_title,
         };
-        let ops = chart::scatter_chart(
+        let cx = chart::ChartCtx {
+            def: &chart.definition,
             rect,
-            &chart.definition.title,
+            title: &chart.definition.title,
             axis_titles,
-            &points,
-            None,
             section_name,
-            &obj.name,
-        );
-        for op in ops {
-            self.cur.push(op);
-        }
+            obj_name: &obj.name,
+            show_labels: chart.definition.data_labels_show_value,
+        };
+        let ops = chart::scatter_chart(&cx, &points, None);
+        self.cur.extend(ops);
     }
 
     /// Render a bubble chart: an XY scatter whose third value binding sizes each marker (a filled
@@ -494,27 +475,10 @@ impl Formatter<'_> {
             self.emit_chart_scatter(chart, rect, section_name, obj);
             return;
         };
-        let (x_field, y_field, size_field) = (
-            aggregate::inner_field(x_ref),
-            aggregate::inner_field(y_ref),
-            aggregate::inner_field(size_ref),
-        );
-        let mut points: Vec<(f64, f64)> = Vec::new();
-        let mut sizes: Vec<f64> = Vec::new();
-        for r in self.dataset.iter_detail_rows() {
-            let (Some(x), Some(y)) = (
-                r.get(&x_field).and_then(|v| v.as_number()),
-                r.get(&y_field).and_then(|v| v.as_number()),
-            ) else {
-                continue;
-            };
-            points.push((x, y));
-            sizes.push(
-                r.get(&size_field)
-                    .and_then(|v| v.as_number())
-                    .unwrap_or(0.0),
-            );
-        }
+        // Three group-scoped bindings (x, y, size): one bubble per category group, area ∝ the size
+        // binding's per-group value. Falls back to one bubble per detail row (formula-aware).
+        let (xyz, sizes) = self.chart_xy_points(chart, &[x_ref, y_ref, size_ref]);
+        let points: Vec<(f64, f64)> = xyz.iter().map(|p| (p[0], p[1])).collect();
         if points.is_empty() {
             self.chart_empty(
                 rect,
@@ -528,18 +492,68 @@ impl Formatter<'_> {
             value: &chart.definition.data_axis_title,
             category: &chart.definition.group_axis_title,
         };
-        let ops = chart::scatter_chart(
+        let cx = chart::ChartCtx {
+            def: &chart.definition,
             rect,
-            &chart.definition.title,
+            title: &chart.definition.title,
             axis_titles,
-            &points,
-            Some(&sizes),
             section_name,
-            &obj.name,
-        );
-        for op in ops {
-            self.cur.push(op);
+            obj_name: &obj.name,
+            show_labels: chart.definition.data_labels_show_value,
+        };
+        let ops = chart::scatter_chart(&cx, &points, Some(&sizes));
+        self.cur.extend(ops);
+    }
+
+    /// Build the XY(Z) points for a scatter/bubble chart from `refs` (two bindings for scatter, three
+    /// for bubble). Scatter/bubble bindings are group-scoped summaries, so the primary source is one
+    /// point per category group — each binding's per-group value (a formula binding resolves through
+    /// its precomputed group summary). An ungrouped chart falls back to one point per detail row,
+    /// evaluating each binding (formula-aware) in the row context. Returns the points as `[x, y, z]`
+    /// (z = 0 with two bindings) plus the z (size) values aligned with the points for the bubble path.
+    fn chart_xy_points(
+        &self,
+        chart: &rpt_model::ChartObject,
+        refs: &[&str],
+    ) -> (Vec<[f64; 3]>, Vec<f64>) {
+        let want_size = refs.len() >= 3;
+        // Per-group: each binding's value in every category group.
+        let (_cats, series) = aggregate::chart_series_multi(self.dataset, &self.locale, chart);
+        if series.len() >= refs.len() {
+            let n = series.iter().map(|(_, v)| v.len()).min().unwrap_or(0);
+            if n > 0 {
+                let mut pts = Vec::with_capacity(n);
+                let mut sizes = Vec::with_capacity(n);
+                for i in 0..n {
+                    let z = if want_size { series[2].1[i] } else { 0.0 };
+                    pts.push([series[0].1[i], series[1].1[i], z]);
+                    sizes.push(z);
+                }
+                return (pts, sizes);
+            }
         }
+        // Fallback: one point per detail row, each binding evaluated (formula-aware) in the row.
+        let mut pts = Vec::new();
+        let mut sizes = Vec::new();
+        for row in self.dataset.iter_detail_rows() {
+            let ctx = rpt_data::DataContext::new(row, self.formulas);
+            let (Some(x), Some(y)) = (
+                crate::resolve::eval_field_ref(refs[0], &ctx).as_number(),
+                crate::resolve::eval_field_ref(refs[1], &ctx).as_number(),
+            ) else {
+                continue;
+            };
+            let z = if want_size {
+                crate::resolve::eval_field_ref(refs[2], &ctx)
+                    .as_number()
+                    .unwrap_or(0.0)
+            } else {
+                0.0
+            };
+            pts.push([x, y, z]);
+            sizes.push(z);
+        }
+        (pts, sizes)
     }
 
     /// Render a stock chart: a vertical hi-lo bar per category (its low/high the category's minimum
@@ -566,17 +580,17 @@ impl Formatter<'_> {
             value: &chart.definition.data_axis_title,
             category: &chart.definition.group_axis_title,
         };
-        let ops = chart::stock_chart(
+        let cx = chart::ChartCtx {
+            def: &chart.definition,
             rect,
-            &chart.definition.title,
+            title: &chart.definition.title,
             axis_titles,
-            &points,
             section_name,
-            &obj.name,
-        );
-        for op in ops {
-            self.cur.push(op);
-        }
+            obj_name: &obj.name,
+            show_labels: chart.definition.data_labels_show_value,
+        };
+        let ops = chart::stock_chart(&cx, &points);
+        self.cur.extend(ops);
     }
 
     /// Render a histogram: the frequency distribution of the first value binding, binned into
@@ -620,19 +634,17 @@ impl Formatter<'_> {
         };
         // Seven bins matches the native engine's default binning for this distribution.
         const BINS: usize = 7;
-        let ops = chart::histogram_chart(
+        let cx = chart::ChartCtx {
+            def: &chart.definition,
             rect,
-            &chart.definition.title,
+            title: &chart.definition.title,
             axis_titles,
-            &values,
-            BINS,
-            chart.definition.data_labels_show_value,
             section_name,
-            &obj.name,
-        );
-        for op in ops {
-            self.cur.push(op);
-        }
+            obj_name: &obj.name,
+            show_labels: chart.definition.data_labels_show_value,
+        };
+        let ops = chart::histogram_chart(&cx, &values, BINS);
+        self.cur.extend(ops);
     }
 
     /// Render a Gantt chart: one horizontal time bar per detail record, spanning its start→end date
@@ -673,9 +685,10 @@ impl Formatter<'_> {
             );
             return;
         }
-        // Cap the drawn rows so a very long detail set stays legible (the row-label thinning handles
-        // moderate density; past the cap the bars would be sub-pixel). Note the truncation once.
-        const MAX_ROWS: usize = 60;
+        // The engine plots every datable record, so we do too (row-label thinning keeps dense charts
+        // legible). A high defensive guard only trims a pathological detail set, whose sub-pixel bars
+        // would otherwise explode the op count; it is far above any realistic gantt. Note it once.
+        const MAX_ROWS: usize = 2000;
         if bars.len() > MAX_ROWS {
             let total = bars.len();
             bars.truncate(MAX_ROWS);
@@ -692,17 +705,17 @@ impl Formatter<'_> {
             value: "",
             category: &chart.definition.group_axis_title,
         };
-        let ops = chart::gantt_chart(
+        let cx = chart::ChartCtx {
+            def: &chart.definition,
             rect,
-            &chart.definition.title,
+            title: &chart.definition.title,
             axis_titles,
-            &bars,
             section_name,
-            &obj.name,
-        );
-        for op in ops {
-            self.cur.push(op);
-        }
+            obj_name: &obj.name,
+            show_labels: chart.definition.data_labels_show_value,
+        };
+        let ops = chart::gantt_chart(&cx, &bars);
+        self.cur.extend(ops);
     }
 
     /// Emit the placeholder box plus an `UnsupportedObject` diagnostic carrying `msg` — the shared
@@ -734,13 +747,93 @@ fn resolve_legend(
         let pos = match chart.definition.legend_position {
             Lp::Right => chart::LegendPosition::Right,
             Lp::Left => chart::LegendPosition::Left,
-            Lp::Top => chart::LegendPosition::Top,
-            Lp::Bottom => chart::LegendPosition::Bottom,
+            // A manually-positioned legend: place it at the top as a render approximation (the exact
+            // stored geometry is not decoded).
+            Lp::Custom => chart::LegendPosition::Top,
+            Lp::BottomCenter => chart::LegendPosition::Bottom,
         };
         chart::legend(rect, pos, series, per_slice, section_name, obj_name)
     } else {
         (Vec::new(), rect)
     }
+}
+
+/// Reserve the subtitle band (under the title) and footnote band (at the chart bottom) and draw both
+/// decoded text elements, returning `(caption_ops, body_rect)` — the reduced rect the chart body
+/// (title/plot/legend) draws into. Returns `None` when both are empty (the common case), so the
+/// per-type renderer keeps drawing its own title into the full rect and existing output is unchanged.
+/// When present, the top title is drawn centrally here (subtitle sits just under it) and the renderer
+/// is handed an empty title. Fonts come from the per-element default table
+/// ([`chart::ChartText`]): subtitle Arial 10, footnote Arial 8 bold-italic, title Arial 14 bold.
+fn chart_captions(
+    def: &rpt_model::ChartDefinition,
+    rect: Rect,
+    top_title: &str,
+    subtitle: &str,
+    footnote: &str,
+    src: &dyn Fn() -> Option<ObjectRef>,
+) -> Option<(Vec<DrawOp>, Rect)> {
+    if subtitle.is_empty() && footnote.is_empty() {
+        return None;
+    }
+    let (rl, rt, rw, rh) = (rect.left.0, rect.top.0, rect.width.0, rect.height.0);
+    let pad = 60;
+    let title_h = if top_title.is_empty() {
+        0
+    } else {
+        (rh / 8).clamp(180, 360)
+    };
+    let subtitle_h = if subtitle.is_empty() {
+        0
+    } else {
+        (rh / 12).clamp(150, 260)
+    };
+    let footnote_h = if footnote.is_empty() {
+        0
+    } else {
+        (rh / 14).clamp(130, 220)
+    };
+    let mut ops = Vec::new();
+    let band = |top: i32, height: i32| Rect {
+        left: Twips(rl),
+        top: Twips(top),
+        width: Twips(rw),
+        height: Twips(height),
+    };
+    if !top_title.is_empty() {
+        ops.push(chart::chart_text_op(
+            def,
+            band(rt + pad / 2, title_h),
+            top_title,
+            chart::ChartText::Title,
+            src,
+        ));
+    }
+    if !subtitle.is_empty() {
+        ops.push(chart::chart_text_op(
+            def,
+            band(rt + title_h, subtitle_h),
+            subtitle,
+            chart::ChartText::Subtitle,
+            src,
+        ));
+    }
+    if !footnote.is_empty() {
+        ops.push(chart::chart_text_op(
+            def,
+            band(rt + rh - footnote_h, footnote_h),
+            footnote,
+            chart::ChartText::Footnote,
+            src,
+        ));
+    }
+    let body = Rect {
+        left: Twips(rl),
+        top: Twips(rt + title_h + subtitle_h),
+        width: Twips(rw),
+        height: Twips((rh - title_h - subtitle_h - footnote_h).max(1)),
+    };
+    Some((ops, body))
 }
 
 /// The legend entries for a 3-D group chart: a single-series riser colours its bars per category
@@ -755,5 +848,73 @@ fn multi_legend_series(categories: &[String], series: &[(String, Vec<f64>)]) -> 
             .zip(&series[0].1)
             .map(|(c, v)| (c.clone(), *v))
             .collect()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::chart_captions;
+    use crate::chart::ChartText;
+    use rpt_model::{Rect, Twips};
+    use rpt_pages::DrawOp;
+
+    fn rect() -> Rect {
+        Rect {
+            left: Twips(0),
+            top: Twips(0),
+            width: Twips(6000),
+            height: Twips(6000),
+        }
+    }
+
+    /// With neither a subtitle nor a footnote (the common case), no bands are reserved and the
+    /// per-type renderer keeps drawing its own title into the full rect — so existing output is
+    /// byte-identical.
+    #[test]
+    fn no_captions_leaves_the_rect_untouched() {
+        let src = || None;
+        let def = rpt_model::ChartDefinition::default();
+        assert!(chart_captions(&def, rect(), "Title", "", "", &src).is_none());
+    }
+
+    /// A chart with a subtitle and footnote draws both as text ops (the title centrally above the
+    /// subtitle), each in its per-element default font, and reserves top+bottom bands so the returned
+    /// body rect is shorter than the full rect and pushed down from the top.
+    #[test]
+    fn subtitle_and_footnote_are_drawn_and_reserve_bands() {
+        let src = || None;
+        let def = rpt_model::ChartDefinition::default();
+        let (ops, body) = chart_captions(&def, rect(), "Title", "Sub here", "Foot here", &src)
+            .expect("captions present");
+
+        let texts: Vec<(&str, &rpt_pages::FontSpec)> = ops
+            .iter()
+            .filter_map(|o| match o {
+                DrawOp::Text(t) => Some((t.text.as_str(), &t.font)),
+                _ => None,
+            })
+            .collect();
+        let by = |s: &str| texts.iter().find(|(t, _)| *t == s).map(|(_, f)| *f);
+
+        // The title, subtitle, and footnote are all emitted.
+        assert!(by("Title").is_some(), "title drawn: {texts:?}");
+        let sub = by("Sub here").expect("subtitle drawn");
+        let foot = by("Foot here").expect("footnote drawn");
+        // Each uses its per-element default font.
+        assert_eq!(sub.size_pt, 10.0, "subtitle Arial 10");
+        assert!(!sub.bold && !sub.italic, "subtitle normal");
+        assert_eq!(foot.size_pt, 8.0, "footnote Arial 8");
+        assert!(foot.bold && foot.italic, "footnote bold-italic");
+        let _ = ChartText::Footnote; // the caption fonts come from this table.
+
+        // The body rect is reserved away from the top (subtitle band) and bottom (footnote band).
+        assert!(
+            body.top.0 > rect().top.0,
+            "body pushed below the subtitle band"
+        );
+        assert!(
+            body.height.0 < rect().height.0,
+            "body shorter than the full rect"
+        );
     }
 }

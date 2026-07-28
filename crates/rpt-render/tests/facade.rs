@@ -1,10 +1,8 @@
 //! The SDK-shaped `ReportDocument` facade — runs on a committed public-demo fixture.
-use std::path::PathBuf;
 
 #[test]
 fn report_document_facade_loads_and_exports() {
-    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("../../tests/fixtures/reports/worrall/AlphaISOsByCountry.rpt");
+    let path = rpt_test_support::fixture("tests/fixtures/reports/worrall/AlphaISOsByCountry.rpt");
     // SDK-familiar shape: one object loads + holds model + exports.
     let doc = rpt_render::ReportDocument::load(&path).expect("load");
     assert!(!doc.report().data_definition.field_definitions.is_empty());

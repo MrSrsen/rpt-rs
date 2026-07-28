@@ -3,11 +3,15 @@
 //! single value when there is one category). A small hub sits at the centre and the aggregate value
 //! prints under the dial.
 
-use super::common::{fmt_val, nice_scale, AXIS, LABEL, PALETTE, TITLE_PT};
+#[cfg(test)]
+use super::common::AxisTitles;
+use super::common::{
+    centered_disc, fmt_val, nice_scale, title_op, ChartCtx, AXIS, LABEL, LABEL_PT, PALETTE,
+    SLICE_BORDER_W,
+};
 use rpt_model::{Rect, Twips};
 use rpt_pages::{
-    DrawOp, EllipseOp, FontSpec, LineOp, ObjectKind, ObjectRef, Point, PolygonOp, Stroke,
-    TextAlign, TextRun,
+    DrawOp, EllipseOp, FontSpec, LineOp, Point, PolygonOp, Stroke, TextAlign, TextRun,
 };
 use std::f64::consts::PI;
 
@@ -20,18 +24,18 @@ const SPAN: f64 = 3.0 * PI / 2.0;
 /// to nice_max with tick marks + labels, and a needle from the centre pointing at the aggregate
 /// value (the series total). `show_labels` gates the big aggregate-value readout under the dial; the
 /// tick labels and title always draw. Returns an empty vec if `series` is empty.
-pub(crate) fn gauge_chart(
-    rect: Rect,
-    title: &str,
-    series: &[(String, f64)],
-    show_labels: bool,
-    section_name: &str,
-    obj_name: &str,
-) -> Vec<DrawOp> {
+pub(crate) fn gauge_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp> {
     if series.is_empty() {
         return Vec::new();
     }
-    let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(obj_name));
+    let &ChartCtx {
+        def,
+        rect,
+        title,
+        show_labels,
+        ..
+    } = cx;
+    let src = || cx.src();
     let mut ops: Vec<DrawOp> = Vec::new();
     let (rl, rt, rw, rh) = (rect.left.0, rect.top.0, rect.width.0, rect.height.0);
     let pad = 60;
@@ -42,26 +46,7 @@ pub(crate) fn gauge_chart(
         (rh / 8).clamp(180, 360)
     };
     if !title.is_empty() {
-        ops.push(DrawOp::Text(TextRun {
-            bounds: Rect {
-                left: Twips(rl),
-                top: Twips(rt + pad / 2),
-                width: Twips(rw),
-                height: Twips(title_h),
-            },
-            text: title.to_string(),
-            font: FontSpec {
-                family: "Arial".into(),
-                size_pt: TITLE_PT,
-                bold: true,
-                ..Default::default()
-            },
-            color: LABEL,
-            align: TextAlign::Center,
-            rotation: 0.0,
-            metrics: None,
-            source: src(),
-        }));
+        ops.push(title_op(def, rl, rt + pad / 2, rw, title_h, title, &src));
     }
 
     let value: f64 = series.iter().map(|(_, v)| *v).sum();
@@ -69,12 +54,8 @@ pub(crate) fn gauge_chart(
     let ticks = (nice_max / step).round().max(1.0) as i32;
 
     // Centre the dial in the area below the title, leaving room for the value readout below it.
-    let box_top = rt + title_h + pad;
-    let box_h = (rt + rh - pad - box_top).max(1);
-    let box_w = (rw - 2 * pad).max(1);
-    let cx = rl + rw / 2;
-    let cy = box_top + box_h / 2;
-    let radius = (box_w.min(box_h) / 2 * 4 / 5).max(1) as f64;
+    let (cx, cy, radius) = centered_disc(rect, title_h);
+    let radius = radius as f64;
 
     let angle_at = |frac: f64| START + frac.clamp(0.0, 1.0) * SPAN;
     let at = |a: f64, r: f64| Point {
@@ -93,7 +74,7 @@ pub(crate) fn gauge_chart(
         fill: None,
         stroke: Some(Stroke {
             color: AXIS,
-            width: Twips(20),
+            width: SLICE_BORDER_W,
             style: rpt_pages::LineStyle::Single,
         }),
         source: src(),
@@ -124,7 +105,7 @@ pub(crate) fn gauge_chart(
             text: fmt_val(t as f64 * step),
             font: FontSpec {
                 family: "Arial".into(),
-                size_pt: 7.0,
+                size_pt: LABEL_PT,
                 ..Default::default()
             },
             color: LABEL,
@@ -207,7 +188,11 @@ mod tests {
 
     #[test]
     fn empty_series_yields_no_ops() {
-        assert!(gauge_chart(rect(), "T", &[], true, "S", "G").is_empty());
+        assert!(gauge_chart(
+            &ChartCtx::test(rect(), "T", AxisTitles::default(), true),
+            &[]
+        )
+        .is_empty());
     }
 
     /// One needle (a Line from the hub centre) + an arc (an open polyline) + the aggregate value
@@ -216,7 +201,10 @@ mod tests {
     fn draws_needle_arc_and_value() {
         // total = 22 → nice_max 25 (nice_scale), so the needle sits below full-scale.
         let s = vec![("A".into(), 15.0), ("B".into(), 7.0)];
-        let ops = gauge_chart(rect(), "Load", &s, true, "RH", "G");
+        let ops = gauge_chart(
+            &ChartCtx::test(rect(), "Load", AxisTitles::default(), true),
+            &s,
+        );
 
         // The hub is the only filled ellipse; its centre is the dial centre.
         let hub = ops
@@ -276,7 +264,10 @@ mod tests {
     fn show_labels_false_omits_value_readout() {
         // total = 22; ticks are 0/5/10/15/20/25, none of which equals 22.
         let s = vec![("A".into(), 15.0), ("B".into(), 7.0)];
-        let ops = gauge_chart(rect(), "T", &s, false, "RH", "G");
+        let ops = gauge_chart(
+            &ChartCtx::test(rect(), "T", AxisTitles::default(), false),
+            &s,
+        );
         let has_value = ops.iter().any(|o| match o {
             DrawOp::Text(t) => t.text == "22",
             _ => false,

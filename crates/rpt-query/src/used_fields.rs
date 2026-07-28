@@ -8,11 +8,12 @@
 //! totals, summaries, chart/cross-tab bindings, record- and group-selection formulas, and the bodies
 //! of every *live* formula (resolved transitively) — and returns the set of referenced field keys.
 //!
-//! The walk mirrors the `UseCount` reference walk but only needs the *set* of referenced fields, not
-//! per-field counts. It is deliberately **conservative**: when in doubt a field is included, since an
-//! extra fetched column is harmless while a missing one breaks rendering.
+//! The walk needs only the *set* of referenced fields, never how often each is named. It is
+//! deliberately **conservative**: when in doubt a field is included, since an extra fetched column is
+//! harmless while a missing one breaks rendering.
 
 use crystal_formula::refs::references;
+use crystal_formula::token::{split_reference, strip_braces};
 use crystal_formula::RefKind;
 use rpt_model::{
     Database, FieldKindData, FontColor, Report, ReportObject, ReportObjectKind, Table,
@@ -36,11 +37,10 @@ pub fn used_database_fields(report: &Report) -> HashSet<String> {
 /// when it is a database field. Sigil-prefixed references (formula `@`, parameter `?`, running total
 /// `#`, SQL expression `%`) and empty tokens are ignored. Handles both the braced and bare forms.
 fn add_field_ref(used: &mut HashSet<String>, raw: &str) {
-    let inner = strip_braces(raw);
-    if inner.is_empty() || inner.starts_with(['@', '?', '#', '%']) {
-        return;
+    let (kind, name) = split_reference(strip_braces(raw));
+    if kind == RefKind::Field && !name.is_empty() {
+        used.insert(name.to_ascii_lowercase());
     }
-    used.insert(inner.to_ascii_lowercase());
 }
 
 /// Add every database field a formula *body* names (via the reference tokenizer, so a `{table.field}`
@@ -54,15 +54,6 @@ fn add_body_fields(used: &mut HashSet<String>, body: &str) {
             add_field_ref(used, &r.name);
         }
     }
-}
-
-/// Strip a single pair of surrounding `{}` braces from a reference token, trimming whitespace.
-fn strip_braces(raw: &str) -> &str {
-    let s = raw.trim();
-    s.strip_prefix('{')
-        .and_then(|inner| inner.strip_suffix('}'))
-        .map(str::trim)
-        .unwrap_or(s)
 }
 
 /// Walk one report scope, collecting the database fields it references.
@@ -101,9 +92,14 @@ fn collect(r: &Report, live: &HashSet<String>, used: &mut HashSet<String>) {
         add_body_fields(used, b);
     }
 
-    // Grouping, sorting, and summary bindings.
+    // Grouping, sorting, and summary bindings. A group/sort key is a bare field or formula token
+    // (`region.name` / `@Key`), except a summary-based group sort whose key is an expression
+    // (`Sum (…, {@Key})`) — walked as a body so its braced field references are fetched too. When the
+    // key names a formula it is made live in `live_formulas`, routing its body through the
+    // field-definition walk above (so e.g. a group-by formula's database references are fetched).
     for g in &dd.groups {
         add_field_ref(used, &g.condition_field);
+        add_body_fields(used, &g.sort.field);
     }
     for s in &dd.record_sorts {
         add_field_ref(used, &s.field);
@@ -208,8 +204,8 @@ fn live_formulas(r: &Report) -> HashSet<String> {
     };
     // A single reference token that names a formula (`{@name}` / `@name`).
     let mention_token = |raw: &str, m: &mut HashSet<String>| {
-        let inner = strip_braces(raw);
-        if let Some(name) = inner.strip_prefix('@') {
+        let (kind, name) = split_reference(strip_braces(raw));
+        if kind == RefKind::Formula {
             m.insert(name.to_ascii_lowercase());
         }
     };
@@ -271,6 +267,20 @@ fn live_formulas(r: &Report) -> HashSet<String> {
         for link in &s.links {
             mention_token(&link.main_report_field, &mut mentioned);
         }
+    }
+    // Group/record sort keys can name a formula: a group-by formula (`@Key`) or a summary-based group
+    // sort (`Sum (…, {@Key})`). Both make the formula live so its body's database fields are fetched
+    // (e.g. a group key `ToText({t.id},0) & {t.name}` needs `t.id` even when only `t.name` is placed).
+    // Each key is tried as a single bare token *and* as an expression body to cover both stored forms.
+    for g in &dd.groups {
+        mention_token(&g.condition_field, &mut mentioned);
+        mention_body(&g.condition_field, &mut mentioned);
+        mention_token(&g.sort.field, &mut mentioned);
+        mention_body(&g.sort.field, &mut mentioned);
+    }
+    for s in &dd.record_sorts {
+        mention_token(&s.field, &mut mentioned);
+        mention_body(&s.field, &mut mentioned);
     }
 
     // Transitive closure: a mentioned formula is live, and its body then extends the mention set.
@@ -444,7 +454,8 @@ mod tests {
     use crate::{build_query_for_report, Dialect};
     use rpt_model::{
         Area, DataDefinition, DbFieldDef, FieldDef, FieldObject, Formula, FormulaField, Report,
-        ReportDefinition, Section, Subreport, SubreportLink, TableJoinType, TableLink,
+        ReportDefinition, Section, Subreport, SubreportLink, TableJoinKind, TableLink,
+        TableLinkOperator,
     };
 
     fn tbl(name: &str, fields: &[&str]) -> Table {
@@ -465,7 +476,8 @@ mod tests {
 
     fn link(src: &str, tgt: &str) -> TableLink {
         TableLink {
-            join_type: TableJoinType::Equal,
+            join_kind: TableJoinKind::Inner,
+            operator: TableLinkOperator::Equal,
             source_table_alias: src.into(),
             target_table_alias: tgt.into(),
             source_fields: vec!["id".into()],
@@ -475,10 +487,10 @@ mod tests {
 
     fn field_obj(data_source: &str) -> ReportObject {
         ReportObject {
-            kind: ReportObjectKind::Field(FieldObject {
+            kind: ReportObjectKind::Field(Box::new(FieldObject {
                 data_source: data_source.into(),
                 ..Default::default()
-            }),
+            })),
             ..Default::default()
         }
     }
@@ -573,6 +585,45 @@ mod tests {
                 .map(|t| t.alias.as_str())
                 .collect::<Vec<_>>(),
             vec!["orders"]
+        );
+    }
+
+    #[test]
+    fn group_by_formula_fetches_its_hidden_fields() {
+        // A group keyed by a formula (`@Key = ToText({product.id}) & {product.name}`) must fetch
+        // *every* field the key references — including `product.id`, which is not placed anywhere on
+        // its own. Missing it collapses all rows into one group: the group key can't distinguish
+        // products, so a Top-5 group sort yields a single group.
+        use rpt_model::{Group, Sort};
+        let db = Database {
+            tables: vec![
+                tbl("product", &["id", "name"]),
+                tbl("order_line", &["amount"]),
+            ],
+            links: vec![],
+        };
+        let mut r = report(
+            db,
+            vec![field_obj("{product.name}")],
+            &[("Key", r#"ToText({product.id},0) & " - " & {product.name}"#)],
+        );
+        r.data_definition.groups = vec![Group {
+            condition_field: "@Key".into(),
+            sort: Sort {
+                field: "Sum ({order_line.amount}, {@Key})".into(),
+                ..Default::default()
+            },
+            ..Default::default()
+        }];
+        let used = used_database_fields(&r);
+        assert!(
+            used.contains("product.id"),
+            "group-by-formula field not fetched: {used:?}"
+        );
+        // The summary-based group-sort expression's summed field is fetched too.
+        assert!(
+            used.contains("order_line.amount"),
+            "group-sort summed field not fetched: {used:?}"
         );
     }
 

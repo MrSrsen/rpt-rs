@@ -1,0 +1,17 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Meridian Global Logistics — monogram badge. Navy #1F3A5F + teal #2C8C99. -->
+  <rect x="16" y="16" width="480" height="480" rx="84" fill="#1F3A5F"/>
+  <!-- Meridian globe motif: circle + vertical meridian ellipse + equator (the 'meridian' longitude line) -->
+  <g transform="translate(256,178)" fill="none" stroke="#2C8C99" stroke-width="9" stroke-linecap="round">
+    <circle r="74"/>
+    <ellipse rx="31" ry="74"/>
+    <line x1="-74" y1="0" x2="74" y2="0"/>
+  </g>
+  <!-- teal orbit accent dot on the meridian (a moving shipment along the route) -->
+  <circle cx="256" cy="104" r="10" fill="#2C8C99"/>
+  <!-- monogram -->
+  <text x="256" y="368" text-anchor="middle" font-family="DejaVu Sans, Arial, Helvetica, sans-serif"
+        font-weight="700" font-size="130" letter-spacing="6" fill="#FFFFFF">MGL</text>
+  <!-- teal underscore accent -->
+  <rect x="176" y="392" width="160" height="10" rx="5" fill="#2C8C99"/>
+</svg>

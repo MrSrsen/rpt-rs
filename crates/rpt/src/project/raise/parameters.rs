@@ -29,10 +29,10 @@ pub(super) struct ParamRecord {
     pub(super) display_type: crate::model::ParameterDisplayType,
     /// SDK `@DefaultValueSortOrder` — decoded from a flag byte in this `0x007a` record.
     pub(super) sort_order: crate::model::ParameterSortOrder,
-    /// The raw Crystal value-type code (`CrFieldValueType`) from the record's `ff ff <vt>` value-list
-    /// marker (`6` = Number, `7` = Currency, `9` = Date, `11` = String — see [`parse_value_entries`]).
-    /// Used only to resolve the [`ParameterValueKind`] for a GUID-less record, which has no
-    /// PromptManager `ValueType` to read.
+    /// The raw Crystal value-type code (SDK `FieldValueType`) from the record's `ff ff <vt>` value-list
+    /// marker (`6` = Number, `7` = Currency, `8` = Boolean, `9` = Date, `10` = Time, `11` = String,
+    /// `15` = DateTime — see [`parse_value_entries`] / [`value_kind_from_code`]). Used only to resolve
+    /// the [`ParameterValueKind`] for a GUID-less record, which has no PromptManager `ValueType` to read.
     pub(super) value_type_code: Option<u8>,
 }
 
@@ -105,17 +105,18 @@ pub(super) fn parse_param_leaf(leaf: &[u8]) -> Option<ParamRecord> {
 }
 
 /// The [`ParameterValueKind`] for a GUID-less parameter, resolved from its `0x007a` value-list marker
-/// code (`CrFieldValueType`). `6`/`7`/`9`/`11` (Number/Currency/Date/String) are confirmed by the
-/// value-entry decoder; `8`/`10` (Boolean/Time) are the natural fill and marked unverified (no corpus
-/// sample of a GUID-less parameter with those codes). Unknown codes fall back to a string parameter.
+/// code — the SDK `FieldValueType` numbering (numberField=6, currencyField=7, booleanField=8,
+/// dateField=9, timeField=10, stringField=11, dateTimeField=15). `8`/`10`/`15` are taken straight from
+/// the public SDK enum ordinals, which are contiguous. Unknown codes fall back to a string parameter.
 fn value_kind_from_code(code: u8) -> ParameterValueKind {
     match code {
         6 => ParameterValueKind::NumberParameter,
         7 => ParameterValueKind::CurrencyParameter,
-        8 => ParameterValueKind::BooleanParameter, // unverified: no corpus sample
+        8 => ParameterValueKind::BooleanParameter,
         9 => ParameterValueKind::DateParameter,
-        10 => ParameterValueKind::TimeParameter, // unverified: no corpus sample
+        10 => ParameterValueKind::TimeParameter,
         11 => ParameterValueKind::StringParameter,
+        15 => ParameterValueKind::DateTimeParameter,
         _ => ParameterValueKind::StringParameter,
     }
 }
@@ -416,7 +417,6 @@ pub(super) fn find_guid_lp(leaf: &[u8]) -> Option<String> {
 /// `<Value xsi:type="DiscreteValue">` children carry the saved `<Description>` and `<Value>` verbatim
 /// (the value is already the human form — no ×100 scaling, unlike the binary pick-list doubles).
 pub(crate) fn parse_report_parameters(stream: &RecordStream) -> BTreeMap<u16, Vec<ParameterValue>> {
-    const CURRENT_VALUE_RECORD: u16 = 0x0031;
     let mut out: BTreeMap<u16, Vec<ParameterValue>> = BTreeMap::new();
     let logical = stream.logical_bytes();
     for root in stream.record_tree() {
@@ -438,9 +438,17 @@ pub(crate) fn parse_report_parameters(stream: &RecordStream) -> BTreeMap<u16, Ve
                 return;
             };
             let Some((raw_values, after)) = parse_value_entries(&leaf, 9, count, value_type) else {
-                // A range (non-discrete) current value: entries can't be recovered, but the record's
-                // presence means the parameter has a saved current value. Mark it with an empty entry.
-                out.entry(idx as u16).or_default();
+                // A range (non-discrete) current value: the binary entry layout differs, but the
+                // record embeds a `<Value xsi:type="RangeValue">` with clean, human-form bound tokens
+                // (`LBound`/`UBound`/`LBoundType`/`UBoundType`) — decode those. Its presence alone
+                // means the parameter has a saved current value.
+                let xml = String::from_utf8_lossy(&leaf);
+                let ranges = parse_range_values(&xml);
+                if ranges.is_empty() {
+                    out.entry(idx as u16).or_default();
+                } else {
+                    out.insert(idx as u16, ranges);
+                }
                 return;
             };
             // Descriptions are LP-string(s) trailing the embedded `</CRMetaObjects>` (when the record
@@ -493,6 +501,37 @@ fn parse_discrete_values(xml: &str, with_description: bool) -> Vec<ParameterValu
         });
     }
     out
+}
+
+/// Parse the `<Value xsi:type="RangeValue">` entries out of a saved-current-value record's embedded
+/// CRMetaObjects fragment. Each range value carries `LBound`/`UBound` (the lower/upper bound values,
+/// already in human form) and `LBoundType`/`UBoundType` (`Inclusive`/`Exclusive`/`Unbounded`). An
+/// absent `UBound` (open upper end) yields an empty `end_value`.
+fn parse_range_values(xml: &str) -> Vec<ParameterValue> {
+    let mut out = Vec::new();
+    for chunk in xml.split("<Value xsi:type=\"RangeValue\"").skip(1) {
+        out.push(ParameterValue {
+            value: xml_tag(chunk, "LBound").unwrap_or_default(),
+            description: None,
+            range: Some(crate::model::ParameterRange {
+                end_value: xml_tag(chunk, "UBound").unwrap_or_default(),
+                lower_bound: range_bound_type(xml_tag(chunk, "LBoundType").as_deref()),
+                upper_bound: range_bound_type(xml_tag(chunk, "UBoundType").as_deref()),
+            }),
+        });
+    }
+    out
+}
+
+/// Map a CRMetaObjects range bound-type token to [`RangeBoundType`]. `Unbounded` (or absent) is an
+/// open end (`NoBound`).
+fn range_bound_type(token: Option<&str>) -> crate::model::RangeBoundType {
+    use crate::model::RangeBoundType;
+    match token {
+        Some("Inclusive") => RangeBoundType::BoundInclusive,
+        Some("Exclusive") => RangeBoundType::BoundExclusive,
+        _ => RangeBoundType::NoBound,
+    }
 }
 
 /// Extract parameter field definitions from the `PromptManager` CRMetaObjects XML, joined to their
@@ -554,6 +593,21 @@ pub(super) fn raise_parameters(
             .and_then(|r| current_values.get(&r.index))
             .cloned()
             .unwrap_or_default();
+        // SDK `DiscreteOrRangeKind` (DiscreteValue=0 / RangeValue=1 / DiscreteAndRangeValue=2) is a
+        // stored per-parameter setting, but its `0x007a` byte is unlocated: range parameters are
+        // structurally divergent (a Date range with no field binding vs. a Currency range embedding a
+        // bound-field LP-string), so no fixed offset separates them from the discrete params. It is instead recovered from the decoded value structure — a parameter
+        // carrying a range value (current or default) is a `RangeValue` parameter. This matches the
+        // engine's own reading; the literal stored byte remains unlocated.
+        let discrete_or_range_kind = if current
+            .iter()
+            .chain(&default_values)
+            .any(|v| v.range.is_some())
+        {
+            crate::model::DiscreteOrRangeKind::RangeValue
+        } else {
+            crate::model::DiscreteOrRangeKind::default()
+        };
         out.push(FieldDef {
             kind: FieldKindData::Parameter(Box::new(ParameterField {
                 value_kind,
@@ -579,6 +633,7 @@ pub(super) fn raise_parameters(
                 // engine defaults (DescriptionAndValue / NoSort) when no detail record exists.
                 default_value_display_type: rec.map(|r| r.display_type).unwrap_or_default(),
                 default_value_sort_order: rec.map(|r| r.sort_order).unwrap_or_default(),
+                discrete_or_range_kind,
                 prompt_group,
                 part_of_group,
                 mutually_exclusive_group,
@@ -677,16 +732,25 @@ mod tests {
     }
 
     #[test]
-    fn value_kind_codes_map_to_confirmed_kinds() {
+    fn value_kind_codes_map_to_their_parameter_kinds() {
         assert_eq!(value_kind_from_code(6), ParameterValueKind::NumberParameter);
         assert_eq!(
             value_kind_from_code(7),
             ParameterValueKind::CurrencyParameter
         );
+        assert_eq!(
+            value_kind_from_code(8),
+            ParameterValueKind::BooleanParameter
+        );
         assert_eq!(value_kind_from_code(9), ParameterValueKind::DateParameter);
+        assert_eq!(value_kind_from_code(10), ParameterValueKind::TimeParameter);
         assert_eq!(
             value_kind_from_code(11),
             ParameterValueKind::StringParameter
+        );
+        assert_eq!(
+            value_kind_from_code(15),
+            ParameterValueKind::DateTimeParameter
         );
         // Unknown code falls back to a string parameter (conservative default).
         assert_eq!(
@@ -752,7 +816,7 @@ mod tests {
         assert_eq!(cp.prompt_group.as_deref(), Some("crobj://{GRP2}"));
         assert!(cp.part_of_group);
         assert!(cp.mutually_exclusive_group);
-        // Range/dynamic default to the discrete/no-binding shape (the corpus carries neither).
+        // Range/dynamic default to the discrete/no-binding shape.
         assert_eq!(
             cp.discrete_or_range_kind,
             crate::model::DiscreteOrRangeKind::DiscreteValue

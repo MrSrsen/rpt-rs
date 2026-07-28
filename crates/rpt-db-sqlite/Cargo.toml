@@ -15,7 +15,7 @@ rust-version.workspace = true
 rpt-model = { workspace = true, features = ["serde"] }
 rpt-data = { workspace = true }
 rpt-query = { workspace = true }
-rusqlite = { version = "0.32", features = ["bundled"] }
+rusqlite = { workspace = true, features = ["bundled"] }
 thiserror = { workspace = true }
 
 [dev-dependencies]

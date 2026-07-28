@@ -16,6 +16,20 @@ macro_rules! sdk_enum {
                 $other(i32),
             )?
         }
+
+        impl $name {
+            /// The SDK constant name for this variant, as a stable `&'static str`. It equals the
+            /// variant identifier (matching the derived `Debug` of a fieldless variant), giving
+            /// serializers an explicit, greppable spelling to emit instead of relying on `Debug`;
+            /// the `sdk_name_matches_wire_vocabulary` test pins a few names so a rename fails loudly.
+            /// The unmapped-code arm reports its wrapper name (`Other`/`Code`) without the raw code.
+            pub fn sdk_name(self) -> &'static str {
+                match self {
+                    $(Self::$variant => stringify!($variant),)+
+                    $(Self::$other(_) => stringify!($other),)?
+                }
+            }
+        }
     };
 }
 
@@ -81,6 +95,20 @@ sdk_enum!(
     }, Other);
 
 sdk_enum!(
+    /// Vertical text alignment of an object within its box (SDK `crAlignmentVerticalAlignment`;
+    /// `crAlignmentTop` / `crAlignmentVerticalCenter` / `crAlignmentBottom`). Stored in the `0x00fc`
+    /// ObjectFormat leaf (byte 3) using the shared [`Alignment`] ordinals (`TopAlign` = 6,
+    /// `VerticalCenterAlign` = 7, `BottomAlign` = 8).
+    VerticalAlignment {
+        /// Top-aligned (the engine default).
+        Top,
+        /// Vertically centered.
+        VerticalCenter,
+        /// Bottom-aligned.
+        Bottom,
+    }, Other);
+
+sdk_enum!(
     /// SDK: `FieldValueType` — a field's data type.
     FieldValueType {
         /// Unknown / unmapped value type.
@@ -142,7 +170,7 @@ sdk_enum!(
     }, Other);
 
 sdk_enum!(
-/// XML `@SortType` — which collection a sort came from.
+/// Which collection a sort came from.
 SortKind {
     /// A record-level sort field.
     RecordSortField,
@@ -220,7 +248,10 @@ sdk_enum!(
     }, Other);
 
 sdk_enum!(
-    /// SDK: `TableJoinType`.
+    /// SDK: `TableJoinType` — the engine's single, lossy join descriptor, which folds a link's
+    /// outer-ness and its comparison operator into one enum (so it cannot express "left outer
+    /// **and** `>`"). The file stores the two independently; see [`TableJoinKind`] and
+    /// [`TableLinkOperator`], which a consumer folds into this only for the SDK-shaped surface.
     TableJoinType {
         /// Equi-join (`=`).
         Equal,
@@ -234,6 +265,39 @@ sdk_enum!(
         GreaterThan,
         /// Less-than join (`<`).
         LessThan,
+    }, Other);
+
+sdk_enum!(
+    /// A table link's **outer-ness** — the `Join Type` half of the designer's Link Options dialog,
+    /// orthogonal to its [`TableLinkOperator`]. Stored as its own word in the `0x000a` link record.
+    TableJoinKind {
+        /// Inner join.
+        Inner,
+        /// Left outer join.
+        LeftOuter,
+        /// Right outer join.
+        RightOuter,
+        /// Full outer join.
+        FullOuter,
+    }, Other);
+
+sdk_enum!(
+    /// A table link's **comparison operator** — the other half of the designer's Link Options
+    /// dialog, orthogonal to its [`TableJoinKind`]. Stored as its own word in the `0x000a` link
+    /// record. `GreaterOrEqual`/`LessOrEqual` have no [`TableJoinType`] counterpart.
+    TableLinkOperator {
+        /// `=`.
+        Equal,
+        /// `<>`.
+        NotEqual,
+        /// `<`.
+        LessThan,
+        /// `<=`.
+        LessOrEqual,
+        /// `>`.
+        GreaterThan,
+        /// `>=`.
+        GreaterOrEqual,
     }, Other);
 
 sdk_enum!(
@@ -316,6 +380,21 @@ sdk_enum!(
     }, Other);
 
 sdk_enum!(
+    /// SDK: `CurrencyPositionType` (`CrystalDecisions.Shared.CurrencyPositionType`). Byte value =
+    /// ordinal; stored in the numeric `0x00f8` leaf (byte 13). Describes where the currency symbol
+    /// sits relative to the value and the negative sign/brackets.
+    CurrencyPosition {
+        /// Leading currency symbol, inside the negative sign/brackets (the engine default).
+        LeadingCurrencyInsideNegative,
+        /// Leading currency symbol, outside the negative sign/brackets.
+        LeadingCurrencyOutsideNegative,
+        /// Trailing currency symbol, inside the negative sign/brackets.
+        TrailingCurrencyInsideNegative,
+        /// Trailing currency symbol, outside the negative sign/brackets.
+        TrailingCurrencyOutsideNegative,
+    }, Other);
+
+sdk_enum!(
     /// SDK: `BooleanOutputType` (`CrystalDecisions.Shared.BooleanOutputType`). Byte value = ordinal.
     BooleanOutputType {
         /// `True` / `False`.
@@ -382,7 +461,7 @@ sdk_enum!(
 
 sdk_enum!(
     /// SDK: `DayOfWeekType` (`DateFieldFormat.DayOfWeekType`). Native `RDDayOfWeekType`:
-    /// 0 = `ShortDayOfWeek`, 1 = `LongDayOfWeek`, 2 = `NoDayOfWeek` (the only corpus value — no weekday
+    /// 0 = `ShortDayOfWeek`, 1 = `LongDayOfWeek`, 2 = `NoDayOfWeek` (the usual value — no weekday
     /// shown). Not exported, so decoded for record completeness only.
     DayOfWeekFormat {
         /// Abbreviated weekday name (`Wed`).
@@ -392,6 +471,143 @@ sdk_enum!(
         /// Weekday not shown.
         NoDayOfWeek,
     }, Other);
+
+sdk_enum!(
+    /// SDK: `DateOrder` (`DateFieldFormat.DateOrder`). Native `RDDateOrderType`. The relative order of
+    /// the day/month/year elements. Decoded from the `0x00f2` date leaf **byte 0**.
+    /// Disk codes: `1` = `DayMonthYear` (European reports), `2` = `MonthDayYear`
+    /// (US reports); `0` = `YearMonthDay` (never surfaced on a real date field — the stored default of
+    /// non-date fields). Like the rest of `DateFieldFormat`, only reported verbatim for an explicit
+    /// (non-system-default) date-valued field; system-default fields resolve it from the host locale.
+    DateOrder {
+        /// Year, then month, then day (`2024/03/05`).
+        YearMonthDay,
+        /// Day, then month, then year (`05/03/2024`).
+        DayMonthYear,
+        /// Month, then day, then year (`03/05/2024`).
+        MonthDayYear,
+    }, Other);
+
+sdk_enum!(
+    /// SDK: `HourFormat` (`TimeFieldFormat.HourFormat`). Native `RDHourType`. Decoded from the
+    /// `0x00f6` time leaf **byte 2**. Disk codes (on explicit-format
+    /// fields): `0` = `NumericHour` (leading-zero), `1` = `NoLeadingZeroNumericHour`, `2` = `NoHour`.
+    /// A stored fact only for an explicit (non-system-default) time/datetime field; system-default
+    /// fields resolve it at runtime from the host locale.
+    HourFormat {
+        /// Numeric hour with a leading zero (`09`).
+        NumericHour,
+        /// Numeric hour without a leading zero (`9`).
+        NoLeadingZeroNumericHour,
+        /// Hour not shown.
+        NoHour,
+    }, Other);
+
+sdk_enum!(
+    /// SDK: `MinuteFormat` (`TimeFieldFormat.MinuteFormat`). Native `RDMinuteType`. Decoded from the
+    /// `0x00f6` time leaf **byte 3**. Disk codes: `0` = `NumericMinute`,
+    /// `2` = `NoMinute` (`1` = `LeadingZeroNumericMinute`, unobserved). Explicit-field stored
+    /// fact; system-default resolves from the host locale.
+    MinuteFormat {
+        /// Numeric minute (`05`).
+        NumericMinute,
+        /// Numeric minute without a leading zero (`5`).
+        NoLeadingZeroNumericMinute,
+        /// Minute not shown.
+        NoMinute,
+    }, Other);
+
+sdk_enum!(
+    /// SDK: `SecondFormat` (`TimeFieldFormat.SecondFormat`). Native `RDSecondType`. Decoded from the
+    /// `0x00f6` time leaf **byte 4**. Disk codes: `0` = `NumericSecond`,
+    /// `2` = `NoSecond` (`1` = `LeadingZeroNumericSecond`, unobserved). Explicit-field stored
+    /// fact; system-default resolves from the host locale.
+    SecondFormat {
+        /// Numeric second (`05`).
+        NumericSecond,
+        /// Numeric second without a leading zero (`5`).
+        NoLeadingZeroNumericSecond,
+        /// Second not shown.
+        NoSecond,
+    }, Other);
+
+sdk_enum!(
+    /// SDK: `DateTimeOrder` (`DateTimeFieldFormat.DateTimeOrder`). Native `RDDateTimeOrderType`. Which
+    /// of the date/time parts is shown and in what order. Decoded from the `0x00f4` datetime leaf
+    /// **byte 0**. Disk codes: `0` = `DateThenTime`, `2` = `DateOnly`
+    /// (`1` = `TimeThenDate`, `3` = `TimeOnly`, both unobserved). A genuine
+    /// stored layout choice (independent of the date/time system-default sub-formats).
+    DateTimeOrder {
+        /// The date part, then the time part.
+        DateThenTime,
+        /// The time part, then the date part.
+        TimeThenDate,
+        /// Only the date part is shown.
+        DateOnly,
+        /// Only the time part is shown.
+        TimeOnly,
+    }, Other);
+
+sdk_enum!(
+    /// SDK: `TextFormat` (`StringFieldFormat.TextFormat`). Native `RDTextFormatType`. How a string
+    /// field's text is interpreted when rendered. Decoded from the `0x00fa` string leaf **byte 15**.
+    /// Disk codes: `0` = `StandardText`,
+    /// `2` = `HTMLText` (`1` = `RTFText`, unobserved). A genuine stored layout fact on every
+    /// string field, not runtime-resolved — render-relevant (HTML/RTF interpretation).
+    TextFormat {
+        /// Plain text.
+        StandardText,
+        /// Rich Text Format markup.
+        RTFText,
+        /// HTML markup.
+        HTMLText,
+    }, Other);
+
+sdk_enum!(
+    /// SDK: `CrChartTypeEnum` — a chart's **data-layout** axis (how the chart is bound to data),
+    /// exposed by RAS as `ChartDefinition.ChartType`. This is **orthogonal** to the visual shape
+    /// ([`ChartGraphType`](crate::ChartGraphType), bar/pie/line): a Group chart can be any shape.
+    ///
+    /// Decoded from the chart's `0x011c` analytic-header record, **leaf byte 2**. The disk encoding
+    /// is `0` = Detail, `1` = Group, `2` = CrossTab — its own ordering, **not** the SDK
+    /// declaration order below (see [`from_code`](Self::from_code)).
+    ///
+    /// `Detail`, `Group`, and `CrossTab` are established. `OLAP`'s disk code is unknown (see
+    /// [`from_code`](Self::from_code)).
+    ChartLayoutType {
+        /// The chart summarizes an existing report **group** — placed in a group/report header or
+        /// footer, it charts the report's own group(s) over the report's summary field(s) (the
+        /// "Top-N"/group-layout charts). Disk byte 2 = `1`.
+        Group,
+        /// The **Advanced** ("detail") layout — the chart defines its own "on change of" category
+        /// and "show value" data bindings directly, independent of any report group. Disk byte 2 =
+        /// `0` (the engine default).
+        Detail,
+        /// The chart is bound to a **cross-tab** (its data comes from a cross-tab grid). Disk byte
+        /// 2 = `2`.
+        CrossTab,
+        /// The chart is bound to an **OLAP** grid. Its disk code is unknown,
+        /// so [`from_code`](Self::from_code) never yields it (an unknown byte 2
+        /// round-trips through [`Other`](Self::Other)); the variant mirrors the SDK enum surface.
+        OLAP,
+    }, Other);
+
+impl ChartLayoutType {
+    /// Decode the chart layout from the `0x011c` analytic-header **leaf byte 2**. The disk codes are
+    /// `0` = Detail, `1` = Group, `2` = CrossTab — the engine's own ordering (Detail, the Advanced
+    /// default, is `0`), distinct from the SDK's `{Group, Detail, CrossTab, OLAP}` declaration order.
+    ///
+    /// OLAP's disk code is unknown, so any other byte round-trips through [`Other`](Self::Other)
+    /// rather than being guessed onto [`OLAP`](Self::OLAP).
+    pub fn from_code(code: u8) -> Self {
+        match code {
+            0 => Self::Detail,
+            1 => Self::Group,
+            2 => Self::CrossTab,
+            other => Self::Other(i32::from(other)),
+        }
+    }
+}
 
 impl DayFormat {
     /// Decode the `dayType` byte (SDK ordinal).
@@ -455,6 +671,91 @@ impl DayOfWeekFormat {
     }
 }
 
+impl DateOrder {
+    /// Decode the `0x00f2` date leaf byte 0 (`dateOrder`).
+    pub fn from_code(code: i32) -> Self {
+        match code {
+            0 => Self::YearMonthDay,
+            1 => Self::DayMonthYear,
+            2 => Self::MonthDayYear,
+            other => Self::Other(other),
+        }
+    }
+}
+
+impl HourFormat {
+    /// Decode the `0x00f6` time leaf byte 2 (`hourType`). On explicit-format fields:
+    /// `0` = `NumericHour` (leading-zero), `1` = `NoLeadingZeroNumericHour`, `2` = `NoHour`.
+    pub fn from_code(code: i32) -> Self {
+        match code {
+            0 => Self::NumericHour,
+            1 => Self::NoLeadingZeroNumericHour,
+            2 => Self::NoHour,
+            other => Self::Other(other),
+        }
+    }
+}
+
+impl MinuteFormat {
+    /// Decode the `0x00f6` time leaf byte 3 (`minuteType`).
+    pub fn from_code(code: i32) -> Self {
+        match code {
+            0 => Self::NumericMinute,
+            1 => Self::NoLeadingZeroNumericMinute,
+            2 => Self::NoMinute,
+            other => Self::Other(other),
+        }
+    }
+}
+
+impl SecondFormat {
+    /// Decode the `0x00f6` time leaf byte 4 (`secondType`).
+    pub fn from_code(code: i32) -> Self {
+        match code {
+            0 => Self::NumericSecond,
+            1 => Self::NoLeadingZeroNumericSecond,
+            2 => Self::NoSecond,
+            other => Self::Other(other),
+        }
+    }
+}
+
+impl DateTimeOrder {
+    /// Decode the `0x00f4` datetime leaf byte 0 (`dateTimeOrder`).
+    pub fn from_code(code: i32) -> Self {
+        match code {
+            0 => Self::DateThenTime,
+            1 => Self::TimeThenDate,
+            2 => Self::DateOnly,
+            3 => Self::TimeOnly,
+            other => Self::Other(other),
+        }
+    }
+}
+
+impl TextFormat {
+    /// Decode the `0x00fa` string leaf byte 15 (`textFormat`).
+    pub fn from_code(code: i32) -> Self {
+        match code {
+            0 => Self::StandardText,
+            1 => Self::RTFText,
+            2 => Self::HTMLText,
+            other => Self::Other(other),
+        }
+    }
+}
+
+impl ReadingOrder {
+    /// Decode a reading-order byte (SDK ordinal): `0` = left-to-right, `1` = right-to-left.
+    pub fn from_code(code: i32) -> Self {
+        match code {
+            0 => Self::LeftToRight,
+            1 => Self::RightToLeft,
+            other => Self::Other(other),
+        }
+    }
+}
+
 impl RoundingFormat {
     /// Decode the rounding byte. The engine stores `11 - decimalPlaces`,
     /// so code 11 = round to unit (0 dp), 9 = round to hundredth (2 dp), 12 = round to ten, etc.
@@ -496,6 +797,56 @@ impl CurrencySymbolFormat {
             1 => Self::FixedSymbol,
             2 => Self::FloatingSymbol,
             other => Self::Other(other),
+        }
+    }
+}
+
+impl CurrencyPosition {
+    /// Decode the currency-position byte (`0x00f8` byte 13; SDK ordinal).
+    pub fn from_code(code: i32) -> Self {
+        match code {
+            0 => Self::LeadingCurrencyInsideNegative,
+            1 => Self::LeadingCurrencyOutsideNegative,
+            2 => Self::TrailingCurrencyInsideNegative,
+            3 => Self::TrailingCurrencyOutsideNegative,
+            other => Self::Other(other),
+        }
+    }
+}
+
+impl VerticalAlignment {
+    /// Decode the object-format vertical-alignment byte (`0x00fc` byte 3), which reuses the shared
+    /// [`Alignment`] ordinals: `6` = top, `7` = vertical centre, `8` = bottom.
+    pub fn from_code(code: i32) -> Self {
+        match code {
+            6 => Self::Top,
+            7 => Self::VerticalCenter,
+            8 => Self::Bottom,
+            other => Self::Other(other),
+        }
+    }
+}
+
+impl TextRotationAngle {
+    /// Decode the object-format text-rotation value (`0x00fc` bytes 20-21, `u16` BE), which stores the
+    /// angle in degrees directly: `0` = upright, `90` / `270` = the two quarter-turn rotations.
+    pub fn from_code(degrees: i32) -> Self {
+        match degrees {
+            0 => Self::Rotate0,
+            90 => Self::Rotate90,
+            270 => Self::Rotate270,
+            other => Self::Other(other),
+        }
+    }
+
+    /// The rotation in degrees counter-clockwise (`0` / `90` / `270`; an unmapped code is returned
+    /// verbatim). This is the angle a renderer applies to the text run.
+    pub fn degrees(self) -> i32 {
+        match self {
+            Self::Rotate0 => 0,
+            Self::Rotate90 => 90,
+            Self::Rotate270 => 270,
+            Self::Other(d) => d,
         }
     }
 }
@@ -543,16 +894,51 @@ sdk_enum!(
     HyperlinkType {
         /// No hyperlink.
         NoHyperlink,
-        /// A `mailto:` e-mail address.
+        /// An e-mail address.
         AnEMailAddress,
-        /// A file path or web URL.
-        AFileOrWebSite,
+        /// A website / file URL (RAS `Website`, stored code 0).
+        Website,
+        /// An HTML link (RAS `Html`, stored code 2). The RAS/JSON model keeps this distinct from
+        /// [`Website`](Self::Website) even though the designer Format Editor groups both under its single
+        /// "A File or Web Site" radio.
+        Html,
         /// A website built from the current field's value.
         CurrentWebsiteField,
         /// A drill-down into a report part.
         ReportPartDrilldown,
         /// A link to another report object.
         AnotherReportObject,
+    }, Other);
+
+impl HyperlinkType {
+    /// Decode the stored hyperlink-type byte — the RAS `CrHyperlinkTypeEnum` ordinal held in the
+    /// `0x00fc` ObjectFormat leaf (`Website=0, Email=1, Html=2, CrystalReport=3, WebsiteFieldValue=4,
+    /// EmailFieldValue=5, Undefined=6, Drilldown=7, ReportObject=8`). `Website` and `Html` are kept
+    /// distinct to mirror the RAS scheme (the designer Format Editor groups both under one radio, but the
+    /// stored byte — and the RAS/JSON model — distinguishes them). `EmailFieldValue` still folds onto
+    /// `CurrentWebsiteField`. `Undefined` (6) is the engine's "no hyperlink" sentinel. `CrystalReport`
+    /// (3), a programmatic-only link to another `.rpt`, has no designer variant and is `Other(3)`.
+    pub fn from_code(code: i32) -> Self {
+        match code {
+            0 => Self::Website,
+            2 => Self::Html,
+            1 => Self::AnEMailAddress,
+            4 | 5 => Self::CurrentWebsiteField,
+            6 => Self::NoHyperlink,
+            7 => Self::ReportPartDrilldown,
+            8 => Self::AnotherReportObject,
+            other => Self::Other(other),
+        }
+    }
+}
+
+sdk_enum!(
+    /// SDK: `LineSpacingType` — how a paragraph's stored line-spacing value is applied.
+    LineSpacingType {
+        /// The value is a multiple of the font's natural line height (`1.0` = single, `2.0` = double).
+        Multiple,
+        /// The value is an exact line pitch in twips, independent of the font's size.
+        Exact,
     }, Other);
 
 sdk_enum!(
@@ -584,8 +970,9 @@ sdk_enum!(
         Metafile,
         /// An OLE-embedded picture.
         Ole,
-        /// A picture of another kind.
-        Other_,
+        /// A named SDK picture kind other than bitmap/metafile/OLE (distinct from the `Other(i32)`
+        /// catch-all that preserves an unmapped engine code).
+        OtherKnown,
     }, Other);
 
 /// The concrete media/container format of an embedded picture's bytes, sniffed from the leading
@@ -593,16 +980,15 @@ sdk_enum!(
 ///
 /// This is the *wire* image format of the bytes stored in the report (the OLE `Embedding N/CONTENTS`
 /// stream), not the coarse SDK [`PictureType`]. The native engine supports importing this whole set
-/// (its extension/MIME table lists `jpg gif tif pct pic iff dib tga pcx png jpeg tiff bmp`, with
-/// dedicated loaders for DIB/BMP via `CSDIB`, TIFF via `TIFFGraph`, and Windows/Enhanced metafiles);
-/// which of them actually appear *embedded* depends on the designer version (older builds transcode
-/// raster imports to a DIB/BMP; the entire public corpus is `Bmp`). Detected by magic so the
-/// renderer can pick the right data-URI MIME type.
+/// (its extension/MIME table lists `jpg gif tif pct pic iff dib tga pcx png jpeg tiff bmp`); which of
+/// them actually appear *embedded* depends on the designer version (older builds transcode raster
+/// imports to a DIB/BMP, so `Bmp` is the norm). Detected by magic so the renderer can
+/// pick the right data-URI MIME type.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[non_exhaustive]
 pub enum ImageFormat {
-    /// Windows Bitmap — a full `BM` file (14-byte `BITMAPFILEHEADER` + DIB). The corpus default.
+    /// Windows Bitmap — a full `BM` file (14-byte `BITMAPFILEHEADER` + DIB). The usual form.
     Bmp,
     /// A bare device-independent bitmap (`BITMAPINFOHEADER`/`BITMAPCOREHEADER`, no `BM` file header).
     /// A valid `.bmp` needs a reconstructed 14-byte file header prepended (see
@@ -671,6 +1057,129 @@ impl ImageFormat {
     }
 }
 
+/// The natural extent (SDK `OriginalWidth`/`OriginalHeight`) of an embedded picture, in twips, as
+/// the native engine's OLE-extent computation yields it — or `None` when the payload's pixel
+/// dimensions can't be read from a header we parse.
+///
+/// This is a *derived* value: the natural size is not stored in the report, the engine recomputes
+/// it at load from the embedded image. Pixel dimensions are read from the format header
+/// (BMP/DIB `BITMAPINFOHEADER`, PNG `IHDR`, JPEG `SOFn`) and converted to twips through HIMETRIC
+/// exactly as the engine does: `himetric = MulDiv(pixels, 100000, pixelsPerMetre)`, falling back to
+/// 96 dpi (`MulDiv(pixels, 2540, 96)`) when the header carries no resolution, then
+/// `twips = MulDiv(himetric, 1440, 2540)`. PNG/JPEG pixel dimensions are always taken at the 96-dpi
+/// fallback (their headers do not carry the DIB pixels-per-metre resolution the extent math keys
+/// on). Formats whose header is not parsed here — metafiles (WMF/EMF), the legacy 12-byte
+/// `BITMAPCOREHEADER` DIB, and the rarer raster containers — return `None`.
+pub fn natural_extent(image_bytes: &[u8]) -> Option<(crate::Twips, crate::Twips)> {
+    let (w_px, h_px, x_ppm, y_ppm) = match ImageFormat::sniff(image_bytes) {
+        // A `BM` file's BITMAPINFOHEADER starts at offset 14 (after the 14-byte BITMAPFILEHEADER).
+        ImageFormat::Bmp => info_header_dimensions(image_bytes, 14)?,
+        // A bare BITMAPINFOHEADER DIB (40-byte header). The legacy BITMAPCOREHEADER (`0x0c`) has no
+        // resolution and a different dimension layout, so it is left unparsed.
+        ImageFormat::Dib if image_bytes.starts_with(&[0x28, 0x00, 0x00, 0x00]) => {
+            info_header_dimensions(image_bytes, 0)?
+        }
+        ImageFormat::Png => png_dimensions(image_bytes)?,
+        ImageFormat::Jpeg => jpeg_dimensions(image_bytes)?,
+        _ => return None,
+    };
+    Some((
+        crate::Twips(himetric_twips(w_px, x_ppm)),
+        crate::Twips(himetric_twips(h_px, y_ppm)),
+    ))
+}
+
+/// Read pixel dimensions and pixels-per-metre resolution from a `BITMAPINFOHEADER` located at
+/// `base` (0 for a bare DIB, 14 for a `BM` file). Returns `(width, height, x_ppm, y_ppm)`.
+fn info_header_dimensions(data: &[u8], base: usize) -> Option<(i32, i32, i32, i32)> {
+    if data.len() < base + 32 {
+        return None;
+    }
+    let rd = |o: usize| i32::from_le_bytes([data[o], data[o + 1], data[o + 2], data[o + 3]]);
+    Some((
+        rd(base + 4).abs(),
+        rd(base + 8).abs(),
+        rd(base + 24),
+        rd(base + 28),
+    ))
+}
+
+/// Read pixel dimensions from a PNG `IHDR` chunk. The header carries no DIB resolution, so the
+/// returned pixels-per-metre are `0` (the 96-dpi extent fallback).
+fn png_dimensions(data: &[u8]) -> Option<(i32, i32, i32, i32)> {
+    if data.len() < 24 || &data[12..16] != b"IHDR" {
+        return None;
+    }
+    let rd = |o: usize| u32::from_be_bytes([data[o], data[o + 1], data[o + 2], data[o + 3]]);
+    let w = i32::try_from(rd(16)).ok()?;
+    let h = i32::try_from(rd(20)).ok()?;
+    Some((w, h, 0, 0))
+}
+
+/// Read pixel dimensions from a JPEG frame header (`SOFn`), scanning the marker segments from the
+/// `SOI`. The header carries no DIB resolution, so the returned pixels-per-metre are `0`.
+fn jpeg_dimensions(data: &[u8]) -> Option<(i32, i32, i32, i32)> {
+    let mut i = 2; // Skip the SOI marker (FF D8).
+    while i + 1 < data.len() {
+        if data[i] != 0xff {
+            return None;
+        }
+        // A marker may be preceded by any number of 0xFF fill bytes.
+        let mut j = i + 1;
+        while data.get(j) == Some(&0xff) {
+            j += 1;
+        }
+        let marker = *data.get(j)?;
+        i = j + 1;
+        match marker {
+            // Standalone markers (RSTn, SOI, EOI, TEM) carry no payload.
+            0xd0..=0xd9 | 0x01 => continue,
+            // Frame headers (SOFn) carry the dimensions; DHT/JPG/DAC are not frame headers.
+            0xc0..=0xcf if !matches!(marker, 0xc4 | 0xc8 | 0xcc) => {
+                // Segment: 2-byte length, 1-byte precision, 2-byte height, 2-byte width.
+                if i + 7 > data.len() {
+                    return None;
+                }
+                let h = i32::from(u16::from_be_bytes([data[i + 3], data[i + 4]]));
+                let w = i32::from(u16::from_be_bytes([data[i + 5], data[i + 6]]));
+                return Some((w, h, 0, 0));
+            }
+            // Any other marker is length-prefixed; skip its payload.
+            _ => {
+                if i + 2 > data.len() {
+                    return None;
+                }
+                let len = usize::from(u16::from_be_bytes([data[i], data[i + 1]]));
+                if len < 2 {
+                    return None;
+                }
+                i += len;
+            }
+        }
+    }
+    None
+}
+
+/// Convert a pixel count to twips via HIMETRIC, matching the engine's OLE-extent computation:
+/// `himetric = MulDiv(px, 100000, ppm)` (96-dpi fallback when the resolution is absent), then
+/// `twips = MulDiv(himetric, 1440, 2540)`.
+fn himetric_twips(px: i32, ppm: i32) -> i32 {
+    let himetric = if ppm > 0 {
+        muldiv(px, 100_000, ppm)
+    } else {
+        muldiv(px, 2540, 96)
+    };
+    muldiv(himetric, 1440, 2540)
+}
+
+/// `MulDiv(a, b, c)` — `round(a * b / c)` in 64-bit, matching the Win32 rounding the engine uses.
+fn muldiv(a: i32, b: i32, c: i32) -> i32 {
+    if c == 0 {
+        return 0;
+    }
+    ((i64::from(a) * i64::from(b) + i64::from(c) / 2) / i64::from(c)) as i32
+}
+
 sdk_enum!(
     /// SDK: `ConnectionInfoKind`.
     ConnectionInfoKind {
@@ -693,6 +1202,8 @@ sdk_enum!(
         RecordNumber,
         /// The current page number.
         PageNumber,
+        /// The "Page N of M" composite (page number and total page count).
+        PageNofM,
         /// The current group number.
         GroupNumber,
         /// The total page count of the report.
@@ -822,6 +1333,58 @@ pub enum PaperSize {
 }
 
 impl PaperSize {
+    /// The SDK `PaperSize` constant name for this variant, as a stable `&'static str` — an explicit
+    /// spelling for serializers to emit instead of relying on `Debug`. The
+    /// [`Code`](PaperSize::Code) arm reports its wrapper name only; a caller surfaces the raw code
+    /// as a bare integer instead.
+    pub fn sdk_name(self) -> &'static str {
+        match self {
+            Self::DefaultPaperSize => stringify!(DefaultPaperSize),
+            Self::PaperLetter => stringify!(PaperLetter),
+            Self::PaperLetterSmall => stringify!(PaperLetterSmall),
+            Self::PaperTabloid => stringify!(PaperTabloid),
+            Self::PaperLedger => stringify!(PaperLedger),
+            Self::PaperLegal => stringify!(PaperLegal),
+            Self::PaperStatement => stringify!(PaperStatement),
+            Self::PaperExecutive => stringify!(PaperExecutive),
+            Self::PaperA3 => stringify!(PaperA3),
+            Self::PaperA4 => stringify!(PaperA4),
+            Self::PaperA4Small => stringify!(PaperA4Small),
+            Self::PaperA5 => stringify!(PaperA5),
+            Self::PaperB4 => stringify!(PaperB4),
+            Self::PaperB5 => stringify!(PaperB5),
+            Self::PaperFolio => stringify!(PaperFolio),
+            Self::PaperQuarto => stringify!(PaperQuarto),
+            Self::Paper10x14 => stringify!(Paper10x14),
+            Self::Paper11x17 => stringify!(Paper11x17),
+            Self::PaperNote => stringify!(PaperNote),
+            Self::PaperEnvelope9 => stringify!(PaperEnvelope9),
+            Self::PaperEnvelope10 => stringify!(PaperEnvelope10),
+            Self::PaperEnvelope11 => stringify!(PaperEnvelope11),
+            Self::PaperEnvelope12 => stringify!(PaperEnvelope12),
+            Self::PaperEnvelope14 => stringify!(PaperEnvelope14),
+            Self::PaperCsheet => stringify!(PaperCsheet),
+            Self::PaperDsheet => stringify!(PaperDsheet),
+            Self::PaperEsheet => stringify!(PaperEsheet),
+            Self::PaperEnvelopeDL => stringify!(PaperEnvelopeDL),
+            Self::PaperEnvelopeC5 => stringify!(PaperEnvelopeC5),
+            Self::PaperEnvelopeC3 => stringify!(PaperEnvelopeC3),
+            Self::PaperEnvelopeC4 => stringify!(PaperEnvelopeC4),
+            Self::PaperEnvelopeC6 => stringify!(PaperEnvelopeC6),
+            Self::PaperEnvelopeC65 => stringify!(PaperEnvelopeC65),
+            Self::PaperEnvelopeB4 => stringify!(PaperEnvelopeB4),
+            Self::PaperEnvelopeB5 => stringify!(PaperEnvelopeB5),
+            Self::PaperEnvelopeB6 => stringify!(PaperEnvelopeB6),
+            Self::PaperEnvelopeItaly => stringify!(PaperEnvelopeItaly),
+            Self::PaperEnvelopeMonarch => stringify!(PaperEnvelopeMonarch),
+            Self::PaperEnvelopePersonal => stringify!(PaperEnvelopePersonal),
+            Self::PaperFanfoldUS => stringify!(PaperFanfoldUS),
+            Self::PaperFanfoldStdGerman => stringify!(PaperFanfoldStdGerman),
+            Self::PaperFanfoldLegalGerman => stringify!(PaperFanfoldLegalGerman),
+            Self::Code(_) => stringify!(Code),
+        }
+    }
+
     /// The standard cut-sheet dimensions of this paper size as `(short, long)` edges in twips, or
     /// `None` for sizes without a fixed sheet rectangle (custom/default, envelopes, fanfold). Used to
     /// recognise a stored page rectangle as a *standard* sheet so its width/height can be oriented
@@ -890,8 +1453,33 @@ pub enum PaperSource {
     Code(i32),
 }
 
+impl PaperSource {
+    /// The SDK `PaperSource` constant name for this variant, as a stable `&'static str` — an
+    /// explicit spelling for serializers to emit instead of relying on `Debug`. The
+    /// [`Code`](PaperSource::Code) arm reports its wrapper name only; a caller surfaces the raw code
+    /// as a bare integer instead.
+    pub fn sdk_name(self) -> &'static str {
+        match self {
+            Self::Auto => stringify!(Auto),
+            Self::Upper => stringify!(Upper),
+            Self::Lower => stringify!(Lower),
+            Self::Middle => stringify!(Middle),
+            Self::Manual => stringify!(Manual),
+            Self::Envelope => stringify!(Envelope),
+            Self::EnvManual => stringify!(EnvManual),
+            Self::Tractor => stringify!(Tractor),
+            Self::SmallFmt => stringify!(SmallFmt),
+            Self::LargeFmt => stringify!(LargeFmt),
+            Self::LargeCapacity => stringify!(LargeCapacity),
+            Self::Cassette => stringify!(Cassette),
+            Self::FormSource => stringify!(FormSource),
+            Self::Code(_) => stringify!(Code),
+        }
+    }
+}
+
 sdk_enum!(
-    /// SDK: `CrParameterDefaultValueDisplayTypeEnum` (XML `@DefaultValueDisplayType`) — how the
+    /// SDK: `CrParameterDefaultValueDisplayTypeEnum` — how the
     /// parameter's default-value pick list is displayed: `Description`, otherwise `DescriptionAndValue`
     /// (the engine default).
     ParameterDisplayType {
@@ -916,9 +1504,8 @@ sdk_enum!(
     }, Other);
 
 sdk_enum!(
-    /// SDK: `CrDiscreteOrRangeKindEnum` (XML `@DiscreteOrRangeKind`) — whether a parameter accepts
-    /// discrete values, a range value, or both. RptToXml emits this attribute; every observed corpus
-    /// report is `DiscreteValue`.
+    /// SDK: `CrDiscreteOrRangeKindEnum` — whether a parameter accepts
+    /// discrete values, a range value, or both.
     DiscreteOrRangeKind {
         /// Accepts discrete values only.
         DiscreteValue,
@@ -927,6 +1514,17 @@ sdk_enum!(
         /// Accepts both discrete and range values.
         DiscreteAndRangeValue,
     }, Other);
+
+sdk_enum!(
+/// SDK: `CrFormulaNullTreatmentEnum` — how a formula treats a null database-field value. The
+/// per-formula editor setting ("If any field value is null" / "default value for its type" vs.
+/// exception). Stored in the `0x76` formula record's trailer.
+FormulaNullTreatment {
+    /// `crTreatNullAsException` (the engine default) — a null operand propagates.
+    Exception,
+    /// `crTreatNullAsDefaultValue` — a null operand is replaced by its type's default value.
+    DefaultValue,
+});
 
 sdk_enum!(
     /// SDK: `RangeBoundType` (`CrystalDecisions.Shared`) — the inclusivity of one end of a range
@@ -959,6 +1557,27 @@ sdk_enum!(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::Twips;
+
+    /// `sdk_name` is the stable serialized spelling of each variant. It must equal the variant
+    /// identifier verbatim, so a rename breaks this test loudly instead of silently changing
+    /// downstream output. Covers a macro-generated enum, the two hand-written enums, the
+    /// unmapped-code arm, and a composed constant name built from `FieldValueType::sdk_name`.
+    #[test]
+    fn sdk_name_matches_wire_vocabulary() {
+        assert_eq!(PaperSize::PaperLetter.sdk_name(), "PaperLetter");
+        assert_eq!(PaperSource::FormSource.sdk_name(), "FormSource");
+        assert_eq!(Alignment::LeftAlign.sdk_name(), "LeftAlign");
+        assert_eq!(SortDirection::AscendingOrder.sdk_name(), "AscendingOrder");
+        assert_eq!(FieldValueType::String.sdk_name(), "String");
+        assert_eq!(
+            format!("crFieldValueType{}Field", FieldValueType::String.sdk_name()),
+            "crFieldValueTypeStringField"
+        );
+        // The unmapped-code arm reports its wrapper name, without the raw code.
+        assert_eq!(PaperSize::Code(999).sdk_name(), "Code");
+        assert_eq!(LineStyle::Other(7).sdk_name(), "Other");
+    }
 
     /// Every `from_code` mapping: known code→variant pairs plus the out-of-range fallback. Catches
     /// enum-ordinal drift without fixtures.
@@ -1107,5 +1726,93 @@ mod tests {
             BooleanOutputType::OneOrZero
         );
         assert_eq!(BooleanOutputType::from_code(5), BooleanOutputType::Other(5));
+    }
+
+    #[test]
+    fn chart_layout_type_from_code() {
+        // Disk byte 2 of the 0x011c analytic header — its own ordering (Detail = 0, the engine
+        // default), distinct from the SDK declaration order.
+        assert_eq!(ChartLayoutType::from_code(0), ChartLayoutType::Detail);
+        assert_eq!(ChartLayoutType::from_code(1), ChartLayoutType::Group);
+        assert_eq!(ChartLayoutType::from_code(2), ChartLayoutType::CrossTab);
+        // OLAP's disk code is unknown; any other byte round-trips through Other rather than being
+        // guessed onto OLAP.
+        assert_eq!(ChartLayoutType::from_code(3), ChartLayoutType::Other(3));
+    }
+
+    /// A `BM` file: 14-byte BITMAPFILEHEADER + a `BITMAPINFOHEADER` of `width`×`height` pixels at
+    /// `ppm` pixels-per-metre (0 = no stored resolution → the 96-dpi extent fallback).
+    fn bmp(width: i32, height: i32, ppm: i32) -> Vec<u8> {
+        let mut b = vec![0u8; 54];
+        b[0..2].copy_from_slice(b"BM");
+        b[14..18].copy_from_slice(&40i32.to_le_bytes());
+        b[18..22].copy_from_slice(&width.to_le_bytes());
+        b[22..26].copy_from_slice(&height.to_le_bytes());
+        b[38..42].copy_from_slice(&ppm.to_le_bytes());
+        b[42..46].copy_from_slice(&ppm.to_le_bytes());
+        b
+    }
+
+    #[test]
+    fn natural_extent_bmp_matches_ole_himetric() {
+        // 96 px at 96 dpi = 1 inch = 1440 twips; 48 px = 720 twips.
+        assert_eq!(
+            natural_extent(&bmp(96, 48, 0)),
+            Some((Twips(1440), Twips(720)))
+        );
+        // A stored ~96-dpi resolution (pixels-per-metre) yields the same extent.
+        assert_eq!(
+            natural_extent(&bmp(96, 48, 3780)),
+            Some((Twips(1440), Twips(720)))
+        );
+        // A negative (top-down) height is read by magnitude.
+        assert_eq!(
+            natural_extent(&bmp(96, -48, 0)),
+            Some((Twips(1440), Twips(720)))
+        );
+    }
+
+    #[test]
+    fn natural_extent_png_reads_ihdr() {
+        // 8-byte signature, IHDR chunk (length 13, type, then width/height big-endian u32).
+        let mut b = vec![0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+        b.extend_from_slice(&13u32.to_be_bytes());
+        b.extend_from_slice(b"IHDR");
+        b.extend_from_slice(&192u32.to_be_bytes());
+        b.extend_from_slice(&96u32.to_be_bytes());
+        // 192 px = 2 inch = 2880 twips; 96 px = 1440 twips (96-dpi fallback).
+        assert_eq!(natural_extent(&b), Some((Twips(2880), Twips(1440))));
+    }
+
+    #[test]
+    fn natural_extent_jpeg_reads_sof0() {
+        // SOI then a SOF0 frame header: FF C0, length, precision, height, width (big-endian u16).
+        let mut b = vec![0xff, 0xd8, 0xff, 0xc0, 0x00, 0x11, 0x08];
+        b.extend_from_slice(&48u16.to_be_bytes()); // height
+        b.extend_from_slice(&96u16.to_be_bytes()); // width
+        b.extend_from_slice(&[0u8; 6]); // component data (ignored)
+                                        // 96 px = 1440 twips, 48 px = 720 twips (96-dpi fallback).
+        assert_eq!(natural_extent(&b), Some((Twips(1440), Twips(720))));
+    }
+
+    #[test]
+    fn natural_extent_jpeg_skips_app_segments() {
+        // An APP0/JFIF segment precedes the frame header; the marker scan must step over it.
+        let mut b = vec![0xff, 0xd8, 0xff, 0xe0, 0x00, 0x04, 0x00, 0x00];
+        b.extend_from_slice(&[0xff, 0xc0, 0x00, 0x11, 0x08]);
+        b.extend_from_slice(&48u16.to_be_bytes());
+        b.extend_from_slice(&96u16.to_be_bytes());
+        b.extend_from_slice(&[0u8; 6]);
+        assert_eq!(natural_extent(&b), Some((Twips(1440), Twips(720))));
+    }
+
+    #[test]
+    fn natural_extent_unknown_formats_are_none() {
+        assert_eq!(natural_extent(&[]), None);
+        assert_eq!(natural_extent(b"GIF89a....."), None);
+        // A legacy 12-byte BITMAPCOREHEADER DIB is not parsed for an extent.
+        assert_eq!(natural_extent(&[0x0c, 0x00, 0x00, 0x00]), None);
+        // A truncated BMP header yields no extent rather than reading out of bounds.
+        assert_eq!(natural_extent(b"BM\x00\x00"), None);
     }
 }

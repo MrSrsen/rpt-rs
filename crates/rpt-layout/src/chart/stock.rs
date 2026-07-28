@@ -4,9 +4,11 @@
 //! chart's own bucketing), the low and high being that category's minimum and maximum of the bound
 //! value fields.
 
-use super::common::{category_label, category_stride, chart_frame, AxisTitles, PALETTE};
+#[cfg(test)]
+use super::common::AxisTitles;
+use super::common::{category_label, category_stride, chart_frame, value_frac, ChartCtx, PALETTE};
 use rpt_model::{Rect, Twips};
-use rpt_pages::{DrawOp, LineOp, ObjectKind, ObjectRef, Point, RectOp, Stroke};
+use rpt_pages::{DrawOp, LineOp, Point, RectOp, Stroke};
 
 /// One category's stock values: the low→high range, plus optional open/close ticks (present only for
 /// the OHLC subtype).
@@ -25,24 +27,24 @@ pub(crate) struct StockPoint {
 /// a thin vertical low→high bar per category, and — for OHLC points — a left open tick and a right
 /// close tick. Category labels are thinned like the other axis families. Returns an empty vec when
 /// there are no points.
-pub(crate) fn stock_chart(
-    rect: Rect,
-    title: &str,
-    axis_titles: AxisTitles,
-    points: &[StockPoint],
-    section_name: &str,
-    obj_name: &str,
-) -> Vec<DrawOp> {
+pub(crate) fn stock_chart(cx: &ChartCtx, points: &[StockPoint]) -> Vec<DrawOp> {
     if points.is_empty() {
         return Vec::new();
     }
-    let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(obj_name));
+    let &ChartCtx {
+        def,
+        rect,
+        title,
+        axis_titles,
+        ..
+    } = cx;
+    let src = || cx.src();
     let mut ops: Vec<DrawOp> = Vec::new();
 
     // The value scale reserves `points.len()` category slots and scales to the tallest high.
     let series: Vec<(String, f64)> = points.iter().map(|p| (p.label.clone(), p.high)).collect();
-    let f = chart_frame(&mut ops, rect, title, axis_titles, &series, &src);
-    let y_at = |v: f64| f.plot_bottom - ((v.max(0.0) / f.max_val) * f.plot_h as f64) as i32;
+    let f = chart_frame(def, &mut ops, rect, title, axis_titles, &series, &src);
+    let y_at = |v: f64| f.plot_bottom - (value_frac(v, f.max_val) * f.plot_h as f64) as i32;
 
     let bar_w = (f.slot / 6).clamp(30, 120);
     let tick = bar_w.max(45);
@@ -134,14 +136,21 @@ mod tests {
 
     #[test]
     fn empty_points_yield_no_ops() {
-        assert!(stock_chart(rect(), "T", AxisTitles::default(), &[], "S", "G").is_empty());
+        assert!(stock_chart(
+            &ChartCtx::test(rect(), "T", AxisTitles::default(), false),
+            &[]
+        )
+        .is_empty());
     }
 
     /// A hi-lo point draws one thin vertical bar per category (taller than it is wide) and no ticks.
     #[test]
     fn hilo_draws_one_vertical_bar_per_category() {
         let pts = vec![hilo("Jan", 200.0, 40.0), hilo("Feb", 120.0, 80.0)];
-        let ops = stock_chart(rect(), "", AxisTitles::default(), &pts, "RH", "G");
+        let ops = stock_chart(
+            &ChartCtx::test(rect(), "", AxisTitles::default(), false),
+            &pts,
+        );
         let bars: Vec<&RectOp> = ops
             .iter()
             .filter_map(|o| match o {
@@ -160,7 +169,10 @@ mod tests {
     #[test]
     fn taller_range_makes_a_taller_bar() {
         let pts = vec![hilo("wide", 240.0, 0.0), hilo("narrow", 120.0, 100.0)];
-        let ops = stock_chart(rect(), "", AxisTitles::default(), &pts, "RH", "G");
+        let ops = stock_chart(
+            &ChartCtx::test(rect(), "", AxisTitles::default(), false),
+            &pts,
+        );
         let heights: Vec<i32> = ops
             .iter()
             .filter_map(|o| match o {
@@ -185,16 +197,22 @@ mod tests {
             open: Some(60.0),
             close: Some(180.0),
         }];
-        let ops = stock_chart(rect(), "", AxisTitles::default(), &pts, "RH", "G");
+        let ops = stock_chart(
+            &ChartCtx::test(rect(), "", AxisTitles::default(), false),
+            &pts,
+        );
         // The two frame axes plus the open + close ticks = 4 line ops (no gridlines at this scale
         // would still leave the two axes; the ticks are the delta over the hi-lo case).
         let lines = ops.iter().filter(|o| matches!(o, DrawOp::Line(_))).count();
         let hilo_lines = {
             let h = vec![hilo("Jan", 200.0, 40.0)];
-            stock_chart(rect(), "", AxisTitles::default(), &h, "RH", "G")
-                .iter()
-                .filter(|o| matches!(o, DrawOp::Line(_)))
-                .count()
+            stock_chart(
+                &ChartCtx::test(rect(), "", AxisTitles::default(), false),
+                &h,
+            )
+            .iter()
+            .filter(|o| matches!(o, DrawOp::Line(_)))
+            .count()
         };
         assert_eq!(lines, hilo_lines + 2, "OHLC adds an open and a close tick");
     }

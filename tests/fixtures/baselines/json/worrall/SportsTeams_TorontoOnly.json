@@ -1,0 +1,2831 @@
+{
+  "model": {
+    "data_definition": {
+      "condition_formula_bodies": [
+        "select RecordNumber mod 2\r\ncase 0: crWhite\r\ncase 1: Color (180, 210, 253)\r\n"
+      ],
+      "custom_functions": [],
+      "field_definitions": [
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 4,
+          "long_name": null,
+          "name": "id",
+          "short_name": "id",
+          "value_type": "Int32s"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 65534,
+          "long_name": null,
+          "name": "league",
+          "short_name": "league",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 65534,
+          "long_name": null,
+          "name": "section",
+          "short_name": "section",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 65534,
+          "long_name": null,
+          "name": "team",
+          "short_name": "team",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 65534,
+          "long_name": null,
+          "name": "sport",
+          "short_name": "sport",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 65534,
+          "long_name": null,
+          "name": "division",
+          "short_name": "division",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 65534,
+          "long_name": null,
+          "name": "hometown",
+          "short_name": "hometown",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Formula": {
+              "null_treatment": "Exception",
+              "number_of_bytes": 65534,
+              "options": 0,
+              "syntax": "Crystal",
+              "text": "{vw_sports_tabler_output.team};"
+            }
+          },
+          "length": 0,
+          "long_name": null,
+          "name": "TeamCustom",
+          "short_name": null,
+          "value_type": "String"
+        }
+      ],
+      "field_manager_census": {
+        "database_fields": 7,
+        "formula_bodies": 5
+      },
+      "formula_variables": [],
+      "group_selection": "",
+      "groups": [],
+      "record_selection": "'Toronto' IN {vw_sports_tabler_output.hometown};",
+      "record_sorts": [
+        {
+          "direction": "AscendingOrder",
+          "field": "@TeamCustom",
+          "kind": "RecordSortField",
+          "topn": null
+        }
+      ],
+      "running_total_condition_formulas": [],
+      "saved_data_filter": "",
+      "summary_binding_fields": []
+    },
+    "database": {
+      "links": [],
+      "tables": [
+        {
+          "alias": "vw_sports_tabler_output",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_odbc.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "ODBC (RDO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "BWPortfolio"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": null
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "vw_sports_tabler_output.id",
+              "name": "id",
+              "short_name": "id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "vw_sports_tabler_output.team",
+              "name": "team",
+              "short_name": "team",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "vw_sports_tabler_output.sport",
+              "name": "sport",
+              "short_name": "sport",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "vw_sports_tabler_output.league",
+              "name": "league",
+              "short_name": "league",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "vw_sports_tabler_output.section",
+              "name": "section",
+              "short_name": "section",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "vw_sports_tabler_output.division",
+              "name": "division",
+              "short_name": "division",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "vw_sports_tabler_output.hometown",
+              "name": "hometown",
+              "short_name": "hometown",
+              "value_type": "PersistentMemo"
+            }
+          ],
+          "name": "vw_sports_tabler_output",
+          "parameters": [],
+          "qualified_name": "vw_sports_tabler_output"
+        }
+      ]
+    },
+    "designer_state": {
+      "connections": [
+        {
+          "destination": 0,
+          "kind": 2,
+          "source": 1
+        },
+        {
+          "destination": 0,
+          "kind": 2,
+          "source": 2
+        },
+        {
+          "destination": 1,
+          "kind": 2,
+          "source": 2
+        },
+        {
+          "destination": 1,
+          "kind": 2,
+          "source": 1
+        },
+        {
+          "destination": 2,
+          "kind": 2,
+          "source": 1
+        },
+        {
+          "destination": 2,
+          "kind": 2,
+          "source": 2
+        },
+        {
+          "destination": 1,
+          "kind": 258,
+          "source": 3
+        },
+        {
+          "destination": 4,
+          "kind": 258,
+          "source": 2
+        },
+        {
+          "destination": 5,
+          "kind": 2,
+          "source": 3
+        }
+      ],
+      "guidelines": [
+        {
+          "flags": 5,
+          "position": 60
+        },
+        {
+          "flags": 1,
+          "position": 796
+        },
+        {
+          "flags": 0,
+          "position": 2573
+        },
+        {
+          "flags": 0,
+          "position": 4350
+        },
+        {
+          "flags": 2,
+          "position": 6127
+        },
+        {
+          "flags": 0,
+          "position": 7904
+        },
+        {
+          "flags": 0,
+          "position": 9681
+        },
+        {
+          "flags": 1,
+          "position": 960
+        }
+      ]
+    },
+    "embeds": [],
+    "has_saved_data": true,
+    "print_options": {
+      "content_height": 15120,
+      "content_width": 11520,
+      "driver_name": null,
+      "margins": {
+        "bottom": 360,
+        "left": 360,
+        "right": 360,
+        "top": 360
+      },
+      "multi_column": null,
+      "paper_orientation": "Portrait",
+      "paper_size": "DefaultPaperSize",
+      "paper_source": "FormSource",
+      "port_name": null,
+      "printer_duplex": "Default",
+      "printer_name": "",
+      "saved_printer_name": ""
+    },
+    "reimport": {
+      "imported_at": {
+        "julian_day": 2459218,
+        "time_fraction": 38482
+      },
+      "reimport_when_opening": 1,
+      "source_path": "",
+      "source_saved_at": {
+        "julian_day": 0,
+        "time_fraction": 0
+      }
+    },
+    "report_definition": {
+      "areas": [
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "ReportHeader",
+          "name": "ReportHeaderArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": true
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 220,
+              "kind": "ReportHeader",
+              "name": "TSection6",
+              "objects": [],
+              "section_code": 6000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": true,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "PageHeader",
+          "name": "PageHeaderArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 1335,
+              "kind": "PageHeader",
+              "name": "TSection1",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 480,
+                    "left": 60,
+                    "top": 120,
+                    "width": 10740
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "HorizontalCenterAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "AHL, CFL, MLB, NBA and NHL Sports Teams",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Cambria",
+                          "size_pt": 20.0,
+                          "strikethrough": false,
+                          "underline": true,
+                          "weight": 700
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": true,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Cambria",
+                                "size_pt": 20.0,
+                                "strikethrough": false,
+                                "underline": true,
+                                "weight": 700
+                              },
+                              "text": "AHL, CFL, MLB, NBA and NHL Sports Teams"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "AHL, CFL, MLB, NBA and NHL Sports Teams"
+                    }
+                  },
+                  "name": "Text1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 12000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 240,
+                    "left": 60,
+                    "top": 720,
+                    "width": 10740
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "HorizontalCenterAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "in Toronto, Ontario, Canada",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": true,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": true,
+                                "charset": 0,
+                                "italic": true,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 700
+                              },
+                              "text": "in Toronto, Ontario, Canada"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "in Toronto, Ontario, Canada"
+                    }
+                  },
+                  "name": "Text9",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 12000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 253,
+                      "g": 210,
+                      "r": 180
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 1080,
+                    "left": 60,
+                    "top": 0,
+                    "width": 11459
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Box": {
+                      "corner_ellipse_height": 0,
+                      "corner_ellipse_width": 0,
+                      "end_section_name": "TSection1",
+                      "fill_color": {
+                        "a": 255,
+                        "b": 253,
+                        "g": 210,
+                        "r": 180
+                      },
+                      "shape": {
+                        "bottom": 1080,
+                        "extend_to_bottom_of_section": false,
+                        "line_color": {
+                          "a": 255,
+                          "b": 255,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "line_style": "NoLine",
+                        "line_thickness": 0,
+                        "right": 11519
+                      }
+                    }
+                  },
+                  "name": "Box1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 12000
+                }
+              ],
+              "section_code": 12000,
+              "width": 0
+            },
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 896,
+              "kind": "PageHeader",
+              "name": "TSection2",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "SingleLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "SingleLine",
+                    "right": "SingleLine",
+                    "tight_horizontal": false,
+                    "top": "SingleLine"
+                  },
+                  "bounds": {
+                    "height": 240,
+                    "left": 60,
+                    "top": 40,
+                    "width": 660
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "HorizontalCenterAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "ID",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 255,
+                          "g": 255,
+                          "r": 255
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": true,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 72,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": true,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              },
+                              "text": "ID"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "ID"
+                    }
+                  },
+                  "name": "Text2",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 12001
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "SingleLine"
+                  },
+                  "bounds": {
+                    "height": 0,
+                    "left": 60,
+                    "top": 600,
+                    "width": 11459
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Line": {
+                      "end_section_name": "TSection2",
+                      "shape": {
+                        "bottom": 600,
+                        "extend_to_bottom_of_section": false,
+                        "line_color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "line_style": "SingleLine",
+                        "line_thickness": 20,
+                        "right": 11519
+                      }
+                    }
+                  },
+                  "name": "Line2",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 12001
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "SingleLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "SingleLine",
+                    "right": "SingleLine",
+                    "tight_horizontal": false,
+                    "top": "SingleLine"
+                  },
+                  "bounds": {
+                    "height": 240,
+                    "left": 796,
+                    "top": 40,
+                    "width": 2804
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "Team",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 255,
+                          "g": 255,
+                          "r": 255
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": true,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 72,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": true,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              },
+                              "text": "Team"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "Team"
+                    }
+                  },
+                  "name": "Text3",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 12001
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "SingleLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "SingleLine",
+                    "right": "SingleLine",
+                    "tight_horizontal": false,
+                    "top": "SingleLine"
+                  },
+                  "bounds": {
+                    "height": 240,
+                    "left": 3720,
+                    "top": 40,
+                    "width": 1440
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "Sport",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 255,
+                          "g": 255,
+                          "r": 255
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": true,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 72,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": true,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              },
+                              "text": "Sport"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "Sport"
+                    }
+                  },
+                  "name": "Text4",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 12001
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "SingleLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "SingleLine",
+                    "right": "SingleLine",
+                    "tight_horizontal": false,
+                    "top": "SingleLine"
+                  },
+                  "bounds": {
+                    "height": 240,
+                    "left": 5280,
+                    "top": 40,
+                    "width": 847
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "League",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 255,
+                          "g": 255,
+                          "r": 255
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": true,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 72,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": true,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              },
+                              "text": "League"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "League"
+                    }
+                  },
+                  "name": "Text5",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 12001
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "SingleLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "SingleLine",
+                    "right": "SingleLine",
+                    "tight_horizontal": false,
+                    "top": "SingleLine"
+                  },
+                  "bounds": {
+                    "height": 240,
+                    "left": 6240,
+                    "top": 40,
+                    "width": 2640
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "Section",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 255,
+                          "g": 255,
+                          "r": 255
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": true,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 72,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": true,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              },
+                              "text": "Section"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "Section"
+                    }
+                  },
+                  "name": "Text6",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 12001
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "SingleLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "SingleLine",
+                    "right": "SingleLine",
+                    "tight_horizontal": false,
+                    "top": "SingleLine"
+                  },
+                  "bounds": {
+                    "height": 240,
+                    "left": 9000,
+                    "top": 40,
+                    "width": 2520
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "Division",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 255,
+                          "g": 255,
+                          "r": 255
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": true,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 72,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": true,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              },
+                              "text": "Division"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "Division"
+                    }
+                  },
+                  "name": "Text7",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 12001
+                }
+              ],
+              "section_code": 12001,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "Detail",
+          "name": "DetailArea1",
+          "sections": [
+            {
+              "condition_formulas": [
+                [
+                  "Section_Back_Color",
+                  "select RecordNumber mod 2\r\ncase 0: crWhite\r\ncase 1: Color (180, 210, 253)\r\n"
+                ]
+              ],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 192,
+                  "g": 192,
+                  "r": 192
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 585,
+              "kind": "Detail",
+              "name": "TSection4",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 480,
+                    "left": 250,
+                    "top": 0,
+                    "width": 652
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "VerticalCenter"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{vw_sports_tabler_output.id}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 11.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": false
+                        },
+                        "date": {
+                          "date_order": "YearMonthDay",
+                          "day": "LeadingZeroNumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "LeadingZeroNumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "ShortYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 0,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToUnit",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": false
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "DatabaseField",
+                      "summary_code": null,
+                      "value_type": "Int32s"
+                    }
+                  },
+                  "name": "TOrderID1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 24000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 480,
+                    "left": 5362,
+                    "top": 0,
+                    "width": 765
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": {
+                      "kind": "Website",
+                      "text": ""
+                    },
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "VerticalCenter"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{vw_sports_tabler_output.league}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 11.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "DatabaseField",
+                      "summary_code": null,
+                      "value_type": "PersistentMemo"
+                    }
+                  },
+                  "name": "TShipVia1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 24000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 480,
+                    "left": 6360,
+                    "top": 0,
+                    "width": 2520
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "VerticalCenter"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{vw_sports_tabler_output.section}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 11.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "DatabaseField",
+                      "summary_code": null,
+                      "value_type": "PersistentMemo"
+                    }
+                  },
+                  "name": "TOrderAmount1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 24000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 480,
+                    "left": 3840,
+                    "top": 0,
+                    "width": 1200
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "VerticalCenter"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{vw_sports_tabler_output.sport}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 11.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "DatabaseField",
+                      "summary_code": null,
+                      "value_type": "PersistentMemo"
+                    }
+                  },
+                  "name": "TCity1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 24000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 480,
+                    "left": 9135,
+                    "top": 0,
+                    "width": 1658
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "VerticalCenter"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{vw_sports_tabler_output.division}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 11.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "DatabaseField",
+                      "summary_code": null,
+                      "value_type": "PersistentMemo"
+                    }
+                  },
+                  "name": "TShipped1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 24000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 480,
+                    "left": 960,
+                    "top": 0,
+                    "width": 2640
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "VerticalCenter"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{@TeamCustom}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 11.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "Formula",
+                      "summary_code": null,
+                      "value_type": "String"
+                    }
+                  },
+                  "name": "TeamCustom1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 24000
+                }
+              ],
+              "section_code": 24000,
+              "width": 0
+            },
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 415,
+              "kind": "Detail",
+              "name": "TSection5",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "SingleLine"
+                  },
+                  "bounds": {
+                    "height": 0,
+                    "left": 0,
+                    "top": 255,
+                    "width": 11474
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Line": {
+                      "end_section_name": "TSection5",
+                      "shape": {
+                        "bottom": 255,
+                        "extend_to_bottom_of_section": false,
+                        "line_color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "line_style": "SingleLine",
+                        "line_thickness": 20,
+                        "right": 11474
+                      }
+                    }
+                  },
+                  "name": "Line1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 24001
+                }
+              ],
+              "section_code": 24001,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "ReportFooter",
+          "name": "ReportFooterArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": true
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 220,
+              "kind": "ReportFooter",
+              "name": "TSection7",
+              "objects": [],
+              "section_code": 48000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": true,
+              "new_page_after": true,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "PageFooter",
+          "name": "PageFooterArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 221,
+              "kind": "PageFooter",
+              "name": "TSection3",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 221,
+                    "left": 9960,
+                    "top": 0,
+                    "width": 1474
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "RightAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "PageNofM",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 255,
+                          "g": 255,
+                          "r": 255
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": true,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 144
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "Special",
+                      "summary_code": null,
+                      "value_type": "String"
+                    }
+                  },
+                  "name": "PageNofM1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 42000
+                }
+              ],
+              "section_code": 42000,
+              "width": 0
+            }
+          ]
+        }
+      ]
+    },
+    "report_options": {
+      "convert_null_field_to_default": false,
+      "convert_other_nulls_to_default": false,
+      "enable_verify_on_every_print": true,
+      "initial_data_context": null,
+      "initial_report_part_name": null,
+      "save_data_with_report": true,
+      "save_preview_picture": true,
+      "save_summaries_with_report": true,
+      "use_dummy_data": false
+    },
+    "save_metadata": [
+      {
+        "key": "Saved Date",
+        "value": "2021.01.12 16:34:13 -0500"
+      },
+      {
+        "key": "Build Version",
+        "value": "14.3.0.3677"
+      },
+      {
+        "key": "Print Engine",
+        "value": "CRW"
+      },
+      {
+        "key": "OS",
+        "value": "Windows Vista"
+      },
+      {
+        "key": "Architecture",
+        "value": "AMD64"
+      },
+      {
+        "key": "Saved Date",
+        "value": "2021.01.04 10:42:27 -0500"
+      },
+      {
+        "key": "Build Version",
+        "value": "14.3.0.3677"
+      },
+      {
+        "key": "Print Engine",
+        "value": "CRPE"
+      },
+      {
+        "key": "OS",
+        "value": "Windows Vista"
+      },
+      {
+        "key": "Architecture",
+        "value": "AMD64"
+      }
+    ],
+    "saved_data": {
+      "columns": [
+        {
+          "name": "vw_sports_tabler_output.id",
+          "value_type": "Int32s"
+        },
+        {
+          "name": "vw_sports_tabler_output.league",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "name": "vw_sports_tabler_output.section",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "name": "vw_sports_tabler_output.team",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "name": "vw_sports_tabler_output.sport",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "name": "vw_sports_tabler_output.division",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "name": "vw_sports_tabler_output.hometown",
+          "value_type": "PersistentMemo"
+        }
+      ],
+      "record_count": 5,
+      "rows": [
+        [
+          "5",
+          "MLB",
+          "American League",
+          "Toronto Blue Jays",
+          "Baseball",
+          "East",
+          "Toronto, Ontario, Canada"
+        ],
+        [
+          "38",
+          "NHL",
+          "Eastern Conference",
+          "Toronto Maple Leafs",
+          "Hockey",
+          "Atlantic",
+          "Toronto, Ontario, Canada"
+        ],
+        [
+          "97",
+          "CFL",
+          null,
+          "Toronto Argonauts",
+          "Football",
+          "East",
+          "Toronto, Ontario, Canada"
+        ],
+        [
+          "107",
+          "NBA",
+          "Eastern Conference",
+          "Toronto Raptors",
+          "Basketball",
+          "Atlantic",
+          "Toronto, Ontario, Canada"
+        ],
+        [
+          "147",
+          "AHL",
+          "Eastern Conference",
+          "Toronto Marlies",
+          "Hockey",
+          "North",
+          "Toronto, Ontario, Canada"
+        ]
+      ]
+    },
+    "subreports": [],
+    "summary_info": {
+      "author": "",
+      "comments": "Sorted by Team ASC",
+      "keywords": "",
+      "last_saved_by": "",
+      "revision_number": "42",
+      "save_with_preview": true,
+      "subject": "Sports, Toronto",
+      "title": "AHL, CFL, MLB, NBA And NHL Sports Teams in Toronto"
+    },
+    "version": 1
+  }
+}

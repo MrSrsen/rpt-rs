@@ -139,6 +139,67 @@ pub(crate) fn rewrite_stream(
     Ok(comp.into_inner().into_inner())
 }
 
+/// Load the `CONTENTS` stream bytes of `{storage_prefix}/Embedding {ordinal}` — the native image
+/// data of a static/OLE picture. Path components are compared with OLE control-char prefixes
+/// (`\x01`, `\x02`) stripped, so the `\x01Ole`/`CONTENTS` naming is matched robustly.
+pub(crate) fn load_embedding_contents(
+    container: &Container,
+    storage_prefix: &str,
+    ordinal: u32,
+) -> Option<Vec<u8>> {
+    let clean = |s: &str| -> String { s.chars().filter(|c| !c.is_control()).collect() };
+    let want: Vec<String> = storage_prefix
+        .split('/')
+        .filter(|s| !s.is_empty())
+        .map(clean)
+        .chain([format!("Embedding {ordinal}"), "CONTENTS".to_owned()])
+        .collect();
+    container.streams().iter().find_map(|s| {
+        let parts: Vec<String> = s
+            .path
+            .components()
+            .filter_map(|c| c.as_os_str().to_str())
+            .filter(|c| !c.is_empty() && *c != "/" && *c != "\\")
+            .map(clean)
+            .collect();
+        (parts == want).then(|| s.bytes.clone())
+    })
+}
+
+/// Summarise embedded OLE objects: for each top-level `Embedding N` storage, hash each of its
+/// OLE data streams into an [`Embed`](crate::model::Embed) (Name, byte size, Base64-MD5), in
+/// directory order. The engine emits the OLE data streams — `Ole`, `OlePres000`, `Ole10Native` —
+/// but not the `CompObj` (OLE class descriptor) or a `CONTENTS` sub-storage, so those are skipped.
+pub(crate) fn raise_embeds(container: &Container) -> Vec<crate::model::Embed> {
+    // Streams under an `Embedding N` storage that are not object data: `CompObj` is the OLE1
+    // class-moniker blob, `CONTENTS` (when present) is a nested storage.
+    const SKIP: [&str; 2] = ["CompObj", "CONTENTS"];
+    let mut out = Vec::new();
+    for s in container.streams() {
+        // Path components below the root, e.g. `["Embedding 2", "\x01Ole"]`. Only top-level
+        // embeddings count (a nested `Subdocument N/Embedding …` has three components).
+        let parts: Vec<&str> = s
+            .path
+            .components()
+            .filter_map(|c| c.as_os_str().to_str())
+            .filter(|c| !c.is_empty() && *c != "/" && *c != "\\")
+            .collect();
+        let [storage, stream] = parts.as_slice() else {
+            continue;
+        };
+        // The stream name carries a `\x01`/`\x02` (OLE control) prefix; strip control chars for the Name.
+        let name: String = stream.chars().filter(|c| !c.is_control()).collect();
+        if storage.starts_with("Embedding ") && !SKIP.contains(&name.as_str()) {
+            out.push(crate::model::Embed {
+                name,
+                size: s.bytes.len() as u64,
+                md5_hash: crate::codec::md5_base64(&s.bytes),
+            });
+        }
+    }
+    out
+}
+
 /// The common, human-meaningful fields of the MS-OLEPS `SummaryInformation` property set.
 ///
 /// Only the string properties relevant to a report are extracted; the full property set is
@@ -158,8 +219,10 @@ pub struct SummaryInformation {
     pub comments: Option<String>,
     /// The last author to save the report (`PID_LAST_AUTHOR`).
     pub last_author: Option<String>,
+    /// The report revision number (`PID_REVNUMBER`) — stored as a string (e.g. `"128"`).
+    pub revision_number: Option<String>,
     /// Whether a preview thumbnail (`PID_THUMBNAIL`) is stored — the engine's
-    /// `SummaryInfo.IsSavingWithPreview` (XML `EnableSavePreviewPicture`).
+    /// `SummaryInfo.IsSavingWithPreview`.
     pub has_thumbnail: bool,
 }
 
@@ -170,6 +233,7 @@ const PID_AUTHOR: u32 = 0x04;
 const PID_KEYWORDS: u32 = 0x05;
 const PID_COMMENTS: u32 = 0x06;
 const PID_LAST_AUTHOR: u32 = 0x08;
+const PID_REVNUMBER: u32 = 0x09;
 const PID_THUMBNAIL: u32 = 0x11;
 
 const VT_LPSTR: u32 = 0x1E;
@@ -212,11 +276,67 @@ impl SummaryInformation {
                 PID_KEYWORDS => info.keywords = Some(value),
                 PID_COMMENTS => info.comments = Some(value),
                 PID_LAST_AUTHOR => info.last_author = Some(value),
+                PID_REVNUMBER => info.revision_number = Some(value),
                 _ => {}
             }
         }
         Some(info)
     }
+}
+
+/// An edited property-set stream, paired with the `(field, value)` pairs blanked out of it.
+pub(crate) type ScrubbedPropertySet = (Vec<u8>, Vec<(&'static str, String)>);
+
+/// Blank the identity properties (`PID_AUTHOR`, `PID_LAST_AUTHOR`) of an OLEPS property-set stream
+/// **in place**, returning the edited stream bytes and the values removed.
+///
+/// The edit is deliberately **same-length**: each value's `vt` tag and declared length are left
+/// alone and only its character bytes are overwritten with NULs, so every property offset and the
+/// section size stay valid and the whole property set — including the thumbnail blob and any
+/// property this crate does not model — survives byte-for-byte. A reader takes the value up to the
+/// first NUL, so the property reads as an empty string. Rebuilding the section instead would mean
+/// re-deriving every offset and re-serializing properties we do not understand.
+///
+/// Returns `None` if the stream is not a parseable property set, or `Some` with an empty removal
+/// list if neither property is present or both are already blank.
+pub(crate) fn scrub_identity_properties(data: &[u8]) -> Option<ScrubbedPropertySet> {
+    if data.len() < 48 || u16_le(data, 0)? != 0xFFFE || u32_le(data, 24)? < 1 {
+        return None;
+    }
+    let sect_off = u32_le(data, 28 + 16)? as usize;
+    let count = u32_le(data.get(sect_off..)?, 4)? as usize;
+
+    let mut out = data.to_vec();
+    let mut removed = Vec::new();
+    for i in 0..count {
+        let entry = sect_off + 8 + i * 8;
+        let pid = u32_le(data, entry)?;
+        let label = match pid {
+            PID_AUTHOR => "author",
+            PID_LAST_AUTHOR => "last_saved_by",
+            _ => continue,
+        };
+        let voff = sect_off + u32_le(data, entry + 4)? as usize;
+        let Some(value) = read_string_property(data.get(sect_off..)?, voff - sect_off) else {
+            continue;
+        };
+        if value.is_empty() {
+            continue;
+        }
+        // Body starts after the value's `vt`(4) + `len`(4). `len` counts characters for VT_LPSTR and
+        // UTF-16 code units for VT_LPWSTR, so scale it to bytes before blanking.
+        let vt = u32_le(data, voff)?;
+        let units = u32_le(data, voff + 4)? as usize;
+        let bytes = match vt {
+            VT_LPSTR => units,
+            VT_LPWSTR => units * 2,
+            _ => continue,
+        };
+        let body = voff + 8;
+        out.get_mut(body..body + bytes)?.fill(0);
+        removed.push((label, value));
+    }
+    Some((out, removed))
 }
 
 /// Read a VT_LPSTR / VT_LPWSTR property at `off` within a section.
@@ -241,5 +361,117 @@ fn read_string_property(sect: &[u8], off: usize) -> Option<String> {
             Some(String::from_utf16_lossy(&units))
         }
         _ => None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// The scrubber blanks exactly the two identity properties, leaves every other property
+    /// readable, and does not change the stream's length — the same-length claim the whole
+    /// anonymize path rests on.
+    #[test]
+    fn scrub_identity_properties_blanks_only_the_identity_fields() {
+        let data = build_property_set(&[
+            (PID_TITLE, "Quarterly Sales"),
+            (PID_AUTHOR, "Ada Lovelace"),
+            (PID_SUBJECT, "Sales"),
+            (PID_LAST_AUTHOR, "Grace Hopper"),
+            (PID_REVNUMBER, "7"),
+        ]);
+        let (edited, removed) =
+            scrub_identity_properties(&data).expect("a built property set parses");
+
+        assert_eq!(edited.len(), data.len(), "the edit must be same-length");
+        assert_eq!(
+            removed,
+            vec![
+                ("author", "Ada Lovelace".to_string()),
+                ("last_saved_by", "Grace Hopper".to_string()),
+            ]
+        );
+
+        let after = SummaryInformation::parse(&edited).expect("edited set still parses");
+        assert_eq!(after.author.as_deref(), Some(""));
+        assert_eq!(after.last_author.as_deref(), Some(""));
+        // Everything around the blanked values is untouched, which is only possible because no
+        // offset moved.
+        assert_eq!(after.title.as_deref(), Some("Quarterly Sales"));
+        assert_eq!(after.subject.as_deref(), Some("Sales"));
+        assert_eq!(after.revision_number.as_deref(), Some("7"));
+    }
+
+    /// An already-clean set reports nothing to remove, so the caller can skip rewriting the stream.
+    #[test]
+    fn scrub_identity_properties_is_a_no_op_when_already_clean() {
+        let data = build_property_set(&[(PID_TITLE, "T"), (PID_AUTHOR, "")]);
+        let (edited, removed) = scrub_identity_properties(&data).expect("parses");
+        assert!(removed.is_empty());
+        assert_eq!(edited, data);
+    }
+
+    /// Build a minimal single-section OLEPS `SummaryInformation` property set carrying the given
+    /// `(propid, VT_LPWSTR value)` entries, so the parser's property-id dispatch (incl.
+    /// `PID_REVNUMBER`/`PID_LAST_AUTHOR`) is covered without any real report bytes.
+    fn build_property_set(entries: &[(u32, &str)]) -> Vec<u8> {
+        // Section body: size(4), count(4), count×(propid(4), value-offset(4)), then the values.
+        let n = entries.len();
+        let table_end = 8 + n * 8; // where the first value starts, section-relative
+        let mut values = Vec::new();
+        let mut offsets = Vec::new();
+        for (_, s) in entries {
+            offsets.push(table_end + values.len());
+            values.extend_from_slice(&VT_LPWSTR.to_le_bytes());
+            let units: Vec<u16> = s.encode_utf16().chain(std::iter::once(0)).collect();
+            values.extend_from_slice(&(units.len() as u32).to_le_bytes());
+            for u in units {
+                values.extend_from_slice(&u.to_le_bytes());
+            }
+        }
+        let mut sect = Vec::new();
+        let size = table_end + values.len();
+        sect.extend_from_slice(&(size as u32).to_le_bytes());
+        sect.extend_from_slice(&(n as u32).to_le_bytes());
+        for ((pid, _), voff) in entries.iter().zip(&offsets) {
+            sect.extend_from_slice(&pid.to_le_bytes());
+            sect.extend_from_slice(&(*voff as u32).to_le_bytes());
+        }
+        sect.extend_from_slice(&values);
+
+        // Property-set header: byte-order(2)=FFFE, version(2), sysid(4), clsid(16),
+        // numsets(4)=1, FMTID(16), first-section-offset(4). Section starts at 48.
+        let mut data = Vec::new();
+        data.extend_from_slice(&0xFFFEu16.to_le_bytes());
+        data.extend_from_slice(&[0; 2]); // version
+        data.extend_from_slice(&[0; 4]); // sysid
+        data.extend_from_slice(&[0; 16]); // clsid
+        data.extend_from_slice(&1u32.to_le_bytes()); // num property sets
+        data.extend_from_slice(&[0; 16]); // FMTID of set 0
+        data.extend_from_slice(&48u32.to_le_bytes()); // section offset
+        assert_eq!(data.len(), 48);
+        data.extend_from_slice(&sect);
+        data
+    }
+
+    #[test]
+    fn parses_revision_and_last_author() {
+        // PID 0x08 = last author, PID 0x09 = revision number.
+        let data = build_property_set(&[
+            (PID_TITLE, "T"),
+            (PID_LAST_AUTHOR, "usr"),
+            (PID_REVNUMBER, "128"),
+        ]);
+        let info = SummaryInformation::parse(&data).expect("valid property set");
+        assert_eq!(info.title.as_deref(), Some("T"));
+        assert_eq!(info.last_author.as_deref(), Some("usr"));
+        assert_eq!(info.revision_number.as_deref(), Some("128"));
+    }
+
+    #[test]
+    fn absent_revision_is_none() {
+        let info = SummaryInformation::parse(&build_property_set(&[(PID_TITLE, "T")])).unwrap();
+        assert_eq!(info.revision_number, None);
+        assert_eq!(info.last_author, None);
     }
 }

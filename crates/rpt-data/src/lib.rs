@@ -20,14 +20,23 @@ mod source;
 mod summary;
 mod value_order;
 
-pub use context::{normalize_param_name, DataContext, FormulaRegistry, Parameters, SharedState};
+pub use context::{
+    normalize_param_name, DataContext, DateTimeSpecials, FormulaRegistry, Parameters, SharedState,
+    SummaryScope,
+};
 pub use diagnostics::{CollectingSink, DiagnosticKind, DiagnosticSink, EvalDiagnostic};
 pub use eval_time::{classify_eval_time, EvalTime};
-pub use pipeline::{build_dataset, build_dataset_with_diagnostics, compile_formulas, date_bucket};
+pub use pipeline::{
+    build_dataset, build_dataset_opts, build_dataset_with, build_dataset_with_at,
+    build_dataset_with_diagnostics, build_dataset_with_params, build_dataset_with_params_at,
+    compile_formulas, compile_formulas_at, compile_formulas_reporting, date_bucket, DatasetOptions,
+    FieldFilter,
+};
 pub use running_total::RunningTotals;
 pub use schedule::{EvalSchedule, ScheduledValues};
 pub use source::{
-    cell_to_value, rows_from_cells, Column, EmptySource, Row, RowSource, SavedDataSource, ScopeData,
+    cell_to_value, rows_from_cells, Cell, Column, DbError, EmptySource, Row, RowData, RowSource,
+    SavedDataSource, ScopeData,
 };
 pub use summary::SummaryAccumulator;
 pub use value_order::{compare_values, value_key};

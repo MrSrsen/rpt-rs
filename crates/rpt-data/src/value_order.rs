@@ -9,11 +9,18 @@ use std::cmp::Ordering;
 /// Total ordering over values for sort / group / running min-max: nulls sort first; temporal and
 /// boolean values compare by their natural order; numbers compare numerically; only genuinely mixed
 /// types fall back to the canonical key text.
+///
+/// Strings compare by **case-sensitive** Unicode-scalar order (so uppercase ASCII sorts before
+/// lowercase, and `"abc"` / `"ABC"` are distinct group buckets). This one comparison drives record
+/// sort, group ordering, and group bucketing together, so they never disagree. A locale- or
+/// case-insensitive collation is not yet modelled — case-sensitivity is the pinned default until one
+/// is (a full collation model is a possible follow-up).
 pub fn compare_values(a: &Value, b: &Value) -> Ordering {
     match (a, b) {
         (Value::Null, Value::Null) => Ordering::Equal,
         (Value::Null, _) => Ordering::Less,
         (_, Value::Null) => Ordering::Greater,
+        // Case-sensitive Unicode-scalar order (see the type-level note above).
         (Value::Str(x), Value::Str(y)) => x.cmp(y),
         (Value::Bool(x), Value::Bool(y)) => x.cmp(y),
         (Value::Date(x), Value::Date(y)) => x.cmp(y),
@@ -68,6 +75,22 @@ mod tests {
         assert_eq!(compare_values(&late, &next_day), Ordering::Less);
         assert!(value_key(&early) < value_key(&late));
         assert!(value_key(&late) < value_key(&next_day));
+    }
+
+    #[test]
+    fn strings_compare_case_sensitively() {
+        // Pinned decision: string ordering is case-sensitive Unicode-scalar order (uppercase ASCII
+        // sorts before lowercase). The same comparison and key drive record sort, group ordering, and
+        // group bucketing, so case-differing values land in distinct buckets. A locale/case-insensitive
+        // collation is a possible follow-up, not current behavior.
+        let s = |t: &str| Value::Str(t.to_string());
+        assert_eq!(compare_values(&s("A"), &s("a")), Ordering::Less);
+        assert_eq!(compare_values(&s("abc"), &s("ABC")), Ordering::Greater);
+        // Case-differing strings are distinct group buckets (distinct keys)…
+        assert_ne!(value_key(&s("abc")), value_key(&s("ABC")));
+        // …while identical strings tie and share a bucket.
+        assert_eq!(compare_values(&s("x"), &s("x")), Ordering::Equal);
+        assert_eq!(value_key(&s("x")), value_key(&s("x")));
     }
 
     #[test]

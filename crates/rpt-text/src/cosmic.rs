@@ -4,13 +4,14 @@
 //! (crate::font_db) does not pull the shaping stack.
 
 use std::cell::RefCell;
+use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 
 use cosmic_text::{Attrs, Buffer, Family, FontSystem, Metrics, Shaping, Style, Weight};
-// One typographic point = 20 twips: the single definition lives in `rpt_layout` (cosmic-text is
+// One typographic point = 20 twips: the single definition lives in `rpt_pages` (cosmic-text is
 // unit-agnostic; we drive it in points and scale the resulting advances to twips).
-use rpt_layout::{TextLayout, TWIPS_PER_PT};
 use rpt_pages::FontSpec;
+use rpt_pages::{TextLayout, TWIPS_PER_PT};
 
 /// Default leading as a multiple of the em, until we read the font's real ascent+descent+line-gap.
 const DEFAULT_LEADING: f32 = 1.2;
@@ -19,7 +20,7 @@ const DEFAULT_LEADING: f32 = 1.2;
 /// can pin a report's exact fonts — e.g. drop `Rubik` into a `fonts/` dir — without touching the
 /// system), then the OS font registry, then the **bundled Liberation fallback** (always loaded, so a
 /// named-but-absent font resolves to a metric-compatible face and rendering never fails for lack of
-/// fonts — see the private `load_bundled_fallback`), and finally cosmic-text's per-glyph fallback.
+/// fonts — see the `bundled` module), and finally cosmic-text's per-glyph fallback.
 #[derive(Debug, Clone, Default)]
 pub struct FontProvider {
     /// Extra directories scanned for fonts, highest priority. Loaded in order.
@@ -49,7 +50,7 @@ impl FontProvider {
     fn into_font_system(self) -> FontSystem {
         // Build the db with the **local dirs first**, then the OS fonts: fontdb resolves a family to
         // the first matching face in insertion order, so a pinned report font shadows a same-named
-        // system font (true override, decision O1) rather than merely filling gaps.
+        // system font (a true override) rather than merely filling gaps.
         let mut db = cosmic_text::fontdb::Database::new();
         for dir in &self.local_dirs {
             db.load_fonts_dir(dir);
@@ -57,38 +58,9 @@ impl FontProvider {
         if self.use_system_fonts {
             db.load_system_fonts();
         }
-        load_bundled_fallback(&mut db);
+        crate::bundled::register_fallback(&mut db);
         FontSystem::new_with_locale_and_db(detect_locale(), db)
     }
-}
-
-/// The bundled Liberation fonts (SIL OFL 1.1) — see `crates/rpt-text/fonts/LICENSE`. Liberation is
-/// **metric-compatible** with Arial / Times New Roman / Courier New (identical advance widths), so a
-/// report authored in those (the Crystal defaults) lays out at the same positions here even when the
-/// originals are not installed.
-const BUNDLED_FONTS: &[&[u8]] = &[
-    include_bytes!("../fonts/LiberationSans-Regular.ttf"),
-    include_bytes!("../fonts/LiberationSans-Bold.ttf"),
-    include_bytes!("../fonts/LiberationSans-Italic.ttf"),
-    include_bytes!("../fonts/LiberationSans-BoldItalic.ttf"),
-    include_bytes!("../fonts/LiberationSerif-Regular.ttf"),
-    include_bytes!("../fonts/LiberationSerif-Bold.ttf"),
-    include_bytes!("../fonts/LiberationMono-Regular.ttf"),
-    include_bytes!("../fonts/LiberationMono-Bold.ttf"),
-];
-
-/// Register the always-present guaranteed fallback set: load the bundled Liberation
-/// faces **last** (lowest priority — a real system/pinned font of the same name still wins), then
-/// point the generic CSS family defaults at them. So any font a report names that is not installed
-/// resolves through the generic fallback to a metric-compatible bundled face — the render is
-/// deterministic and never fails for lack of fonts (headless CI, minimal containers, wasm).
-fn load_bundled_fallback(db: &mut cosmic_text::fontdb::Database) {
-    for bytes in BUNDLED_FONTS {
-        db.load_font_data(bytes.to_vec());
-    }
-    db.set_sans_serif_family("Liberation Sans");
-    db.set_serif_family("Liberation Serif");
-    db.set_monospace_family("Liberation Mono");
 }
 
 /// Best-effort system locale (affects locale-specific family resolution, e.g. CJK), from `LANG`
@@ -101,11 +73,41 @@ fn detect_locale() -> String {
         .unwrap_or_else(|| "en-US".to_string())
 }
 
+/// A resolved-metrics cache key: the same handful of `FontSpec`s recur thousands of times per pass,
+/// so `(line_height, ascent)` is memoized on `family + size + bold + italic` (size stored by bit
+/// pattern to keep the key hashable and exact).
+#[derive(Clone, PartialEq, Eq, Hash)]
+struct FontKey {
+    family: String,
+    size_bits: u32,
+    bold: bool,
+    italic: bool,
+}
+
+impl FontKey {
+    fn new(font: &FontSpec) -> FontKey {
+        FontKey {
+            family: font.family.clone(),
+            size_bits: font.size_pt.to_bits(),
+            bold: font.bold,
+            italic: font.italic,
+        }
+    }
+}
+
 /// A [`TextLayout`] backed by cosmic-text. Holds a `FontSystem` (the font DB + shaping cache) behind
 /// a `RefCell` because the trait measures through `&self` while cosmic-text shapes through
 /// `&mut FontSystem`. Single-threaded use (one per layout pass); not `Sync`.
 pub struct CosmicLayout {
     font_system: RefCell<FontSystem>,
+    /// Lowercased family names actually present in the DB. A requested family that is **not** here
+    /// resolves through the sans-serif generic (the metric-compatible bundled Liberation) rather than
+    /// letting cosmic-text's built-in per-script fallback list pick an arbitrary loaded sans (e.g. the
+    /// bundled DejaVu symbol face) — which would break Arial/Times metric-compatibility. The symbol
+    /// face is still reached, but only through per-glyph coverage fallback for glyphs Liberation lacks.
+    known_families: HashSet<String>,
+    /// Memoized `(line_height_twips, ascent_twips)` per [`FontKey`], computed lazily on first use.
+    metrics_cache: RefCell<HashMap<FontKey, (f64, f64)>>,
 }
 
 impl std::fmt::Debug for CosmicLayout {
@@ -117,8 +119,16 @@ impl std::fmt::Debug for CosmicLayout {
 impl CosmicLayout {
     /// Build from a [`FontProvider`].
     pub fn new(provider: FontProvider) -> CosmicLayout {
+        let font_system = provider.into_font_system();
+        let known_families = font_system
+            .db()
+            .faces()
+            .flat_map(|f| f.families.iter().map(|(name, _)| name.to_lowercase()))
+            .collect();
         CosmicLayout {
-            font_system: RefCell::new(provider.into_font_system()),
+            font_system: RefCell::new(font_system),
+            known_families,
+            metrics_cache: RefCell::new(HashMap::new()),
         }
     }
 
@@ -139,7 +149,15 @@ impl CosmicLayout {
         let mut buffer = Buffer::new(&mut fs, Metrics::new(size, size * DEFAULT_LEADING));
         // set_size/set_text just store config in 0.19; shape_until_scroll does the shaping with fonts.
         buffer.set_size(max_width_pt, None);
-        let mut attrs = Attrs::new().family(Family::Name(&font.family));
+        // A known family shapes by name; an absent one goes through the sans-serif generic (the DB's
+        // metric-compatible Liberation), NOT cosmic-text's built-in per-script list — see
+        // `known_families`. Per-glyph fallback still covers glyphs the chosen face lacks.
+        let family = if self.known_families.contains(&font.family.to_lowercase()) {
+            Family::Name(&font.family)
+        } else {
+            Family::SansSerif
+        };
+        let mut attrs = Attrs::new().family(family);
         if font.bold {
             attrs = attrs.weight(Weight::BOLD);
         }
@@ -149,6 +167,59 @@ impl CosmicLayout {
         buffer.set_text(text, &attrs, Shaping::Advanced, None);
         buffer.shape_until_scroll(&mut fs, false);
         buffer
+    }
+
+    /// Resolve `font` (after cosmic-text fallback) to the vertical metrics of the face that actually
+    /// renders it, in font design units: `(units_per_em, ascent, descent, leading)`. Shapes a probe
+    /// glyph to discover the resolved `font_id`. `None` when nothing resolves or the face has no em
+    /// square — the callers substitute their own em-relative fallback.
+    fn resolved_metrics(&self, font: &FontSpec) -> Option<(u16, f32, f32, f32)> {
+        let font_id = self
+            .shaped("x", font, None)
+            .layout_runs()
+            .flat_map(|run| run.glyphs.iter())
+            .map(|g| g.font_id)
+            .next()?;
+        let weight = if font.bold {
+            cosmic_text::fontdb::Weight::BOLD
+        } else {
+            cosmic_text::fontdb::Weight::NORMAL
+        };
+        let resolved = self.font_system.borrow_mut().get_font(font_id, weight)?;
+        let m = resolved.metrics();
+        if m.units_per_em == 0 {
+            return None;
+        }
+        Some((m.units_per_em, m.ascent, m.descent, m.leading))
+    }
+
+    /// Memoized `(line_height_twips, ascent_twips)` for `font`. The first call per [`FontKey`] shapes
+    /// a probe glyph to resolve the face; subsequent calls hit the cache. Values are identical to
+    /// computing them directly — this is pure memoization of an expensive per-`FontSpec` resolution.
+    fn line_metrics(&self, font: &FontSpec) -> (f64, f64) {
+        let key = FontKey::new(font);
+        if let Some(&cached) = self.metrics_cache.borrow().get(&key) {
+            return cached;
+        }
+        let metrics = match self.resolved_metrics(font) {
+            // Real vertical metrics: `(ascent − descent + line-gap) / units_per_em`, scaled to the
+            // point size (skrifa reports descent negative, so the subtraction adds its magnitude).
+            Some((units_per_em, ascent, descent, leading)) => {
+                let line_units = (ascent - descent + leading) as f64;
+                let line_height =
+                    line_units / units_per_em as f64 * font.size_pt as f64 * TWIPS_PER_PT;
+                let ascent =
+                    ascent as f64 / units_per_em as f64 * font.size_pt as f64 * TWIPS_PER_PT;
+                (line_height, ascent)
+            }
+            // Unresolvable font: em-relative fallbacks (1.2×em line height, ~0.8×em ascent).
+            None => (
+                font.size_pt as f64 * TWIPS_PER_PT * DEFAULT_LEADING as f64,
+                font.size_pt as f64 * TWIPS_PER_PT * 0.8,
+            ),
+        };
+        self.metrics_cache.borrow_mut().insert(key, metrics);
+        metrics
     }
 }
 
@@ -163,63 +234,57 @@ impl TextLayout for CosmicLayout {
     }
 
     fn line_height_twips(&self, font: &FontSpec) -> f64 {
-        // Real line height from the resolved font's vertical metrics (ascent − descent + line-gap,
-        // in font design units), falling back to 1.2×em if the font can't be resolved. skrifa's
-        // metrics use `Size::unscaled()` (font units) with a negative descent, so the em-normalized
-        // line height is `(ascent − descent + leading) / units_per_em`, scaled to the point size.
-        let fallback = font.size_pt as f64 * TWIPS_PER_PT * DEFAULT_LEADING as f64;
-        // Shape a probe glyph to discover which font (after fallback) actually renders this spec.
-        let font_id = self
-            .shaped("x", font, None)
-            .layout_runs()
-            .flat_map(|run| run.glyphs.iter())
-            .map(|g| g.font_id)
-            .next();
-        let Some(font_id) = font_id else {
-            return fallback;
-        };
-        let weight = if font.bold {
-            cosmic_text::fontdb::Weight::BOLD
-        } else {
-            cosmic_text::fontdb::Weight::NORMAL
-        };
-        let Some(resolved) = self.font_system.borrow_mut().get_font(font_id, weight) else {
-            return fallback;
-        };
-        let m = resolved.metrics();
-        if m.units_per_em == 0 {
-            return fallback;
-        }
-        let line_units = (m.ascent - m.descent + m.leading) as f64;
-        line_units / m.units_per_em as f64 * font.size_pt as f64 * TWIPS_PER_PT
+        // Real line height from the resolved font's vertical metrics, falling back to 1.2×em when the
+        // font can't be resolved. Computed (and memoized) in `line_metrics`.
+        self.line_metrics(font).0
     }
 
     fn ascent_twips(&self, font: &FontSpec) -> f64 {
-        // The resolved face's ascent (design units), scaled to the point size; falls back to the
-        // trait default (~0.8 em) when the font can't be resolved.
-        let fallback = font.size_pt as f64 * TWIPS_PER_PT * 0.8;
-        let font_id = self
-            .shaped("x", font, None)
-            .layout_runs()
-            .flat_map(|run| run.glyphs.iter())
-            .map(|g| g.font_id)
-            .next();
-        let Some(font_id) = font_id else {
-            return fallback;
+        // The resolved face's ascent scaled to the point size, falling back to ~0.8×em. Computed
+        // (and memoized) in `line_metrics`.
+        self.line_metrics(font).1
+    }
+
+    fn substituted_chars(&self, text: &str, font: &FontSpec) -> String {
+        // Resolve the primary face for the requested family (same query FontDb uses on the backend
+        // side), then report every char that face lacks — those render through the shared symbol
+        // fallback (DejaVu, registered on the same path). Deterministic and font-DB-driven, so the
+        // reported set matches what the physical backends actually substitute.
+        use cosmic_text::fontdb::{Family, Query, Stretch, Style, Weight};
+        let fs = self.font_system.borrow();
+        let db = fs.db();
+        let primary = db.query(&Query {
+            families: &[Family::Name(&font.family), Family::SansSerif],
+            weight: if font.bold {
+                Weight::BOLD
+            } else {
+                Weight::NORMAL
+            },
+            stretch: Stretch::Normal,
+            style: if font.italic {
+                Style::Italic
+            } else {
+                Style::Normal
+            },
+        });
+        let Some(primary) = primary else {
+            return String::new();
         };
-        let weight = if font.bold {
-            cosmic_text::fontdb::Weight::BOLD
-        } else {
-            cosmic_text::fontdb::Weight::NORMAL
-        };
-        let Some(resolved) = self.font_system.borrow_mut().get_font(font_id, weight) else {
-            return fallback;
-        };
-        let m = resolved.metrics();
-        if m.units_per_em == 0 {
-            return fallback;
-        }
-        m.ascent as f64 / m.units_per_em as f64 * font.size_pt as f64 * TWIPS_PER_PT
+        // Parse the face once and probe every char against it, rather than re-parsing per char.
+        db.with_face_data(primary, |data, index| {
+            let face = ttf_parser::Face::parse(data, index).ok();
+            let mut out = String::new();
+            for c in text.chars() {
+                if c.is_control() || out.contains(c) {
+                    continue;
+                }
+                if face.as_ref().and_then(|f| f.glyph_index(c)).is_none() {
+                    out.push(c);
+                }
+            }
+            out
+        })
+        .unwrap_or_default()
     }
 
     fn wrap(&self, text: &str, max_width: f64, font: &FontSpec) -> Vec<String> {
@@ -313,6 +378,70 @@ mod tests {
             w_arial, w_lib,
             "unmatched 'Arial' falls back to the bundled Liberation Sans"
         );
+    }
+
+    #[test]
+    fn symbol_fallback_converges_with_the_backends() {
+        // Measurement must fall back to the SAME bundled symbol face the
+        // physical backends render with, so summed advances agree and text after a symbol stays put.
+        // With only the bundled set loaded, ⚠ in "Arial" measures identically to naming DejaVu Sans
+        // directly — proving cosmic-text's per-glyph fallback lands on the bundled DejaVu.
+        let m = CosmicLayout::new(FontProvider {
+            local_dirs: vec![],
+            use_system_fonts: false,
+        });
+        let arial = FontSpec {
+            family: "Arial".into(),
+            ..font(12.0)
+        };
+        let dejavu = FontSpec {
+            family: "DejaVu Sans".into(),
+            ..font(12.0)
+        };
+        let w_arial = m.width_twips("\u{26A0}", &arial);
+        let w_dejavu = m.width_twips("\u{26A0}", &dejavu);
+        assert!(w_arial > 0.0, "⚠ shapes to a real glyph, not tofu");
+        assert_eq!(
+            w_arial, w_dejavu,
+            "⚠ in Arial falls back to the same bundled DejaVu face used by the backends"
+        );
+    }
+
+    #[test]
+    fn substituted_chars_reports_only_uncovered_glyphs() {
+        let m = CosmicLayout::new(FontProvider {
+            local_dirs: vec![],
+            use_system_fonts: false,
+        });
+        let arial = FontSpec {
+            family: "Arial".into(),
+            ..font(12.0)
+        };
+        // ASCII is fully covered by the Latin face → nothing substituted.
+        assert_eq!(m.substituted_chars("HAZ", &arial), "");
+        // ⚠ is not in the Latin face → reported (once, deduped) and the ASCII around it is not.
+        assert_eq!(
+            m.substituted_chars("\u{26A0} HAZ \u{26A0}", &arial),
+            "\u{26A0}"
+        );
+    }
+
+    #[test]
+    fn metrics_are_stable_and_deterministic_across_the_cache() {
+        // The per-FontSpec metrics cache is pure memoization: repeated calls and a fresh instance
+        // must return bit-identical values (the guarantee the render gate relies on).
+        let f = FontSpec {
+            family: "Arial".into(),
+            bold: true,
+            ..font(11.5)
+        };
+        let a = CosmicLayout::with_system_fonts();
+        let first = (a.line_height_twips(&f), a.ascent_twips(&f));
+        let second = (a.line_height_twips(&f), a.ascent_twips(&f));
+        assert_eq!(first, second, "cached call returns identical values");
+        let b = CosmicLayout::with_system_fonts();
+        let fresh = (b.line_height_twips(&f), b.ascent_twips(&f));
+        assert_eq!(first, fresh, "resolution is deterministic across instances");
     }
 
     #[test]

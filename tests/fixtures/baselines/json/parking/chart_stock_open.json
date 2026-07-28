@@ -1,0 +1,1657 @@
+{
+  "model": {
+    "data_definition": {
+      "condition_formula_bodies": [],
+      "custom_functions": [],
+      "field_definitions": [
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 8,
+          "long_name": null,
+          "name": "created_at",
+          "short_name": "created_at",
+          "value_type": "DateTime"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 8,
+          "long_name": null,
+          "name": "total",
+          "short_name": "total",
+          "value_type": "Number"
+        }
+      ],
+      "field_manager_census": {
+        "database_fields": 2,
+        "formula_bodies": 4
+      },
+      "formula_variables": [],
+      "group_selection": "",
+      "groups": [],
+      "record_selection": "",
+      "record_sorts": [],
+      "running_total_condition_formulas": [],
+      "saved_data_filter": "",
+      "summary_binding_fields": []
+    },
+    "database": {
+      "links": [
+        {
+          "join_kind": "Inner",
+          "operator": "Equal",
+          "source_fields": [
+            "order_id"
+          ],
+          "source_table_alias": "order_service",
+          "target_fields": [
+            "id"
+          ],
+          "target_table_alias": "orders"
+        },
+        {
+          "join_kind": "Inner",
+          "operator": "Equal",
+          "source_fields": [
+            "service_id"
+          ],
+          "source_table_alias": "order_service",
+          "target_fields": [
+            "id"
+          ],
+          "target_table_alias": "service"
+        },
+        {
+          "join_kind": "Inner",
+          "operator": "Equal",
+          "source_fields": [
+            "partner_id"
+          ],
+          "source_table_alias": "orders",
+          "target_fields": [
+            "id"
+          ],
+          "target_table_alias": "partner"
+        },
+        {
+          "join_kind": "Inner",
+          "operator": "Equal",
+          "source_fields": [
+            "parking_lot_id"
+          ],
+          "source_table_alias": "orders",
+          "target_fields": [
+            "id"
+          ],
+          "target_table_alias": "parking_lot"
+        }
+      ],
+      "tables": [
+        {
+          "alias": "countries_all_iso",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_odbc.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "ODBC (RDO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "parking"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": "rpt"
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "countries_all_iso.id",
+              "name": "id",
+              "short_name": "id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "countries_all_iso.name",
+              "name": "name",
+              "short_name": "name",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "countries_all_iso.alpha_2_code",
+              "name": "alpha_2_code",
+              "short_name": "alpha_2_code",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "countries_all_iso.alpha_3_code",
+              "name": "alpha_3_code",
+              "short_name": "alpha_3_code",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "countries_all_iso.numeric_code",
+              "name": "numeric_code",
+              "short_name": "numeric_code",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "countries_all_iso.internet_cctld",
+              "name": "internet_cctld",
+              "short_name": "internet_cctld",
+              "value_type": "PersistentMemo"
+            }
+          ],
+          "name": "countries_all_iso",
+          "parameters": [],
+          "qualified_name": "rptfixtures.public.countries_all_iso"
+        },
+        {
+          "alias": "funding_primary",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_odbc.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "ODBC (RDO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "parking"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": "rpt"
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "funding_primary.funder_id",
+              "name": "funder_id",
+              "short_name": "funder_id",
+              "value_type": "Int32s"
+            }
+          ],
+          "name": "funding_primary",
+          "parameters": [],
+          "qualified_name": "rptfixtures.public.funding_primary"
+        },
+        {
+          "alias": "order_service",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_odbc.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "ODBC (RDO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "parking"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": "rpt"
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "order_service.id",
+              "name": "id",
+              "short_name": "id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "order_service.order_id",
+              "name": "order_id",
+              "short_name": "order_id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "order_service.service_id",
+              "name": "service_id",
+              "short_name": "service_id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "order_service.quantity",
+              "name": "quantity",
+              "short_name": "quantity",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "order_service.line_total",
+              "name": "line_total",
+              "short_name": "line_total",
+              "value_type": "Number"
+            }
+          ],
+          "name": "order_service",
+          "parameters": [],
+          "qualified_name": "rptfixtures.public.order_service"
+        },
+        {
+          "alias": "orders",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_odbc.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "ODBC (RDO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "parking"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": "rpt"
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "orders.id",
+              "name": "id",
+              "short_name": "id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 66,
+              "long_name": "orders.order_number",
+              "name": "order_number",
+              "short_name": "order_number",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "orders.partner_id",
+              "name": "partner_id",
+              "short_name": "partner_id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "orders.parking_lot_id",
+              "name": "parking_lot_id",
+              "short_name": "parking_lot_id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 122,
+              "long_name": "orders.customer_first",
+              "name": "customer_first",
+              "short_name": "customer_first",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 162,
+              "long_name": "orders.customer_last",
+              "name": "customer_last",
+              "short_name": "customer_last",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 322,
+              "long_name": "orders.customer_email",
+              "name": "customer_email",
+              "short_name": "customer_email",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "orders.created_at",
+              "name": "created_at",
+              "short_name": "created_at",
+              "value_type": "DateTime"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "orders.arrival_date",
+              "name": "arrival_date",
+              "short_name": "arrival_date",
+              "value_type": "Date"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "orders.departure_date",
+              "name": "departure_date",
+              "short_name": "departure_date",
+              "value_type": "Date"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "orders.arrival_time",
+              "name": "arrival_time",
+              "short_name": "arrival_time",
+              "value_type": "Time"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "orders.departure_time",
+              "name": "departure_time",
+              "short_name": "departure_time",
+              "value_type": "Time"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "orders.passengers",
+              "name": "passengers",
+              "short_name": "passengers",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "orders.nights",
+              "name": "nights",
+              "short_name": "nights",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "orders.price_per_night",
+              "name": "price_per_night",
+              "short_name": "price_per_night",
+              "value_type": "Number"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "orders.subtotal",
+              "name": "subtotal",
+              "short_name": "subtotal",
+              "value_type": "Number"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "orders.discount",
+              "name": "discount",
+              "short_name": "discount",
+              "value_type": "Number"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "orders.tax_rate",
+              "name": "tax_rate",
+              "short_name": "tax_rate",
+              "value_type": "Number"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "orders.tax_amount",
+              "name": "tax_amount",
+              "short_name": "tax_amount",
+              "value_type": "Number"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "orders.total",
+              "name": "total",
+              "short_name": "total",
+              "value_type": "Number"
+            },
+            {
+              "description": null,
+              "length": 12,
+              "long_name": "orders.paid",
+              "name": "paid",
+              "short_name": "paid",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 12,
+              "long_name": "orders.oversized_vehicle",
+              "name": "oversized_vehicle",
+              "short_name": "oversized_vehicle",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 50,
+              "long_name": "orders.state",
+              "name": "state",
+              "short_name": "state",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 34,
+              "long_name": "orders.source",
+              "name": "source",
+              "short_name": "source",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 2002,
+              "long_name": "orders.note",
+              "name": "note",
+              "short_name": "note",
+              "value_type": "String"
+            }
+          ],
+          "name": "orders",
+          "parameters": [],
+          "qualified_name": "rptfixtures.public.orders"
+        },
+        {
+          "alias": "parking_lot",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_odbc.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "ODBC (RDO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "parking"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": "rpt"
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "parking_lot.id",
+              "name": "id",
+              "short_name": "id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 34,
+              "long_name": "parking_lot.code",
+              "name": "code",
+              "short_name": "code",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 202,
+              "long_name": "parking_lot.name",
+              "name": "name",
+              "short_name": "name",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "parking_lot.capacity",
+              "name": "capacity",
+              "short_name": "capacity",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 12,
+              "long_name": "parking_lot.covered",
+              "name": "covered",
+              "short_name": "covered",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 482,
+              "long_name": "parking_lot.address",
+              "name": "address",
+              "short_name": "address",
+              "value_type": "String"
+            }
+          ],
+          "name": "parking_lot",
+          "parameters": [],
+          "qualified_name": "rptfixtures.public.parking_lot"
+        },
+        {
+          "alias": "partner",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_odbc.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "ODBC (RDO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "parking"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": "rpt"
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "partner.id",
+              "name": "id",
+              "short_name": "id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 34,
+              "long_name": "partner.code",
+              "name": "code",
+              "short_name": "code",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 242,
+              "long_name": "partner.name",
+              "name": "name",
+              "short_name": "name",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 162,
+              "long_name": "partner.country",
+              "name": "country",
+              "short_name": "country",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 12,
+              "long_name": "partner.api_enabled",
+              "name": "api_enabled",
+              "short_name": "api_enabled",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 1602,
+              "long_name": "partner.notes",
+              "name": "notes",
+              "short_name": "notes",
+              "value_type": "String"
+            }
+          ],
+          "name": "partner",
+          "parameters": [],
+          "qualified_name": "rptfixtures.public.partner"
+        },
+        {
+          "alias": "provinces_all",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_odbc.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "ODBC (RDO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "parking"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": "rpt"
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "provinces_all.id",
+              "name": "id",
+              "short_name": "id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "provinces_all.name_short",
+              "name": "name_short",
+              "short_name": "name_short",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "provinces_all.name_long",
+              "name": "name_long",
+              "short_name": "name_long",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "provinces_all.country_id",
+              "name": "country_id",
+              "short_name": "country_id",
+              "value_type": "Int32s"
+            }
+          ],
+          "name": "provinces_all",
+          "parameters": [],
+          "qualified_name": "rptfixtures.public.provinces_all"
+        },
+        {
+          "alias": "service",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_odbc.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "ODBC (RDO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "parking"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": "rpt"
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "service.id",
+              "name": "id",
+              "short_name": "id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 42,
+              "long_name": "service.code",
+              "name": "code",
+              "short_name": "code",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 202,
+              "long_name": "service.name",
+              "name": "name",
+              "short_name": "name",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "service.unit_price",
+              "name": "unit_price",
+              "short_name": "unit_price",
+              "value_type": "Number"
+            },
+            {
+              "description": null,
+              "length": 12,
+              "long_name": "service.taxable",
+              "name": "taxable",
+              "short_name": "taxable",
+              "value_type": "String"
+            }
+          ],
+          "name": "service",
+          "parameters": [],
+          "qualified_name": "rptfixtures.public.service"
+        },
+        {
+          "alias": "vw_sports_tabler_output",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_odbc.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "ODBC (RDO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "parking"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": "rpt"
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "vw_sports_tabler_output.id",
+              "name": "id",
+              "short_name": "id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "vw_sports_tabler_output.team",
+              "name": "team",
+              "short_name": "team",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "vw_sports_tabler_output.sport",
+              "name": "sport",
+              "short_name": "sport",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "vw_sports_tabler_output.league",
+              "name": "league",
+              "short_name": "league",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "vw_sports_tabler_output.section",
+              "name": "section",
+              "short_name": "section",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "vw_sports_tabler_output.division",
+              "name": "division",
+              "short_name": "division",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "vw_sports_tabler_output.hometown",
+              "name": "hometown",
+              "short_name": "hometown",
+              "value_type": "PersistentMemo"
+            }
+          ],
+          "name": "vw_sports_tabler_output",
+          "parameters": [],
+          "qualified_name": "rptfixtures.public.vw_sports_tabler_output"
+        }
+      ]
+    },
+    "designer_state": {
+      "connections": [],
+      "guidelines": []
+    },
+    "embeds": [],
+    "has_saved_data": true,
+    "print_options": {
+      "content_height": 15120,
+      "content_width": 11520,
+      "driver_name": null,
+      "margins": {
+        "bottom": 360,
+        "left": 360,
+        "right": 360,
+        "top": 360
+      },
+      "multi_column": null,
+      "paper_orientation": "Portrait",
+      "paper_size": "DefaultPaperSize",
+      "paper_source": "FormSource",
+      "port_name": null,
+      "printer_duplex": "Default",
+      "printer_name": "",
+      "saved_printer_name": ""
+    },
+    "reimport": {
+      "imported_at": {
+        "julian_day": 2451471,
+        "time_fraction": 72148
+      },
+      "reimport_when_opening": 1,
+      "source_path": "",
+      "source_saved_at": {
+        "julian_day": 0,
+        "time_fraction": 0
+      }
+    },
+    "report_definition": {
+      "areas": [
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": true,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "ReportHeader",
+          "name": "Area1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 4545,
+              "kind": "ReportHeader",
+              "name": "Section1",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 4320,
+                    "left": 2535,
+                    "top": 225,
+                    "width": 7200
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Chart": {
+                      "category_refs": [
+                        "orders.created_at"
+                      ],
+                      "data_refs": [
+                        "orders.total",
+                        "orders.total"
+                      ],
+                      "definition": {
+                        "category_period": "Weekly",
+                        "category_refs": [
+                          "{orders.created_at}"
+                        ],
+                        "data_axis_title": "",
+                        "data_label": "",
+                        "data_labels_show_value": false,
+                        "data_refs": [
+                          "Minimum ({orders.total}, {orders.created_at}, \"daily\")",
+                          "Maximum ({orders.total}, {orders.created_at}, \"daily\")"
+                        ],
+                        "element_fonts": [
+                          {
+                            "name": "Arial",
+                            "size_pt": null
+                          },
+                          {
+                            "name": "Arial",
+                            "size_pt": null
+                          },
+                          {
+                            "name": "Arial",
+                            "size_pt": null
+                          },
+                          {
+                            "name": "Arial",
+                            "size_pt": null
+                          },
+                          {
+                            "name": "Arial",
+                            "size_pt": null
+                          },
+                          {
+                            "name": "Arial",
+                            "size_pt": null
+                          },
+                          {
+                            "name": "Arial",
+                            "size_pt": null
+                          },
+                          {
+                            "name": "Arial",
+                            "size_pt": null
+                          }
+                        ],
+                        "footnote": "",
+                        "graph_subtype": 101,
+                        "graph_type": "Stock",
+                        "group_axis_gridlines": "None",
+                        "group_axis_title": "",
+                        "layout_type": "Detail",
+                        "legend_position": "Right",
+                        "legend_visible": true,
+                        "series_colors": [],
+                        "subtitle": "",
+                        "title": "Order total by month",
+                        "value_axis_gridlines": "Major",
+                        "view_angle": "Standard"
+                      }
+                    }
+                  },
+                  "name": "Graph1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 6000
+                }
+              ],
+              "section_code": 6000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": true,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "PageHeader",
+          "name": "Area2",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 600,
+              "kind": "PageHeader",
+              "name": "Section2",
+              "objects": [],
+              "section_code": 12000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "Detail",
+          "name": "Area3",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 4270,
+              "kind": "Detail",
+              "name": "Section3",
+              "objects": [],
+              "section_code": 24000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": true,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "ReportFooter",
+          "name": "Area4",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 600,
+              "kind": "ReportFooter",
+              "name": "Section4",
+              "objects": [],
+              "section_code": 48000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": true,
+              "new_page_after": true,
+              "new_page_before": false,
+              "print_at_bottom_of_page": true,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "PageFooter",
+          "name": "Area5",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 600,
+              "kind": "PageFooter",
+              "name": "Section5",
+              "objects": [],
+              "section_code": 42000,
+              "width": 0
+            }
+          ]
+        }
+      ]
+    },
+    "report_options": {
+      "convert_null_field_to_default": false,
+      "convert_other_nulls_to_default": false,
+      "enable_verify_on_every_print": false,
+      "initial_data_context": null,
+      "initial_report_part_name": null,
+      "save_data_with_report": true,
+      "save_preview_picture": false,
+      "save_summaries_with_report": true,
+      "use_dummy_data": false
+    },
+    "save_metadata": [
+      {
+        "key": "Saved Date",
+        "value": "2005.09.20 09:59:29 Pacific Standard Time"
+      },
+      {
+        "key": "Build Version",
+        "value": "11.5.0.240"
+      },
+      {
+        "key": "Print Engine",
+        "value": "CRW"
+      },
+      {
+        "key": "OS",
+        "value": "Windows Server 2003 family"
+      },
+      {
+        "key": "Architecture",
+        "value": "x86"
+      },
+      {
+        "key": "Saved Date",
+        "value": "2007.07.25 11:07:35 Pacific Standard Time"
+      },
+      {
+        "key": "Build Version",
+        "value": "12.0.0.321"
+      },
+      {
+        "key": "Print Engine",
+        "value": "CRVBD"
+      },
+      {
+        "key": "OS",
+        "value": "Windows XP"
+      },
+      {
+        "key": "Architecture",
+        "value": "x86"
+      },
+      {
+        "key": "Saved Date",
+        "value": "2026.07.10 23:00:54 +0100"
+      },
+      {
+        "key": "Build Version",
+        "value": "13.0.40.5789"
+      },
+      {
+        "key": "Print Engine",
+        "value": "CRVBD"
+      },
+      {
+        "key": "OS",
+        "value": "Windows Vista"
+      },
+      {
+        "key": "Architecture",
+        "value": "x86"
+      }
+    ],
+    "saved_data": {
+      "columns": [
+        {
+          "name": "orders.created_at",
+          "value_type": "DateTime"
+        },
+        {
+          "name": "orders.total",
+          "value_type": "Number"
+        }
+      ],
+      "record_count": 30,
+      "rows": [
+        [
+          "2460312",
+          "-1"
+        ],
+        [
+          "2460314",
+          "0"
+        ],
+        [
+          "2460317",
+          "0"
+        ],
+        [
+          "2460329",
+          "-1"
+        ],
+        [
+          "2460337",
+          "0"
+        ],
+        [
+          "2460341",
+          "0"
+        ],
+        [
+          "2460346",
+          "0"
+        ],
+        [
+          "2460354",
+          "0"
+        ],
+        [
+          "2460359",
+          "-1"
+        ],
+        [
+          "2460365",
+          "1"
+        ],
+        [
+          "2460371",
+          "0"
+        ],
+        [
+          "2460376",
+          "0"
+        ],
+        [
+          "2460384",
+          "0"
+        ],
+        [
+          "2460391",
+          "-1"
+        ],
+        [
+          "2460398",
+          "0"
+        ],
+        [
+          "2460404",
+          "0"
+        ],
+        [
+          "2460409",
+          "0"
+        ],
+        [
+          "2460416",
+          "0"
+        ],
+        [
+          "2460421",
+          "-1"
+        ],
+        [
+          "2460427",
+          "1"
+        ],
+        [
+          "2460433",
+          "0"
+        ],
+        [
+          "2460438",
+          "0"
+        ],
+        [
+          "2460446",
+          "0"
+        ],
+        [
+          "2460453",
+          "-1"
+        ],
+        [
+          "2460460",
+          "0"
+        ],
+        [
+          "2460466",
+          "0"
+        ],
+        [
+          "2460471",
+          "0"
+        ],
+        [
+          "2460478",
+          "0"
+        ],
+        [
+          "2460485",
+          "-1"
+        ],
+        [
+          "2460490",
+          "1"
+        ]
+      ]
+    },
+    "subreports": [],
+    "summary_info": {
+      "author": "",
+      "comments": "",
+      "keywords": "",
+      "last_saved_by": "",
+      "revision_number": "23",
+      "save_with_preview": false,
+      "subject": "",
+      "title": ""
+    },
+    "version": 1
+  }
+}

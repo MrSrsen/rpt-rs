@@ -1,9 +1,8 @@
 //! Structural decode test for the chart legend (visible flag + placement), read from the `0x0121`
-//! `ChartDefinition2` styling struct. RptToXml never emits a `ChartObject`, so there is no oracle —
-//! these are verified byte-exactly against single-property synthetic/minimal-pair fixtures.
+//! `ChartDefinition2` styling struct. Each case pins one styling property byte-exactly against a
+//! fixture that varies only that property.
 
 use rpt::model::{ChartLegendPosition, ReportObjectKind};
-use std::path::Path;
 
 /// The first chart's decoded [`rpt::model::ChartDefinition`] in a report.
 fn chart_def(report: &rpt::model::Report) -> Option<&rpt::model::ChartDefinition> {
@@ -22,9 +21,7 @@ fn chart_def(report: &rpt::model::Report) -> Option<&rpt::model::ChartDefinition
 /// Open a fixture and return its first chart definition's `(legend_visible, legend_position)`,
 /// or `None` if the fixture is absent (so the suite stays green without the private corpus).
 fn legend(rel: &str) -> Option<(bool, ChartLegendPosition)> {
-    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../tests/fixtures/reports")
-        .join(rel);
+    let path = rpt_test_support::fixture("tests/fixtures/reports").join(rel);
     let rpt = rpt::Rpt::open(&path).ok()?;
     let def = chart_def(rpt.report()).expect("fixture has a chart");
     Some((def.legend_visible, def.legend_position))
@@ -41,7 +38,7 @@ fn baseline_legend_visible_right() {
     assert_eq!(pos, ChartLegendPosition::Right);
 }
 
-/// Minimal-pair fixtures over the parking bar chart confirm the legend flags byte-exactly:
+/// The legend flags decode byte-exactly:
 /// right → (visible, Right), left → (visible, Left), off → (hidden, ...).
 #[test]
 fn parking_legend_minimal_pairs() {
@@ -52,7 +49,7 @@ fn parking_legend_minimal_pairs() {
         eprintln!("[skip] parking legend fixtures absent");
         return;
     }
-    // Left (code 1) — confirmed by the right→left byte diff at the position high byte (00→01).
+    // Left (code 1) — the position high byte reads 01.
     let (visible, pos) = legend("parking/orders_legend_left.rpt").expect("left fixture");
     assert!(visible, "left variant legend is shown");
     assert_eq!(pos, ChartLegendPosition::Left);
@@ -65,9 +62,7 @@ fn parking_legend_minimal_pairs() {
 /// Open a fixture and return its first chart's `(graph_type, data_labels_show_value, n_series_colors)`,
 /// or `None` if the fixture is absent.
 fn data_labels(rel: &str) -> Option<(rpt::model::ChartGraphType, bool, usize)> {
-    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../tests/fixtures/reports")
-        .join(rel);
+    let path = rpt_test_support::fixture("tests/fixtures/reports").join(rel);
     let rpt = rpt::Rpt::open(&path).ok()?;
     let def = chart_def(rpt.report()).expect("fixture has a chart");
     Some((
@@ -77,10 +72,9 @@ fn data_labels(rel: &str) -> Option<(rpt::model::ChartGraphType, bool, usize)> {
     ))
 }
 
-/// The data-labels "show value" flag (bit1 of the `0x0121` data-labels enum byte) decodes off across
-/// every corpus chart — none of the sampled fixtures enable point labels, so the walk lands on `00`
-/// for axis charts (+81 from the legend short) and on `00` for the pie fixture (+83, pie-family
-/// shift). The positive (`02`) case is proven by the differential byte-map, not a fixture.
+/// The data-labels "show value" flag (bit1 of the `0x0121` data-labels enum byte) reads off on every
+/// fixture here, so the walk lands on `00` for axis charts (+81 from the legend short) and on `00`
+/// for the pie fixture (+83, pie-family shift). The positive (`02`) case is unexercised.
 /// `series_colors` is always empty: the design-time palette is not byte-recoverable.
 #[test]
 fn data_labels_and_series_colors_across_fixtures() {
@@ -131,7 +125,7 @@ fn graph_type_from_code_maps_documented_families() {
     for (code, want) in cases {
         assert_eq!(G::from_code(code), want, "code {code}");
     }
-    // Codes past the confirmed gallery (0..=15) are preserved verbatim, not silently collapsed.
+    // Codes past the gallery (0..=15) are preserved verbatim, not silently collapsed.
     assert_eq!(G::from_code(16), G::Other(16));
     assert_eq!(G::from_code(99), G::Other(99));
 }
@@ -173,10 +167,10 @@ fn is_3d_only_for_3d_families() {
     }
 }
 
-/// Bar-family `arrangement()` decoded from the `graph_subtype` variant slot, confirmed by the parking
-/// bar minimal pairs: subtype `0`→Clustered, `1`→Stacked, `2`→Percent.
+/// Bar-family `arrangement()` decoded from the `graph_subtype` variant slot: subtype `0`→Clustered,
+/// `1`→Stacked, `2`→Percent.
 #[test]
-fn arrangement_bar_minimal_pairs() {
+fn arrangement_decodes_from_the_bar_subtype_slot() {
     use rpt::model::{ChartArrangement, ChartDefinition};
     // Default and a truncated leaf both fall back to Clustered.
     assert_eq!(
@@ -202,11 +196,10 @@ fn arrangement_bar_minimal_pairs() {
     }
 }
 
-/// The 2-D depth-effect bit (`0x02` of `graph_subtype`) on the Area family, confirmed by the area
-/// minimal pair (subtype `0x14`→`0x16`). Depth is a shallow-3-D look, not a 3-D chart type, so
-/// `is_3d()` stays `false`.
+/// The 2-D depth-effect bit (`0x02` of `graph_subtype`) on the Area family (subtype `0x14`→`0x16`).
+/// Depth is a shallow-3-D look, not a 3-D chart type, so `is_3d()` stays `false`.
 #[test]
-fn area_depth_effect_minimal_pair() {
+fn area_depth_effect_reads_the_subtype_bit() {
     let cases = [
         ("parking/orders_area.rpt", false),
         ("parking/orders_area_depth.rpt", true),
@@ -225,24 +218,19 @@ fn area_depth_effect_minimal_pair() {
 
 /// Open a fixture, returning `None` if absent so the suite stays green without the private corpus.
 fn open(rel: &str) -> Option<rpt::Rpt> {
-    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../tests/fixtures/reports")
-        .join(rel);
+    let path = rpt_test_support::fixture("tests/fixtures/reports").join(rel);
     rpt::Rpt::open(&path).ok()
 }
 
 /// The chart's "on change of `<date>`" category period, decoded from the category grid `0xe5`
 /// group's SDK-ordinal byte (`used + 3`) — the same encoding a report group's date condition uses.
 ///
-/// `orders` (monthly) and `orders_weekly` (weekly) are byte-confirmed AND cross-checked against the
-/// engine's rendered category-axis labels (6 monthly vs 25 weekly buckets). `orders_bar_stacked`
-/// (monthly) proves the period is read independently of the stock/stacked flag (`0x0126` first-u32).
+/// The period is read independently of the stock/stacked flag (`0x0126` first-u32).
 ///
-/// KNOWN RESIDUAL: the engine renders the `chart_stock` stock chart with **biweekly** (13) buckets,
-/// but its category grid stores ordinal `1` (weekly) — byte-identical to genuinely-weekly
-/// `orders_weekly` at every non-confounded position — so it decodes as `Weekly`. The biweekly signal
-/// is not byte-isolable from the current fixtures (it is confounded with the stock chart type and
-/// the absence of a report group).
+/// A chart whose category has no report group can render its axis with biweekly-spaced labels even
+/// when the stored ordinal reads `Weekly` — with no report group to bucket the detail rows itself, the
+/// engine auto-thins a crowded date axis at render time; that is a render-time cosmetic, not a stored
+/// interval. A genuinely biweekly chart stores ordinal `2` directly and decodes as `Biweekly`.
 #[test]
 fn category_period_from_grid_group() {
     use rpt::model::ChartCategoryPeriod::*;
@@ -252,8 +240,8 @@ fn category_period_from_grid_group() {
         ("parking/orders_bar_stacked.rpt", Some(Monthly)),
         // Discrete/XY category (scatter) — no periodic grouping.
         ("parking/chart_scatter.rpt", None),
-        // Stock charts: engine renders biweekly, but the stored SDK ordinal is 1 (weekly). Decodes
-        // as Weekly — the stored value; the biweekly render is a documented, un-isolable residual.
+        // Stock charts genuinely group weekly (ordinal 1); the engine's biweekly-spaced axis labels
+        // are render-time auto-thinning, not a stored interval (see the doc above). Decodes Weekly.
         ("parking/chart_stock.rpt", Some(Weekly)),
         ("parking/chart_stock_open.rpt", Some(Weekly)),
     ];

@@ -83,33 +83,13 @@ fn sample() -> Page {
     p
 }
 
-/// Compare `actual` bytes against the committed golden at `tests/golden/<name>`. Regenerate after
-/// an intentional change: `RPT_BLESS=1 cargo test -p rpt-render-pdf`.
-fn assert_golden_bytes(name: &str, actual: &[u8]) {
-    let dir = format!("{}/tests/golden", env!("CARGO_MANIFEST_DIR"));
-    let path = format!("{dir}/{name}");
-    if std::env::var_os("RPT_BLESS").is_some() {
-        std::fs::create_dir_all(&dir).unwrap();
-        std::fs::write(&path, actual).unwrap();
-        return;
-    }
-    let expected = std::fs::read(&path).unwrap_or_else(|_| {
-        panic!("missing golden {path}; regenerate with RPT_BLESS=1 cargo test -p rpt-render-pdf")
-    });
-    assert!(
-        actual == expected.as_slice(),
-        "golden mismatch for {name} ({} vs {} bytes); if intentional, regenerate with RPT_BLESS=1",
-        actual.len(),
-        expected.len()
-    );
-}
-
 #[test]
 fn golden_basic_pdf_snapshot() {
     // The dependency-free writer emits fully deterministic PDF (no embedded fonts / timestamps),
     // so a byte-golden pins its exact structure — a content-op change fails even if the %PDF magic
     // and probe substrings still match.
-    assert_golden_bytes(
+    rpt_test_support::assert_golden_bytes(
+        env!("CARGO_MANIFEST_DIR"),
         "basic.pdf",
         &render_pages_basic(std::slice::from_ref(&sample())),
     );
@@ -136,6 +116,82 @@ fn render_pages_multipage() {
     let pages = vec![sample(), sample(), sample()];
     let bytes = render_pages(&pages);
     assert!(bytes.starts_with(b"%PDF"));
+}
+
+/// A text run that follows a stroked path op (line/rule) must be drawn fill-only. Text carries no
+/// stroke, so a stroke left active on the surface by the preceding line would make krilla fill *and*
+/// stroke the glyphs (text render mode `2 Tr`) — a doubled/haloed run. The page in `sample()` places
+/// its line last, so add a text run after it and assert no glyph run is stroked.
+#[cfg(feature = "krilla-backend")]
+#[test]
+fn text_after_line_is_fill_only() {
+    let mut page = sample();
+    page.push(DrawOp::Text(TextRun {
+        bounds: rpt_model::Rect {
+            left: Twips(720),
+            top: Twips(1400),
+            width: Twips(3900),
+            height: Twips(320),
+        },
+        text: "After the line".into(),
+        font: FontSpec {
+            size_pt: 10.0,
+            ..FontSpec::default()
+        },
+        color: Color {
+            a: 255,
+            r: 0,
+            g: 0,
+            b: 0,
+        },
+        align: TextAlign::Left,
+        rotation: 0.0,
+        metrics: None,
+        source: None,
+    }));
+    let bytes = render_page(&page);
+    let content = inflated_content(&bytes);
+    assert!(
+        content.contains(" TJ") || content.contains(" Tj"),
+        "expected the krilla backend to emit glyph runs"
+    );
+    assert!(
+        !content.contains("2 Tr") && !content.contains("1 Tr"),
+        "text must be fill-only (0 Tr); a stroked run (1/2 Tr) means a leaked stroke doubled the glyphs"
+    );
+}
+
+/// Concatenate every `/FlateDecode` content stream in `pdf`, inflated to text, for op-level asserts.
+#[cfg(feature = "krilla-backend")]
+fn inflated_content(pdf: &[u8]) -> String {
+    let marker = b"stream";
+    let mut out = String::new();
+    let mut i = 0;
+    while let Some(rel) = find(&pdf[i..], marker) {
+        let mut s = i + rel + marker.len();
+        // Skip the EOL after `stream` (CRLF or LF).
+        if pdf.get(s) == Some(&b'\r') {
+            s += 1;
+        }
+        if pdf.get(s) == Some(&b'\n') {
+            s += 1;
+        }
+        let Some(erel) = find(&pdf[s..], b"endstream") else {
+            break;
+        };
+        let end = s + erel;
+        if let Ok(bytes) = miniz_oxide::inflate::decompress_to_vec_zlib(&pdf[s..end]) {
+            out.push_str(&String::from_utf8_lossy(&bytes));
+            out.push('\n');
+        }
+        i = end + b"endstream".len();
+    }
+    out
+}
+
+#[cfg(feature = "krilla-backend")]
+fn find(hay: &[u8], needle: &[u8]) -> Option<usize> {
+    hay.windows(needle.len()).position(|w| w == needle)
 }
 
 #[test]
@@ -204,6 +260,35 @@ fn basic_writer_emits_ellipse_beziers() {
 }
 
 #[test]
+fn basic_writer_rounded_rect_emits_beziers_not_re() {
+    let rounded = DrawOp::Rect(RectOp {
+        bounds: rpt_model::Rect {
+            left: Twips(0),
+            top: Twips(0),
+            width: Twips(3000),
+            height: Twips(1500),
+        },
+        fill: Some(
+            Color {
+                a: 255,
+                r: 10,
+                g: 20,
+                b: 30,
+            }
+            .into(),
+        ),
+        stroke: None,
+        corner_radius: Twips(300),
+        source: None,
+    });
+    let s = String::from_utf8_lossy(&render_pages_basic(&[one_op_page(rounded)])).into_owned();
+    // Four corner arcs, no `re` rectangle operator, closed and filled.
+    assert_eq!(s.matches(" c\n").count(), 4, "{s}");
+    assert!(!s.contains(" re\n"), "{s}");
+    assert!(s.contains("h\n") && s.contains("f\n"), "{s}");
+}
+
+#[test]
 fn basic_writer_rotated_text_wraps_in_cm() {
     let rotated = DrawOp::Text(TextRun {
         bounds: rpt_model::Rect {
@@ -229,6 +314,47 @@ fn basic_writer_rotated_text_wraps_in_cm() {
     // A rotation `cm` wraps the text object.
     assert!(s.contains(" cm\n"), "{s}");
     assert!(s.contains("q ") && s.contains("Q\n"));
+}
+
+#[test]
+fn basic_writer_justified_text_sets_word_spacing() {
+    let justified = |align, width| {
+        DrawOp::Text(TextRun {
+            bounds: rpt_model::Rect {
+                left: Twips(0),
+                top: Twips(0),
+                width: Twips(width),
+                height: Twips(240),
+            },
+            text: "two words here".into(),
+            font: FontSpec::default(),
+            color: Color {
+                a: 255,
+                r: 0,
+                g: 0,
+                b: 0,
+            },
+            align,
+            rotation: 0.0,
+            metrics: None,
+            source: None,
+        })
+    };
+    // A justified run under its box width sets a positive word spacing (`Tw`) and resets it (`0 Tw`).
+    let s = String::from_utf8_lossy(&render_pages_basic(&[one_op_page(justified(
+        TextAlign::Justified,
+        9000,
+    ))]))
+    .into_owned();
+    assert!(s.contains(" Tw "), "expected word spacing, got: {s}");
+    assert!(s.contains("0 Tw ET"), "word spacing reset, got: {s}");
+    // A left run emits no word spacing.
+    let left = String::from_utf8_lossy(&render_pages_basic(&[one_op_page(justified(
+        TextAlign::Left,
+        9000,
+    ))]))
+    .into_owned();
+    assert!(!left.contains(" Tw "), "{left}");
 }
 
 #[test]

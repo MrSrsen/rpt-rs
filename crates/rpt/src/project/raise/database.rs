@@ -47,6 +47,12 @@ pub(super) fn raise_database(qe: &RecordStream) -> Database {
         // table-type word — is anchored elsewhere. The table and every field are qualified by
         // this alias, not the raw name.
         let alias = table_alias(&strings, &name);
+        // The provider's qualified name is the table's *second* own string: the bare table name for
+        // an unqualified table (`Customer`), the literal `Command` for a SQL-command table, or the
+        // full `catalog.schema.table` when the provider qualified it (`rptfixtures.public.orders`).
+        // It sits at index 1 because the name is repeated at index 0 and the qualified form follows
+        // (the intervening NUL slots are dropped by `own_lp_strings`).
+        let qualified_name = strings.get(1).filter(|s| !s.is_empty()).cloned();
         // Every SQL-command table is named `Command` / `Command_N`; any other name is a real
         // database table or view. The class is keyed on the name, not on detecting a SQL string.
         let is_command = name == "Command" || name.starts_with("Command_");
@@ -70,6 +76,14 @@ pub(super) fn raise_database(qe: &RecordStream) -> Database {
                 data_fields.push(field);
             }
         }
+        // The command's bind parameters are the table's `0x07` children (a command/stored-proc
+        // table only; a plain database table has none).
+        let parameters = n
+            .children
+            .iter()
+            .filter(|c| c.rtype == QE_COMMAND_PARAM)
+            .filter_map(|c| raise_command_param(c, logical))
+            .collect();
         table_list.push((
             order_id,
             Table {
@@ -78,8 +92,9 @@ pub(super) fn raise_database(qe: &RecordStream) -> Database {
                 connection: connection.clone(),
                 data_fields,
                 command_text,
+                parameters,
                 name,
-                ..Default::default()
+                qualified_name,
             },
         ));
     }
@@ -88,9 +103,15 @@ pub(super) fn raise_database(qe: &RecordStream) -> Database {
     db.tables = table_list.into_iter().map(|(_, t)| t).collect();
 
     // Table links (0x0a) — root-level records of six big-endian u32s:
-    // `[link_id][src_field_id][dst_field_id][_][join_type][_]`. Resolve the field ids against the
-    // index to recover the linked tables and fields. The stream sometimes stores links out of order;
-    // they are emitted by ascending link_id, so collect then sort.
+    // `[link_id][src_field_id][dst_field_id][operator][join_kind][w5]`. Resolve the field ids against
+    // the index to recover the linked tables and fields. The stream sometimes stores links out of
+    // order; they are emitted by ascending link_id, so collect then sort.
+    //
+    // The two predicate words are one-hot bit codes and are INDEPENDENT — the designer's Link Options
+    // dialog sets outer-ness and comparison operator separately, and the file mirrors that split even
+    // though the SDK's single `TableJoinType` cannot express both at once. Word 5 stays undecoded: it
+    // is 1 on every link ever observed, including under a lookup-type change and a compound key (a
+    // two-term join is stored as two `0x0a` records, so it is not a field-term count either).
     let mut raw_links: Vec<(i32, TableLink)> = Vec::new();
     for root in &tree {
         root.walk(&mut |n| {
@@ -99,8 +120,8 @@ pub(super) fn raise_database(qe: &RecordStream) -> Database {
             }
             let b = n.leaf_bytes(logical);
             let be = |i: usize| i32_be(&b, i * 4);
-            let (Some(link_id), Some(src_id), Some(dst_id), Some(join)) =
-                (be(0), be(1), be(2), be(4))
+            let (Some(link_id), Some(src_id), Some(dst_id), Some(operator), Some(join)) =
+                (be(0), be(1), be(2), be(3), be(4))
             else {
                 return;
             };
@@ -112,7 +133,8 @@ pub(super) fn raise_database(qe: &RecordStream) -> Database {
             raw_links.push((
                 link_id,
                 TableLink {
-                    join_type: TableJoinType::from_code(join),
+                    join_kind: TableJoinKind::from_code(join),
+                    operator: TableLinkOperator::from_code(operator),
                     source_table_alias: src_table.clone(),
                     target_table_alias: dst_table.clone(),
                     source_fields: vec![src_field.name.clone()],
@@ -124,7 +146,7 @@ pub(super) fn raise_database(qe: &RecordStream) -> Database {
     raw_links.sort_by_key(|(id, _)| *id);
     // A join between two tables is one <TableLink> carrying the full (possibly compound) key, whereas
     // the QE stream stores one `0x0a` record per field-pair. Fold consecutive records (in link_id /
-    // emit order) that share the same source table, target table and join type into a single link,
+    // emit order) that share the same source table, target table and predicate into a single link,
     // concatenating their fields.
     let mut links: Vec<TableLink> = Vec::new();
     for (_, link) in raw_links {
@@ -132,7 +154,8 @@ pub(super) fn raise_database(qe: &RecordStream) -> Database {
             Some(last)
                 if last.source_table_alias == link.source_table_alias
                     && last.target_table_alias == link.target_table_alias
-                    && last.join_type == link.join_type =>
+                    && last.join_kind == link.join_kind
+                    && last.operator == link.operator =>
             {
                 last.source_fields.extend(link.source_fields);
                 last.target_fields.extend(link.target_fields);
@@ -178,6 +201,21 @@ pub(super) fn table_alias(strings: &[String], name: &str) -> String {
         let alias = &strings[2];
         if !alias.is_empty() && alias.len() < 64 && !alias.chars().any(char::is_whitespace) {
             return alias.clone();
+        }
+    }
+    // A fully-qualified base table stores its report *instance* name — the alias — as the last element
+    // of a trailing `[database, schema, instance]` triple, alongside the fully-qualified
+    // `database.schema.name` string (`strings[1]`). When a report self-joins one table under several
+    // aliases, the bare `name` repeats across the instances, so only this instance string tells them
+    // apart. When the qualified name is reconstructable from a consecutive `[db, schema, X]` triple
+    // (`db.schema.name` == the qualified string), `X` is the alias — for an un-aliased table it simply
+    // equals the name.
+    if let Some(qualified) = strings.get(1) {
+        if let Some(w) = strings
+            .windows(3)
+            .find(|w| &format!("{}.{}.{}", w[0], w[1], name) == qualified)
+        {
+            return w[2].clone();
         }
     }
     // Otherwise the alias is the bare name or a suffixed instance variant (`clients1`, `Command_2`).
@@ -228,34 +266,21 @@ pub(super) fn command_sql(node: &RecordNode, logical: &[u8]) -> Option<String> {
     longest_lp(&node.leaf_bytes(logical))
 }
 
-/// Read one connection slot (a length-prefixed string) at `off`, **keeping empty slots** (a
-/// length-1 NUL → `""`), returning the text and the next offset. Unlike [`read_lp_string`], an empty
-/// slot is a valid value here, not a skip — the connection record's `[DLL, type, server]` slots are
-/// positional and the type slot is often empty.
-fn read_conn_slot(b: &[u8], off: usize) -> Option<(String, usize)> {
-    let len = u32_be(b, off)? as usize;
-    if len > 0x4000 {
-        return None;
-    }
-    let raw = b.get(off + 4..off + 4 + len)?;
-    let end = raw.iter().position(|&x| x == 0).unwrap_or(raw.len());
-    Some((
-        String::from_utf8_lossy(&raw[..end]).into_owned(),
-        off + 4 + len,
-    ))
-}
-
 /// The three positional own-slots of a `0x02` connection leaf: `(Database_DLL, QE_DatabaseType,
 /// QE_ServerDescription)`. The leaf is `[marker][DLL][type][server]`; the marker width varies, so
 /// anchor on the driver DLL (the first slot whose text ends `.dll`) and read the next two slots
 /// from there, keeping empties (the type slot is commonly empty — the engine then derives it).
+///
+/// Slots are read as length-prefixed lossy strings (an empty length-1 NUL slot is a valid value
+/// here, not a skip), capped wide enough for a long server description.
 fn qe_connection_slots(b: &[u8]) -> (String, String, String) {
+    let slot = |off: usize| read_be_lp_string_lossy_at(b, off, 0x4000);
     let mut i = 0;
     while i + 4 <= b.len() {
-        if let Some((s, next)) = read_conn_slot(b, i) {
+        if let Some((s, next)) = slot(i) {
             if s.to_ascii_lowercase().ends_with(".dll") {
-                let (db_type, n2) = read_conn_slot(b, next).unwrap_or_default();
-                let (server, _) = read_conn_slot(b, n2).unwrap_or_default();
+                let (db_type, n2) = slot(next).unwrap_or_default();
+                let (server, _) = slot(n2).unwrap_or_default();
                 return (s, db_type, server);
             }
         }
@@ -394,6 +419,31 @@ pub(super) fn raise_connection(n: &RecordNode, logical: &[u8]) -> ConnectionInfo
     connection
 }
 
+/// A `QESession` command-parameter record (0x07), a child of a command/stored-proc table (0x03):
+/// `[u32-BE id][lp-string name][lp-string heading][u32-BE flags=1][u32-BE value-type]…`. The name
+/// is the bind's stored spelling (`cardCode`, `$[BOY_AB_FROMDATE]`); the value-type is the
+/// `CrFieldValueTypeEnum` code (`6`=Number, `9`=Date, `11`=String, …). The heading/prompt slot is a
+/// length-prefixed string — a 5-byte null placeholder (`00 00 00 01 00`) when the parameter has no
+/// heading, exactly as the field record's description slot — and is skipped over to reach the type.
+/// The trailing default/current-value payload (report-instance data) is intentionally not decoded.
+pub(super) fn raise_command_param(node: &RecordNode, logical: &[u8]) -> Option<CommandParameter> {
+    let bytes = node.leaf_bytes(logical);
+    let mut c = Cursor::new(&bytes);
+    c.u32_be()?; // parameter id (unused)
+    let name = c.lp_string()?;
+    // The heading/prompt slot: a real lp-string advances the cursor; an empty placeholder
+    // (`00 00 00 01 00`) fails `lp_string` validation, so skip its fixed 5 bytes.
+    if c.lp_string().is_none() {
+        c.skip(5);
+    }
+    c.u32_be()?; // flags (== 1)
+    let value_type = c
+        .u32_be()
+        .map(|v| FieldValueType::from_code(v as i32))
+        .unwrap_or_default();
+    Some(CommandParameter { name, value_type })
+}
+
 /// A `QESession` field record (0x04): `[u32 id][lp-string name][u32 flags][u32][u32-le
 /// value-type][u32-le length]`. The id (big-endian, the table-link reference key) and name
 /// length are big-endian; the trailing value-type and length scalars are little-endian. Returns
@@ -418,22 +468,29 @@ pub(super) fn raise_db_field(node: &RecordNode, logical: &[u8]) -> Option<(i32, 
         .u8()
         .map(|v| FieldValueType::from_code(i32::from(v)))
         .unwrap_or_default();
-    // The field's byte length is a big-endian u32 immediately after the value-type code. An
-    // "unlimited"/MAX string column (HANA NVARCHAR(MAX)) instead stores a 4-byte sentinel whose
-    // high word is 0xFFFF here — the SQL VARCHAR(MAX) convention — and the real length follows it.
-    // The high word 0xFFFF can never be a valid byte count, so it unambiguously flags the variant.
+    // The field's column size follows the value-type code. Normally it is a single big-endian u32.
+    // A MAX/unlimited column (a `(N)VARCHAR(MAX)` / large-object mapping) instead prefixes it with a
+    // 4-byte "unlimited" descriptor whose high word is 0xFFFF (observed `FF FF 00 00`, the SQL MAX
+    // convention), and the engine's fallback capacity (65536 wide chars) follows. A high word of
+    // 0xFFFF can never be a valid byte count, so it unambiguously flags the variant. This fires on
+    // `nvarchar(max)` String columns and on wide `Memo` columns; for Memo the length is overridden
+    // to -1 below, so the skip only affects the String case.
     if u16_be(&bytes, c.pos()) == Some(0xffff) {
         c.skip(4);
     }
     let stored_length = c.u32_be().map(|v| v as i32).unwrap_or_default();
-    // An `nvarchar` string column is marked by an empty `0x0000` child record: its stored value is
-    // the wide character count + 1, so the byte length is `(stored - 1) * 2` rather than `stored`.
-    let stored_length =
-        if value_type == FieldValueType::String && node.children.iter().any(|c| c.rtype == 0) {
-            stored_length.saturating_sub(1).saturating_mul(2)
-        } else {
-            stored_length
-        };
+    // The empty `0x0000` child record marks a **wide** (2-byte-per-char, `nvarchar`/Unicode) column.
+    // Its stored value is the character capacity plus one (a null-terminator slot), so the byte
+    // length is `(stored - 1) * 2`. A single-byte (`varchar`) column has no such child and stores
+    // its byte length directly. (This distinction, not the value-type, is what separates wide from
+    // narrow String columns; Memo columns also carry the marker but take their fixed -1 length.)
+    let stored_length = if value_type == FieldValueType::String
+        && node.children.iter().any(|c| c.rtype == QE_EMPTY_MARKER)
+    {
+        stored_length.saturating_sub(1).saturating_mul(2)
+    } else {
+        stored_length
+    };
     let length = value_type.byte_length().unwrap_or(stored_length);
     Some((
         id,

@@ -7,10 +7,10 @@
 //!
 //! 1. **Unknown / misspelled built-in functions** — a call whose name is in neither the built-in
 //!    function table nor the caller-supplied custom-function set (with a nearest-name suggestion).
-//! 2. **Function arity** — a built-in called with a structurally wrong number of arguments, for the
-//!    functions whose argument shape the type system encodes (`IIf`/`Switch`/`Choose` and the
-//!    aggregate/argument-copying families). The engine's per-function signatures aren't tabulated,
-//!    so functions with a fixed/opaque return rule are not arity-checked.
+//! 2. **Function arity** — a built-in called with a structurally wrong number of arguments, driven
+//!    by the funcID-keyed signature table (`types::sig`). The dispatched built-ins and the
+//!    conditional forms (`IIf`/`Switch`/`Choose`) carry a real bound; a name with no confidently
+//!    known signature is left unchecked rather than risk rejecting a valid call.
 //! 3. **Operator type errors** — a binary/unary operator applied to statically-known incompatible
 //!    operand types (e.g. arithmetic on a `String`), via [`deduce_type`].
 //! 4. **Unknown references** — a `{field}` / `{?param}` / `{@formula}` / `{#rt}` / `{%sql}` whose
@@ -18,24 +18,21 @@
 //!    supplies that set, so the crate stays standalone (with no context, only the intrinsic checks
 //!    1–3 run).
 //!
-//! This is an additive, parity-neutral pass: it produces diagnostics and touches neither the
-//! reference-counting ([`refs`](super::refs)) nor the evaluation paths.
+//! This is an additive pass: it produces diagnostics and touches neither the reference-extraction
+//! ([`refs`](super::refs)) nor the evaluation paths.
 //!
 //! ## Spans
 //!
-//! The [`Node`] tree carries no source spans, so precise spans come from the token stream:
-//! [`validate_str`] tokenizes the source and points each name/reference diagnostic at the exact
-//! offending token. The AST-only [`validate`] entry cannot recover offsets and reports every
-//! diagnostic against a whole-formula span — use it when only an AST is available; prefer
-//! [`validate_str`] (which an LSP always can, since it has the source) for editor-quality spans.
-//! Operator diagnostics use a whole-formula span in both entries (the AST doesn't identify which
-//! operator token produced the type error).
+//! Every [`Node`] carries its source [`Span`], so each diagnostic is reported at the exact
+//! sub-expression it concerns — the offending call, reference, or operator expression — with no
+//! re-tokenization. The AST-only [`validate`] entry and the source-level [`validate_str`] entry
+//! produce identical spans; `validate_str` additionally prepends the parser's syntactic diagnostics.
 
 use std::collections::HashSet;
 
-use super::ast::Node;
+use super::ast::{Node, NodeKind};
 use super::parser::{Diagnostic, Severity};
-use super::token::{op, RefKind, Syntax, TokenKind};
+use super::token::{op, RefKind, Span, Syntax};
 use super::types::{deduce_type, func_id, ResultKind};
 
 /// The known-symbol sets a caller supplies so cross-reference checks can run. Every set is optional:
@@ -124,148 +121,75 @@ impl ValidationContext {
     }
 }
 
-/// Which token a diagnostic points at, resolved against the source in [`validate_str`].
-#[derive(Debug, Clone)]
-enum Locate {
-    /// The next identifier token whose text matches (case-insensitively) — a call's callee name.
-    Ident(String),
-    /// The next reference token with this kind and name.
-    Reference(RefKind, String),
-    /// No specific token; the whole formula.
-    Whole,
-}
-
-/// An un-located diagnostic: its message/severity plus the token to point at.
-#[derive(Debug, Clone)]
-struct Raw {
-    message: String,
-    severity: Severity,
-    locate: Locate,
-}
-
 /// Validate a parsed formula against `ctx`, returning semantic diagnostics.
 ///
-/// The AST carries no spans, so every diagnostic here is reported against a whole-formula span
-/// (`0..0`). Prefer [`validate_str`] when the source text is available — it points name and
-/// reference diagnostics at their exact tokens. See the [module docs](self#spans).
+/// Each diagnostic is located at its node's [`Span`] — the offending call,
+/// reference, or operator sub-expression — so occurrences of the same name are pinpointed
+/// independently. See the [module docs](self#spans).
 pub fn validate(node: &Node, ctx: &ValidationContext) -> Vec<Diagnostic> {
-    let mut raws = Vec::new();
-    Walker {
-        ctx,
-        out: &mut raws,
-    }
-    .visit(node);
-    raws.into_iter()
-        .map(|r| Diagnostic {
-            message: r.message,
-            start: 0,
-            end: 0,
-            severity: r.severity,
-        })
-        .collect()
+    let mut out = Vec::new();
+    Walker { ctx, out: &mut out }.visit(node);
+    out
 }
 
-/// Parse `src` under `syntax` and validate it against `ctx`, with precise token spans.
+/// Parse `src` under `syntax` and validate it against `ctx`.
 ///
 /// This is the LSP-facing entry: it returns the parser's syntactic diagnostics followed by the
-/// semantic diagnostics from [`validate`], each name/reference diagnostic located at its exact
-/// source token (operator diagnostics keep a whole-formula span; see the [module docs](self#spans)).
+/// semantic diagnostics from [`validate`], each located at its exact source span.
 pub fn validate_str(src: &str, syntax: Syntax, ctx: &ValidationContext) -> Vec<Diagnostic> {
     let (node, mut diags) = super::parse(src, syntax);
-    let mut raws = Vec::new();
-    Walker {
-        ctx,
-        out: &mut raws,
-    }
-    .visit(&node);
-    let toks = super::tokenize(src, syntax);
-    let mut consumed = vec![false; toks.len()];
-    let whole = (0usize, src.len());
-    for r in raws {
-        let (start, end) = match &r.locate {
-            Locate::Whole => whole,
-            Locate::Ident(name) => find_token(&toks, &mut consumed, whole, |t| {
-                matches!(t.kind, TokenKind::Ident) && t.text.eq_ignore_ascii_case(name)
-            }),
-            Locate::Reference(kind, name) => find_token(&toks, &mut consumed, whole, |t| {
-                matches!(t.kind, TokenKind::Reference(k) if k == *kind)
-                    && t.text.eq_ignore_ascii_case(name)
-            }),
-        };
-        diags.push(Diagnostic {
-            message: r.message,
-            start,
-            end,
-            severity: r.severity,
-        });
-    }
+    diags.extend(validate(&node, ctx));
     diags
 }
 
-/// Find the first not-yet-consumed token satisfying `pred`, mark it consumed, and return its span;
-/// fall back to `whole` when none is left (keeps occurrences of the same name in source order).
-fn find_token(
-    toks: &[super::token::Token],
-    consumed: &mut [bool],
-    whole: (usize, usize),
-    pred: impl Fn(&super::token::Token) -> bool,
-) -> (usize, usize) {
-    for (i, t) in toks.iter().enumerate() {
-        if !consumed[i] && pred(t) {
-            consumed[i] = true;
-            return (t.start, t.end);
-        }
-    }
-    whole
-}
-
-/// The recursive AST walk collecting [`Raw`] diagnostics.
+/// The recursive AST walk emitting span-located [`Diagnostic`]s.
 struct Walker<'a> {
     ctx: &'a ValidationContext,
-    out: &'a mut Vec<Raw>,
+    out: &'a mut Vec<Diagnostic>,
 }
 
 impl Walker<'_> {
-    fn push(&mut self, message: impl Into<String>, severity: Severity, locate: Locate) {
-        self.out.push(Raw {
+    fn push(&mut self, message: impl Into<String>, severity: Severity, span: Span) {
+        self.out.push(Diagnostic {
             message: message.into(),
+            start: span.start,
+            end: span.end,
             severity,
-            locate,
         });
     }
 
     fn visit(&mut self, node: &Node) {
-        match node {
-            Node::Call { name, args } => {
-                self.check_call(name, args);
+        match &node.kind {
+            NodeKind::Call { name, args } => {
+                self.check_call(name, args, node.span);
                 for a in args {
                     self.visit(a);
                 }
             }
-            Node::Reference { kind, name } => self.check_reference(*kind, name),
-            Node::Binary { op, left, right } => {
+            NodeKind::Reference { kind, name } => self.check_reference(*kind, name, node.span),
+            NodeKind::Binary { op, left, right } => {
                 if let Some(msg) = check_binary(*op, left, right) {
-                    self.push(msg, Severity::Error, Locate::Whole);
+                    self.push(msg, Severity::Error, node.span);
                 }
                 self.visit(left);
                 self.visit(right);
             }
-            Node::Unary { op, expr } => {
+            NodeKind::Unary { op, expr } => {
                 if let Some(msg) = check_unary(*op, expr) {
-                    self.push(msg, Severity::Error, Locate::Whole);
+                    self.push(msg, Severity::Error, node.span);
                 }
                 self.visit(expr);
             }
-            Node::Index { base, index } => {
+            NodeKind::Index { base, index } => {
                 self.visit(base);
                 self.visit(index);
             }
-            Node::Array(items) | Node::Seq(items) | Node::Unparsed(items) => {
+            NodeKind::Array(items) | NodeKind::Seq(items) | NodeKind::Unparsed(items) => {
                 for n in items {
                     self.visit(n);
                 }
             }
-            Node::If {
+            NodeKind::If {
                 cond,
                 then,
                 elifs,
@@ -281,13 +205,13 @@ impl Walker<'_> {
                     self.visit(e);
                 }
             }
-            Node::Assign { value, .. } => self.visit(value),
-            Node::Declare { init: Some(i), .. } => self.visit(i),
-            Node::While { cond, body, .. } => {
+            NodeKind::Assign { value, .. } => self.visit(value),
+            NodeKind::Declare { init: Some(i), .. } => self.visit(i),
+            NodeKind::While { cond, body, .. } => {
                 self.visit(cond);
                 self.visit(body);
             }
-            Node::For {
+            NodeKind::For {
                 from,
                 to,
                 step,
@@ -302,20 +226,25 @@ impl Walker<'_> {
                 self.visit(body);
             }
             // Leaves and value-less nodes: nothing to check or descend into.
-            Node::Number(_)
-            | Node::Str(_)
-            | Node::Bool(_)
-            | Node::DateLit(_)
-            | Node::Ident(_)
-            | Node::Declare { init: None, .. }
-            | Node::Exit(_)
-            | Node::Error
-            | Node::Empty => {}
+            NodeKind::Number(_)
+            | NodeKind::Str(_)
+            | NodeKind::Bool(_)
+            | NodeKind::DateLit(_)
+            | NodeKind::Ident(_)
+            | NodeKind::Declare { init: None, .. }
+            | NodeKind::Exit(_)
+            | NodeKind::Error
+            | NodeKind::Empty => {}
         }
     }
 
-    /// Check a `name(args…)` call: unknown function (with suggestion) and structural arity.
-    fn check_call(&mut self, name: &str, args: &[Node]) {
+    /// Check a `name(args…)` call: unknown function (with suggestion) and structural arity. `span` is
+    /// the call node's span; the callee-name diagnostics anchor at just the name (the call's first
+    /// token), not the whole `name(args)`.
+    fn check_call(&mut self, name: &str, args: &[Node], span: Span) {
+        // The callee name is the call's leading token, so its span runs from the node start over the
+        // name's source bytes (the stored name is the verbatim identifier text).
+        let name_span = Span::new(span.start, span.start + name.len());
         match func_id(name) {
             None => {
                 let known_custom = self
@@ -338,61 +267,38 @@ impl Walker<'_> {
                     message.push_str(" (not a built-in; may be a custom function)");
                     Severity::Warning
                 };
-                self.push(message, severity, Locate::Ident(name.to_string()));
+                self.push(message, severity, name_span);
             }
             Some(id) => {
                 if let Some(msg) = arity_error(name, id, args.len()) {
-                    self.push(msg, Severity::Error, Locate::Ident(name.to_string()));
+                    self.push(msg, Severity::Error, name_span);
                 }
             }
         }
     }
 
-    /// Check a `{…}` reference against the caller's declared name set for its kind, if any.
-    fn check_reference(&mut self, kind: RefKind, name: &str) {
+    /// Check a `{…}` reference against the caller's declared name set for its kind, if any. `span` is
+    /// the reference node's span.
+    fn check_reference(&mut self, kind: RefKind, name: &str, span: Span) {
         if let Some(set) = self.ctx.set_for(kind) {
             if !set.contains(&name.to_ascii_lowercase()) {
                 let what = ref_kind_noun(kind);
                 self.push(
                     format!("unknown {what} `{}{name}`", ref_sigil(kind)),
                     Severity::Error,
-                    Locate::Reference(kind, name.to_string()),
+                    span,
                 );
             }
         }
     }
 }
 
-/// A structural arity error message for a built-in whose argument shape the type system encodes,
-/// or `None` when the function isn't arity-constrained here. The per-function signatures aren't
-/// tabulated, so only the functions with a structured return rule (`IIf`/`Switch`/`Choose` and the
-/// aggregate/argument families) are checked.
+/// A structural arity error message for a built-in, or `None` when the call's argument count is
+/// accepted (or the funcID carries no bound). Driven by the funcID-keyed signature table
+/// ([`super::types::sig`]).
 fn arity_error(name: &str, id: u16, n: usize) -> Option<String> {
-    use super::types::ReturnRule as R;
-    let too_few = |min: usize| {
-        (n < min).then(|| {
-            format!(
-                "`{name}` expects at least {min} argument{}, got {n}",
-                plural(min)
-            )
-        })
-    };
-    match super::types::return_rule(id) {
-        R::Iif => (n != 3).then(|| format!("`{name}` expects 3 arguments, got {n}")),
-        R::Switch => (n < 2 || !n.is_multiple_of(2))
-            .then(|| format!("`{name}` expects an even number of arguments (≥2), got {n}")),
-        R::Choose => too_few(2),
-        R::AggNumeric | R::MaxMinArg | R::DeArray | R::CopyArg => too_few(1),
-        R::Fixed(_) | R::Complex => None,
-    }
-}
-
-fn plural(n: usize) -> &'static str {
-    if n == 1 {
-        ""
-    } else {
-        "s"
-    }
+    let sig = super::types::sig(id);
+    (!sig.accepts(n)).then(|| format!("`{name}` expects {}, got {n}", sig.expected()))
 }
 
 /// A binary-operator type error message, or `None` if the operand types are compatible or not

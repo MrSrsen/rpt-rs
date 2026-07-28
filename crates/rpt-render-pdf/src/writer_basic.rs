@@ -3,7 +3,8 @@
 //! to serialize a document). Raw PDF is y-up (origin bottom-left), so this writer flips y.
 
 use crate::common::{
-    aligned_x, approx_text_width, baseline_offset_twips, chan, pt, solid_of, KAPPA, TWIPS_PER_PT,
+    aligned_x, approx_text_width, baseline_offset_twips, chan, pt, solid_of, KAPPA, MIN_STROKE_PT,
+    TWIPS_PER_PT,
 };
 use rpt_model::Color;
 use rpt_pages::{DrawOp, EllipseOp, Fill, LineOp, Page, PolygonOp, RectOp, TextRun};
@@ -141,7 +142,61 @@ fn rect_ops(c: &mut String, r: &RectOp, h: f64) {
     let y = h - pt(r.bounds.top.0 + r.bounds.height.0);
     let w = pt(r.bounds.width.0);
     let ht = pt(r.bounds.height.0);
-    let _ = writeln!(c, "{x:.2} {y:.2} {w:.2} {ht:.2} re");
+    let radius = pt(r.corner_radius.0).clamp(0.0, (w / 2.0).min(ht / 2.0));
+    if radius <= 0.0 {
+        let _ = writeln!(c, "{x:.2} {y:.2} {w:.2} {ht:.2} re");
+    } else {
+        // A rounded rect: straight edges joined by four cubic-Bézier quarter arcs (kappa control
+        // offset), matching the ellipse's corner construction. y-up PDF space, so `yt` is the top.
+        let k = radius * KAPPA;
+        let (xl, xr, yb, yt) = (x, x + w, y, y + ht);
+        let _ = writeln!(c, "{:.2} {:.2} m", xl + radius, yt);
+        let _ = writeln!(c, "{:.2} {:.2} l", xr - radius, yt);
+        let _ = writeln!(
+            c,
+            "{:.2} {:.2} {:.2} {:.2} {:.2} {:.2} c",
+            xr - radius + k,
+            yt,
+            xr,
+            yt - radius + k,
+            xr,
+            yt - radius
+        );
+        let _ = writeln!(c, "{:.2} {:.2} l", xr, yb + radius);
+        let _ = writeln!(
+            c,
+            "{:.2} {:.2} {:.2} {:.2} {:.2} {:.2} c",
+            xr,
+            yb + radius - k,
+            xr - radius + k,
+            yb,
+            xr - radius,
+            yb
+        );
+        let _ = writeln!(c, "{:.2} {:.2} l", xl + radius, yb);
+        let _ = writeln!(
+            c,
+            "{:.2} {:.2} {:.2} {:.2} {:.2} {:.2} c",
+            xl + radius - k,
+            yb,
+            xl,
+            yb + radius - k,
+            xl,
+            yb + radius
+        );
+        let _ = writeln!(c, "{:.2} {:.2} l", xl, yt - radius);
+        let _ = writeln!(
+            c,
+            "{:.2} {:.2} {:.2} {:.2} {:.2} {:.2} c",
+            xl,
+            yt - radius + k,
+            xl + radius - k,
+            yt,
+            xl + radius,
+            yt
+        );
+        c.push_str("h\n");
+    }
     paint_ops(c, r.fill.as_ref(), r.stroke.as_ref());
 }
 
@@ -292,11 +347,36 @@ fn text_ops(c: &mut String, t: &TextRun, h: f64) {
             -sin
         );
     }
+    // Justified: spread the box slack across the inter-word gaps with PDF's word-spacing operator
+    // (`Tw` adds to every space glyph), flushing both edges. The layout marks a paragraph's last line
+    // `Left`, so only interior wrapped lines carry slack; `0 Tw` resets it. Unjustified emits no `Tw`.
+    let word_space =
+        rpt_render_util::justify_gap_extra(t.align, &t.text, pt(t.bounds.width.0), text_w);
+    let (tw_set, tw_reset) = if word_space > 0.0 {
+        (format!("{word_space:.3} Tw "), " 0 Tw")
+    } else {
+        (String::new(), "")
+    };
     let _ = writeln!(
         c,
-        "BT /F1 {size:.2} Tf {x:.2} {y:.2} Td ({}) Tj ET",
+        "BT {tw_set}/F1 {size:.2} Tf {x:.2} {y:.2} Td ({}) Tj{tw_reset} ET",
         escape_pdf_text(&t.text)
     );
+    // Underline / strikethrough as thin filled bars (`re f`); the nonstroking colour set above still
+    // applies. PDF is y-up, so an underline sits just below the baseline and a strikethrough crosses
+    // the x-height above it.
+    if t.font.underline || t.font.strikethrough {
+        let thickness = (size * 0.06).max(MIN_STROKE_PT);
+        if t.font.underline {
+            let by = y - 2.0 * thickness;
+            let _ = writeln!(c, "{x:.2} {by:.2} {text_w:.2} {thickness:.2} re f");
+        }
+        if t.font.strikethrough {
+            let ascent_pt = baseline_offset_twips(t) / TWIPS_PER_PT;
+            let by = y + ascent_pt * 0.3 - thickness;
+            let _ = writeln!(c, "{x:.2} {by:.2} {text_w:.2} {thickness:.2} re f");
+        }
+    }
     if rotated {
         c.push_str("Q\n");
     }
@@ -323,11 +403,11 @@ fn set_stroke_color(c: &mut String, color: Color) {
 }
 
 fn set_line_width(c: &mut String, w: f64) {
-    let _ = writeln!(c, "{:.2} w", w.max(0.25));
+    let _ = writeln!(c, "{:.2} w", w.max(MIN_STROKE_PT));
 }
 
-/// Escape a string for a PDF literal `(...)`. Non-ASCII collapses to `?` (WinAnsi/embedding is a
-/// follow-up); `(`, `)`, `\` are backslash-escaped.
+/// Escape a string for a PDF literal `(...)`. This writer has no WinAnsi/font-embedding support, so
+/// non-ASCII collapses to `?`; `(`, `)`, `\` are backslash-escaped.
 fn escape_pdf_text(s: &str) -> String {
     let mut out = String::with_capacity(s.len());
     for ch in s.chars() {

@@ -228,3 +228,168 @@ impl<'a> ReadArchive<'a> {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::StreamId;
+
+    /// The raw `Contents` bytes of a committed fixture, plus the offset whose low-bit flip clears the
+    /// header's `useFixed` short (found by search, so it survives the fixture being re-authored).
+    fn fixture_with_usefixed_offset() -> Option<(Vec<u8>, Vec<u8>, usize)> {
+        let path = rpt_test_support::fixture("tests/fixtures/reports/synthetic/blank_report.rpt");
+        let file = std::fs::read(&path).ok()?;
+        let rpt = crate::Rpt::open(&path).ok()?;
+        let raw = rpt.stream(&StreamId::Contents)?.raw_bytes().to_vec();
+        let base = ReadArchive::new(&raw).load_stream_header().ok()?;
+        let off = (0..64).find(|&off| {
+            let mut p = raw.clone();
+            p[off] ^= 1;
+            ReadArchive::new(&p).load_stream_header().is_ok_and(|h| {
+                h.is_encrypted && !h.use_fixed_key && h.version == base.version && h.iv == base.iv
+            })
+        })?;
+        Some((file, raw, off))
+    }
+
+    /// Clearing the header's `useFixed` flag changes nothing about how the stream decodes: the
+    /// payload still decrypts with the universal built-in key, byte for byte. This mirrors the
+    /// engine, which ignores the flag the same way — a report whose only modification is this bit
+    /// cleared opens normally in the designer, with no password prompt. The test guards
+    /// against "helpfully" branching on the flag later and refusing a file Crystal reads fine.
+    #[test]
+    fn non_fixed_key_flag_does_not_change_decoding() {
+        let Some((_, raw, off)) = fixture_with_usefixed_offset() else {
+            eprintln!("[skip] fixture absent or no useFixed bit found");
+            return;
+        };
+        let mut patched = raw.clone();
+        patched[off] ^= 1;
+
+        let header = ReadArchive::new(&patched)
+            .load_stream_header()
+            .expect("parses");
+        assert!(header.is_encrypted, "still encrypted");
+        assert!(!header.use_fixed_key, "flag really is cleared");
+
+        let plain = crate::codec::decode_contents(&raw).expect("control decodes");
+        let patched_plain =
+            crate::codec::decode_contents(&patched).expect("flag must not gate decoding");
+        assert_eq!(
+            plain, patched_plain,
+            "the flag is inert — same logical bytes either way"
+        );
+    }
+
+    /// A stream encrypted with a key this reader does not have is diagnosed as a KEY problem, not
+    /// as a zlib problem. Crystal never emits one, but a third-party application with its own copy
+    /// of the encryption library can round-trip reports under its own key — and since that key is
+    /// not in the file, the payload simply will not decrypt. Simulated here by corrupting the
+    /// ciphertext, which produces the same observable: an encrypted stream that decrypts to
+    /// non-zlib bytes.
+    ///
+    /// Both flag states are checked, because the key and the flag are INDEPENDENT setters — a foreign
+    /// key can arrive with `useFixed` still set, so the diagnosis must not be gated on the flag.
+    #[test]
+    fn foreign_key_is_reported_as_a_key_problem() {
+        let Some((_, raw, off)) = fixture_with_usefixed_offset() else {
+            eprintln!("[skip] fixture absent or no useFixed bit found");
+            return;
+        };
+        let header_end = {
+            let mut a = ReadArchive::new(&raw);
+            a.next_record(StreamHeader::RECORD_TYPE).unwrap();
+            a.top_record_end()
+        };
+
+        for clear_flag in [false, true] {
+            let mut p = raw.clone();
+            if clear_flag {
+                p[off] ^= 1;
+            }
+            // Perturb the ciphertext body: stands in for "encrypted under a different key".
+            p[header_end] ^= 0xff;
+
+            let err = crate::codec::decode_contents(&p)
+                .expect_err("a stream we cannot key must not decode");
+            let msg = err.to_string();
+            assert!(
+                msg.contains("key this reader does not have"),
+                "clear_flag={clear_flag}: {msg}"
+            );
+            let hint = if clear_flag {
+                "useFixed = 0"
+            } else {
+                "claims the built-in key"
+            };
+            assert!(msg.contains(hint), "clear_flag={clear_flag}: {msg}");
+            assert!(msg.len() < 400, "diagnostic must stay readable: {msg}");
+        }
+    }
+
+    /// Emit a `.rpt` whose `Contents` payload is encrypted with a **non-built-in key** — the exact
+    /// artifact a third-party host with its own copy of the encryption key would produce. No SAP
+    /// binary can author one, so it is built here: decrypt the real
+    /// payload with the built-in key, then re-encrypt the same deflate stream under a DIFFERENT real
+    /// Crystal key — the QESession universal key — reusing the header IV. The result is structurally
+    /// a perfectly valid report that simply cannot be keyed by anyone but its author.
+    ///
+    /// `RPT_EMIT_FOREIGNKEY=<path>` writes it; add `RPT_FOREIGNKEY_CLEAR_FLAG=1` to also clear
+    /// `useFixed`. Write OUTSIDE `tests/fixtures/reports/`, which is an auto-discovered corpus.
+    #[test]
+    fn emit_foreign_key_report() {
+        let Some(out) = std::env::var_os("RPT_EMIT_FOREIGNKEY") else {
+            return;
+        };
+        let (file, raw, off) = fixture_with_usefixed_offset().expect("fixture");
+
+        let header = ReadArchive::new(&raw).load_stream_header().expect("header");
+        let iv: [u8; 16] = header.iv.as_slice().try_into().expect("16-byte IV");
+        let body_off = {
+            let mut a = ReadArchive::new(&raw);
+            a.next_record(StreamHeader::RECORD_TYPE).unwrap();
+            a.top_record_end()
+        };
+
+        // Built-in key -> plaintext deflate -> re-encrypt under the other universal key.
+        let deflate = super::super::crypto::cfb_decrypt(&iv, &raw[body_off..]);
+        let foreign =
+            super::super::aes128::cfb_encrypt(&iv, &deflate, super::super::qe_crypto::round_keys());
+
+        let mut stream = raw[..body_off].to_vec();
+        stream.extend_from_slice(&foreign);
+        if std::env::var_os("RPT_FOREIGNKEY_CLEAR_FLAG").is_some() {
+            stream[off] ^= 1;
+        }
+
+        let rewritten =
+            crate::container::rewrite_stream(&file, &StreamId::Contents, &stream).expect("rewrite");
+        std::fs::write(&out, rewritten).expect("write");
+        eprintln!(
+            "wrote {:?} (Contents re-keyed to the QE universal key)",
+            out
+        );
+    }
+
+    /// Emit a `.rpt` whose `Contents` header declares `useFixed = 0` while the payload stays
+    /// encrypted with the built-in key — the probe that established the flag is inert (the designer
+    /// opens it normally, no prompt). Kept for re-running that check against a future engine build.
+    /// Off by default; set `RPT_EMIT_NONFIXED=<path>` to write one. Write it OUTSIDE
+    /// `tests/fixtures/reports/`, which is an auto-discovered baseline corpus.
+    #[test]
+    fn emit_non_fixed_key_report() {
+        let Some(out) = std::env::var_os("RPT_EMIT_NONFIXED") else {
+            return;
+        };
+        let (file, raw, off) = fixture_with_usefixed_offset().expect("fixture");
+        let mut patched = raw.clone();
+        patched[off] ^= 1;
+        let rewritten = crate::container::rewrite_stream(&file, &StreamId::Contents, &patched)
+            .expect("rewrite");
+        std::fs::write(&out, rewritten).expect("write");
+        eprintln!(
+            "wrote {:?} (useFixed cleared at raw Contents offset {off})",
+            out
+        );
+    }
+}

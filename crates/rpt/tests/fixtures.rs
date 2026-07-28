@@ -1,41 +1,34 @@
 //! Shared fixture discovery for the integration tests.
 //!
-//! `samples/` and `research/oracles/` are git-ignored. Fixture-dependent tests locate files
-//! by path and skip gracefully when absent, so a clean checkout still compiles and runs green.
-//! Fixture bytes, names, and strings never appear in assertions or output.
+//! Reports come from the committed public corpus under `tests/fixtures/reports/`, so these tests
+//! run on any checkout. Fixture bytes, names, and strings never appear in assertions or output.
 //!
 //! `mod`-included into test binaries that need it; not every binary uses every helper.
 #![allow(dead_code)]
 
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
-/// The workspace root (two levels up from this crate's `CARGO_MANIFEST_DIR`).
-pub fn workspace_root() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR"))
-        .ancestors()
-        .nth(2)
-        .expect("workspace root")
-        .to_path_buf()
-}
+/// The workspace root, from the shared [`rpt_test_support`] helper.
+pub use rpt_test_support::workspace_root;
 
-/// All `.rpt` files in `samples/`, or an empty vec if the directory is absent.
-pub fn sample_rpts() -> Vec<PathBuf> {
-    let dir = workspace_root().join("samples");
-    let Ok(entries) = std::fs::read_dir(&dir) else {
-        return Vec::new();
-    };
-    let mut out: Vec<PathBuf> = entries
-        .flatten()
-        .map(|e| e.path())
-        .filter(|p| p.extension().is_some_and(|e| e == "rpt"))
-        .collect();
+/// Every committed `.rpt` fixture, recursively, sorted for a stable iteration order.
+pub fn public_rpts() -> Vec<PathBuf> {
+    fn walk(dir: &std::path::Path, out: &mut Vec<PathBuf>) {
+        let Ok(entries) = std::fs::read_dir(dir) else {
+            return;
+        };
+        for path in entries.flatten().map(|e| e.path()) {
+            if path.is_dir() {
+                walk(&path, out);
+            } else if path.extension().is_some_and(|e| e == "rpt") {
+                out.push(path);
+            }
+        }
+    }
+    let mut out = Vec::new();
+    walk(&workspace_root().join("tests/fixtures/reports"), &mut out);
     out.sort();
     out
-}
-
-/// Read an oracle file under `research/oracles/`, or `None` if absent.
-pub fn oracle(rel: &str) -> Option<Vec<u8>> {
-    std::fs::read(workspace_root().join("research/oracles").join(rel)).ok()
 }
 
 /// Print a uniform skip notice (visible with `cargo test -- --nocapture`).

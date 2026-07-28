@@ -21,12 +21,15 @@
 //! raw PDF is y-up (origin bottom-left) while krilla's surface is y-down (origin top-left, matching the
 //! Page IR): the basic writer flips y and the krilla backend does not.
 //!
-//! Images are not embedded by either writer through this entry point — the resolved image bytes live
-//! out-of-band from the Page IR and are not threaded through [`render_pages`].
+//! Images: the krilla backend embeds each picture whose bytes are present in the document's
+//! out-of-band [`assets`](rpt_pages::PagedDocument::assets) — reached through the [`PdfBackend`]
+//! whole-document entry point, which is the only path that carries them. The pages-only
+//! [`render_pages`] free function has no assets, so it draws no pictures; the basic writer never does.
 //!
 //! [krilla]: https://docs.rs/krilla
 
-use rpt_pages::Page;
+use rpt_pages::{ImageAsset, Page};
+use std::collections::BTreeMap;
 
 mod common;
 mod writer_basic;
@@ -43,12 +46,19 @@ pub use writer_basic::render_pages_basic;
 /// Uses the krilla backend when the `krilla-backend` feature is enabled (the default), falling back to
 /// the dependency-free [`render_pages_basic`] writer if krilla is disabled or fails to serialize.
 pub fn render_pages(pages: &[Page]) -> Vec<u8> {
+    render_pages_with_assets(pages, &BTreeMap::new())
+}
+
+/// Like [`render_pages`], but embeds each image op whose `image_id` resolves in `assets` (the krilla
+/// backend only). The [`PdfBackend`] whole-document entry point calls this with the document's assets.
+pub fn render_pages_with_assets(pages: &[Page], assets: &BTreeMap<String, ImageAsset>) -> Vec<u8> {
     #[cfg(feature = "krilla-backend")]
     {
-        if let Some(bytes) = writer_krilla::render(pages) {
+        if let Some(bytes) = writer_krilla::render(pages, assets) {
             return bytes;
         }
     }
+    let _ = assets; // the basic writer draws no images
     render_pages_basic(pages)
 }
 
@@ -86,7 +96,7 @@ impl rpt_pages::PageBackend for PdfBackend {
 
     fn render(&self, doc: &rpt_pages::PagedDocument, opts: &PdfOptions) -> Vec<u8> {
         match opts.writer {
-            PdfWriter::Auto => render_pages(&doc.pages),
+            PdfWriter::Auto => render_pages_with_assets(&doc.pages, &doc.assets),
             PdfWriter::Basic => render_pages_basic(&doc.pages),
         }
     }

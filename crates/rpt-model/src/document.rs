@@ -3,7 +3,7 @@
 use super::enums::{PaperOrientation, PaperSize, PaperSource, PrinterDuplex};
 use super::primitives::Twips;
 
-/// SDK: `ISummaryInfo` (XML `<Summaryinfo>`).
+/// SDK: `ISummaryInfo`.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct SummaryInfo {
@@ -17,11 +17,19 @@ pub struct SummaryInfo {
     pub comments: String,
     /// Keywords associated with the report (SDK `SummaryInfo.KeywordsInReport`).
     pub keywords: String,
+    /// The report revision number (SDK `SummaryInfo.RevisionNumber`) — sourced from the OLE
+    /// `\x05SummaryInformation` property set (`PIDSI_REVNUMBER` = 0x09), kept in the engine's stored
+    /// string form (e.g. `"128"`). Empty when the property is absent.
+    pub revision_number: String,
+    /// The user who last saved the report (SDK `SummaryInfo.LastSavedBy`) — from the OLE
+    /// `\x05SummaryInformation` property set (`PIDSI_LASTAUTHOR` = 0x08). May carry a login name;
+    /// empty when the property is absent.
+    pub last_saved_by: String,
     /// Whether the report is saved with a preview thumbnail (SDK `SavePreviewPicture`).
     pub save_with_preview: bool,
 }
 
-/// SDK: `IPrintOptions` (XML `<PrintOptions>`).
+/// SDK: `IPrintOptions`.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct PrintOptions {
@@ -37,8 +45,12 @@ pub struct PrintOptions {
     pub paper_source: PaperSource,
     /// The printer's duplex (two-sided printing) mode.
     pub printer_duplex: PrinterDuplex,
-    /// The saved printer name.
+    /// The live/current printer name (SDK `PrinterName`); the engine reports this empty.
     pub printer_name: String,
+    /// The saved printer's device name (SDK `SavedPrinterName`) — the DEVMODE device string, e.g. a
+    /// network printer path. Distinct from the empty live `printer_name`; empty when no printer
+    /// record was saved.
+    pub saved_printer_name: String,
     /// The saved printer driver name, when recorded.
     pub driver_name: Option<String>,
     /// The saved printer port name, when recorded.
@@ -68,7 +80,7 @@ pub struct MultiColumn {
     pub across_then_down: bool,
 }
 
-/// SDK: `IPageMargins` (XML `<PageMargins>`).
+/// SDK: `IPageMargins`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct PageMargins {
@@ -82,7 +94,7 @@ pub struct PageMargins {
     pub bottom: Twips,
 }
 
-/// SDK: `IReportOptions` (XML `<ReportOptions>`) — saved-data / query behavior.
+/// SDK: `IReportOptions` — saved-data / query behavior.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct ReportOptions {
@@ -94,6 +106,15 @@ pub struct ReportOptions {
     pub save_preview_picture: bool,
     /// Whether the report renders against generated dummy data (SDK `EnableUseDummyData`).
     pub use_dummy_data: bool,
+    /// Whether the engine re-verifies the database schema on every print (SDK
+    /// `EnableVerifyOnEveryPrint`). Stored in the report-header record's option flag byte.
+    pub enable_verify_on_every_print: bool,
+    /// Whether database `NULL` field values are converted to their type's default value (SDK
+    /// `ConvertNullFieldToDefault`). Stored in the report's data-source options record.
+    pub convert_null_field_to_default: bool,
+    /// Whether other `NULL` values are converted to their type's default value (SDK
+    /// `ConvertOtherNullsToDefault`). Stored in the report's data-source options record.
+    pub convert_other_nulls_to_default: bool,
     /// The initial data context (report-part navigation entry point), when set.
     pub initial_data_context: Option<String>,
     /// The initial report-part name to display, when set.
@@ -123,11 +144,13 @@ pub struct SubreportReimportInfo {
     pub source_path: String,
     /// When the subreport was imported into this report.
     pub imported_at: ReimportTimestamp,
-    /// The re-import policy enum byte (the designer's "re-import when opening" setting). Kept raw —
-    /// no SDK reader pins its value set.
+    /// The "re-import subreport when opening" policy — a multi-valued enum, evaluated at load: value
+    /// `1` skips the source-file check, other values compare the source `.rpt`'s modification time to
+    /// decide whether to re-import. Kept raw: it is invariant at `1` (so there is no non-default
+    /// example) and the RAS `SubreportController` exposes no re-import accessor, so the value→name
+    /// mapping is unknown and left undecoded rather than fabricated.
     pub reimport_when_opening: u8,
-    /// A second `(Julian-day, time-fraction)` timestamp (the source's own save time); zero across
-    /// the corpus.
+    /// A second `(Julian-day, time-fraction)` timestamp (the source's own save time); normally zero.
     pub source_saved_at: ReimportTimestamp,
 }
 
@@ -155,29 +178,40 @@ pub struct DesignerState {
     pub connections: Vec<ObjectConnection>,
 }
 
-/// One designer snap guideline. Its position is a twip coordinate on the design canvas (horizontal
-/// and vertical guides share the same shape; the axis is implied by the parent collection).
-/// Designer-only.
+/// One designer snap guideline. Its position is a twip coordinate on the design canvas. Horizontal
+/// and vertical guides share this shape; the axis is carried by the **parent** list record, not by
+/// this entry — the two guideline lists (`0x010d` and `0x010f`) partition the guides into the two
+/// axes (which list is horizontal vs vertical is unknown, having no reader surface). This flat
+/// collection is not split by axis, since nothing consumes the orientation. Designer-only.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Guideline {
-    /// The guideline's position on the canvas, in twips.
+    /// The guideline's position on the canvas, in twips (leaf `[0..4]`, big-endian).
     pub position: Twips,
-    /// The guideline's flag word (raw; snap/lock state — not separately decoded).
+    /// The guideline's flag word (leaf `[4..6]`, big-endian; raw). A small integer (`0x00..0x1a` in
+    /// observed, high byte always zero) that varies per guide — a snap/lock/attachment state, *not*
+    /// the orientation (that is the parent list, above). Individual bit meanings are unknown (no
+    /// reader surface exposes it), so it is preserved raw.
     pub flags: u16,
 }
 
-/// One designer object-connection edge. `source`/`destination` are small layout-object node
-/// indices; the edge `kind` word is `0x0002` for every real edge (a degenerate `0 → 0` root edge
-/// stores it shifted). Designer-only.
+/// One designer object-connection edge (record `0x0111`, a 22-byte leaf). `source`/`destination`
+/// are small layout-object node indices (`[0..2]`/`[2..4]`, big-endian); `[4..12]` is a constant
+/// eight-zero span and `[14..22]` a constant eight-`0xFF` span (both invariant,
+/// consumed but not modelled). Designer-only.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct ObjectConnection {
-    /// The source layout-object node index.
+    /// The source layout-object node index (leaf `[0..2]`, big-endian; a small index).
     pub source: u16,
-    /// The destination layout-object node index.
+    /// The destination layout-object node index (leaf `[2..4]`, big-endian; a small index).
     pub destination: u16,
-    /// The connection kind word (`0x0002` for every real edge).
+    /// The connection kind word (leaf `[12..14]`, big-endian; raw). Its two bytes vary
+    /// independently — high ∈ `{0, 1, 2}`, low ∈ `{0, 2, 3}` — which fits a pair of per-endpoint
+    /// attachment codes better than the single version stamp the value clustering first suggested.
+    /// Unresolvable here either way: no reader surface exposes it, and these records are pure
+    /// interactive-designer state that programmatic authoring never emits, so no fixture can pin
+    /// them. Preserved raw, no enum.
     pub kind: u16,
 }
 
@@ -193,7 +227,7 @@ pub struct Subreport {
     pub links: Vec<SubreportLink>,
 }
 
-/// SDK: `ISubreportLink` (XML `<SubReportLink>`).
+/// SDK: `ISubreportLink`.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct SubreportLink {

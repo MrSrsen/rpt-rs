@@ -5,8 +5,12 @@
 //! These decoders raise those records into the pieces of a [`crate::model::SubreportLink`], which
 //! the [`crate::io`] facade assembles after both the main report and its subreports are raised.
 
-use crate::records::rtype::{FORMULA, PARAM_RECORD, SUBREPORT_LINK, SUBREPORT_OBJECT};
+use crate::container::{Container, LoadedStream};
+use crate::records::rtype::{
+    FORMULA, PARAM_RECORD, REPORT_HEADER, SUBREPORT_LINK, SUBREPORT_OBJECT,
+};
 use crate::records::RecordStream;
+use crate::StreamId;
 
 /// One decoded `0x0106` subreport-link record: the subreport-parameter index the main field feeds,
 /// the `MainReportFieldName`, and the **SubreportFieldName handle** — the `(kind, index)` pair
@@ -28,7 +32,7 @@ pub(crate) struct LinkRecord {
 /// pairs a link to the auto-created subreport parameter), and the length-prefixed name is the
 /// `MainReportFieldName`. The **trailing descriptor** (when 8+ bytes:
 /// `[main-field-kind/index ×4][u16-BE SF-kind][u16-BE SF-index]`) carries the SubreportFieldName
-/// handle. The engine counts one `Field.UseCount` per link.
+/// handle.
 pub(crate) fn subreport_links(
     contents: &RecordStream,
 ) -> std::collections::BTreeMap<u32, Vec<LinkRecord>> {
@@ -232,6 +236,8 @@ pub(crate) fn subreport_link_bindings(
             // just the first. Parsing the body (not the flat operand list) keeps the comparison
             // operator, which gates non-equality clauses (see `add_link_bindings`).
             for s in u32_lp_strings(&leaf) {
+                // A byte-presence pre-filter, not reference parsing — `rpt` is pure I/O and does not
+                // depend on `crystal-formula`, so the reference recognizer stays out of the reader layer.
                 if s.contains("{?") {
                     add_link_bindings(&s, map);
                 }
@@ -256,7 +262,7 @@ pub(crate) fn subreport_link_bindings(
 /// (Crystal names the link parameter `Pm-<main>` and compares the *same* column on the subreport
 /// side). This rejects a user filter that merely re-uses the link parameter on a *different* column
 /// (e.g. `{sub.other_col} >= {?Pm-sub.link_col}`), whose SubreportFieldName stays the parameter.
-/// Mirrors the `Field.UseCount` rule the XML exporter applies for subreport-link fields.
+/// Matches how the engine itself resolves a subreport link's bound column.
 fn add_link_bindings(body: &str, map: &mut std::collections::HashMap<String, String>) {
     let pat = "{?";
     for (idx, _) in body.match_indices(pat) {
@@ -336,4 +342,122 @@ fn u32_lp_strings(leaf: &[u8]) -> Vec<String> {
         i += 1;
     }
     out
+}
+
+/// Per-subreport metadata used to resolve its incoming links: the parameter-index → parameter-name
+/// map (joins a link's `0x0106` parameter index to the LinkedParameterName) and the parameter-name →
+/// bound-field map (the SubreportFieldName for a db-field link, from the `0x0076` link selection).
+#[derive(Default)]
+pub(crate) struct SubLinkMeta {
+    pub(crate) index_names: std::collections::HashMap<u16, String>,
+    pub(crate) bindings: std::collections::HashMap<String, String>,
+}
+
+/// Raise each subreport (`Subdocument N` storage) into a nested [`Report`](crate::model::Report). A
+/// subreport has its own `Contents` / `QESession` / `PromptManager` streams under its storage,
+/// decoded with the same pipeline as the main report.
+pub(crate) fn raise_subreports(
+    container: &Container,
+    current_values: &std::collections::BTreeMap<u16, Vec<crate::model::ParameterValue>>,
+) -> (
+    Vec<crate::model::Subreport>,
+    std::collections::BTreeMap<u32, String>,
+    std::collections::BTreeMap<u32, SubLinkMeta>,
+) {
+    use std::collections::BTreeMap;
+    // Group every `Subdocument N/…` stream by its subdocument index.
+    let mut groups: BTreeMap<u32, Vec<&LoadedStream>> = BTreeMap::new();
+    for s in container.streams() {
+        let first = s
+            .path
+            .components()
+            .filter_map(|c| c.as_os_str().to_str())
+            .find(|c| !c.is_empty() && *c != "/");
+        if let Some(name) = first {
+            if let Some(n) = name.strip_prefix("Subdocument ") {
+                if let Ok(idx) = n.trim().parse::<u32>() {
+                    groups.entry(idx).or_default().push(s);
+                }
+            }
+        }
+    }
+
+    let mut out = Vec::new();
+    let mut names: BTreeMap<u32, String> = BTreeMap::new();
+    let mut meta: BTreeMap<u32, SubLinkMeta> = BTreeMap::new();
+    for (idx, group) in groups {
+        // Within a subdocument, locate its Contents / QESession / PromptManager by basename.
+        let by_name = |want: &str| {
+            group.iter().find(|s| {
+                s.path
+                    .file_name()
+                    .and_then(|f| f.to_str())
+                    .map(|f| f == want)
+                    .unwrap_or(false)
+            })
+        };
+        let Some(contents_raw) = by_name("Contents") else {
+            continue;
+        };
+        let contents = RecordStream::decode(StreamId::Contents, &contents_raw.bytes);
+        let qe = by_name("QESession").map(|s| RecordStream::decode(StreamId::QESession, &s.bytes));
+        let prompt = by_name("PromptManager")
+            .map(|s| RecordStream::decode(StreamId::PromptManager, &s.bytes));
+        // A subreport's saved parameter current values can live in its own `Contents` as `0x0031`
+        // records, not the report-level `ReportParametersStream` (which may be absent entirely).
+        // Merge them over the main report's current values; the subreport's own values win on index
+        // collision (its `0x0031` index matches the subreport parameter's own index).
+        let mut sub_current = current_values.clone();
+        sub_current.extend(super::parse_report_parameters(&contents));
+        let report = super::raise(
+            Some(&contents),
+            qe.as_ref(),
+            prompt.as_ref(),
+            &sub_current,
+            None,
+        );
+        let name = subreport_name_from_contents(&contents);
+        names.insert(idx, name.clone());
+        let prompt_xml = prompt
+            .as_ref()
+            .and_then(|p| crate::codec::decode_prompt_manager(p.raw_bytes()));
+        meta.insert(
+            idx,
+            SubLinkMeta {
+                index_names: subreport_param_index_names(&contents, prompt_xml.as_deref()),
+                bindings: subreport_link_bindings(&contents),
+            },
+        );
+        out.push(crate::model::Subreport {
+            name,
+            report: Box::new(report),
+            links: Vec::new(),
+        });
+    }
+    (out, names, meta)
+}
+
+/// The subreport's friendly name, read from its `Subdocument`'s report-header record (`0x0064`):
+/// leaf bytes `[7..11]` hold a big-endian `u32` length, then a NUL-terminated string (the NUL is
+/// included in the length). Returns empty if absent.
+fn subreport_name_from_contents(contents: &RecordStream) -> String {
+    let logical = contents.logical_bytes();
+    for root in contents.record_tree() {
+        if root.rtype == REPORT_HEADER {
+            let lb = root.leaf_bytes(logical);
+            if let Some(len) = crate::bytes::u32_be(&lb, 7) {
+                let len = len as usize;
+                if (1..=4096).contains(&len) {
+                    if let Some(raw) = lb.get(11..11 + len) {
+                        let end = raw.iter().position(|&b| b == 0).unwrap_or(raw.len());
+                        if end > 0 {
+                            return String::from_utf8_lossy(&raw[..end]).into_owned();
+                        }
+                    }
+                }
+            }
+            break;
+        }
+    }
+    String::new()
 }

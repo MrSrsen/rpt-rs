@@ -29,6 +29,7 @@
 mod aggregate;
 mod chart;
 mod crosstab;
+pub mod diagnostics;
 mod emf;
 mod format;
 mod paginate;
@@ -91,13 +92,64 @@ pub(crate) fn push_diag(sink: &DiagSink, d: Diagnostic) {
 const DEFAULT_PAGE_W: i32 = 12240; // 8.5in
 const DEFAULT_PAGE_H: i32 = 15840; // 11in
 
+/// One placed line of a text object: its text plus the horizontal offset and usable width for its
+/// [`rpt_pages::TextRun`] bounds. `x_offset`/`width` carry per-paragraph indentation (left/right and
+/// the first-line indent on the paragraph's first wrapped line). For an un-indented paragraph
+/// `x_offset` is zero and `width` is the object's full width, so placement is byte-identical to the
+/// pre-indent behaviour.
+pub(crate) struct LayoutLine {
+    pub(crate) text: String,
+    /// Left offset from the object's left edge, in twips: `left_indent` plus `first_line_indent` on
+    /// the paragraph's first wrapped line.
+    pub(crate) x_offset: Twips,
+    /// The line's usable width, in twips: the object width minus `x_offset` and the paragraph's
+    /// `right_indent`.
+    pub(crate) width: Twips,
+    /// The line's own resolved font — the owning paragraph's font (a run-level override, else the
+    /// object font), so a multi-paragraph text object with mixed point sizes renders each paragraph at
+    /// its own size.
+    pub(crate) font: FontSpec,
+    /// The vertical advance from this line's top to the next, in twips: the font's natural line height
+    /// scaled by the paragraph's `Multiple` line spacing, or its `Exact` twip pitch.
+    pub(crate) line_height: Twips,
+    /// The baseline offset below this line's top edge, in twips (the line font's ascent).
+    pub(crate) ascent: Twips,
+    /// Horizontal alignment of this line. Usually the object alignment, but a justified paragraph's
+    /// last wrapped line falls back to left (typography does not stretch a paragraph's final line).
+    pub(crate) align: TextAlign,
+}
+
+/// One child page of a formatted subreport: its box-local draw-ops (the subreport's printable
+/// top-left mapped to `0,0`) and the content height (the deepest op bottom, floored at the box
+/// height so a short subreport never shrinks its band). A subreport with an internal forced page
+/// break (a section's `NewPage`) produces one chunk per child page.
+pub(crate) struct SubreportChunk {
+    pub(crate) ops: Vec<DrawOp>,
+    pub(crate) height: i32,
+}
+
+/// A subreport formatted once for the band it sits in, cached so the band-planning phase can grow the
+/// band to fit it and the emit phase can place it — flowing it across parent pages when it is taller
+/// than one page — without re-running the child (a second run would double-fire the subreport's
+/// `Shared`/`Global` variable writes). `chunks` hold the child's pages' box-local ops (one chunk per
+/// forced internal page break).
+pub(crate) struct SubreportRender {
+    pub(crate) chunks: Vec<SubreportChunk>,
+}
+
+impl SubreportRender {
+    /// The total content height the enclosing band grows to accommodate (the single-chunk fit path
+    /// uses this to extend the band; a multi-chunk or overflowing subreport flows instead).
+    pub(crate) fn used_height(&self) -> i32 {
+        self.chunks.iter().map(|c| c.height).sum()
+    }
+}
+
 /// A resolved text/field object's display: its wrapped lines and rendering attributes, computed
 /// once per band so the grown height and the emitted runs stay consistent.
 pub(crate) struct TextPlan {
-    pub(crate) lines: Vec<String>,
-    pub(crate) font: FontSpec,
+    pub(crate) lines: Vec<LayoutLine>,
     pub(crate) color: Color,
-    pub(crate) align: TextAlign,
     pub(crate) kind: ObjectKind,
 }
 
@@ -195,6 +247,40 @@ struct Bands<'a> {
     group_formats: Vec<GroupAreaFormat>,
 }
 
+/// The level-matching key a group header and its footer share: the area name with its band token
+/// (`Header`/`Footer`) removed once, so `nameHeader`↔`nameFooter`, `orderdateHeader`↔`orderdateFooter`,
+/// and `GroupHeaderArea3`↔`GroupFooterArea3` all pair up regardless of the (UI-creation-order) digit
+/// suffix that the file's area names carry.
+fn group_area_key(name: &str, token: &str) -> String {
+    name.replacen(token, "", 1)
+}
+
+/// Order group footers by group level (0 = outermost), pairing each footer to the header level that
+/// shares its [`group_area_key`]. This is robust to whatever order the file/decoder presents footers
+/// in. When the names don't pair up cleanly (an unmatched footer, or a mismatched count), fall back
+/// to the canonical assumption that footers are stored innermost-first and reverse them.
+fn order_group_footers<'a>(
+    header_keys: &[String],
+    footer_entries: Vec<(String, Vec<&'a Section>)>,
+) -> Vec<Vec<&'a Section>> {
+    let mut placed: Vec<Option<Vec<&Section>>> = (0..header_keys.len()).map(|_| None).collect();
+    let mut all_matched = footer_entries.len() == header_keys.len();
+    let mut fallback = Vec::with_capacity(footer_entries.len());
+    for (key, sections) in footer_entries {
+        fallback.push(sections.clone());
+        match header_keys.iter().position(|k| *k == key) {
+            Some(level) if placed[level].is_none() => placed[level] = Some(sections),
+            _ => all_matched = false,
+        }
+    }
+    if all_matched && placed.iter().all(Option::is_some) {
+        placed.into_iter().map(Option::unwrap).collect()
+    } else {
+        fallback.reverse();
+        fallback
+    }
+}
+
 impl<'a> Bands<'a> {
     fn collect(report: &'a Report) -> Bands<'a> {
         let mut b = Bands {
@@ -207,22 +293,37 @@ impl<'a> Bands<'a> {
             page_footer: Vec::new(),
             group_formats: Vec::new(),
         };
+        // Group headers appear in group-level order (outermost first); record each level's matching
+        // key so its footer can be paired back to it by name, not by position.
+        let mut header_keys: Vec<String> = Vec::new();
+        let mut footer_entries: Vec<(String, Vec<&Section>)> = Vec::new();
         for area in &report.report_definition.areas {
-            let sections: Vec<&Section> = area.sections.iter().collect();
+            // "Hide (Drill-Down OK)" hides the whole area in the normal (non-drill-down) render, so it
+            // contributes no bands — but its structural bookkeeping (group level, header/footer key,
+            // group format) is kept by zeroing only its sections, so group-level indexing stays aligned.
+            let sections: Vec<&Section> = if area.format.hide_for_drill_down {
+                Vec::new()
+            } else {
+                area.sections.iter().collect()
+            };
             match area.kind {
                 AreaSectionKind::ReportHeader => b.report_header.extend(sections),
                 AreaSectionKind::PageHeader => b.page_header.extend(sections),
                 AreaSectionKind::GroupHeader => {
                     b.group_formats.push(area.format.group.unwrap_or_default());
+                    header_keys.push(group_area_key(&area.name, "Header"));
                     b.group_headers.push(sections);
                 }
                 AreaSectionKind::Detail => b.detail.extend(sections),
-                AreaSectionKind::GroupFooter => b.group_footers.push(sections),
+                AreaSectionKind::GroupFooter => {
+                    footer_entries.push((group_area_key(&area.name, "Footer"), sections));
+                }
                 AreaSectionKind::ReportFooter => b.report_footer.extend(sections),
                 AreaSectionKind::PageFooter => b.page_footer.extend(sections),
                 _ => {}
             }
         }
+        b.group_footers = order_group_footers(&header_keys, footer_entries);
         b
     }
 }
@@ -236,10 +337,9 @@ pub(crate) struct Formatter<'a> {
     /// The printable-area origin (report top-left margin) stamped on every emitted [`Page`] so
     /// physical backends can re-apply it.
     origin: Point,
-    content_left: i32,
-    content_top: i32,
+    /// Bottom of the flow body in printable-relative twips: the printable height minus the reserved
+    /// page-footer band. Bands paginate when they would cross it, and the page footer pins to it.
     body_bottom: i32,
-    page_footer_top: i32,
 
     pages: Vec<Page>,
     checkpoints: Vec<PageCheckpoint>,
@@ -247,6 +347,11 @@ pub(crate) struct Formatter<'a> {
     cursor_y: i32,
     page_number: i64,
     record_number: i64,
+    /// The detail record currently in scope during the print walk. A page header/footer resolves its
+    /// field/formula objects against the record straddling the page boundary (the first record placed
+    /// on a page for the header, the last for the footer) — this tracks that record, updated as each
+    /// detail row is emitted. `None` before the first record prints.
+    current_row: Option<&'a Row>,
     /// Text metrics + line-breaking (default: [`ApproxLayout`]; inject a font-accurate impl for
     /// engine parity and international scripts). Borrowed so nested subreport layouts share it.
     text_layout: &'a dyn TextLayout,
@@ -272,6 +377,10 @@ pub(crate) struct Formatter<'a> {
     /// group-stack change (see [`Self::refresh_group_summaries`]) and handed to each per-record
     /// [`ResolveState`] as a cheap `Rc` clone rather than deep-cloned on every band emit.
     group_summaries: Rc<Vec<(String, Vec<Summary>)>>,
+    /// The report grand-total summaries, shared into every [`ResolveState`] so a 1-argument
+    /// (grand-total) summary — `Sum({field})`, whether a placed object or a summary function in a
+    /// formula — resolves to the report total from any band, not the innermost group's subtotal.
+    grand_summaries: Rc<Vec<Summary>>,
     /// Optional live-row provider for subreports. Threaded into nested subreport
     /// formatters so a whole tree renders from live data; `None` = subreports use saved data.
     scope_data: Option<&'a dyn ScopeData>,
@@ -295,6 +404,23 @@ pub(crate) struct Formatter<'a> {
     /// per [`Formatter::emit_object`] call, shared by that object's text runs and its border/fill box;
     /// monotonic across the report, with subreport ids remapped into this space on merge.
     next_instance_id: u32,
+    /// Placed `TotalPageCount`/`PageNofM` runs to rewrite once the final page count is known (the
+    /// forward reference a single pass cannot resolve; see [`Self::resolve_page_totals`]).
+    page_count_fixups: Vec<PageCountFixup>,
+}
+
+/// A placed text run whose value depends on the final page count (`TotalPageCount` / `PageNofM`),
+/// recorded during the single layout pass and rewritten once the true page total is known (the
+/// forward reference the single pass cannot resolve up front — see [`Formatter::resolve_page_totals`]).
+struct PageCountFixup {
+    /// Index into [`Formatter::pages`] of the page carrying the run.
+    page_index: usize,
+    /// Index of the [`DrawOp::Text`] within that page's ops.
+    op_index: usize,
+    /// The special field to re-resolve, and the page number it displays (which honours any
+    /// page-number reset, so only the total is stale).
+    field: rpt_model::FieldObject,
+    page_number: i64,
 }
 
 /// One enclosing group's render-time state: its key, its condition field, and its computed summaries
@@ -340,15 +466,12 @@ impl<'a> Formatter<'a> {
         // the coordinate model in one place instead of scattering ±margin across every position site
         // and every backend.
         let origin = Point::new(m.left.0, m.top.0);
-        let content_left = 0;
-        let content_top = 0;
         // Bottom of the printable area in printable-relative coords (= printable height).
         let content_bottom = page_h - m.bottom.0 - m.top.0;
-        let page_footer_height: i32 = Bands::collect(report)
-            .page_footer
-            .iter()
-            .map(|s| s.height.0)
-            .sum();
+        // Draw-op coordinates are printable-relative (0-based), so the content origin is (0, 0); it is
+        // not threaded as a field. The margin is carried once as the page origin (above).
+        let bands = Bands::collect(report);
+        let page_footer_height: i32 = bands.page_footer.iter().map(|s| s.height.0).sum();
         let page_size = PageSize {
             width: Twips(page_w),
             height: Twips(page_h),
@@ -359,19 +482,17 @@ impl<'a> Formatter<'a> {
             report,
             dataset,
             formulas,
-            bands: Bands::collect(report),
+            bands,
             page_size,
             origin,
-            content_left,
-            content_top,
             body_bottom: content_bottom - page_footer_height,
-            page_footer_top: content_bottom - page_footer_height,
             pages: Vec::new(),
             checkpoints: Vec::new(),
             cur,
-            cursor_y: content_top,
+            cursor_y: 0,
             page_number: 0,
             record_number: 0,
+            current_row: None,
             text_layout,
             multi_column: po.multi_column,
             col_offset: 0,
@@ -380,6 +501,7 @@ impl<'a> Formatter<'a> {
             scheduled,
             group_stack: Vec::new(),
             group_summaries: Rc::new(Vec::new()),
+            grand_summaries: Rc::new(dataset.grand_total.clone()),
             scope_data,
             locale,
             diagnostics: RefCell::new(Vec::new()),
@@ -387,7 +509,17 @@ impl<'a> Formatter<'a> {
             pending_page_break: false,
             pending_page_number_reset: false,
             next_instance_id: 0,
+            page_count_fixups: Vec::new(),
         }
+    }
+
+    /// Switch this formatter into flow mode: never paginate, so the whole report lays out onto a
+    /// single tall page. Used to format an inline subreport into one continuous op list whose height
+    /// the enclosing band grows to fit (see `place::format_subreport`).
+    fn set_flow_mode(&mut self) {
+        // A body bottom far past any realistic content height: the band-overflow checks never trip,
+        // so `begin_page`/`finish_page` run exactly once and every band flows onto page 1.
+        self.body_bottom = i32::MAX / 4;
     }
 
     fn run(mut self) -> PagedDocument {
@@ -412,33 +544,45 @@ impl<'a> Formatter<'a> {
                 ),
             );
         }
-        // begin_page emits the report header (page 1 only) above the page header, then the page
-        // header — the correct top-of-page band order.
-        self.begin_page();
+        // Open page 1, then emit the report header above the page header (the correct top-of-page
+        // band order). The report header is emitted here — not in `begin_page` — because a tall
+        // subreport in it flows across continuation pages, each of which repeats the page header via
+        // `begin_page`; every later page turn opens through `begin_page` (report header page-1 only).
+        self.open_page();
+        self.emit_report_header();
+        // `dataset` is borrowed for the whole formatter lifetime, so copy the reference out and walk
+        // it in place — no need to deep-clone the recursively-owned `GroupInstance` tree to satisfy
+        // the borrow checker against `&mut self`.
+        let dataset = self.dataset;
         // Body: grouped or flat.
-        if self.dataset.groups.is_empty() {
-            self.emit_details(&self.dataset.details, &self.dataset.grand_total);
+        if dataset.groups.is_empty() {
+            if self.bands.group_headers.is_empty() && self.bands.group_footers.is_empty() {
+                self.emit_details(&dataset.details, &dataset.grand_total);
+            } else {
+                // A report that defines group bands but produced no group (an empty dataset) still
+                // lays out the group skeleton once, so its static content renders.
+                self.emit_empty_group_skeleton();
+            }
         } else {
-            // `dataset` is borrowed for the whole formatter lifetime, so copy the reference out and
-            // iterate the group tree in place — no need to deep-clone the recursively-owned
-            // `GroupInstance` tree just to satisfy the borrow checker against `&mut self`.
-            let dataset = self.dataset;
             for g in &dataset.groups {
                 self.emit_group(g);
             }
         }
-        // Report footer (once) — the grand-total summaries are in scope so a 1-argument grand-total
-        // summary object resolves.
+        // Report footer (once) — resolved against the report's last record (Crystal's report-footer
+        // record context) so its field/formula objects populate; the grand-total summaries are in
+        // scope so a 1-argument grand-total summary object also resolves.
         let rf: Vec<&Section> = self.bands.report_footer.clone();
         let mut rf_state = self.state(None);
-        rf_state.summaries = self.dataset.grand_total.clone();
+        rf_state.summaries = Rc::new(dataset.grand_total.clone());
+        let last = dataset.iter_detail_rows().last().copied();
         for s in rf {
-            self.emit_band(s, None, &rf_state);
+            self.emit_band(s, last, &rf_state);
         }
         self.finish_page();
 
-        // Second pass would fix TotalPageCount; first-cut sets it to the final page count on every
-        // page's checkpoint. (A real two-pass or checkpoint replay is a flagged follow-up.)
+        // The final page count is now known: rewrite every `TotalPageCount`/`PageNofM` run that was
+        // placed with a provisional total during the single pass.
+        self.resolve_page_totals();
         PagedDocument {
             pages: self.pages,
             checkpoints: self.checkpoints,
@@ -452,11 +596,43 @@ impl<'a> Formatter<'a> {
     pub(crate) fn state(&self, group_key: Option<Value>) -> ResolveState {
         ResolveState {
             group_key,
-            summaries: Vec::new(),
+            summaries: Rc::new(Vec::new()),
             group_summaries: Rc::clone(&self.group_summaries),
+            grand_summaries: Rc::clone(&self.grand_summaries),
             page_number: self.page_number,
             total_pages: self.pages.len() as i64 + 1,
             record_number: self.record_number,
+        }
+    }
+
+    /// Rewrite every recorded `TotalPageCount`/`PageNofM` run with the true final page count. Each
+    /// run's displayed page number is preserved (it honoured any page-number reset already); only the
+    /// stale total changes. The run's stored advance is recomputed so a right/centre-aligned footer
+    /// re-anchors to the new width.
+    fn resolve_page_totals(&mut self) {
+        if self.page_count_fixups.is_empty() {
+            return;
+        }
+        let total = self.pages.len() as i64;
+        let diag: DiagSink = RefCell::new(Vec::new());
+        for fx in std::mem::take(&mut self.page_count_fixups) {
+            let state = ResolveState {
+                page_number: fx.page_number,
+                total_pages: total,
+                ..ResolveState::default()
+            };
+            let text =
+                resolve::field_text(self.report, &fx.field, None, &state, &self.locale, &diag);
+            if let Some(DrawOp::Text(run)) = self
+                .pages
+                .get_mut(fx.page_index)
+                .and_then(|p| p.ops.get_mut(fx.op_index))
+            {
+                if let Some(m) = run.metrics.as_mut() {
+                    m.advance = Twips(self.text_layout.width_twips(&text, &run.font) as i32);
+                }
+                run.text = text;
+            }
         }
     }
 
@@ -501,7 +677,7 @@ impl<'a> Formatter<'a> {
     /// Build the per-record [`DataContext`] from this Formatter's report-lifetime state (formulas,
     /// params, shared vars, running totals, scheduled values) plus one `row` and the print `state`.
     /// The context borrows `row` for its own lifetime, so it never keeps `self` borrowed.
-    pub(crate) fn context<'r>(&self, row: &'r Row, state: &ResolveState) -> DataContext<'r>
+    pub(crate) fn context<'r>(&self, row: &'r Row, state: &'r ResolveState) -> DataContext<'r>
     where
         'a: 'r,
     {
@@ -521,6 +697,13 @@ pub(crate) fn first_row(g: &GroupInstance) -> Option<&Row> {
     g.details
         .first()
         .or_else(|| g.subgroups.iter().find_map(first_row))
+}
+
+/// The last detail record of a group subtree, in print order — the group-footer record context.
+pub(crate) fn last_row(g: &GroupInstance) -> Option<&Row> {
+    g.details
+        .last()
+        .or_else(|| g.subgroups.iter().rev().find_map(last_row))
 }
 
 /// A [`RowSource`] with no columns and no rows — for a subreport that carries no saved data (only

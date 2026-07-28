@@ -1,40 +1,70 @@
 //! Math and array-aggregate builtins.
 
-use super::{map_numeric, mismatch, num_arg, opt_num, Builtin};
+use super::{arg, map_numeric, mismatch, num_arg, opt_num};
 use crate::eval::{EvalError, Value};
 
-/// Handle a math/aggregate [`Builtin`] (routed here by [`super::Builtin::family`]).
-pub(super) fn call(b: Builtin, name: &str, args: &[Value]) -> Result<Value, EvalError> {
-    use Builtin as B;
+/// The math and array-aggregate builtins. Wrapped by [`super::Builtin::Math`] in the dispatch table.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum MathFn {
+    Abs,
+    Sgn,
+    Int,
+    Fix,
+    Truncate,
+    Round,
+    RoundUp,
+    MRound,
+    Floor,
+    Ceiling,
+    Remainder,
+    Sqr,
+    Exp,
+    Log,
+    Sin,
+    Cos,
+    Tan,
+    Atn,
+    Pi,
+    Minimum,
+    Maximum,
+    Sum,
+    Average,
+    Count,
+    UBound,
+}
+
+/// Handle a math/aggregate builtin (routed here from [`super::call`]).
+pub(super) fn call(b: MathFn, name: &str, args: &[Value]) -> Result<Value, EvalError> {
+    use MathFn as B;
     match b {
-        B::Abs => map_numeric(&args[0], name, f64::abs),
+        B::Abs => map_numeric(name, args, 0, f64::abs),
         B::Sgn => Ok(Value::Number(match num_arg(name, args, 0)? {
             n if n > 0.0 => 1.0,
             n if n < 0.0 => -1.0,
             _ => 0.0,
         })),
-        B::Int => map_numeric(&args[0], name, f64::floor),
-        B::Fix => map_numeric(&args[0], name, f64::trunc),
+        B::Int => map_numeric(name, args, 0, f64::floor),
+        B::Fix => map_numeric(name, args, 0, f64::trunc),
         B::Floor => {
             let m = opt_multiple(name, args)?;
-            map_numeric(&args[0], name, |n| (n / m).floor() * m)
+            map_numeric(name, args, 0, |n| (n / m).floor() * m)
         }
         B::Ceiling => {
             let m = opt_multiple(name, args)?;
-            map_numeric(&args[0], name, |n| (n / m).ceil() * m)
+            map_numeric(name, args, 0, |n| (n / m).ceil() * m)
         }
         B::RoundUp => {
             // Round away from zero to `places` decimals (default 0).
             let places = opt_num(args, 1).unwrap_or(0.0) as i32;
             let scale = 10f64.powi(places);
-            map_numeric(&args[0], name, |n| {
+            map_numeric(name, args, 0, |n| {
                 n.signum() * (n.abs() * scale).ceil() / scale
             })
         }
         B::MRound => {
             // Nearest multiple of arg1 (half away from zero); a zero multiple yields zero.
             let m = num_arg(name, args, 1)?;
-            map_numeric(&args[0], name, |n| {
+            map_numeric(name, args, 0, |n| {
                 if m == 0.0 {
                     0.0
                 } else {
@@ -46,13 +76,13 @@ pub(super) fn call(b: Builtin, name: &str, args: &[Value]) -> Result<Value, Eval
         B::Truncate => {
             let places = opt_num(args, 1).unwrap_or(0.0) as i32;
             let scale = 10f64.powi(places);
-            map_numeric(&args[0], name, |n| (n * scale).trunc() / scale)
+            map_numeric(name, args, 0, |n| (n * scale).trunc() / scale)
         }
         B::Round => {
             let places = opt_num(args, 1).unwrap_or(0.0) as i32;
             let scale = 10f64.powi(places);
             // Half away from zero, like the engine (f64::round is half-away too).
-            map_numeric(&args[0], name, |n| (n * scale).round() / scale)
+            map_numeric(name, args, 0, |n| (n * scale).round() / scale)
         }
         B::Remainder => {
             let (a, b) = (num_arg(name, args, 0)?, num_arg(name, args, 1)?);
@@ -70,11 +100,10 @@ pub(super) fn call(b: Builtin, name: &str, args: &[Value]) -> Result<Value, Eval
         B::Atn => Ok(Value::Number(num_arg(name, args, 0)?.atan())),
         // Array forms only; record-set aggregation needs the data pipeline.
         B::Minimum | B::Maximum | B::Sum | B::Average | B::Count => aggregate(b, name, args),
-        B::UBound => match &args[0] {
+        B::UBound => match arg(name, args, 0)? {
             Value::Array(a) => Ok(Value::Number(a.len() as f64)),
             v => Err(mismatch(name, v)),
         },
-        other => unreachable!("non-math builtin {other:?} routed to math"),
     }
 }
 
@@ -96,23 +125,19 @@ fn opt_multiple(name: &str, args: &[Value]) -> Result<f64, EvalError> {
 
 /// `Minimum`/`Maximum`/`Sum`/`Average`/`Count` over an array argument. The record-set forms
 /// (`Sum({field}, {group})`) need the data pipeline and are reported as such.
-fn aggregate(builtin: Builtin, name: &str, args: &[Value]) -> Result<Value, EvalError> {
-    let items: &[Value] = match args {
-        [Value::Array(a)] => a,
-        [Value::Range { lo, hi, .. }] if matches!(builtin, Builtin::Minimum | Builtin::Maximum) => {
-            return Ok(if builtin == Builtin::Minimum {
+fn aggregate(builtin: MathFn, name: &str, args: &[Value]) -> Result<Value, EvalError> {
+    // Min/Max accept a range directly — its bounds are the extremes.
+    if let [Value::Range { lo, hi, .. }] = args {
+        if matches!(builtin, MathFn::Minimum | MathFn::Maximum) {
+            return Ok(if builtin == MathFn::Minimum {
                 (**lo).clone()
             } else {
                 (**hi).clone()
             });
         }
-        _ => {
-            return Err(EvalError::Unsupported(format!(
-                "{name} over records (needs data context)"
-            )))
-        }
-    };
-    if builtin == Builtin::Count {
+    }
+    let items = super::array_arg(name, args)?;
+    if builtin == MathFn::Count {
         return Ok(Value::Number(
             items.iter().filter(|v| !v.is_null()).count() as f64
         ));
@@ -122,26 +147,26 @@ fn aggregate(builtin: Builtin, name: &str, args: &[Value]) -> Result<Value, Eval
         return Ok(Value::Null);
     }
     match builtin {
-        Builtin::Minimum | Builtin::Maximum => {
+        MathFn::Minimum | MathFn::Maximum => {
             let mut best = non_null[0];
             for v in &non_null[1..] {
                 let ord = crate::eval::compare(v, best)?;
-                if (builtin == Builtin::Minimum && ord.is_lt())
-                    || (builtin == Builtin::Maximum && ord.is_gt())
+                if (builtin == MathFn::Minimum && ord.is_lt())
+                    || (builtin == MathFn::Maximum && ord.is_gt())
                 {
                     best = v;
                 }
             }
             Ok(best.clone())
         }
-        Builtin::Sum | Builtin::Average => {
+        MathFn::Sum | MathFn::Average => {
             let mut total = 0.0;
             let mut currency = false;
             for v in &non_null {
                 total += v.as_number().ok_or_else(|| mismatch(name, v))?;
                 currency |= matches!(v, Value::Currency(_));
             }
-            let n = if builtin == Builtin::Average {
+            let n = if builtin == MathFn::Average {
                 total / non_null.len() as f64
             } else {
                 total
@@ -152,7 +177,12 @@ fn aggregate(builtin: Builtin, name: &str, args: &[Value]) -> Result<Value, Eval
                 Value::Number(n)
             })
         }
-        _ => unreachable!(),
+        // Every `MathFn` the dispatcher routes here has an arm above; a new variant without one lands
+        // here, which is a gap in this crate rather than a bad formula.
+        other => {
+            debug_assert!(false, "unhandled MathFn: {other:?}");
+            Err(EvalError::Internal("unhandled math builtin"))
+        }
     }
 }
 
@@ -219,7 +249,7 @@ mod tests {
             run("Abs(\"x\")"),
             Err(EvalError::TypeMismatch { .. })
         ));
-        assert!(matches!(run("Sqr()"), Err(EvalError::BadArg(_))));
+        assert!(matches!(run("Sqr()"), Err(EvalError::Arity { .. })));
     }
 
     #[test]

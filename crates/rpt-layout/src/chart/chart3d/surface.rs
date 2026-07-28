@@ -5,11 +5,14 @@
 //! rather than per-facet normal shading, and the ribbons are globally painter-sorted
 //! back-to-front over the same scenery walls/floor.
 
-use super::projection::{face, Projection, Vec3, ViewAngle};
-use super::scene::{axes_3d, background_planes, compose, floor_grid, room_edges};
-use crate::chart::common::{compute_frame, nice_scale, AxisTitles, PALETTE};
+use super::projection::{face, p3};
+use super::scene::{compose, setup_3d};
+#[cfg(test)]
+use crate::chart::common::AxisTitles;
+use crate::chart::common::{ChartCtx, PALETTE};
+#[cfg(test)]
 use rpt_model::Rect;
-use rpt_pages::{DrawOp, ObjectKind, ObjectRef};
+use rpt_pages::DrawOp;
 
 /// Build the draw-ops for a 3-D surface chart. `categories` are the X-axis slots; `series` is one row
 /// per data binding (`name`, value-per-category), receding along Z. Each series is a top ribbon of
@@ -17,63 +20,25 @@ use rpt_pages::{DrawOp, ObjectKind, ObjectRef};
 /// categories has `S × (C − 1)` data faces. Draws the three background planes first, then the ribbon
 /// quads globally painter-sorted back-to-front, then the category labels. Returns an empty vec if
 /// there is nothing to plot or a single category (no segment to span).
-#[allow(clippy::too_many_arguments)]
 pub(crate) fn surface_3d(
-    rect: Rect,
-    title: &str,
+    cx: &ChartCtx,
     categories: &[String],
     series: &[(String, Vec<f64>)],
     view_angle: rpt_model::ChartViewAngle,
-    section_name: &str,
-    obj_name: &str,
 ) -> Vec<DrawOp> {
     let (s_count, c_count) = (series.len(), categories.len());
     if s_count == 0 || c_count < 2 {
         return Vec::new();
     }
-    let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(obj_name));
+    let &ChartCtx { rect, title, .. } = cx;
+    let src = || cx.src();
 
-    // The value scale spans every series×category value so the tallest ridge never touches the ceiling;
-    // the frame reserves the category slots off a synthetic per-category series carrying the column max.
-    let global_max = series
-        .iter()
-        .flat_map(|(_, vals)| vals.iter().copied())
-        .fold(0.0_f64, f64::max);
-    let (max_val, _) = nice_scale(global_max);
-    let frame_series: Vec<(String, f64)> = categories
-        .iter()
-        .enumerate()
-        .map(|(c, label)| {
-            let cat_max = series
-                .iter()
-                .map(|(_, vals)| vals.get(c).copied().unwrap_or(0.0))
-                .fold(0.0_f64, f64::max);
-            (label.clone(), cat_max)
-        })
-        .collect();
-    let f = compute_frame(rect, title, AxisTitles::default(), &frame_series);
+    // Frame, projection, and background scenery from the shared 3-D scene setup (single depth band).
+    let (f, max_val, proj, background, axis_labels) =
+        setup_3d(rect, title, categories, series, view_angle, &[], &src);
 
     let plot_left = f.plot_left;
-    let plot_right = f.plot_right();
-    let plot_top = f.plot_top();
     let plot_bottom = f.plot_bottom;
-
-    let (pl, pr, pt, pb) = (
-        plot_left as f64,
-        plot_right as f64,
-        plot_top as f64,
-        plot_bottom as f64,
-    );
-    // The chart's decoded view-angle preset, perspective-fit into the plot box (as the riser).
-    let proj = Projection::perspective(pl, pr, pt, pb, ViewAngle::for_preset(view_angle));
-    let (grid, axis_labels) = axes_3d(&proj, &f, categories, &src);
-    let mut background = background_planes(&proj, pl, pr, pt, pb, &src).to_vec();
-    let x_div: Vec<f64> = (1..c_count)
-        .map(|c| (plot_left + c as i32 * f.slot) as f64)
-        .collect();
-    background.extend(floor_grid(&proj, pb, pl, pr, &x_div, &[], &src));
-    background.extend(grid);
-    background.extend(room_edges(&proj, pl, pr, pt, pb, &src));
 
     // Category grid: a point per category, centred in its slot (as line/area), at the scaled height.
     let slot = f.slot;
@@ -99,26 +64,10 @@ pub(crate) fn surface_3d(
             data_faces.push(face(
                 &proj,
                 &[
-                    Vec3 {
-                        x: x0,
-                        y: y0,
-                        z: zf,
-                    },
-                    Vec3 {
-                        x: x1,
-                        y: y1,
-                        z: zf,
-                    },
-                    Vec3 {
-                        x: x1,
-                        y: y1,
-                        z: zb,
-                    },
-                    Vec3 {
-                        x: x0,
-                        y: y0,
-                        z: zb,
-                    },
+                    p3(x0, y0, zf),
+                    p3(x1, y1, zf),
+                    p3(x1, y1, zb),
+                    p3(x0, y0, zb),
                 ],
                 color,
                 None,
@@ -160,39 +109,13 @@ mod tests {
     fn empty_or_single_category_yields_no_ops() {
         let cats = vec!["A".to_string(), "B".to_string()];
         let series = vec![("s".to_string(), vec![1.0, 2.0])];
-        assert!(surface_3d(
-            rect(),
-            "T",
-            &[],
-            &series,
-            rpt_model::ChartViewAngle::Standard,
-            "S",
-            "Graph1"
-        )
-        .is_empty());
-        assert!(surface_3d(
-            rect(),
-            "T",
-            &cats,
-            &[],
-            rpt_model::ChartViewAngle::Standard,
-            "S",
-            "Graph1"
-        )
-        .is_empty());
+        let cx = ChartCtx::test(rect(), "T", AxisTitles::default(), false);
+        assert!(surface_3d(&cx, &[], &series, rpt_model::ChartViewAngle::Standard).is_empty());
+        assert!(surface_3d(&cx, &cats, &[], rpt_model::ChartViewAngle::Standard).is_empty());
         // A single category has no segment to span.
         let one = vec!["A".to_string()];
         let s1 = vec![("s".to_string(), vec![1.0])];
-        assert!(surface_3d(
-            rect(),
-            "T",
-            &one,
-            &s1,
-            rpt_model::ChartViewAngle::Standard,
-            "S",
-            "Graph1"
-        )
-        .is_empty());
+        assert!(surface_3d(&cx, &one, &s1, rpt_model::ChartViewAngle::Standard).is_empty());
     }
 
     #[test]
@@ -203,13 +126,10 @@ mod tests {
             ("s2".to_string(), (0..10).map(|c| (10 - c) as f64).collect()),
         ];
         let ops = surface_3d(
-            rect(),
-            "Surf",
+            &ChartCtx::test(rect(), "Surf", AxisTitles::default(), false),
             &cats,
             &series,
             rpt_model::ChartViewAngle::Standard,
-            "RH",
-            "Graph1",
         );
         let polys = fills(&ops).len();
         // 3 scenery planes + S×(C−1) ribbon quads = 3 + 2×9 = 21.
@@ -228,13 +148,10 @@ mod tests {
             ("s2".to_string(), vec![2.0, 4.0, 6.0, 1.0]),
         ];
         let ops = surface_3d(
-            rect(),
-            "",
+            &ChartCtx::test(rect(), "", AxisTitles::default(), false),
             &cats,
             &series,
             rpt_model::ChartViewAngle::Standard,
-            "RH",
-            "Graph1",
         );
         // Skip the 3 scenery planes; every ribbon quad is its series' flat palette colour (no shading,
         // unlike the riser's shade ladder). Painter-sorting interleaves the series, so count colours.

@@ -1,6 +1,6 @@
 -- Fixture for worrall_AlphaISOsByCountry.rpt (PUBLIC report; worrallbrian/crystal_reports).
 --
--- SYNTHETIC data only — invented country-like rows (NOT real ISO 3166, nothing from samples/).
+-- SYNTHETIC data only — invented country-like rows (NOT real ISO 3166).
 -- Portable DDL: this exact script seeds BOTH the SQLite test DB (cargo test) and the postgres DB
 -- that the Crystal engine re-queries via the cross-engine oracle, so both stacks read identical
 -- rows. Column names + types MUST match the report's stored bindings (QESession table

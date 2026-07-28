@@ -1,0 +1,1902 @@
+{
+  "model": {
+    "data_definition": {
+      "condition_formula_bodies": [],
+      "custom_functions": [],
+      "field_definitions": [
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 8,
+          "long_name": null,
+          "name": "Price (SRP)",
+          "short_name": "Price (SRP)",
+          "value_type": "Currency"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 102,
+          "long_name": null,
+          "name": "Product Name",
+          "short_name": "Product Name",
+          "value_type": "String"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Formula": {
+              "null_treatment": "Exception",
+              "number_of_bytes": 8,
+              "options": 0,
+              "syntax": "Crystal",
+              "text": "{Product.Price (SRP)} * 0.75"
+            }
+          },
+          "length": 0,
+          "long_name": null,
+          "name": "Discounted Price",
+          "short_name": null,
+          "value_type": "Currency"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Formula": {
+              "null_treatment": "Exception",
+              "number_of_bytes": 102,
+              "options": 0,
+              "syntax": "Crystal",
+              "text": "UpperCase ({Product.Product Name})"
+            }
+          },
+          "length": 0,
+          "long_name": null,
+          "name": "Capitalize Product Name",
+          "short_name": null,
+          "value_type": "String"
+        }
+      ],
+      "field_manager_census": {
+        "database_fields": 2,
+        "formula_bodies": 5
+      },
+      "formula_variables": [],
+      "group_selection": "",
+      "groups": [],
+      "record_selection": "",
+      "record_sorts": [],
+      "running_total_condition_formulas": [],
+      "saved_data_filter": "",
+      "summary_binding_fields": []
+    },
+    "database": {
+      "links": [],
+      "tables": [
+        {
+          "alias": "Product",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_dao.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "Access/Excel (DAO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "E:\\Documents\\Ed2Go\\Crystal_Reports\\xtreme.mdb"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": null
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "Product.Product ID",
+              "name": "Product ID",
+              "short_name": "Product ID",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 102,
+              "long_name": "Product.Product Name",
+              "name": "Product Name",
+              "short_name": "Product Name",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 42,
+              "long_name": "Product.Color",
+              "name": "Color",
+              "short_name": "Color",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 22,
+              "long_name": "Product.Size",
+              "name": "Size",
+              "short_name": "Size",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 22,
+              "long_name": "Product.M/F",
+              "name": "M/F",
+              "short_name": "M/F",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "Product.Price (SRP)",
+              "name": "Price (SRP)",
+              "short_name": "Price (SRP)",
+              "value_type": "Currency"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "Product.Product Type ID",
+              "name": "Product Type ID",
+              "short_name": "Product Type ID",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 102,
+              "long_name": "Product.Product Class",
+              "name": "Product Class",
+              "short_name": "Product Class",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "Product.Supplier ID",
+              "name": "Supplier ID",
+              "short_name": "Supplier ID",
+              "value_type": "Int32s"
+            }
+          ],
+          "name": "Product",
+          "parameters": [],
+          "qualified_name": "Product"
+        }
+      ]
+    },
+    "designer_state": {
+      "connections": [
+        {
+          "destination": 0,
+          "kind": 258,
+          "source": 2
+        },
+        {
+          "destination": 0,
+          "kind": 258,
+          "source": 1
+        },
+        {
+          "destination": 1,
+          "kind": 2,
+          "source": 2
+        },
+        {
+          "destination": 1,
+          "kind": 2,
+          "source": 1
+        },
+        {
+          "destination": 3,
+          "kind": 2,
+          "source": 2
+        },
+        {
+          "destination": 3,
+          "kind": 2,
+          "source": 1
+        }
+      ],
+      "guidelines": [
+        {
+          "flags": 2,
+          "position": 11225
+        },
+        {
+          "flags": 2,
+          "position": 240
+        },
+        {
+          "flags": 0,
+          "position": 6378
+        },
+        {
+          "flags": 2,
+          "position": 3360
+        }
+      ]
+    },
+    "embeds": [],
+    "has_saved_data": true,
+    "print_options": {
+      "content_height": 15120,
+      "content_width": 11520,
+      "driver_name": null,
+      "margins": {
+        "bottom": 360,
+        "left": 360,
+        "right": 360,
+        "top": 360
+      },
+      "multi_column": null,
+      "paper_orientation": "Portrait",
+      "paper_size": "DefaultPaperSize",
+      "paper_source": "FormSource",
+      "port_name": null,
+      "printer_duplex": "Default",
+      "printer_name": "",
+      "saved_printer_name": ""
+    },
+    "reimport": {
+      "imported_at": {
+        "julian_day": 2456218,
+        "time_fraction": 79373
+      },
+      "reimport_when_opening": 1,
+      "source_path": "",
+      "source_saved_at": {
+        "julian_day": 0,
+        "time_fraction": 0
+      }
+    },
+    "report_definition": {
+      "areas": [
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": true,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "ReportHeader",
+          "name": "ReportHeaderArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 600,
+              "kind": "ReportHeader",
+              "name": "ReportHeaderSection1",
+              "objects": [],
+              "section_code": 6000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": true,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "PageHeader",
+          "name": "PageHeaderArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 600,
+              "kind": "PageHeader",
+              "name": "PageHeaderSection1",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 221,
+                    "left": 9720,
+                    "top": 379,
+                    "width": 1505
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "RightAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "FieldHeading": {
+                      "field_object_name": "DiscountedPrice1",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": true,
+                          "weight": 400
+                        }
+                      },
+                      "max_lines": 0,
+                      "reading_order": "LeftToRight",
+                      "text": "Discounted Price"
+                    }
+                  },
+                  "name": "Text1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 12000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 221,
+                    "left": 240,
+                    "top": 379,
+                    "width": 2554
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "FieldHeading": {
+                      "field_object_name": "ProductName1",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": true,
+                          "weight": 400
+                        }
+                      },
+                      "max_lines": 0,
+                      "reading_order": "LeftToRight",
+                      "text": "Product Name"
+                    }
+                  },
+                  "name": "Text2",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 12000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 221,
+                    "left": 6660,
+                    "top": 379,
+                    "width": 1128
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "RightAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "FieldHeading": {
+                      "field_object_name": "PriceSRP1",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": true,
+                          "weight": 400
+                        }
+                      },
+                      "max_lines": 0,
+                      "reading_order": "LeftToRight",
+                      "text": "Price (SRP)"
+                    }
+                  },
+                  "name": "Text3",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 12000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 221,
+                    "left": 3360,
+                    "top": 379,
+                    "width": 2554
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "FieldHeading": {
+                      "field_object_name": "CapitalizeProductName1",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": true,
+                          "weight": 400
+                        }
+                      },
+                      "max_lines": 0,
+                      "reading_order": "LeftToRight",
+                      "text": "Capitalize Product Name"
+                    }
+                  },
+                  "name": "Text4",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 12000
+                }
+              ],
+              "section_code": 12000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "Detail",
+          "name": "DetailArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 221,
+              "kind": "Detail",
+              "name": "DetailSection1",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 221,
+                    "left": 9720,
+                    "top": 0,
+                    "width": 1505
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{@Discounted Price}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": false
+                        },
+                        "date": {
+                          "date_order": "YearMonthDay",
+                          "day": "LeadingZeroNumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "LeadingZeroNumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "ShortYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "Bracketed",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "Formula",
+                      "summary_code": null,
+                      "value_type": "Currency"
+                    }
+                  },
+                  "name": "DiscountedPrice1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 24000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 221,
+                    "left": 240,
+                    "top": 0,
+                    "width": 2554
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{Product.Product Name}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "DatabaseField",
+                      "summary_code": null,
+                      "value_type": "String"
+                    }
+                  },
+                  "name": "ProductName1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 24000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 221,
+                    "left": 6660,
+                    "top": 0,
+                    "width": 1128
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{Product.Price (SRP)}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": false
+                        },
+                        "date": {
+                          "date_order": "YearMonthDay",
+                          "day": "LeadingZeroNumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "LeadingZeroNumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "ShortYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "Bracketed",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "DatabaseField",
+                      "summary_code": null,
+                      "value_type": "Currency"
+                    }
+                  },
+                  "name": "PriceSRP1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 24000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 221,
+                    "left": 3360,
+                    "top": 0,
+                    "width": 2554
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{@Capitalize Product Name}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "Formula",
+                      "summary_code": null,
+                      "value_type": "String"
+                    }
+                  },
+                  "name": "CapitalizeProductName1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 24000
+                }
+              ],
+              "section_code": 24000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": true,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "ReportFooter",
+          "name": "ReportFooterArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 600,
+              "kind": "ReportFooter",
+              "name": "ReportFooterSection1",
+              "objects": [],
+              "section_code": 48000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": true,
+              "new_page_after": true,
+              "new_page_before": false,
+              "print_at_bottom_of_page": true,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "PageFooter",
+          "name": "PageFooterArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 600,
+              "kind": "PageFooter",
+              "name": "PageFooterSection1",
+              "objects": [],
+              "section_code": 42000,
+              "width": 0
+            }
+          ]
+        }
+      ]
+    },
+    "report_options": {
+      "convert_null_field_to_default": false,
+      "convert_other_nulls_to_default": false,
+      "enable_verify_on_every_print": true,
+      "initial_data_context": null,
+      "initial_report_part_name": null,
+      "save_data_with_report": true,
+      "save_preview_picture": true,
+      "save_summaries_with_report": true,
+      "use_dummy_data": false
+    },
+    "save_metadata": [
+      {
+        "key": "Saved Date",
+        "value": "2012.10.18 22:22:06 Eastern Standard Time"
+      },
+      {
+        "key": "Build Version",
+        "value": "12.0.0.683"
+      },
+      {
+        "key": "Print Engine",
+        "value": "CRW"
+      },
+      {
+        "key": "OS",
+        "value": "Windows Server 2003 family"
+      },
+      {
+        "key": "Architecture",
+        "value": "x86"
+      }
+    ],
+    "saved_data": {
+      "columns": [
+        {
+          "name": "Product.Price (SRP)",
+          "value_type": "Currency"
+        },
+        {
+          "name": "Product.Product Name",
+          "value_type": "String"
+        }
+      ],
+      "record_count": 115,
+      "rows": [
+        [
+          "1450",
+          "Active Outdoors Crochet Glove"
+        ],
+        [
+          "1450",
+          "Active Outdoors Crochet Glove"
+        ],
+        [
+          "1450",
+          "Active Outdoors Crochet Glove"
+        ],
+        [
+          "1450",
+          "Active Outdoors Crochet Glove"
+        ],
+        [
+          "1450",
+          "Active Outdoors Crochet Glove"
+        ],
+        [
+          "1650",
+          "Active Outdoors Lycra Glove"
+        ],
+        [
+          "1650",
+          "Active Outdoors Lycra Glove"
+        ],
+        [
+          "1650",
+          "Active Outdoors Lycra Glove"
+        ],
+        [
+          "1650",
+          "Active Outdoors Lycra Glove"
+        ],
+        [
+          "1650",
+          "Active Outdoors Lycra Glove"
+        ],
+        [
+          "1650",
+          "Active Outdoors Lycra Glove"
+        ],
+        [
+          "4190",
+          "Triumph Pro Helmet"
+        ],
+        [
+          "4190",
+          "Triumph Pro Helmet"
+        ],
+        [
+          "4190",
+          "Triumph Pro Helmet"
+        ],
+        [
+          "4190",
+          "Triumph Pro Helmet"
+        ],
+        [
+          "4190",
+          "Triumph Pro Helmet"
+        ],
+        [
+          "4190",
+          "Triumph Pro Helmet"
+        ],
+        [
+          "5390",
+          "Triumph Vertigo Helmet"
+        ],
+        [
+          "5390",
+          "Triumph Vertigo Helmet"
+        ],
+        [
+          "5390",
+          "Triumph Vertigo Helmet"
+        ],
+        [
+          "5390",
+          "Triumph Vertigo Helmet"
+        ],
+        [
+          "5390",
+          "Triumph Vertigo Helmet"
+        ],
+        [
+          "5390",
+          "Triumph Vertigo Helmet"
+        ],
+        [
+          "5390",
+          "Triumph Vertigo Helmet"
+        ],
+        [
+          "5390",
+          "Triumph Vertigo Helmet"
+        ],
+        [
+          "5390",
+          "Triumph Vertigo Helmet"
+        ],
+        [
+          "450",
+          "Guardian Chain Lock"
+        ],
+        [
+          "1750",
+          "Guardian \"U\" Lock"
+        ],
+        [
+          "1990",
+          "Guardian XL \"U\" Lock"
+        ],
+        [
+          "2190",
+          "Guardian ATB Lock"
+        ],
+        [
+          "2190",
+          "Guardian Mini Lock"
+        ],
+        [
+          "1350",
+          "InFlux Crochet Glove"
+        ],
+        [
+          "1350",
+          "InFlux Crochet Glove"
+        ],
+        [
+          "1350",
+          "InFlux Crochet Glove"
+        ],
+        [
+          "1550",
+          "InFlux Lycra Glove"
+        ],
+        [
+          "1550",
+          "InFlux Lycra Glove"
+        ],
+        [
+          "1550",
+          "InFlux Lycra Glove"
+        ],
+        [
+          "3390",
+          "Xtreme Adult Helmet"
+        ],
+        [
+          "3390",
+          "Xtreme Adult Helmet"
+        ],
+        [
+          "3390",
+          "Xtreme Adult Helmet"
+        ],
+        [
+          "3390",
+          "Xtreme Adult Helmet"
+        ],
+        [
+          "3390",
+          "Xtreme Adult Helmet"
+        ],
+        [
+          "3390",
+          "Xtreme Adult Helmet"
+        ],
+        [
+          "3390",
+          "Xtreme Youth Helmet"
+        ],
+        [
+          "3390",
+          "Xtreme Youth Helmet"
+        ],
+        [
+          "1190",
+          "Xtreme Mtn Lock"
+        ],
+        [
+          "998",
+          "Xtreme Rhino Lock"
+        ],
+        [
+          "3790",
+          "Xtreme Titan Lock"
+        ],
+        [
+          "1450",
+          "Xtreme Anatomic Mens Saddle"
+        ],
+        [
+          "1450",
+          "Xtreme Anatomic Ladies Saddle"
+        ],
+        [
+          "1450",
+          "Xtreme Wide MTB Saddle"
+        ],
+        [
+          "2350",
+          "Xtreme Gellite Mens Saddle"
+        ],
+        [
+          "2350",
+          "Xtreme Gellite  Ladies Saddle"
+        ],
+        [
+          "1200",
+          "Roadster Jr BMX Saddle"
+        ],
+        [
+          "900",
+          "Roadster Micro Mtn Saddle"
+        ],
+        [
+          "1500",
+          "Roadster Mini Mtn Saddle"
+        ],
+        [
+          "2350",
+          "Vesper Comfort ATB Saddle"
+        ],
+        [
+          "2350",
+          "Vesper Comfort Ladies Saddle"
+        ],
+        [
+          "3600",
+          "Vesper Gelflex ATB Saddle"
+        ],
+        [
+          "3600",
+          "Vesper Gelflex Ladies Saddle"
+        ],
+        [
+          "293985",
+          "Descent"
+        ],
+        [
+          "293985",
+          "Descent"
+        ],
+        [
+          "293985",
+          "Descent"
+        ],
+        [
+          "293985",
+          "Descent"
+        ],
+        [
+          "293985",
+          "Descent"
+        ],
+        [
+          "293985",
+          "Descent"
+        ],
+        [
+          "293985",
+          "Descent"
+        ],
+        [
+          "293985",
+          "Descent"
+        ],
+        [
+          "293985",
+          "Descent"
+        ],
+        [
+          "293985",
+          "Descent"
+        ],
+        [
+          "173985",
+          "Mozzie"
+        ],
+        [
+          "173985",
+          "Mozzie"
+        ],
+        [
+          "173985",
+          "Mozzie"
+        ],
+        [
+          "173985",
+          "Mozzie"
+        ],
+        [
+          "173985",
+          "Mozzie"
+        ],
+        [
+          "89985",
+          "Endorphin"
+        ],
+        [
+          "89985",
+          "Endorphin"
+        ],
+        [
+          "89985",
+          "Endorphin"
+        ],
+        [
+          "89985",
+          "Endorphin"
+        ],
+        [
+          "89985",
+          "Endorphin"
+        ],
+        [
+          "83235",
+          "Romeo"
+        ],
+        [
+          "83235",
+          "Romeo"
+        ],
+        [
+          "83235",
+          "Romeo"
+        ],
+        [
+          "83235",
+          "Romeo"
+        ],
+        [
+          "53985",
+          "Wheeler"
+        ],
+        [
+          "53985",
+          "Wheeler"
+        ],
+        [
+          "53985",
+          "Wheeler"
+        ],
+        [
+          "53985",
+          "Wheeler"
+        ],
+        [
+          "76485",
+          "SlickRock"
+        ],
+        [
+          "76485",
+          "SlickRock"
+        ],
+        [
+          "76485",
+          "SlickRock"
+        ],
+        [
+          "76485",
+          "SlickRock"
+        ],
+        [
+          "76485",
+          "SlickRock"
+        ],
+        [
+          "47985",
+          "Rapel"
+        ],
+        [
+          "47985",
+          "Rapel"
+        ],
+        [
+          "47985",
+          "Rapel"
+        ],
+        [
+          "47985",
+          "Rapel"
+        ],
+        [
+          "47985",
+          "Rapel"
+        ],
+        [
+          "47985",
+          "Rapel"
+        ],
+        [
+          "47985",
+          "Rapel"
+        ],
+        [
+          "47985",
+          "Rapel"
+        ],
+        [
+          "32985",
+          "Nicros"
+        ],
+        [
+          "32985",
+          "Nicros"
+        ],
+        [
+          "32985",
+          "Nicros"
+        ],
+        [
+          "32985",
+          "Nicros"
+        ],
+        [
+          "32985",
+          "Nicros"
+        ],
+        [
+          "32985",
+          "Nicros"
+        ],
+        [
+          "32985",
+          "Nicros"
+        ],
+        [
+          "32985",
+          "Nicros"
+        ],
+        [
+          "32985",
+          "Nicros"
+        ],
+        [
+          "32985",
+          "Nicros"
+        ],
+        [
+          "28185",
+          "Mini Nicros"
+        ],
+        [
+          "28185",
+          "Mini Nicros"
+        ],
+        [
+          "27435",
+          "Micro Nicros"
+        ],
+        [
+          "27435",
+          "Micro Nicros"
+        ]
+      ]
+    },
+    "subreports": [],
+    "summary_info": {
+      "author": "",
+      "comments": "",
+      "keywords": "",
+      "last_saved_by": "",
+      "revision_number": "1",
+      "save_with_preview": true,
+      "subject": "",
+      "title": ""
+    },
+    "version": 1
+  }
+}

@@ -4,18 +4,14 @@
 //! ([`super::projection`]). Background walls/floor are drawn first; all data faces
 //! are then globally painter-sorted back-to-front so nearer boxes overlap farther ones.
 
-use super::projection::{face, shade, Projection, Vec3, ViewAngle};
-use super::scene::{axes_3d, background_planes, compose, floor_grid, room_edges};
-use crate::chart::common::{
-    compute_frame, fmt_val, nice_scale, value_label, AxisTitles, LABEL, PALETTE,
-};
+use super::projection::{face, p3, shade, ViewAngle, FRONT_SHADE, SIDE_SHADE};
+use super::scene::{compose, setup_3d};
+#[cfg(test)]
+use crate::chart::common::AxisTitles;
+use crate::chart::common::{fmt_val, value_frac, value_label, ChartCtx, LABEL, PALETTE};
+#[cfg(test)]
 use rpt_model::Rect;
-use rpt_pages::{DrawOp, ObjectKind, ObjectRef};
-
-/// Directional-lighting ladder read off the engine's per-riser brush trios: the top face keeps the
-/// base colour, the front face is 0.8× and the shadowed side 0.6×.
-const FRONT_SHADE: f32 = 0.8;
-const SIDE_SHADE: f32 = 0.6;
+use rpt_pages::DrawOp;
 
 /// Upper bound on the fraction of a series' floor cell a riser's footprint may fill along the depth
 /// axis, so clustered series never touch. The footprint is normally sized to be world-square (see
@@ -28,75 +24,46 @@ const MAX_CELL_FILL: f64 = 0.85;
 /// the three background planes first, then every box's three shaded faces globally painter-sorted
 /// back-to-front, then the labels. Returns an empty vec if there is nothing to plot. `show_labels`
 /// gates the per-box data-value label.
-#[allow(clippy::too_many_arguments)]
 pub(crate) fn riser_3d(
-    rect: Rect,
-    title: &str,
+    cx: &ChartCtx,
     categories: &[String],
     series: &[(String, Vec<f64>)],
-    show_labels: bool,
     view_angle: rpt_model::ChartViewAngle,
-    section_name: &str,
-    obj_name: &str,
 ) -> Vec<DrawOp> {
     let (s_count, c_count) = (series.len(), categories.len());
     if s_count == 0 || c_count == 0 {
         return Vec::new();
     }
-    let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(obj_name));
+    let &ChartCtx {
+        rect,
+        title,
+        show_labels,
+        ..
+    } = cx;
+    let src = || cx.src();
 
-    // The value scale spans every series×category value (clustered, not stacked), so the tallest box
-    // never touches the ceiling. The frame reserves the category slots off a synthetic per-category
-    // series carrying that global max so its `nice_scale` matches.
-    let global_max = series
-        .iter()
-        .flat_map(|(_, vals)| vals.iter().copied())
-        .fold(0.0_f64, f64::max);
-    let (max_val, _) = nice_scale(global_max);
-    let frame_series: Vec<(String, f64)> = categories
-        .iter()
-        .enumerate()
-        .map(|(c, label)| {
-            let cat_max = series
-                .iter()
-                .map(|(_, vals)| vals.get(c).copied().unwrap_or(0.0))
-                .fold(0.0_f64, f64::max);
-            (label.clone(), cat_max)
-        })
-        .collect();
-    // The 3-D riser paints its own frame (no rotated axis titles), so reserve no axis-title bands.
-    let f = compute_frame(rect, title, AxisTitles::default(), &frame_series);
-
-    let bar_w = (f.slot * 3 / 5).max(15);
-    let plot_left = f.plot_left;
-    let plot_right = f.plot_right();
-    let plot_top = f.plot_top();
-    let plot_bottom = f.plot_bottom;
-
-    let (pl, pr, pt, pb) = (
-        plot_left as f64,
-        plot_right as f64,
-        plot_top as f64,
-        plot_bottom as f64,
-    );
-    // The chart's decoded view-angle preset, perspective-fit into the plot box.
-    let va = ViewAngle::for_preset(view_angle);
-    let proj = Projection::perspective(pl, pr, pt, pb, va);
-    // Background first (behind everything, so risers always overlap it): the floor and two back walls,
-    // the floor grid, the value gridlines wrapping the walls, and the room's external outline.
-    let (grid, axis_labels) = axes_3d(&proj, &f, categories, &src);
-    let mut background = background_planes(&proj, pl, pr, pt, pb, &src).to_vec();
-    let x_div: Vec<f64> = (1..c_count)
-        .map(|c| (plot_left + c as i32 * f.slot) as f64)
-        .collect();
+    // Series-depth floor-grid divisions: one band per series (clustered), empty for a single series.
     let z_div: Vec<f64> = if s_count > 1 {
         (1..s_count).map(|s| s as f64 / s_count as f64).collect()
     } else {
         Vec::new()
     };
-    background.extend(floor_grid(&proj, pb, pl, pr, &x_div, &z_div, &src));
-    background.extend(grid);
-    background.extend(room_edges(&proj, pl, pr, pt, pb, &src));
+    // Frame, projection, and background scenery from the shared 3-D scene setup.
+    let (f, max_val, proj, background, axis_labels) =
+        setup_3d(rect, title, categories, series, view_angle, &z_div, &src);
+
+    let bar_w = (f.slot * 3 / 5).max(15);
+    let plot_left = f.plot_left;
+    let plot_right = f.plot_right;
+    let plot_top = f.plot_top();
+    let plot_bottom = f.plot_bottom;
+    let (pl, pr, _pt, pb) = (
+        plot_left as f64,
+        plot_right as f64,
+        plot_top as f64,
+        plot_bottom as f64,
+    );
+    let va = ViewAngle::for_preset(view_angle);
 
     // Every box's three faces, collected with their view-space depth for a single global painter sort.
     // The floor depth is divided into one cell per series. Each riser has a world-square footprint — its
@@ -119,7 +86,7 @@ pub(crate) fn riser_3d(
             } else {
                 PALETTE[s % PALETTE.len()]
             };
-            let h = ((val.max(0.0) / max_val) * f.plot_h as f64) as i32;
+            let h = (value_frac(*val, max_val) * f.plot_h as f64) as i32;
             let x0 = (plot_left + c as i32 * f.slot + (f.slot - bar_w) / 2) as f64;
             let x1 = x0 + bar_w as f64;
             let ytop = (plot_bottom - h.max(1)) as f64;
@@ -127,37 +94,17 @@ pub(crate) fn riser_3d(
             // One painter key per box (its floor-cell centre), shared by all three faces so a box's
             // faces stay grouped and boxes sort by grid distance — a far box never interleaves a near
             // one, regardless of height.
-            let box_key = proj.depth(Vec3 {
-                x: (x0 + x1) / 2.0,
-                y: ybottom,
-                z: (zf + zb) / 2.0,
-            });
+            let box_key = proj.depth(p3((x0 + x1) / 2.0, ybottom, (zf + zb) / 2.0));
 
             // Front (z = zf), the mid-shade face nearest the viewer.
             data_faces.push((
                 face(
                     &proj,
                     &[
-                        Vec3 {
-                            x: x0,
-                            y: ytop,
-                            z: zf,
-                        },
-                        Vec3 {
-                            x: x1,
-                            y: ytop,
-                            z: zf,
-                        },
-                        Vec3 {
-                            x: x1,
-                            y: ybottom,
-                            z: zf,
-                        },
-                        Vec3 {
-                            x: x0,
-                            y: ybottom,
-                            z: zf,
-                        },
+                        p3(x0, ytop, zf),
+                        p3(x1, ytop, zf),
+                        p3(x1, ybottom, zf),
+                        p3(x0, ybottom, zf),
                     ],
                     shade(color, FRONT_SHADE),
                     None,
@@ -171,26 +118,10 @@ pub(crate) fn riser_3d(
                 face(
                     &proj,
                     &[
-                        Vec3 {
-                            x: x0,
-                            y: ytop,
-                            z: zf,
-                        },
-                        Vec3 {
-                            x: x1,
-                            y: ytop,
-                            z: zf,
-                        },
-                        Vec3 {
-                            x: x1,
-                            y: ytop,
-                            z: zb,
-                        },
-                        Vec3 {
-                            x: x0,
-                            y: ytop,
-                            z: zb,
-                        },
+                        p3(x0, ytop, zf),
+                        p3(x1, ytop, zf),
+                        p3(x1, ytop, zb),
+                        p3(x0, ytop, zb),
                     ],
                     color,
                     None,
@@ -205,26 +136,10 @@ pub(crate) fn riser_3d(
                 face(
                     &proj,
                     &[
-                        Vec3 {
-                            x: x0,
-                            y: ytop,
-                            z: zf,
-                        },
-                        Vec3 {
-                            x: x0,
-                            y: ytop,
-                            z: zb,
-                        },
-                        Vec3 {
-                            x: x0,
-                            y: ybottom,
-                            z: zb,
-                        },
-                        Vec3 {
-                            x: x0,
-                            y: ybottom,
-                            z: zf,
-                        },
+                        p3(x0, ytop, zf),
+                        p3(x0, ytop, zb),
+                        p3(x0, ybottom, zb),
+                        p3(x0, ybottom, zf),
                     ],
                     shade(color, SIDE_SHADE),
                     None,
@@ -235,14 +150,10 @@ pub(crate) fn riser_3d(
             ));
 
             if show_labels {
-                let top = proj.project(Vec3 {
-                    x: (x0 + x1) / 2.0,
-                    y: ytop,
-                    z: zf,
-                });
+                let top = proj.project(p3((x0 + x1) / 2.0, ytop, zf));
                 labels.push(value_label(
                     top.x.0,
-                    (top.y.0 - 230).max(plot_top),
+                    top.y.0.saturating_sub(230).max(plot_top),
                     &fmt_val(*val),
                     LABEL,
                     &src,
@@ -294,40 +205,11 @@ mod tests {
 
     #[test]
     fn empty_yields_no_ops() {
-        assert!(riser_3d(
-            rect(),
-            "T",
-            &[],
-            &[],
-            true,
-            rpt_model::ChartViewAngle::Standard,
-            "S",
-            "Graph1"
-        )
-        .is_empty());
+        let cx = ChartCtx::test(rect(), "T", AxisTitles::default(), true);
+        assert!(riser_3d(&cx, &[], &[], rpt_model::ChartViewAngle::Standard).is_empty());
         let (cats, series) = single(&[("A", 1.0)]);
-        assert!(riser_3d(
-            rect(),
-            "T",
-            &cats,
-            &[],
-            true,
-            rpt_model::ChartViewAngle::Standard,
-            "S",
-            "Graph1"
-        )
-        .is_empty());
-        assert!(riser_3d(
-            rect(),
-            "T",
-            &[],
-            &series,
-            true,
-            rpt_model::ChartViewAngle::Standard,
-            "S",
-            "Graph1"
-        )
-        .is_empty());
+        assert!(riser_3d(&cx, &cats, &[], rpt_model::ChartViewAngle::Standard).is_empty());
+        assert!(riser_3d(&cx, &[], &series, rpt_model::ChartViewAngle::Standard).is_empty());
     }
 
     #[test]
@@ -336,14 +218,10 @@ mod tests {
         // slot on the floor — the 3-D axes, not the flat 2-D frame.
         let (cats, series) = single(&[("A", 12.0), ("B", 27.0), ("C", 6.0)]);
         let ops = riser_3d(
-            rect(),
-            "Cities",
+            &ChartCtx::test(rect(), "Cities", AxisTitles::default(), false),
             &cats,
             &series,
-            false,
             rpt_model::ChartViewAngle::Standard,
-            "RH",
-            "Graph1",
         );
         let lines = ops.iter().filter(|o| matches!(o, DrawOp::Line(_))).count();
         let texts = ops.iter().filter(|o| matches!(o, DrawOp::Text(_))).count();
@@ -358,14 +236,10 @@ mod tests {
     fn draws_three_planes_and_three_faces_per_box() {
         let (cats, series) = single(&[("A", 12.0), ("B", 27.0), ("C", 6.0)]);
         let ops = riser_3d(
-            rect(),
-            "Cities",
+            &ChartCtx::test(rect(), "Cities", AxisTitles::default(), true),
             &cats,
             &series,
-            true,
             rpt_model::ChartViewAngle::Standard,
-            "RH",
-            "Graph1",
         );
         let polys = ops
             .iter()
@@ -384,14 +258,10 @@ mod tests {
             ("s3".to_string(), vec![8.0, 12.0, 18.0]),
         ];
         let ops = riser_3d(
-            rect(),
-            "",
+            &ChartCtx::test(rect(), "", AxisTitles::default(), false),
             &cats,
             &series,
-            false,
             rpt_model::ChartViewAngle::Standard,
-            "RH",
-            "Graph1",
         );
         let polys = fills(&ops).len();
         assert_eq!(
@@ -407,14 +277,10 @@ mod tests {
         // colour is PALETTE[0]; the top keeps it, the front is 0.8× and the side 0.6×.
         let (cats, series) = single(&[("A", 20.0)]);
         let ops = riser_3d(
-            rect(),
-            "",
+            &ChartCtx::test(rect(), "", AxisTitles::default(), false),
             &cats,
             &series,
-            false,
             rpt_model::ChartViewAngle::Standard,
-            "RH",
-            "Graph1",
         );
         let f = fills(&ops);
         let base = PALETTE[0];
@@ -437,6 +303,44 @@ mod tests {
         assert!(front > side, "front (0.8×) brighter than side (0.6×)");
     }
 
+    /// A large category×series grid and non-finite / degenerate values must not panic and must stay
+    /// bounded (the painter sort is NaN-safe via `total_cmp`; heights fold NaN/Inf through the value
+    /// scale). Also covers the misconfigured single-cell 3-D chart.
+    #[test]
+    fn large_grid_and_degenerate_3d_do_not_panic() {
+        let cats: Vec<String> = (0..40).map(|i| format!("c{i}")).collect();
+        let series: Vec<(String, Vec<f64>)> = (0..12)
+            .map(|s| {
+                let vals = (0..40)
+                    .map(|c| match (s + c) % 5 {
+                        0 => f64::NAN,
+                        1 => f64::INFINITY,
+                        2 => -3.0,
+                        3 => 1e17,
+                        _ => (c as f64) + 1.0,
+                    })
+                    .collect();
+                (format!("s{s}"), vals)
+            })
+            .collect();
+        let ops = riser_3d(
+            &ChartCtx::test(rect(), "Stress", AxisTitles::default(), true),
+            &cats,
+            &series,
+            rpt_model::ChartViewAngle::Standard,
+        );
+        assert!(!ops.is_empty(), "a large grid still emits faces");
+
+        // A single cell (one category, one series) is a valid, if degenerate, 3-D chart.
+        let (c1, s1) = single(&[("only", 0.0)]);
+        let _ = riser_3d(
+            &ChartCtx::test(rect(), "", AxisTitles::default(), true),
+            &c1,
+            &s1,
+            rpt_model::ChartViewAngle::Standard,
+        );
+    }
+
     #[test]
     fn farther_box_faces_precede_nearer_ones() {
         // Two series receding in z: every face of the farther (back) series must be emitted before
@@ -450,14 +354,10 @@ mod tests {
             ("back".to_string(), vec![20.0]),
         ];
         let ops = riser_3d(
-            rect(),
-            "",
+            &ChartCtx::test(rect(), "", AxisTitles::default(), false),
             &cats,
             &series,
-            false,
             rpt_model::ChartViewAngle::Standard,
-            "RH",
-            "Graph1",
         );
         // Skip the 3 scenery planes; the next 6 fills are the two boxes' faces in painter order.
         let data = &fills(&ops)[3..];

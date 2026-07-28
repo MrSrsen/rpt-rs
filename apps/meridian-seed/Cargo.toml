@@ -1,0 +1,23 @@
+[package]
+name = "meridian-seed"
+description = "Deterministic seed-database generator for the synthetic 'Meridian Global Logistics' render-test corpus — emits portable Postgres/SQLite SQL from a fixed PRNG seed"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "meridian-seed"
+path = "src/main.rs"
+
+[dependencies]
+rand_chacha = { workspace = true }
+rand_core = { workspace = true }
+
+[lints]
+workspace = true

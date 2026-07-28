@@ -1,0 +1,37 @@
+[package]
+name = "rpt-cli"
+description = "Command-line tool to inspect Crystal Reports .rpt files"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories = ["command-line-utilities"]
+rust-version.workspace = true
+
+[[bin]]
+name = "rpt"
+path = "src/main.rs"
+
+[dependencies]
+# `serde` enables the model's serde derives, used by the `json-dump` export.
+rpt = { workspace = true, features = ["serde"] }
+rpt-query.workspace = true
+rpt-kdl.workspace = true
+rpt-json.workspace = true
+# The formula checker (`rpt formulas`) parses and validates formula bodies. The engine is standalone —
+# it carries no `.rpt`/container dependency — so this is a leaf addition.
+crystal-formula = { workspace = true }
+serde.workspace = true
+serde_json.workspace = true
+thiserror = { workspace = true }
+
+[dev-dependencies]
+kdl.workspace = true
+similar = { workspace = true }
+rpt-test-support = { workspace = true }
+
+[lints]
+workspace = true

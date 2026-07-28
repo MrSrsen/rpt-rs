@@ -1,13 +1,128 @@
-//! Fitting enums: mapping low-level engine codes (as read from a record substrate) onto the
-//! model enum variants.
+//! Fitting enums: `from_code` constructors that map low-level engine codes (as read from a record
+//! substrate) onto the model enum variants — pure integer→variant conversions with no I/O,
+//! exposed as inherent constructors so call sites stay ergonomic (`FieldValueType::from_code(..)`).
 //!
-//! Inherent `from_code` constructors on the enums, so call sites stay ergonomic
-//! (`FieldValueType::from_code(..)`). Pure integer→variant conversions with no I/O.
+//! This module holds the `from_code` impls for the general enums (summary/reset/evaluation
+//! conditions, sort direction, line style, alignment, formula-variable scope, field value type,
+//! page-setup enums, table join type). It is **not** the sole home: an enum's `from_code` is placed
+//! beside its definition where that reads better — the display-format enums keep theirs alongside
+//! the enum ([`DayFormat`](crate::DayFormat), [`MonthFormat`](crate::MonthFormat),
+//! [`RoundingFormat`](crate::RoundingFormat), …), the chart enums beside theirs
+//! ([`ChartGraphType`](crate::ChartGraphType), [`ChartViewAngle`](crate::ChartViewAngle), …), and
+//! [`FieldRefKind`](crate::FieldRefKind) beside its own definition.
 
 use crate::{
     Alignment, FieldValueType, FormulaVariableScope, LineStyle, ResetConditionType, SortDirection,
-    SummaryOperation, TableJoinType,
+    SpecialFieldType, SummaryOperation, TableJoinKind, TableLinkOperator,
 };
+
+impl SpecialFieldType {
+    /// Map a special-field object's type byte (the byte at `p+2` of its opener/embedded-field
+    /// record) to the variant. The file's codes are the engine's internal `CrSpecialFieldTypeEnum`
+    /// numbering (not the alpha-sorted SDK `SpecialVarType`), with a date/time block (`0x00`–`0x05`),
+    /// a summary-info text block (`0x06`–`0x07`), and a page block (`0x10`–`0x11`).
+    ///
+    /// Only the established byte codes are mapped; `None` for any other code, so the caller keeps the
+    /// localized display string. `RecordNumber` / `GroupNumber` / `TotalPageCount` / `RecordSelection` /
+    /// `GroupSelection` / `FileAuthor` / `FilePath` / `FileCreationDate` are named SDK kinds whose
+    /// file byte code is unknown, so they are deliberately not mapped here.
+    pub fn from_code(code: u8) -> Option<SpecialFieldType> {
+        Some(match code {
+            0x00 => SpecialFieldType::PrintDate,
+            0x01 => SpecialFieldType::PrintTime,
+            0x02 => SpecialFieldType::ModificationDate,
+            0x03 => SpecialFieldType::ModificationTime,
+            0x04 => SpecialFieldType::DataDate,
+            0x05 => SpecialFieldType::DataTime,
+            0x06 => SpecialFieldType::ReportTitle,
+            0x07 => SpecialFieldType::ReportComments,
+            0x10 => SpecialFieldType::PageNofM,
+            0x11 => SpecialFieldType::PageNumber,
+            _ => return None,
+        })
+    }
+
+    /// The engine's canonical (space-free) name for this special field — the exact string the engine
+    /// renders as a field object's `DataSource` (e.g. `PageNofM`, `DataDate`). This is
+    /// `CrSpecialFieldTypeEnum`'s `FormulaForm`, not the localized display token.
+    pub fn name(self) -> &'static str {
+        match self {
+            SpecialFieldType::RecordNumber => "RecordNumber",
+            SpecialFieldType::PageNumber => "PageNumber",
+            SpecialFieldType::PageNofM => "PageNofM",
+            SpecialFieldType::GroupNumber => "GroupNumber",
+            SpecialFieldType::TotalPageCount => "TotalPageCount",
+            SpecialFieldType::PrintDate => "PrintDate",
+            SpecialFieldType::PrintTime => "PrintTime",
+            SpecialFieldType::ModificationDate => "ModificationDate",
+            SpecialFieldType::ModificationTime => "ModificationTime",
+            SpecialFieldType::DataDate => "DataDate",
+            SpecialFieldType::DataTime => "DataTime",
+            SpecialFieldType::RecordSelection => "RecordSelection",
+            SpecialFieldType::GroupSelection => "GroupSelection",
+            SpecialFieldType::ReportTitle => "ReportTitle",
+            SpecialFieldType::ReportComments => "ReportComments",
+            SpecialFieldType::FileAuthor => "FileAuthor",
+            SpecialFieldType::FilePath => "FilePath",
+            SpecialFieldType::FileCreationDate => "FileCreationDate",
+            SpecialFieldType::Other(_) => "",
+        }
+    }
+
+    /// Recover the variant from the canonical [`name`](Self::name) (the inverse of `name`). `None`
+    /// for an unrecognized string.
+    pub fn from_name(name: &str) -> Option<SpecialFieldType> {
+        Some(match name {
+            "RecordNumber" => SpecialFieldType::RecordNumber,
+            "PageNumber" => SpecialFieldType::PageNumber,
+            "PageNofM" => SpecialFieldType::PageNofM,
+            "GroupNumber" => SpecialFieldType::GroupNumber,
+            "TotalPageCount" => SpecialFieldType::TotalPageCount,
+            "PrintDate" => SpecialFieldType::PrintDate,
+            "PrintTime" => SpecialFieldType::PrintTime,
+            "ModificationDate" => SpecialFieldType::ModificationDate,
+            "ModificationTime" => SpecialFieldType::ModificationTime,
+            "DataDate" => SpecialFieldType::DataDate,
+            "DataTime" => SpecialFieldType::DataTime,
+            "RecordSelection" => SpecialFieldType::RecordSelection,
+            "GroupSelection" => SpecialFieldType::GroupSelection,
+            "ReportTitle" => SpecialFieldType::ReportTitle,
+            "ReportComments" => SpecialFieldType::ReportComments,
+            "FileAuthor" => SpecialFieldType::FileAuthor,
+            "FilePath" => SpecialFieldType::FilePath,
+            "FileCreationDate" => SpecialFieldType::FileCreationDate,
+            _ => return None,
+        })
+    }
+
+    /// The value type the engine resolves this special field to: the date/time kinds to
+    /// [`Date`](FieldValueType::Date)/[`Time`](FieldValueType::Time), the numeric counters to
+    /// [`Int32u`](FieldValueType::Int32u), the textual kinds to [`String`](FieldValueType::String).
+    pub fn value_type(self) -> FieldValueType {
+        use FieldValueType::*;
+        match self {
+            SpecialFieldType::PrintDate
+            | SpecialFieldType::ModificationDate
+            | SpecialFieldType::DataDate
+            | SpecialFieldType::FileCreationDate => Date,
+            SpecialFieldType::PrintTime
+            | SpecialFieldType::ModificationTime
+            | SpecialFieldType::DataTime => Time,
+            SpecialFieldType::PageNumber
+            | SpecialFieldType::GroupNumber
+            | SpecialFieldType::TotalPageCount
+            | SpecialFieldType::RecordNumber => Int32u,
+            SpecialFieldType::PageNofM
+            | SpecialFieldType::ReportTitle
+            | SpecialFieldType::ReportComments
+            | SpecialFieldType::FileAuthor
+            | SpecialFieldType::FilePath
+            | SpecialFieldType::RecordSelection
+            | SpecialFieldType::GroupSelection => String,
+            SpecialFieldType::Other(_) => Unknown,
+        }
+    }
+}
 
 impl SummaryOperation {
     /// Map the running-total/summary operation code (`0x7e` byte 0) to the variant. These are the
@@ -204,6 +319,13 @@ impl FieldValueType {
             }
         })
     }
+
+    /// Whether values of this type are raw binary (a blob), not text. A DB backend must fetch such a
+    /// column as bytes rather than casting it to text, and the pipeline keeps the raw bytes so a
+    /// blob-bound picture object receives the real image data.
+    pub fn is_binary(self) -> bool {
+        matches!(self, FieldValueType::Blob)
+    }
 }
 
 impl crate::PaperOrientation {
@@ -306,17 +428,31 @@ impl crate::PaperSource {
     }
 }
 
-impl TableJoinType {
-    /// Map the QE join-type code (Crystal `CRTableJoinTypeEnum`) to the variant.
-    pub fn from_code(code: i32) -> TableJoinType {
+impl TableJoinKind {
+    /// Map the stored QE join-kind word to the variant. The codes are one-hot bits, not ordinals.
+    pub fn from_code(code: i32) -> TableJoinKind {
         match code {
-            1 => TableJoinType::Equal,
-            2 => TableJoinType::LeftOuter,
-            3 => TableJoinType::RightOuter,
-            4 => TableJoinType::GreaterThan,
-            5 => TableJoinType::LessThan,
-            8 => TableJoinType::NotEqual,
-            _ => TableJoinType::Other(code),
+            0x1 => TableJoinKind::Inner,
+            0x2 => TableJoinKind::LeftOuter,
+            0x4 => TableJoinKind::RightOuter,
+            0x8 => TableJoinKind::FullOuter,
+            _ => TableJoinKind::Other(code),
+        }
+    }
+}
+
+impl TableLinkOperator {
+    /// Map the stored QE link comparison-operator word to the variant. Like [`TableJoinKind`] the
+    /// codes are one-hot bits; unlike a bitmask proper they are never combined.
+    pub fn from_code(code: i32) -> TableLinkOperator {
+        match code {
+            0x04 => TableLinkOperator::Equal,
+            0x08 => TableLinkOperator::NotEqual,
+            0x10 => TableLinkOperator::LessThan,
+            0x20 => TableLinkOperator::LessOrEqual,
+            0x40 => TableLinkOperator::GreaterThan,
+            0x80 => TableLinkOperator::GreaterOrEqual,
+            _ => TableLinkOperator::Other(code),
         }
     }
 }
@@ -604,19 +740,74 @@ mod tests {
         assert_eq!(PaperSource::default(), Auto);
     }
 
-    /// `TableJoinType::from_code`: `1..=5` and `8` map to their join variants; the gaps (`6`, `7`)
-    /// and out-of-range codes become `Other`.
+    /// `TableJoinKind::from_code` maps the four one-hot join-kind bits; anything else — including
+    /// the ordinals `3`/`5`/`6` a dense-enum reading would expect — is an unmapped `Other`.
     #[test]
-    fn table_join_type_from_code() {
-        use TableJoinType::*;
-        assert_eq!(TableJoinType::from_code(1), Equal);
-        assert_eq!(TableJoinType::from_code(2), LeftOuter);
-        assert_eq!(TableJoinType::from_code(3), RightOuter);
-        assert_eq!(TableJoinType::from_code(4), GreaterThan);
-        assert_eq!(TableJoinType::from_code(5), LessThan);
-        assert_eq!(TableJoinType::from_code(8), NotEqual);
-        assert_eq!(TableJoinType::from_code(6), Other(6));
-        assert_eq!(TableJoinType::from_code(7), Other(7));
-        assert_eq!(TableJoinType::from_code(0), Other(0));
+    fn table_join_kind_from_code() {
+        use TableJoinKind::*;
+        assert_eq!(TableJoinKind::from_code(1), Inner);
+        assert_eq!(TableJoinKind::from_code(2), LeftOuter);
+        assert_eq!(TableJoinKind::from_code(4), RightOuter);
+        assert_eq!(TableJoinKind::from_code(8), FullOuter);
+        assert_eq!(TableJoinKind::from_code(3), Other(3));
+        assert_eq!(TableJoinKind::from_code(0), Other(0));
+    }
+
+    /// `TableLinkOperator::from_code` maps the six one-hot comparison bits `0x04`–`0x80`; the two
+    /// unused low bits and anything wider are unmapped `Other`.
+    #[test]
+    fn table_link_operator_from_code() {
+        use TableLinkOperator::*;
+        assert_eq!(TableLinkOperator::from_code(0x04), Equal);
+        assert_eq!(TableLinkOperator::from_code(0x08), NotEqual);
+        assert_eq!(TableLinkOperator::from_code(0x10), LessThan);
+        assert_eq!(TableLinkOperator::from_code(0x20), LessOrEqual);
+        assert_eq!(TableLinkOperator::from_code(0x40), GreaterThan);
+        assert_eq!(TableLinkOperator::from_code(0x80), GreaterOrEqual);
+        assert_eq!(TableLinkOperator::from_code(0x01), Other(1));
+        assert_eq!(TableLinkOperator::from_code(0x100), Other(0x100));
+    }
+
+    /// `SpecialFieldType::from_code` maps the established special-field byte codes (date/time
+    /// block `0x00`–`0x05`, summary-info text `0x06`–`0x07`, page block `0x10`–`0x11`) to their
+    /// variants and leaves any other code unmapped (`None`) for the localized-string fallback. The
+    /// mapped codes round-trip through [`SpecialFieldType::name`]/`from_name`.
+    #[test]
+    fn special_field_type_from_code() {
+        use crate::SpecialFieldType::*;
+        for (code, kind, name) in [
+            (0x00u8, PrintDate, "PrintDate"),
+            (0x01, PrintTime, "PrintTime"),
+            (0x02, ModificationDate, "ModificationDate"),
+            (0x03, ModificationTime, "ModificationTime"),
+            (0x04, DataDate, "DataDate"),
+            (0x05, DataTime, "DataTime"),
+            (0x06, ReportTitle, "ReportTitle"),
+            (0x07, ReportComments, "ReportComments"),
+            (0x10, PageNofM, "PageNofM"),
+            (0x11, PageNumber, "PageNumber"),
+        ] {
+            assert_eq!(SpecialFieldType::from_code(code), Some(kind));
+            assert_eq!(kind.name(), name);
+            assert_eq!(SpecialFieldType::from_name(name), Some(kind));
+        }
+        // Unproven codes fall back (None), so the caller keeps the display string.
+        assert_eq!(SpecialFieldType::from_code(0x08), None);
+        assert_eq!(SpecialFieldType::from_code(0x12), None);
+        assert_eq!(SpecialFieldType::from_code(0xff), None);
+    }
+
+    /// `SpecialFieldType::value_type`: date/time kinds resolve to `Date`/`Time`, the counters to
+    /// `Int32u`, and the textual kinds (page-of-M, titles, selections) to `String`.
+    #[test]
+    fn special_field_type_value_type() {
+        use crate::FieldValueType;
+        use crate::SpecialFieldType::*;
+        assert_eq!(DataDate.value_type(), FieldValueType::Date);
+        assert_eq!(DataTime.value_type(), FieldValueType::Time);
+        assert_eq!(PageNumber.value_type(), FieldValueType::Int32u);
+        assert_eq!(RecordNumber.value_type(), FieldValueType::Int32u);
+        assert_eq!(PageNofM.value_type(), FieldValueType::String);
+        assert_eq!(ReportComments.value_type(), FieldValueType::String);
     }
 }

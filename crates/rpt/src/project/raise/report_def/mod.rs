@@ -15,7 +15,7 @@ use super::*;
 mod chart;
 mod conditions;
 mod crosstab;
-mod data_source;
+pub(super) mod data_source;
 mod formats;
 mod grid;
 mod objects;
@@ -37,6 +37,12 @@ use summary::*;
 pub(in crate::project::raise) use conditions::condition_formula_bodies;
 // The parent `raise` runs `resolve_heading_alignment` after the database is decoded, so re-export it.
 pub(in crate::project::raise) use objects::resolve_heading_alignment;
+// The per-object format-record decoders are re-exported to the parent `raise` so the `annotate`
+// module can summarize the raw format records for inspection tooling.
+pub(in crate::project::raise) use formats::{
+    decode_boolean_format, decode_common_format, decode_date_format, decode_datetime_format,
+    decode_numeric_format, decode_string_format, decode_time_format,
+};
 
 /// A record's role in the `ReportDefinition` stream. The stream is a flat, ordered sequence:
 /// area/section markers delimit the layout tree, an *opener* starts a report object, and the
@@ -46,6 +52,10 @@ pub(super) enum RdRecord {
     Area,
     /// `0x8c` — opens a section within the current area.
     Section,
+    /// A band marker (`0x8d`/`0x8f`/`0x91`/`0x93`/`0x95`/`0x97`/`0x99`) — parents the following
+    /// `0x8c` section and authoritatively names its band kind, since the area/section *name* is
+    /// user-renameable (a group band is commonly named after its group field, e.g. `nameHeader`).
+    Band(AreaSectionKind),
     /// `0xa5` — opens a text object. Whether it is a field-heading object is only known once (and
     /// if) its [`RdRecord::FieldHeadingLink`] record is seen, so it always opens as a text object.
     OpenText,
@@ -68,6 +78,10 @@ pub(super) enum RdRecord {
     OpenSubreport,
     /// `0xb8` — opens a cross-tab object (wrapped by `0xb9`; the `0x9e` name nests inside it).
     OpenCrossTab,
+    /// `0x9c` — the current area's `SectionCodeHeaderFooter`, directly parenting the `0x9b`
+    /// `SectionCodeAreaType` leaf that carries the area's group nesting level (byte 2, for a group
+    /// area). Streams right after the area marker, so it decorates the most-recently-opened area.
+    SectionCodeHeaderFooter,
     /// `0x9e` — the current object's Name + Width/Height.
     Name,
     /// `0xbe` — the current object's Left/Top.
@@ -112,6 +126,13 @@ impl RdRecord {
         match node.rtype {
             AREA_MARKER => RdRecord::Area,
             SECTION_MARKER => RdRecord::Section,
+            REPORT_HEADER_BAND => RdRecord::Band(AreaSectionKind::ReportHeader),
+            REPORT_FOOTER_BAND => RdRecord::Band(AreaSectionKind::ReportFooter),
+            PAGE_HEADER_BAND => RdRecord::Band(AreaSectionKind::PageHeader),
+            PAGE_FOOTER_BAND => RdRecord::Band(AreaSectionKind::PageFooter),
+            DETAIL_BAND => RdRecord::Band(AreaSectionKind::Detail),
+            GROUP_HEADER_BAND => RdRecord::Band(AreaSectionKind::GroupHeader),
+            GROUP_FOOTER_BAND => RdRecord::Band(AreaSectionKind::GroupFooter),
             TEXT_OBJECT => RdRecord::OpenText,
             FIELD_HEADING_LINK => RdRecord::FieldHeadingLink,
             FIELD_OBJECT => RdRecord::OpenField,
@@ -121,6 +142,7 @@ impl RdRecord {
             OLE_OBJECT_ITEM => RdRecord::OleObjectItem,
             SUBREPORT_OBJECT => RdRecord::OpenSubreport,
             CROSSTAB_OBJECT => RdRecord::OpenCrossTab,
+            SECTION_CODE_HEADER_FOOTER => RdRecord::SectionCodeHeaderFooter,
             OBJECT_NAME => RdRecord::Name,
             OBJECT_POS => RdRecord::Position,
             OBJECT_FORMAT => RdRecord::Format,
@@ -142,9 +164,11 @@ impl RdRecord {
     }
 }
 
-/// The kind of a `0xa9` drawing object, taken from byte 25 of its `0xec` border record. Crystal's
-/// drawing primitives are exactly lines and boxes, so this byte is `1` (box) or `2` (line); `Other`
-/// captures any other value (treated as the `0xa9` default, a line).
+/// The kind of a `0xa9` drawing object, taken from byte 25 of its `0xec` border record: `1` = box,
+/// `2` = line — the only two values in use, so the set is closed. An ellipse/oval is not a third
+/// kind but an `IBoxObject` (byte 25 = `1`) whose corner-ellipse (bytes 26-29) rounds the box fully,
+/// and a rounded rectangle is the same box with a partial corner-ellipse. `Other` is a fallback for
+/// any unobserved value, treated as the `0xa9` default: a line.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum DrawingShapeKind {
     Box,
@@ -168,6 +192,7 @@ pub(super) fn raise_report_definition(
     tree: &[RecordNode],
     logical: &[u8],
     groups: &[Group],
+    field_types: &std::collections::HashMap<String, crate::model::FieldValueType>,
 ) -> ReportDefinition {
     let mut areas: Vec<Area> = Vec::new();
     // The bound field reference of a blob-field object: set by its `0xb1` wrapper, consumed by the
@@ -184,9 +209,19 @@ pub(super) fn raise_report_definition(
     // The engine reports the object's font as the FIRST run's font, so once an object has received a
     // font we ignore later runs. Reset on every object opener.
     let mut font_set = false;
+    // The engine likewise reports the object's font colour as the FIRST run's colour (`0x0100`
+    // streams once per run, ahead of that run's `0x08`), so the first colour after an object opener
+    // wins and later runs are ignored. Reset on every object opener alongside `font_set`.
+    let mut color_set = false;
+    // Each field streams two numeric-format leaves (currency slot, then number slot); this tracks
+    // whether the first (currency) slot has been consumed for the current field.
+    let mut numeric_currency_slot_pending = false;
     // True while the walk is inside a folded-away auxiliary detail-pair area (DetailHeader/Footer),
     // whose format records must not leak onto the real Detail area. Set per Area marker.
     let mut in_aux_area = false;
+    // The band kind announced by the most recent band marker (`0x8d`..`0x99`), consumed by the
+    // `0x8c` section it parents to set the authoritative area/section kind.
+    let mut pending_band_kind: Option<AreaSectionKind> = None;
     let sum_defs = collect_summary_defs(tree, logical);
     for node in flatten(tree) {
         let rd = RdRecord::classify(node);
@@ -201,6 +236,8 @@ pub(super) fn raise_report_definition(
                 | RdRecord::OpenCrossTab
         ) {
             font_set = false;
+            color_set = false;
+            numeric_currency_slot_pending = true;
         }
         match rd {
             RdRecord::Area => {
@@ -214,7 +251,22 @@ pub(super) fn raise_report_definition(
                 // and the Detail area's is the one kept.
                 in_aux_area = !open_area(&mut areas, node, logical);
             }
-            RdRecord::Section => open_section(&mut areas, node, logical),
+            RdRecord::Band(kind) => pending_band_kind = Some(kind),
+            RdRecord::Section => open_section(&mut areas, node, logical, pending_band_kind.take()),
+            RdRecord::SectionCodeHeaderFooter => {
+                // The wrapper parents one `0x9b` leaf: byte 0 = area-type (03 = group), byte 2 = the
+                // 0-based group nesting level. Record it on the current area (a group area sees this
+                // right after its marker). This is the authoritative group level — used to order the
+                // group bands and scope group summaries — independent of the area name and of the
+                // areas' binary storage order.
+                if let Some(area) = areas.last_mut() {
+                    if let Some(lb) = node.children.first().map(|c| c.leaf_bytes(logical)) {
+                        if lb.first() == Some(&0x03) {
+                            area.group_level = lb.get(2).map(|&b| usize::from(b));
+                        }
+                    }
+                }
+            }
             RdRecord::OpenText => {
                 open_object(&mut areas, ReportObjectKind::Text(TextObject::default()));
             }
@@ -236,6 +288,7 @@ pub(super) fn raise_report_definition(
                                     },
                                     max_lines: t.max_lines,
                                     font_color: t.font_color.clone(),
+                                    reading_order: t.reading_order,
                                 });
                         }
                     }
@@ -283,16 +336,11 @@ pub(super) fn raise_report_definition(
                         raw = format!("{} of {operand}", summary_op_token(*op));
                     }
                 }
-                // A summary's group scope is the group owning the section it sits in — its canonical
-                // level (not the raw area suffix). Report/page bands yield none (a grand total). The
-                // level map is derived from the areas built so far, which — because a group's header
-                // always precedes its own fields — holds the entry every group-band lookup needs.
-                let group_no = match areas.last().map(|a| (a.kind, trailing_digits(&a.name))) {
-                    Some((AreaSectionKind::GroupHeader | AreaSectionKind::GroupFooter, suffix)) => {
-                        canonical_group_levels(&areas).get(&suffix).copied()
-                    }
-                    _ => None,
-                };
+                // A summary's group scope is the group owning the section it sits in: its 1-based
+                // nesting level, read from the hosting area's decoded `group_level` (`0x9b` byte 2).
+                // Report/page bands carry no `group_level`, yielding a grand total. The area's level
+                // is set by its `SectionCodeHeaderFooter`, which streams ahead of its field objects.
+                let group_no = areas.last().and_then(|a| a.group_level).map(|l| l + 1);
                 // For a summary object, carry its definition index (dedup identity for
                 // `<SummaryFields>`) and result value type (from the indexed `0x7e` def's child).
                 let summary_code = matches!(kind, FieldRefKind::Summary)
@@ -304,7 +352,7 @@ pub(super) fn raise_report_definition(
                     .unwrap_or_default();
                 open_object(
                     &mut areas,
-                    ReportObjectKind::Field(FieldObject {
+                    ReportObjectKind::Field(Box::new(FieldObject {
                         data_source: field_data_source(
                             kind,
                             &raw,
@@ -317,7 +365,7 @@ pub(super) fn raise_report_definition(
                         value_type,
                         summary_code,
                         ..Default::default()
-                    }),
+                    })),
                 );
             }
             RdRecord::OpenShape => {
@@ -355,8 +403,8 @@ pub(super) fn raise_report_definition(
             }
             RdRecord::OpenPicture => {
                 // A picture wrapped by a `0xb1` is a blob-field object bound to a database field;
-                // open it as such (carrying the field reference) so it can be counted toward
-                // `Field.UseCount`. An unwrapped picture is a static image or a chart placeholder.
+                // open it as such, carrying the field reference. An unwrapped picture is a static
+                // image or a chart placeholder.
                 match pending_blob_ds.take() {
                     Some(raw) if !raw.is_empty() => open_object(
                         &mut areas,
@@ -400,9 +448,9 @@ pub(super) fn raise_report_definition(
                 );
             }
             RdRecord::OpenCrossTab => {
-                // The `0xb8` opener carries the grid's row/column/summary bindings (decoded by
-                // the derived analytics for UseCount); here it opens a typed marker so the following name,
-                // geometry, border and format records decorate it like any other object.
+                // The `0xb8` opener carries the grid's row/column/summary bindings; here it opens a
+                // typed marker so the following name, geometry, border and format records decorate
+                // it like any other object.
                 open_object(
                     &mut areas,
                     ReportObjectKind::CrossTab(crate::model::CrossTabObject::default()),
@@ -427,6 +475,10 @@ pub(super) fn raise_report_definition(
                 let lb = node.leaf_bytes(logical);
                 if let (Some(obj), Some(align)) = (current_object(&mut areas), lb.get(2).copied()) {
                     obj.format.horizontal_alignment = Alignment::from_code(i32::from(align));
+                    // Byte 3 is the vertical alignment (shared `Alignment` ordinals: 6/7/8).
+                    obj.format.vertical_alignment = object_vertical_alignment(&lb);
+                    // Bytes 20-21 (u16 BE) carry the text rotation in degrees (0 / 90 / 270).
+                    obj.format.text_rotation = object_text_rotation(&lb);
                     // Byte 1 is EnableSuppress, stored inverted (0 = suppressed, 1 = shown).
                     obj.format.suppress.value = lb.get(1).is_some_and(|&b| b == 0);
                     // Byte 5 is EnableKeepTogether (1 = keep together), byte 9 EnableCanGrow. A
@@ -490,6 +542,12 @@ pub(super) fn raise_report_definition(
                 let line_thickness =
                     crate::model::Twips(i32::from(lb.get(21).copied().unwrap_or(0)));
                 let shape_type = DrawingShapeKind::from_byte(lb.get(25).copied().unwrap_or(0));
+                // A box's rounded-corner ellipse (0 = square corners): two big-endian `u16` twip
+                // values right after the shape byte — width at bytes 26-27, height at bytes 28-29.
+                // A full ellipse/oval is the SDK's `IBoxObject` with the ellipse rounded to the box's
+                // own width/height. The render pipeline reads them to draw rounded/elliptical boxes.
+                let corner_ellipse_width = Twips(i32::from(u16_be(&lb, 26).unwrap_or(0)));
+                let corner_ellipse_height = Twips(i32::from(u16_be(&lb, 28).unwrap_or(0)));
                 let mut border = raise_border(node, logical);
                 border.condition_formulas = std::mem::take(&mut pending_border_conditions);
                 // The box's own section height (to detect a box that spans past it, below).
@@ -509,6 +567,8 @@ pub(super) fn raise_report_definition(
                             obj.kind = ReportObjectKind::Box(crate::model::BoxShape {
                                 shape,
                                 end_section_name: l.end_section_name.clone(),
+                                corner_ellipse_width,
+                                corner_ellipse_height,
                                 ..Default::default()
                             });
                             if shape.right.0 > 0 {
@@ -536,9 +596,14 @@ pub(super) fn raise_report_definition(
                 }
             }
             RdRecord::FontColor => {
-                let color = raise_colorref(&node.leaf_bytes(logical));
-                if let Some(fc) = current_object(&mut areas).and_then(font_color_mut) {
-                    fc.color = color;
+                // Object-level colour: first run wins — a multi-run text object keeps the colour of
+                // its first run for the `<FontColor>` the exporter emits (mirrors `font_set`).
+                if !color_set {
+                    let color = raise_colorref(&node.leaf_bytes(logical));
+                    if let Some(fc) = current_object(&mut areas).and_then(font_color_mut) {
+                        fc.color = color;
+                        color_set = true;
+                    }
                 }
             }
             RdRecord::Font => {
@@ -566,6 +631,17 @@ pub(super) fn raise_report_definition(
                 // Each `0xc0` opens one line (paragraph) of the text object: `0xc0`,`0xc2`(text),
                 // `0x08`(font) repeat per line. The first opens line 1; every subsequent `0xc0`
                 // within the same object is a line break, rendered as `\n` in `<Text>`.
+                let lb = node.leaf_bytes(logical);
+                // The paragraph's indentation: three big-endian u32 twip values — left indent at
+                // bytes 0-3, right at 4-7, first-line at 8-11 (only left indent is ever non-zero).
+                // Line spacing trails the indents: byte 17 = LineSpacingType (0 = multiple, 1 = exact),
+                // bytes 18-21 (u32 BE) = the value (a 16.16 multiplier when multiple, twips when exact).
+                let indent = crate::model::IndentAndSpacingFormat {
+                    left_indent: Twips(u32_be(&lb, 0).unwrap_or(0) as i32),
+                    right_indent: Twips(u32_be(&lb, 4).unwrap_or(0) as i32),
+                    first_line_indent: Twips(u32_be(&lb, 8).unwrap_or(0) as i32),
+                    line_spacing: decode_line_spacing(&lb, 17, 18),
+                };
                 if let Some(ReportObjectKind::Text(t)) =
                     current_object(&mut areas).map(|o| &mut o.kind)
                 {
@@ -573,12 +649,14 @@ pub(super) fn raise_report_definition(
                         t.display.push('\n');
                     }
                     // Start a new paragraph in the structured run tree (one per `0x00c0`).
-                    t.paragraphs.push(crate::model::Paragraph::default());
+                    t.paragraphs.push(crate::model::Paragraph {
+                        indent,
+                        ..Default::default()
+                    });
                 }
                 // Text and field-heading objects carry their authoritative horizontal alignment in
                 // byte 12 of this `0xc0` record (the `0xfc` value is a conditional override). It
                 // streams after `0xfc`, so it correctly supersedes it; field objects have no `0xc0`.
-                let lb = node.leaf_bytes(logical);
                 if let (Some(obj), Some(&a)) = (current_object(&mut areas), lb.get(12)) {
                     obj.format.horizontal_alignment = Alignment::from_code(i32::from(a));
                 }
@@ -589,7 +667,7 @@ pub(super) fn raise_report_definition(
                 // [special-field code @ p+2]`. Render it inline for `display` exactly as the engine
                 // renders a DataSource (via the shared `field_data_source`: db/formula/param → `{ref}`,
                 // a special field → its code name like `PrintDate`), then record the raw `alias.name` /
-                // `@formula` / `?param` reference for UseCount.
+                // `@formula` / `?param` reference in `embedded_fields`.
                 let raw = object_data_string(node, logical)
                     .or_else(|| first_string(node, logical))
                     .unwrap_or_default();
@@ -601,7 +679,15 @@ pub(super) fn raise_report_definition(
                         .map(|c| FieldRefKind::from_code(*c))
                         .unwrap_or_default();
                     let code = lb.get(p + 2).copied();
-                    let rendered = field_data_source(kind, &raw, groups, None, code, None);
+                    // A GroupName special field embedded in text renders as the engine's SDK form
+                    // `GroupName ({condition field})`, not the internal `Group #N Name` display
+                    // reference. Recover the 1-based group number from that reference (its sole ASCII
+                    // digit run) so `field_data_source` reconstructs the SDK form, matching the field
+                    // object opener path.
+                    let group_display = matches!(kind, FieldRefKind::GroupName)
+                        .then(|| group_display_number(&raw))
+                        .flatten();
+                    let rendered = field_data_source(kind, &raw, groups, group_display, code, None);
                     if let Some(ReportObjectKind::Text(t)) =
                         current_object(&mut areas).map(|o| &mut o.kind)
                     {
@@ -650,15 +736,35 @@ pub(super) fn raise_report_definition(
                         let ff = f.format.get_or_insert_with(Default::default);
                         match child.rtype {
                             FF_COMMON_VALUE => ff.common = decode_common_format(&lb),
-                            FF_NUMERIC_VALUE => ff.numeric = decode_numeric_format(&lb),
+                            FF_NUMERIC_VALUE => {
+                                // The first numeric leaf of the pair is the currency-format slot, the
+                                // second the number-format slot. Keep both: the number slot is the
+                                // reported value for non-currency fields; the value-type resolution
+                                // pass swaps in the currency slot for Currency-valued fields.
+                                let nf = decode_numeric_format(&lb);
+                                if numeric_currency_slot_pending {
+                                    ff.currency_numeric = nf.clone();
+                                    numeric_currency_slot_pending = false;
+                                }
+                                ff.numeric = nf;
+                            }
                             FF_BOOLEAN_VALUE => ff.boolean = decode_boolean_format(&lb),
                             // The `0x00f2` date leaf carries the per-field stored day/month/year
                             // format enums (varies per field); decode them. The engine reports them
-                            // verbatim only for a date-valued non-system-default field — the
-                            // effective resolution lives in the XML exporter's field_format derivation. The time
-                            // (`0x00f6`) / datetime leaves stay runtime/locale-resolved; the string
-                            // sub-format is decoded elsewhere / not emitted.
+                            // verbatim only for a date-valued non-system-default field; resolving
+                            // the effective format is the consumer's job (`rpt-layout` for the
+                            // render path). The time (`0x00f6`) / datetime leaves stay
+                            // runtime/locale-resolved; the string sub-format is decoded elsewhere.
                             FF_DATE_VALUE => ff.date = decode_date_format(&lb),
+                            // `0x00f6` TimeFieldFormat: stored hour/minute/second element enums (the
+                            // rest of the time surface is runtime/locale-resolved).
+                            FF_TIME_VALUE => ff.time = decode_time_format(&lb),
+                            // `0x00fa` StringFieldFormat: stored text-format / word-wrap / max-lines /
+                            // reading-order (render-relevant, genuine per-field facts).
+                            FF_STRING_VALUE => ff.string = decode_string_format(&lb),
+                            // `0x00f4` DateTimeFieldFormat: stored `DateTimeOrder` + `DateTimeSeparator`
+                            // (the nested date/time renderings are runtime-resolved).
+                            0x00f4 => ff.date_time = decode_datetime_format(&lb),
                             _ => {}
                         }
                     }
@@ -668,8 +774,8 @@ pub(super) fn raise_report_definition(
         }
     }
     demote_orphan_headings(&mut areas);
-    reclassify_picture_openers(&mut areas);
-    attach_grid_bindings(tree, logical, &mut areas);
+    reclassify_picture_openers(&mut areas, &collect_chart_object_names(tree, logical));
+    attach_grid_bindings(tree, logical, &mut areas, groups, field_types);
     sort_areas_canonical(&mut areas);
     resolve_cross_section_boxes(&mut areas);
     ReportDefinition { areas }

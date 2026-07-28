@@ -4,36 +4,41 @@
 //! no per-point markers — the engine's area is a clean ribbon — and its category axis
 //! is thinned like the other axis families so a dense series' labels don't overlap.
 
+#[cfg(test)]
+use super::common::AxisTitles;
 use super::common::{
-    category_label, category_stride, chart_frame, fmt_val, value_label, AxisTitles, LABEL, PALETTE,
+    category_label, category_stride, chart_frame, fmt_val, value_frac, value_label, ChartCtx,
+    LABEL, PALETTE,
 };
-use rpt_model::{Color, Rect, Twips};
-use rpt_pages::{DrawOp, LineOp, ObjectKind, ObjectRef, Point, PolygonOp, Stroke};
+#[cfg(test)]
+use rpt_model::Rect;
+use rpt_model::{Color, Twips};
+use rpt_pages::{DrawOp, LineOp, Point, PolygonOp, Stroke};
 
 /// Build the draw-ops for an area chart of `series` (category label → value): the shared axis frame,
 /// a translucent fill polygon from the baseline up to the per-category points, then the connecting
 /// polyline and value/category labels. `show_labels` gates the per-point data-value labels (the
 /// report's decoded "show value" flag). Returns an empty vec if `series` is empty.
-pub(crate) fn area_chart(
-    rect: Rect,
-    title: &str,
-    axis_titles: AxisTitles,
-    series: &[(String, f64)],
-    show_labels: bool,
-    section_name: &str,
-    obj_name: &str,
-) -> Vec<DrawOp> {
+pub(crate) fn area_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp> {
     if series.is_empty() {
         return Vec::new();
     }
-    let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(obj_name));
+    let &ChartCtx {
+        def,
+        rect,
+        title,
+        axis_titles,
+        show_labels,
+        ..
+    } = cx;
+    let src = || cx.src();
     let mut ops: Vec<DrawOp> = Vec::new();
-    let f = chart_frame(&mut ops, rect, title, axis_titles, series, &src);
+    let f = chart_frame(def, &mut ops, rect, title, axis_titles, series, &src);
 
     // Point per category, centered in its slot; y scales from the baseline like a bar's top.
     let point = |i: i32, val: f64| Point {
         x: Twips(f.plot_left + i * f.slot + f.slot / 2),
-        y: Twips(f.plot_bottom - ((val.max(0.0) / f.max_val) * f.plot_h as f64) as i32),
+        y: Twips(f.plot_bottom - (value_frac(val, f.max_val) * f.plot_h as f64) as i32),
     };
 
     // Fill polygon: baseline under the first point → each point → baseline under the last point.
@@ -119,7 +124,7 @@ mod tests {
             width: Twips(3000),
             height: Twips(2000),
         };
-        assert!(area_chart(r, "T", AxisTitles::default(), &[], true, "S", "Graph1").is_empty());
+        assert!(area_chart(&ChartCtx::test(r, "T", AxisTitles::default(), true), &[]).is_empty());
     }
 
     #[test]
@@ -136,13 +141,8 @@ mod tests {
             ("Mar".into(), 6.0),
         ];
         let ops = area_chart(
-            r,
-            "Trend",
-            AxisTitles::default(),
+            &ChartCtx::test(r, "Trend", AxisTitles::default(), true),
             &series,
-            true,
-            "RH",
-            "Graph1",
         );
         // Exactly one fill polygon, closed, spanning point count + 2 baseline anchors.
         let polys: Vec<&PolygonOp> = ops
@@ -185,13 +185,8 @@ mod tests {
         let series: Vec<(String, f64)> =
             (0..40).map(|i| (format!("p{i}"), i as f64 + 1.0)).collect();
         let ops = area_chart(
-            r,
-            "Trend",
-            AxisTitles::default(),
+            &ChartCtx::test(r, "Trend", AxisTitles::default(), false),
             &series,
-            false,
-            "RH",
-            "Graph1",
         );
         // No marker rects at all (the area is fill + line only).
         let rects = ops.iter().filter(|o| matches!(o, DrawOp::Rect(_))).count();

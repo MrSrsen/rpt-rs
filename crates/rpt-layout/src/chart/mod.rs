@@ -37,7 +37,7 @@ mod stock;
 
 pub(crate) use area::area_chart;
 pub(crate) use bar::{bar_chart, bar_chart_multi};
-pub(crate) use common::{legend, AxisTitles, LegendPosition};
+pub(crate) use common::{chart_text_op, legend, AxisTitles, ChartCtx, ChartText, LegendPosition};
 pub(crate) use doughnut::doughnut_chart;
 pub(crate) use funnel::funnel_chart;
 pub(crate) use gantt::{gantt_chart, GanttBar};

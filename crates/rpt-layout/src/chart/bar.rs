@@ -1,38 +1,41 @@
 //! Bar chart: one riser per category, from the baseline up to the group's summary value,
 //! over the shared Num+Ord axis frame.
 
+#[cfg(test)]
+use super::common::AxisTitles;
 use super::common::{
-    category_label, category_stride, chart_frame, fmt_val, value_label, AxisTitles, LABEL, PALETTE,
+    category_label, category_stride, chart_frame, fmt_val, value_frac, value_label, ChartCtx,
+    LABEL, PALETTE,
 };
 use rpt_model::{ChartArrangement, Rect, Twips};
-use rpt_pages::{DrawOp, ObjectKind, ObjectRef, RectOp};
+use rpt_pages::{DrawOp, ObjectRef, RectOp};
 
 /// Build the draw-ops for a bar chart of `series` (category label → value) inside `rect` (twips).
 /// `title` is drawn centered at the top when non-empty. `show_labels` gates the per-bar data-value
 /// labels (the report's decoded "show value" flag). Returns an empty vec if `series` is empty
 /// (the caller then keeps the placeholder + diagnostic).
-pub(crate) fn bar_chart(
-    rect: Rect,
-    title: &str,
-    axis_titles: AxisTitles,
-    series: &[(String, f64)],
-    show_labels: bool,
-    section_name: &str,
-    obj_name: &str,
-) -> Vec<DrawOp> {
+pub(crate) fn bar_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp> {
     if series.is_empty() {
         return Vec::new();
     }
-    let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(obj_name));
+    let &ChartCtx {
+        def,
+        rect,
+        title,
+        axis_titles,
+        show_labels,
+        ..
+    } = cx;
+    let src = || cx.src();
     let mut ops: Vec<DrawOp> = Vec::new();
-    let f = chart_frame(&mut ops, rect, title, axis_titles, series, &src);
+    let f = chart_frame(def, &mut ops, rect, title, axis_titles, series, &src);
 
     // Bars: one riser per category, from the baseline up to the value.
     let bar_w = (f.slot * 3 / 5).max(15);
     let stride = category_stride(&f, series.len());
     for (i, (label, val)) in series.iter().enumerate() {
         let i = i as i32;
-        let h = ((val.max(0.0) / f.max_val) * f.plot_h as f64) as i32;
+        let h = (value_frac(*val, f.max_val) * f.plot_h as f64) as i32;
         let bx = f.plot_left + i * f.slot + (f.slot - bar_w) / 2;
         let by = f.plot_bottom - h;
         ops.push(DrawOp::Rect(RectOp {
@@ -77,24 +80,26 @@ pub(crate) fn bar_chart(
 /// Each series is coloured by its index in the shared palette (so the legend the caller composes from
 /// `series_names` matches). `show_labels` gates the per-riser data-value labels. Returns an empty vec
 /// if there are no categories or no series.
-#[allow(clippy::too_many_arguments)]
 pub(crate) fn bar_chart_multi(
-    rect: Rect,
-    title: &str,
-    axis_titles: AxisTitles,
+    cx: &ChartCtx,
     categories: &[String],
     series_names: &[String],
     values: &[Vec<f64>],
     arrangement: ChartArrangement,
-    show_labels: bool,
-    section_name: &str,
-    obj_name: &str,
 ) -> Vec<DrawOp> {
     let n_series = series_names.len();
     if categories.is_empty() || n_series == 0 {
         return Vec::new();
     }
-    let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(obj_name));
+    let &ChartCtx {
+        def,
+        rect,
+        title,
+        axis_titles,
+        show_labels,
+        ..
+    } = cx;
+    let src = || cx.src();
     let mut ops: Vec<DrawOp> = Vec::new();
 
     // The value-axis scale depends on the arrangement: the tallest single riser (clustered), the
@@ -114,7 +119,7 @@ pub(crate) fn bar_chart_multi(
             (c.clone(), v)
         })
         .collect();
-    let f = chart_frame(&mut ops, rect, title, axis_titles, &frame_series, &src);
+    let f = chart_frame(def, &mut ops, rect, title, axis_titles, &frame_series, &src);
 
     let n = n_series as i32;
     for (ci, cat) in categories.iter().enumerate() {
@@ -127,7 +132,7 @@ pub(crate) fn bar_chart_multi(
                 let sub_w = (group_w / n).max(8);
                 let group_left = slot_left + (f.slot - sub_w * n) / 2;
                 for (s, val) in values[ci].iter().enumerate() {
-                    let h = ((val.max(0.0) / f.max_val) * f.plot_h as f64) as i32;
+                    let h = (value_frac(*val, f.max_val) * f.plot_h as f64) as i32;
                     let bx = group_left + s as i32 * sub_w;
                     let by = f.plot_bottom - h;
                     ops.push(riser(bx, by, sub_w, h, s, &src));
@@ -154,7 +159,7 @@ pub(crate) fn bar_chart_multi(
                         ChartArrangement::Percent => 0.0,
                         _ => val.max(0.0),
                     };
-                    let h = ((scaled / f.max_val) * f.plot_h as f64) as i32;
+                    let h = (value_frac(scaled, f.max_val) * f.plot_h as f64) as i32;
                     let by = f.plot_bottom - acc_h - h;
                     ops.push(riser(bx, by, bar_w, h, s, &src));
                     if show_labels && h > 200 {
@@ -205,7 +210,48 @@ mod tests {
             width: Twips(3000),
             height: Twips(2000),
         };
-        assert!(bar_chart(r, "T", AxisTitles::default(), &[], true, "S", "Graph1").is_empty());
+        assert!(bar_chart(&ChartCtx::test(r, "T", AxisTitles::default(), true), &[]).is_empty());
+    }
+
+    /// Extreme / misconfigured axis-chart inputs must not panic and must keep every emitted rect
+    /// within the plot: a thousand categories (sub-twip slots), an all-zero / negative-only / all-equal
+    /// series (degenerate value scale), and NaN/Inf/extreme-magnitude values.
+    #[test]
+    fn extreme_axis_inputs_do_not_panic() {
+        let r = Rect {
+            left: Twips(100),
+            top: Twips(100),
+            width: Twips(6000),
+            height: Twips(4000),
+        };
+        let run = |series: &[(String, f64)]| {
+            let ops = bar_chart(&ChartCtx::test(r, "T", AxisTitles::default(), true), series);
+            // Every rect is finite (i32) and within a sane multiple of the chart rect — no runaway
+            // geometry from a NaN/Inf/extreme value.
+            for op in &ops {
+                if let DrawOp::Rect(rc) = op {
+                    assert!(rc.bounds.width.0.abs() < 10 * r.width.0, "bounded width");
+                    assert!(rc.bounds.height.0.abs() < 10 * r.height.0, "bounded height");
+                }
+            }
+        };
+        // High cardinality: 1000 categories → sub-twip slots, must stay drawable.
+        let many: Vec<(String, f64)> = (0..1000)
+            .map(|i| (format!("c{i}"), (i % 7) as f64))
+            .collect();
+        run(&many);
+        // All-zero, negative-only, all-equal, and non-finite / extreme magnitudes.
+        run(&[("a".into(), 0.0), ("b".into(), 0.0)]);
+        run(&[("a".into(), -5.0), ("b".into(), -9.0)]);
+        run(&[("a".into(), 7.0), ("b".into(), 7.0)]);
+        run(&[
+            ("nan".into(), f64::NAN),
+            ("inf".into(), f64::INFINITY),
+            ("big".into(), 1e18),
+            ("ok".into(), 3.0),
+        ]);
+        // A single point.
+        run(&[("only".into(), 4.0)]);
     }
 
     #[test]
@@ -224,13 +270,8 @@ mod tests {
             ("Mexico".into(), 6.0),
         ];
         let ops = bar_chart(
-            r,
-            "Cities",
-            AxisTitles::default(),
+            &ChartCtx::test(r, "Cities", AxisTitles::default(), true),
             &series,
-            true,
-            "RH",
-            "Graph1",
         );
         let bars = ops.iter().filter(|o| matches!(o, DrawOp::Rect(_))).count();
         let lines = ops.iter().filter(|o| matches!(o, DrawOp::Line(_))).count();
@@ -284,13 +325,8 @@ mod tests {
             ("Mexico".into(), 6.0),
         ];
         let ops = bar_chart(
-            r,
-            "Cities",
-            AxisTitles::default(),
+            &ChartCtx::test(r, "Cities", AxisTitles::default(), false),
             &series,
-            false,
-            "RH",
-            "Graph1",
         );
         let bars = ops.iter().filter(|o| matches!(o, DrawOp::Rect(_))).count();
         let lines = ops.iter().filter(|o| matches!(o, DrawOp::Line(_))).count();
@@ -348,16 +384,11 @@ mod tests {
         let names = vec!["A".to_string(), "B".to_string()];
         let values = vec![vec![10.0, 20.0], vec![30.0, 5.0]];
         let ops = bar_chart_multi(
-            multi_rect(),
-            "T",
-            AxisTitles::default(),
+            &ChartCtx::test(multi_rect(), "T", AxisTitles::default(), false),
             &categories,
             &names,
             &values,
             ChartArrangement::Clustered,
-            false,
-            "RH",
-            "G",
         );
         let rs = risers(&ops);
         assert_eq!(rs.len(), 4, "n_series·n_cat risers");
@@ -378,16 +409,11 @@ mod tests {
         let names = vec!["A".to_string(), "B".to_string()];
         let values = vec![vec![10.0, 20.0], vec![30.0, 5.0]];
         let ops = bar_chart_multi(
-            multi_rect(),
-            "T",
-            AxisTitles::default(),
+            &ChartCtx::test(multi_rect(), "T", AxisTitles::default(), false),
             &categories,
             &names,
             &values,
             ChartArrangement::Stacked,
-            false,
-            "RH",
-            "G",
         );
         let rs = risers(&ops);
         assert_eq!(rs.len(), 4, "n_series·n_cat risers");
@@ -410,16 +436,11 @@ mod tests {
         // Totals differ (20 vs 120) but both must fill the plot to 100%.
         let values = vec![vec![10.0, 10.0], vec![30.0, 90.0]];
         let ops = bar_chart_multi(
-            multi_rect(),
-            "T",
-            AxisTitles::default(),
+            &ChartCtx::test(multi_rect(), "T", AxisTitles::default(), false),
             &categories,
             &names,
             &values,
             ChartArrangement::Percent,
-            false,
-            "RH",
-            "G",
         );
         let rs = risers(&ops);
         assert_eq!(rs.len(), 4, "n_series·n_cat risers");
@@ -443,29 +464,19 @@ mod tests {
     #[test]
     fn multi_empty_yields_no_ops() {
         assert!(bar_chart_multi(
-            multi_rect(),
-            "T",
-            AxisTitles::default(),
+            &ChartCtx::test(multi_rect(), "T", AxisTitles::default(), false),
             &[],
             &["A".to_string()],
             &[],
             ChartArrangement::Clustered,
-            false,
-            "RH",
-            "G",
         )
         .is_empty());
         assert!(bar_chart_multi(
-            multi_rect(),
-            "T",
-            AxisTitles::default(),
+            &ChartCtx::test(multi_rect(), "T", AxisTitles::default(), false),
             &["Q1".to_string()],
             &[],
             &[vec![]],
             ChartArrangement::Clustered,
-            false,
-            "RH",
-            "G",
         )
         .is_empty());
     }

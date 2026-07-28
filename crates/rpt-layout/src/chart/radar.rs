@@ -3,13 +3,15 @@
 //! is one closed polygon through the per-category radial points, over a polar grid of concentric
 //! rings and radial spokes — no cartesian axes.
 
+#[cfg(test)]
+use super::common::AxisTitles;
 use super::common::{
-    fmt_val, nice_scale, truncate, value_label, AXIS, GRID, LABEL, PALETTE, TITLE_PT,
+    centered_disc, fmt_val, nice_scale, title_op, truncate, value_label, ChartCtx, AXIS, GRID,
+    LABEL, LABEL_PT, PALETTE,
 };
 use rpt_model::{Color, Rect, Twips};
 use rpt_pages::{
-    DrawOp, EllipseOp, FontSpec, LineOp, ObjectKind, ObjectRef, Point, PolygonOp, Stroke,
-    TextAlign, TextRun,
+    DrawOp, EllipseOp, FontSpec, LineOp, Point, PolygonOp, Stroke, TextAlign, TextRun,
 };
 use std::f64::consts::{FRAC_PI_2, TAU};
 
@@ -19,18 +21,18 @@ use std::f64::consts::{FRAC_PI_2, TAU};
 /// rim, then the series as one closed polygon through the radial points (translucent fill + stroke)
 /// with a small marker at each vertex. `show_labels` gates the per-vertex data-value labels. Returns
 /// an empty vec if `series` is empty.
-pub(crate) fn radar_chart(
-    rect: Rect,
-    title: &str,
-    series: &[(String, f64)],
-    show_labels: bool,
-    section_name: &str,
-    obj_name: &str,
-) -> Vec<DrawOp> {
+pub(crate) fn radar_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp> {
     if series.is_empty() {
         return Vec::new();
     }
-    let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(obj_name));
+    let &ChartCtx {
+        def,
+        rect,
+        title,
+        show_labels,
+        ..
+    } = cx;
+    let src = || cx.src();
     let mut ops: Vec<DrawOp> = Vec::new();
     let (rl, rt, rw, rh) = (rect.left.0, rect.top.0, rect.width.0, rect.height.0);
     let pad = 60;
@@ -41,16 +43,12 @@ pub(crate) fn radar_chart(
         (rh / 8).clamp(180, 360)
     };
     if !title.is_empty() {
-        ops.push(title_op(rl, rt + pad / 2, rw, title_h, title, &src));
+        ops.push(title_op(def, rl, rt + pad / 2, rw, title_h, title, &src));
     }
 
     // Centre the polar plot in the area below the title, leaving room for the rim category labels.
-    let box_top = rt + title_h + pad;
-    let box_h = (rt + rh - pad - box_top).max(1);
-    let box_w = (rw - 2 * pad).max(1);
-    let cx = rl + rw / 2;
-    let cy = box_top + box_h / 2;
-    let radius = (box_w.min(box_h) / 2 * 4 / 5).max(1) as f64;
+    let (cx, cy, radius) = centered_disc(rect, title_h);
+    let radius = radius as f64;
 
     let n = series.len() as i32;
     // Angle of category `i`: evenly spaced, starting at 12 o'clock and advancing clockwise.
@@ -115,7 +113,7 @@ pub(crate) fn radar_chart(
             text: truncate(&series[i as usize].0, 14),
             font: FontSpec {
                 family: "Arial".into(),
-                size_pt: 7.0,
+                size_pt: LABEL_PT,
                 ..Default::default()
             },
             color: LABEL,
@@ -186,37 +184,6 @@ pub(crate) fn radar_chart(
     ops
 }
 
-/// A centered, bold chart title `TextRun` (shared shape with the pie/doughnut titles).
-fn title_op(
-    x: i32,
-    y: i32,
-    w: i32,
-    h: i32,
-    title: &str,
-    src: &dyn Fn() -> Option<ObjectRef>,
-) -> DrawOp {
-    DrawOp::Text(TextRun {
-        bounds: Rect {
-            left: Twips(x),
-            top: Twips(y),
-            width: Twips(w),
-            height: Twips(h),
-        },
-        text: title.to_string(),
-        font: FontSpec {
-            family: "Arial".into(),
-            size_pt: TITLE_PT,
-            bold: true,
-            ..Default::default()
-        },
-        color: LABEL,
-        align: TextAlign::Center,
-        rotation: 0.0,
-        metrics: None,
-        source: src(),
-    })
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -241,7 +208,11 @@ mod tests {
 
     #[test]
     fn empty_series_yields_no_ops() {
-        assert!(radar_chart(rect(), "T", &[], true, "S", "G").is_empty());
+        assert!(radar_chart(
+            &ChartCtx::test(rect(), "T", AxisTitles::default(), true),
+            &[]
+        )
+        .is_empty());
     }
 
     /// n categories → one closed polygon with n vertices, at least one grid ring, and a rim label per
@@ -249,7 +220,10 @@ mod tests {
     #[test]
     fn draws_polygon_rings_and_category_labels() {
         let s = series();
-        let ops = radar_chart(rect(), "Compass", &s, true, "RH", "G");
+        let ops = radar_chart(
+            &ChartCtx::test(rect(), "Compass", AxisTitles::default(), true),
+            &s,
+        );
         let closed: Vec<&PolygonOp> = ops
             .iter()
             .filter_map(|o| match o {
@@ -283,7 +257,10 @@ mod tests {
     fn show_labels_false_omits_value_labels() {
         // Off the nice-number ticks so a data value can't collide with an axis label.
         let s = vec![("A".into(), 12.0), ("B".into(), 27.0), ("C".into(), 6.0)];
-        let ops = radar_chart(rect(), "T", &s, false, "RH", "G");
+        let ops = radar_chart(
+            &ChartCtx::test(rect(), "T", AxisTitles::default(), false),
+            &s,
+        );
         let texts: Vec<String> = ops
             .iter()
             .filter_map(|o| match o {

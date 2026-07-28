@@ -1,11 +1,38 @@
 //! String builtins.
 
-use super::{bad_arg, mismatch, num_arg, opt_num, str_arg, Builtin};
+use super::{arg, bad_arg, mismatch, num_arg, opt_num, str_arg};
 use crate::eval::{EvalError, Value};
 
-/// Handle a string [`Builtin`] (routed here by [`super::Builtin::family`]).
-pub(super) fn call(b: Builtin, name: &str, args: &[Value]) -> Result<Value, EvalError> {
-    use Builtin as B;
+/// The string-family builtins. Wrapped by [`super::Builtin::String`] in the dispatch table.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum StringFn {
+    Length,
+    UpperCase,
+    LowerCase,
+    ProperCase,
+    Trim,
+    TrimLeft,
+    TrimRight,
+    Left,
+    Right,
+    Mid,
+    InStr,
+    InStrRev,
+    Replace,
+    ReplicateString,
+    Space,
+    StrReverse,
+    Split,
+    Join,
+    Filter,
+    StrCmp,
+    Chr,
+    Asc,
+}
+
+/// Handle a string builtin (routed here from [`super::call`]).
+pub(super) fn call(b: StringFn, name: &str, args: &[Value]) -> Result<Value, EvalError> {
+    use StringFn as B;
     match b {
         B::Length => Ok(Value::Number(str_arg(name, args, 0)?.chars().count() as f64)),
         B::UpperCase => Ok(Value::Str(str_arg(name, args, 0)?.to_uppercase())),
@@ -106,7 +133,7 @@ pub(super) fn call(b: Builtin, name: &str, args: &[Value]) -> Result<Value, Eval
             Ok(Value::Array(parts))
         }
         B::Join => {
-            let items = match &args[0] {
+            let items = match arg(name, args, 0)? {
                 Value::Array(a) => a,
                 v => return Err(mismatch(name, v)),
             };
@@ -130,7 +157,7 @@ pub(super) fn call(b: Builtin, name: &str, args: &[Value]) -> Result<Value, Eval
         }
         B::Filter => {
             // Elements of a string array that contain (or, with include=false, omit) `match`.
-            let items = match &args[0] {
+            let items = match arg(name, args, 0)? {
                 Value::Array(a) => a,
                 v => return Err(mismatch(name, v)),
             };
@@ -183,7 +210,6 @@ pub(super) fn call(b: Builtin, name: &str, args: &[Value]) -> Result<Value, Eval
             Some(c) => Ok(Value::Number(c as u32 as f64)),
             None => Err(bad_arg(name, "empty string")),
         },
-        other => unreachable!("non-string builtin {other:?} routed to string"),
     }
 }
 
@@ -307,7 +333,7 @@ mod tests {
             run(r#"Length(5)"#),
             Err(EvalError::TypeMismatch { .. })
         ));
-        assert!(matches!(run(r#"Left("ab")"#), Err(EvalError::BadArg(_))));
+        assert!(matches!(run(r#"Left("ab")"#), Err(EvalError::Arity { .. })));
         assert!(matches!(run(r#"Asc("")"#), Err(EvalError::BadArg(_))));
         assert!(matches!(run("Chr(1114112)"), Err(EvalError::BadArg(_)))); // above U+10FFFF
         assert!(matches!(

@@ -12,10 +12,11 @@ categories.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+thiserror = { workspace = true }
 rpt-model = { workspace = true }
 crystal-formula = { workspace = true }
 rpt-data = { workspace = true }
-sea-query = { version = "0.32", default-features = false, features = ["backend-mysql", "backend-postgres", "backend-sqlite"] }
+sea-query = { workspace = true, default-features = false, features = ["backend-mysql", "backend-postgres", "backend-sqlite"] }
 
 [lints]
 workspace = true

@@ -1,0 +1,15 @@
+[package]
+name = "metafile"
+description = "A dependency-free, cross-platform Windows Metafile (EMF/WMF/EMF+) vector parser with a backend-agnostic sink"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+keywords = ["emf", "wmf", "metafile", "vector", "gdi"]
+categories = ["parser-implementations", "graphics", "no-std"]
+
+[lints]
+workspace = true

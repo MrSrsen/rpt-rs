@@ -6,18 +6,14 @@
 //! from the flat area path when the Area family's depth-effect bit is set
 //! ([`rpt_model::ChartDefinition::has_depth_effect`]).
 
-use super::projection::{face, shade, Projection, Vec3, ViewAngle};
-use super::scene::{axes_3d, background_planes, compose, floor_grid, room_edges};
-use crate::chart::common::{
-    compute_frame, fmt_val, nice_scale, value_label, AxisTitles, LABEL, PALETTE,
-};
+use super::projection::{face, p3, shade, Vec3, BACK_SHADE, FRONT_SHADE};
+use super::scene::{compose, setup_3d};
+#[cfg(test)]
+use crate::chart::common::AxisTitles;
+use crate::chart::common::{fmt_val, value_label, ChartCtx, LABEL, PALETTE};
+#[cfg(test)]
 use rpt_model::Rect;
-use rpt_pages::{DrawOp, ObjectKind, ObjectRef};
-
-/// Directional-lighting ladder (as the riser): the lit crest keeps the base colour, the front
-/// silhouette is 0.8×, the receding back and end caps 0.6×.
-const FRONT_SHADE: f32 = 0.8;
-const BACK_SHADE: f32 = 0.6;
+use rpt_pages::DrawOp;
 
 /// Build the draw-ops for a 3-D area chart. `categories` are the X-axis slots; `series` is one row per
 /// data binding (`name`, value-per-category), receding along Z (a single series is `S == 1`). Each
@@ -25,64 +21,33 @@ const BACK_SHADE: f32 = 0.6;
 /// along the crest, and two end caps — `C + 3` faces per series. Draws the three background planes
 /// first, then every face globally painter-sorted back-to-front, then category (and optional value)
 /// labels. Returns an empty vec if there is nothing to plot.
-#[allow(clippy::too_many_arguments)]
 pub(crate) fn area_3d(
-    rect: Rect,
-    title: &str,
+    cx: &ChartCtx,
     categories: &[String],
     series: &[(String, Vec<f64>)],
-    show_labels: bool,
     view_angle: rpt_model::ChartViewAngle,
-    section_name: &str,
-    obj_name: &str,
 ) -> Vec<DrawOp> {
     let (s_count, c_count) = (series.len(), categories.len());
     if s_count == 0 || c_count == 0 {
         return Vec::new();
     }
-    let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(obj_name));
+    let &ChartCtx {
+        rect,
+        title,
+        show_labels,
+        ..
+    } = cx;
+    let src = || cx.src();
 
-    // Value scale spans every series×category value; the frame reserves the category slots off a
-    // synthetic per-category series carrying the column max so its `nice_scale` matches.
-    let global_max = series
-        .iter()
-        .flat_map(|(_, vals)| vals.iter().copied())
-        .fold(0.0_f64, f64::max);
-    let (max_val, _) = nice_scale(global_max);
-    let frame_series: Vec<(String, f64)> = categories
-        .iter()
-        .enumerate()
-        .map(|(c, label)| {
-            let cat_max = series
-                .iter()
-                .map(|(_, vals)| vals.get(c).copied().unwrap_or(0.0))
-                .fold(0.0_f64, f64::max);
-            (label.clone(), cat_max)
-        })
-        .collect();
-    let f = compute_frame(rect, title, AxisTitles::default(), &frame_series);
+    // Frame, projection, and background scenery come from the shared 3-D scene setup; the area family
+    // has a single depth band, so it reserves no series-depth floor grid.
+    let (f, max_val, proj, background, axis_labels) =
+        setup_3d(rect, title, categories, series, view_angle, &[], &src);
 
     let plot_left = f.plot_left;
-    let plot_right = f.plot_right();
     let plot_top = f.plot_top();
     let plot_bottom = f.plot_bottom;
-
-    let (pl, pr, pt, pb) = (
-        plot_left as f64,
-        plot_right as f64,
-        plot_top as f64,
-        plot_bottom as f64,
-    );
-    // The chart's decoded view-angle preset, perspective-fit into the plot box (as the riser).
-    let proj = Projection::perspective(pl, pr, pt, pb, ViewAngle::for_preset(view_angle));
-    let (grid, axis_labels) = axes_3d(&proj, &f, categories, &src);
-    let mut background = background_planes(&proj, pl, pr, pt, pb, &src).to_vec();
-    let x_div: Vec<f64> = (1..c_count)
-        .map(|c| (plot_left + c as i32 * f.slot) as f64)
-        .collect();
-    background.extend(floor_grid(&proj, pb, pl, pr, &x_div, &[], &src));
-    background.extend(grid);
-    background.extend(room_edges(&proj, pl, pr, pt, pb, &src));
+    let pb = plot_bottom as f64;
 
     let slot = f.slot;
     let x_at = |c: usize| (plot_left + c as i32 * slot + slot / 2) as f64;
@@ -143,26 +108,10 @@ pub(crate) fn area_3d(
             data_faces.push(face(
                 &proj,
                 &[
-                    Vec3 {
-                        x: x0,
-                        y: y0,
-                        z: zf,
-                    },
-                    Vec3 {
-                        x: x1,
-                        y: y1,
-                        z: zf,
-                    },
-                    Vec3 {
-                        x: x1,
-                        y: y1,
-                        z: zb,
-                    },
-                    Vec3 {
-                        x: x0,
-                        y: y0,
-                        z: zb,
-                    },
+                    p3(x0, y0, zf),
+                    p3(x1, y1, zf),
+                    p3(x1, y1, zb),
+                    p3(x0, y0, zb),
                 ],
                 color,
                 None,
@@ -199,11 +148,7 @@ pub(crate) fn area_3d(
 
         if show_labels {
             for (c, v) in vals.iter().enumerate() {
-                let top = proj.project(Vec3 {
-                    x: x_at(c),
-                    y: y_at(*v),
-                    z: zf,
-                });
+                let top = proj.project(p3(x_at(c), y_at(*v), zf));
                 labels.push(value_label(
                     top.x.0,
                     (top.y.0 - 230).max(plot_top),
@@ -251,28 +196,9 @@ mod tests {
     fn empty_yields_no_ops() {
         let cats = vec!["A".to_string(), "B".to_string()];
         let series = vec![("s".to_string(), vec![1.0, 2.0])];
-        assert!(area_3d(
-            rect(),
-            "T",
-            &[],
-            &series,
-            false,
-            rpt_model::ChartViewAngle::Standard,
-            "S",
-            "Graph1"
-        )
-        .is_empty());
-        assert!(area_3d(
-            rect(),
-            "T",
-            &cats,
-            &[],
-            false,
-            rpt_model::ChartViewAngle::Standard,
-            "S",
-            "Graph1"
-        )
-        .is_empty());
+        let cx = ChartCtx::test(rect(), "T", AxisTitles::default(), false);
+        assert!(area_3d(&cx, &[], &series, rpt_model::ChartViewAngle::Standard).is_empty());
+        assert!(area_3d(&cx, &cats, &[], rpt_model::ChartViewAngle::Standard).is_empty());
     }
 
     #[test]
@@ -280,14 +206,10 @@ mod tests {
         let cats: Vec<String> = (0..5).map(|c| format!("c{c}")).collect();
         let series = vec![("s".to_string(), vec![3.0, 8.0, 5.0, 9.0, 4.0])];
         let ops = area_3d(
-            rect(),
-            "Area3D",
+            &ChartCtx::test(rect(), "Area3D", AxisTitles::default(), false),
             &cats,
             &series,
-            false,
             rpt_model::ChartViewAngle::Standard,
-            "RH",
-            "Graph1",
         );
         let polys = fills(&ops).len();
         // 3 scenery planes + (front + back + (C−1) crest quads + 2 caps) = 3 + (2 + 4 + 2) = 11.
@@ -302,14 +224,10 @@ mod tests {
             ("s2".to_string(), vec![2.0, 4.0, 6.0, 1.0]),
         ];
         let ops = area_3d(
-            rect(),
-            "",
+            &ChartCtx::test(rect(), "", AxisTitles::default(), false),
             &cats,
             &series,
-            false,
             rpt_model::ChartViewAngle::Standard,
-            "RH",
-            "Graph1",
         );
         let polys = fills(&ops).len();
         // 3 planes + S×(C+3) = 3 + 2×7 = 17.

@@ -1,20 +1,27 @@
 //! Number-to-text builtins: `ToWords` (an amount spelled out, cheque style) and `Roman` (classic
 //! Roman numerals).
 
-use super::{bad_arg, num_arg, opt_num, Builtin};
+use super::{bad_arg, num_arg, opt_num};
 use crate::eval::{EvalError, Value};
 
-/// Handle a numeral [`Builtin`] (routed here by [`super::Builtin::family`]).
-pub(super) fn call(b: Builtin, name: &str, args: &[Value]) -> Result<Value, EvalError> {
+/// The numeral-family builtins. Wrapped by [`super::Builtin::Numeral`] in the dispatch table.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum NumeralFn {
+    ToWords,
+    Roman,
+}
+
+/// Handle a numeral builtin (routed here from [`super::call`]).
+pub(super) fn call(b: NumeralFn, name: &str, args: &[Value]) -> Result<Value, EvalError> {
     match b {
-        Builtin::ToWords => {
+        NumeralFn::ToWords => {
             let value = num_arg(name, args, 0)?;
             // The optional second argument is the number of decimal places (default 2); 0 suppresses
             // the fractional clause entirely.
             let decimals = opt_num(args, 1).unwrap_or(2.0).max(0.0) as u32;
             Ok(Value::Str(to_words(value, decimals)))
         }
-        Builtin::Roman => {
+        NumeralFn::Roman => {
             let n = num_arg(name, args, 0)?.round() as i64;
             // Only the classic form is implemented; the graduated simplified forms (1-4) report
             // Unsupported rather than guess at their per-level rules.
@@ -27,7 +34,6 @@ pub(super) fn call(b: Builtin, name: &str, args: &[Value]) -> Result<Value, Eval
             }
             roman(name, n).map(Value::Str)
         }
-        other => unreachable!("non-numeral builtin {other:?} routed to numeral"),
     }
 }
 

@@ -4,12 +4,12 @@
 //! group summary: the chart binds two date fields (start, end) and draws a bar per record rather than
 //! a riser per group.
 
-use super::common::{truncate, AxisTitles, AXIS, GRID, LABEL, PALETTE, TITLE_PT};
+#[cfg(test)]
+use super::common::AxisTitles;
+use super::common::{truncate, ChartCtx, AXIS, GRID, LABEL, PALETTE, TITLE_PT};
 use rpt_format_value::Date;
 use rpt_model::{Rect, Twips};
-use rpt_pages::{
-    DrawOp, FontSpec, LineOp, ObjectKind, ObjectRef, Point, RectOp, Stroke, TextAlign, TextRun,
-};
+use rpt_pages::{DrawOp, FontSpec, LineOp, Point, RectOp, Stroke, TextAlign, TextRun};
 
 /// One Gantt row: a `label` and the `[start, end]` span in civil day-numbers ([`Date::to_days`], with
 /// a fractional part for the time-of-day of a DateTime binding). `start`/`end` are normalized by the
@@ -25,18 +25,17 @@ pub(crate) struct GanttBar {
 /// min start to the max end, one horizontal filled bar per record stacked top-to-bottom, its row
 /// label on the left, and date-formatted tick labels along the bottom. `axis_titles.category` is the
 /// date-axis title (drawn centered below the ticks). Returns an empty vec when there are no bars.
-pub(crate) fn gantt_chart(
-    rect: Rect,
-    title: &str,
-    axis_titles: AxisTitles,
-    bars: &[GanttBar],
-    section_name: &str,
-    obj_name: &str,
-) -> Vec<DrawOp> {
+pub(crate) fn gantt_chart(cx: &ChartCtx, bars: &[GanttBar]) -> Vec<DrawOp> {
     if bars.is_empty() {
         return Vec::new();
     }
-    let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(obj_name));
+    let &ChartCtx {
+        rect,
+        title,
+        axis_titles,
+        ..
+    } = cx;
+    let src = || cx.src();
     let mut ops: Vec<DrawOp> = Vec::new();
     let (rl, rt, rw, rh) = (rect.left.0, rect.top.0, rect.width.0, rect.height.0);
 
@@ -285,7 +284,11 @@ mod tests {
 
     #[test]
     fn empty_bars_yield_no_ops() {
-        assert!(gantt_chart(rect(), "T", AxisTitles::default(), &[], "S", "G").is_empty());
+        assert!(gantt_chart(
+            &ChartCtx::test(rect(), "T", AxisTitles::default(), false),
+            &[]
+        )
+        .is_empty());
     }
 
     /// One horizontal bar per record, each spanning its start→end on the shared date axis: an earlier
@@ -297,7 +300,10 @@ mod tests {
             bar("B", (2024, 1, 5), (2024, 1, 8)),
             bar("C", (2024, 1, 15), (2024, 1, 31)),
         ];
-        let ops = gantt_chart(rect(), "Schedule", AxisTitles::default(), &bars, "RH", "G");
+        let ops = gantt_chart(
+            &ChartCtx::test(rect(), "Schedule", AxisTitles::default(), false),
+            &bars,
+        );
         let rects: Vec<(i32, i32, i32, i32)> = ops
             .iter()
             .filter_map(|o| match o {
@@ -349,7 +355,10 @@ mod tests {
             bar("A", (2024, 3, 1), (2024, 3, 1)),
             bar("B", (2024, 3, 1), (2024, 3, 1)),
         ];
-        let ops = gantt_chart(rect(), "", AxisTitles::default(), &bars, "RH", "G");
+        let ops = gantt_chart(
+            &ChartCtx::test(rect(), "", AxisTitles::default(), false),
+            &bars,
+        );
         let widths: Vec<i32> = ops
             .iter()
             .filter_map(|o| match o {

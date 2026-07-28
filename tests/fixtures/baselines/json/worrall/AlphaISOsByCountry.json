@@ -1,0 +1,4515 @@
+{
+  "model": {
+    "data_definition": {
+      "condition_formula_bodies": [
+        "select RecordNumber mod 2\r\ncase 0: crYellow\r\ncase 1: crLime\r\n"
+      ],
+      "custom_functions": [],
+      "field_definitions": [
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 4,
+          "long_name": null,
+          "name": "id",
+          "short_name": "id",
+          "value_type": "Int32s"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 65534,
+          "long_name": null,
+          "name": "name",
+          "short_name": "name",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 65534,
+          "long_name": null,
+          "name": "alpha_2_code",
+          "short_name": "alpha_2_code",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 65534,
+          "long_name": null,
+          "name": "alpha_3_code",
+          "short_name": "alpha_3_code",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 65534,
+          "long_name": null,
+          "name": "numeric_code",
+          "short_name": "numeric_code",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 65534,
+          "long_name": null,
+          "name": "internet_cctld",
+          "short_name": "internet_cctld",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Formula": {
+              "null_treatment": "Exception",
+              "number_of_bytes": 65534,
+              "options": 0,
+              "syntax": "Crystal",
+              "text": "Local StringVar DotCode := {countries_all_iso.internet_cctld};\r\n\r\nIf Length(DotCode) = 0\r\nThen\r\n\"-\"\r\nElse\r\nDotCode\r\n;"
+            }
+          },
+          "length": 0,
+          "long_name": null,
+          "name": "CCTLD_formatted",
+          "short_name": null,
+          "value_type": "String"
+        }
+      ],
+      "field_manager_census": {
+        "database_fields": 6,
+        "formula_bodies": 5
+      },
+      "formula_variables": [],
+      "group_selection": "",
+      "groups": [],
+      "record_selection": "",
+      "record_sorts": [],
+      "running_total_condition_formulas": [],
+      "saved_data_filter": "",
+      "summary_binding_fields": []
+    },
+    "database": {
+      "links": [],
+      "tables": [
+        {
+          "alias": "countries_all_iso",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_odbc.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "ODBC (RDO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "BWPortfolio"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": null
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "countries_all_iso.id",
+              "name": "id",
+              "short_name": "id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "countries_all_iso.name",
+              "name": "name",
+              "short_name": "name",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "countries_all_iso.alpha_2_code",
+              "name": "alpha_2_code",
+              "short_name": "alpha_2_code",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "countries_all_iso.alpha_3_code",
+              "name": "alpha_3_code",
+              "short_name": "alpha_3_code",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "countries_all_iso.numeric_code",
+              "name": "numeric_code",
+              "short_name": "numeric_code",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "countries_all_iso.internet_cctld",
+              "name": "internet_cctld",
+              "short_name": "internet_cctld",
+              "value_type": "PersistentMemo"
+            }
+          ],
+          "name": "countries_all_iso",
+          "parameters": [],
+          "qualified_name": "countries_all_iso"
+        }
+      ]
+    },
+    "designer_state": {
+      "connections": [
+        {
+          "destination": 5,
+          "kind": 512,
+          "source": 1
+        },
+        {
+          "destination": 3,
+          "kind": 512,
+          "source": 1
+        },
+        {
+          "destination": 2,
+          "kind": 512,
+          "source": 1
+        },
+        {
+          "destination": 4,
+          "kind": 515,
+          "source": 1
+        },
+        {
+          "destination": 1,
+          "kind": 512,
+          "source": 1
+        },
+        {
+          "destination": 0,
+          "kind": 512,
+          "source": 1
+        },
+        {
+          "destination": 0,
+          "kind": 2,
+          "source": 2
+        },
+        {
+          "destination": 0,
+          "kind": 2,
+          "source": 1
+        },
+        {
+          "destination": 2,
+          "kind": 2,
+          "source": 2
+        },
+        {
+          "destination": 2,
+          "kind": 2,
+          "source": 1
+        },
+        {
+          "destination": 4,
+          "kind": 2,
+          "source": 2
+        },
+        {
+          "destination": 4,
+          "kind": 2,
+          "source": 1
+        },
+        {
+          "destination": 5,
+          "kind": 2,
+          "source": 2
+        },
+        {
+          "destination": 5,
+          "kind": 2,
+          "source": 1
+        },
+        {
+          "destination": 0,
+          "kind": 514,
+          "source": 4
+        },
+        {
+          "destination": 1,
+          "kind": 514,
+          "source": 4
+        }
+      ],
+      "guidelines": [
+        {
+          "flags": 1,
+          "position": 178
+        },
+        {
+          "flags": 5,
+          "position": 399
+        },
+        {
+          "flags": 0,
+          "position": 178
+        },
+        {
+          "flags": 2,
+          "position": 60
+        },
+        {
+          "flags": 0,
+          "position": 919
+        },
+        {
+          "flags": 0,
+          "position": 3027
+        },
+        {
+          "flags": 0,
+          "position": 5135
+        },
+        {
+          "flags": 2,
+          "position": 7243
+        },
+        {
+          "flags": 2,
+          "position": 9351
+        },
+        {
+          "flags": 4,
+          "position": 10560
+        }
+      ]
+    },
+    "embeds": [],
+    "has_saved_data": true,
+    "print_options": {
+      "content_height": 15120,
+      "content_width": 11520,
+      "driver_name": null,
+      "margins": {
+        "bottom": 360,
+        "left": 360,
+        "right": 360,
+        "top": 360
+      },
+      "multi_column": null,
+      "paper_orientation": "Portrait",
+      "paper_size": "DefaultPaperSize",
+      "paper_source": "FormSource",
+      "port_name": null,
+      "printer_duplex": "Default",
+      "printer_name": "",
+      "saved_printer_name": ""
+    },
+    "reimport": {
+      "imported_at": {
+        "julian_day": 2459224,
+        "time_fraction": 42668
+      },
+      "reimport_when_opening": 1,
+      "source_path": "",
+      "source_saved_at": {
+        "julian_day": 0,
+        "time_fraction": 0
+      }
+    },
+    "report_definition": {
+      "areas": [
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": true,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "ReportHeader",
+          "name": "ReportHeaderArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 0,
+                  "g": 128,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 760,
+              "kind": "ReportHeader",
+              "name": "ReportHeaderSection1",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 0
+                    },
+                    "bottom": "DoubleLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "DoubleLine",
+                    "right": "DoubleLine",
+                    "tight_horizontal": false,
+                    "top": "DoubleLine"
+                  },
+                  "bounds": {
+                    "height": 600,
+                    "left": 80,
+                    "top": 80,
+                    "width": 11340
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "HorizontalCenterAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "VerticalCenter"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "Alpha Codes and Internet CCTLDs by Country",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Rubik",
+                          "size_pt": 18.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": true,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Rubik",
+                                "size_pt": 18.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 700
+                              },
+                              "text": "Alpha Codes and Internet CCTLDs by Country"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "Alpha Codes and Internet CCTLDs by Country"
+                    }
+                  },
+                  "name": "Text7",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 6000
+                }
+              ],
+              "section_code": 6000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "PageHeader",
+          "name": "PageHeaderArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 0,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 819,
+              "kind": "PageHeader",
+              "name": "PageHeaderSection1",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 240,
+                    "left": 60,
+                    "top": 399,
+                    "width": 660
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "RightAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "ID",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": true,
+                          "name": "Rubik",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": true,
+                                "name": "Rubik",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              },
+                              "text": "ID"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "ID"
+                    }
+                  },
+                  "name": "Text9",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 12000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 240,
+                    "left": 1080,
+                    "top": 399,
+                    "width": 6000
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "Country",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": true,
+                          "name": "Rubik",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": true,
+                                "name": "Rubik",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              },
+                              "text": "Country"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "Country"
+                    }
+                  },
+                  "name": "Text10",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 12000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 240,
+                    "left": 7243,
+                    "top": 399,
+                    "width": 915
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "Alpha 2",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": true,
+                          "name": "Rubik",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": true,
+                                "name": "Rubik",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              },
+                              "text": "Alpha 2"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "Alpha 2"
+                    }
+                  },
+                  "name": "Text11",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 12000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 240,
+                    "left": 8280,
+                    "top": 399,
+                    "width": 849
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "Alpha 3",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": true,
+                          "name": "Rubik",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": true,
+                                "name": "Rubik",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              },
+                              "text": "Alpha 3"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "Alpha 3"
+                    }
+                  },
+                  "name": "Text12",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 12000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 420,
+                    "left": 9351,
+                    "top": 212,
+                    "width": 1095
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "Numeric\nCode",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": true,
+                          "name": "Rubik",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": true,
+                                "name": "Rubik",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              },
+                              "text": "Numeric"
+                            }
+                          ]
+                        },
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": true,
+                                "name": "Rubik",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              },
+                              "text": "Code"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "Code"
+                    }
+                  },
+                  "name": "Text13",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 12000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 467,
+                    "left": 10560,
+                    "top": 178,
+                    "width": 959
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "Internet\nCCTLD",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": true,
+                          "name": "Rubik",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": true,
+                                "name": "Rubik",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              },
+                              "text": "Internet"
+                            }
+                          ]
+                        },
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": true,
+                                "name": "Rubik",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              },
+                              "text": "CCTLD"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "CCTLD"
+                    }
+                  },
+                  "name": "Text14",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 12000
+                }
+              ],
+              "section_code": 12000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "Detail",
+          "name": "DetailArea1",
+          "sections": [
+            {
+              "condition_formulas": [
+                [
+                  "Section_Back_Color",
+                  "select RecordNumber mod 2\r\ncase 0: crYellow\r\ncase 1: crLime\r\n"
+                ]
+              ],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 0,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 840,
+              "kind": "Detail",
+              "name": "DetailSection1",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 840,
+                    "left": 60,
+                    "top": 0,
+                    "width": 660
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "VerticalCenter"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{countries_all_iso.id}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Rubik",
+                          "size_pt": 12.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "YearMonthDay",
+                          "day": "LeadingZeroNumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "LeadingZeroNumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "ShortYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 0,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToUnit",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "DatabaseField",
+                      "summary_code": null,
+                      "value_type": "Int32s"
+                    }
+                  },
+                  "name": "id1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 24000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 840,
+                    "left": 1080,
+                    "top": 0,
+                    "width": 6000
+                  },
+                  "format": {
+                    "can_grow": true,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "VerticalCenter"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{countries_all_iso.name}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Rubik",
+                          "size_pt": 12.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "DatabaseField",
+                      "summary_code": null,
+                      "value_type": "PersistentMemo"
+                    }
+                  },
+                  "name": "name1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 24000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 840,
+                    "left": 7243,
+                    "top": 0,
+                    "width": 917
+                  },
+                  "format": {
+                    "can_grow": true,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "VerticalCenter"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{countries_all_iso.alpha_2_code}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Rubik",
+                          "size_pt": 12.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "DatabaseField",
+                      "summary_code": null,
+                      "value_type": "PersistentMemo"
+                    }
+                  },
+                  "name": "alpha2code1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 24000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 840,
+                    "left": 8280,
+                    "top": 0,
+                    "width": 960
+                  },
+                  "format": {
+                    "can_grow": true,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "VerticalCenter"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{countries_all_iso.alpha_3_code}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Rubik",
+                          "size_pt": 12.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "DatabaseField",
+                      "summary_code": null,
+                      "value_type": "PersistentMemo"
+                    }
+                  },
+                  "name": "alpha3code1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 24000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 840,
+                    "left": 9351,
+                    "top": 0,
+                    "width": 1089
+                  },
+                  "format": {
+                    "can_grow": true,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "VerticalCenter"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{countries_all_iso.numeric_code}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Rubik",
+                          "size_pt": 12.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "DatabaseField",
+                      "summary_code": null,
+                      "value_type": "PersistentMemo"
+                    }
+                  },
+                  "name": "numericcode1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 24000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 840,
+                    "left": 10560,
+                    "top": 0,
+                    "width": 960
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "VerticalCenter"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{@CCTLD_formatted}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Rubik",
+                          "size_pt": 12.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "Formula",
+                      "summary_code": null,
+                      "value_type": "String"
+                    }
+                  },
+                  "name": "CCTLDformatted1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 24000
+                }
+              ],
+              "section_code": 24000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": true,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "ReportFooter",
+          "name": "ReportFooterArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 0,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 220,
+              "kind": "ReportFooter",
+              "name": "ReportFooterSection1",
+              "objects": [],
+              "section_code": 48000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": true,
+              "new_page_before": false,
+              "print_at_bottom_of_page": true,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "PageFooter",
+          "name": "PageFooterArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 0
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 840,
+              "kind": "PageFooter",
+              "name": "PageFooterSection1",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 360,
+                    "left": 9823,
+                    "top": 240,
+                    "width": 1474
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "HorizontalCenterAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "VerticalCenter"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "PageNofM",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 128,
+                          "r": 255
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": true,
+                          "name": "Rubik",
+                          "size_pt": 11.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "Special",
+                      "summary_code": null,
+                      "value_type": "String"
+                    }
+                  },
+                  "name": "PageNofM1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 42000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 128,
+                      "r": 255
+                    },
+                    "bottom": "SingleLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "SingleLine",
+                    "right": "SingleLine",
+                    "tight_horizontal": false,
+                    "top": "SingleLine"
+                  },
+                  "bounds": {
+                    "height": 599,
+                    "left": 9721,
+                    "top": 120,
+                    "width": 1679
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Box": {
+                      "corner_ellipse_height": 180,
+                      "corner_ellipse_width": 180,
+                      "end_section_name": "PageFooterSection1",
+                      "fill_color": {
+                        "a": 255,
+                        "b": 0,
+                        "g": 255,
+                        "r": 255
+                      },
+                      "shape": {
+                        "bottom": 719,
+                        "extend_to_bottom_of_section": false,
+                        "line_color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 128,
+                          "r": 255
+                        },
+                        "line_style": "SingleLine",
+                        "line_thickness": 70,
+                        "right": 11400
+                      }
+                    }
+                  },
+                  "name": "Box1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 42000
+                }
+              ],
+              "section_code": 42000,
+              "width": 0
+            }
+          ]
+        }
+      ]
+    },
+    "report_options": {
+      "convert_null_field_to_default": false,
+      "convert_other_nulls_to_default": false,
+      "enable_verify_on_every_print": true,
+      "initial_data_context": null,
+      "initial_report_part_name": null,
+      "save_data_with_report": true,
+      "save_preview_picture": true,
+      "save_summaries_with_report": true,
+      "use_dummy_data": false
+    },
+    "save_metadata": [
+      {
+        "key": "Saved Date",
+        "value": "2021.01.12 12:49:41 -0500"
+      },
+      {
+        "key": "Build Version",
+        "value": "14.3.0.3677"
+      },
+      {
+        "key": "Print Engine",
+        "value": "CRW"
+      },
+      {
+        "key": "OS",
+        "value": "Windows Vista"
+      },
+      {
+        "key": "Architecture",
+        "value": "AMD64"
+      }
+    ],
+    "saved_data": {
+      "columns": [
+        {
+          "name": "countries_all_iso.id",
+          "value_type": "Int32s"
+        },
+        {
+          "name": "countries_all_iso.name",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "name": "countries_all_iso.alpha_2_code",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "name": "countries_all_iso.alpha_3_code",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "name": "countries_all_iso.numeric_code",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "name": "countries_all_iso.internet_cctld",
+          "value_type": "PersistentMemo"
+        }
+      ],
+      "record_count": 249,
+      "rows": [
+        [
+          "1",
+          "Afghanistan",
+          "AF",
+          "AFG",
+          "004",
+          ".af"
+        ],
+        [
+          "2",
+          "Åland Islands",
+          "AX",
+          "ALA",
+          "248",
+          ".ax"
+        ],
+        [
+          "3",
+          "Albania",
+          "AL",
+          "ALB",
+          "008",
+          ".al"
+        ],
+        [
+          "4",
+          "Algeria",
+          "DZ",
+          "DZA",
+          "012",
+          ".dz"
+        ],
+        [
+          "5",
+          "American Samoa",
+          "AS",
+          "ASM",
+          "016",
+          ".as"
+        ],
+        [
+          "6",
+          "Andorra",
+          "AD",
+          "AND",
+          "020",
+          ".ad"
+        ],
+        [
+          "7",
+          "Angola",
+          "AO",
+          "AGO",
+          "024",
+          ".ao"
+        ],
+        [
+          "8",
+          "Anguilla",
+          "AI",
+          "AIA",
+          "660",
+          ".ai"
+        ],
+        [
+          "9",
+          "Antarctica",
+          "AQ",
+          "ATA",
+          "010",
+          ".aq"
+        ],
+        [
+          "10",
+          "Antigua and Barbuda",
+          "AG",
+          "ATG",
+          "028",
+          ".ag"
+        ],
+        [
+          "11",
+          "Argentina",
+          "AR",
+          "ARG",
+          "032",
+          ".ar"
+        ],
+        [
+          "12",
+          "Armenia",
+          "AM",
+          "ARM",
+          "051",
+          ".am"
+        ],
+        [
+          "13",
+          "Aruba",
+          "AW",
+          "ABW",
+          "533",
+          ".aw"
+        ],
+        [
+          "14",
+          "Australia",
+          "AU",
+          "AUS",
+          "036",
+          ".au"
+        ],
+        [
+          "15",
+          "Austria",
+          "AT",
+          "AUT",
+          "040",
+          ".at"
+        ],
+        [
+          "16",
+          "Azerbaijan",
+          "AZ",
+          "AZE",
+          "031",
+          ".az"
+        ],
+        [
+          "17",
+          "Bahamas (the)",
+          "BS",
+          "BHS",
+          "044",
+          ".bs"
+        ],
+        [
+          "18",
+          "Bahrain",
+          "BH",
+          "BHR",
+          "048",
+          ".bh"
+        ],
+        [
+          "19",
+          "Bangladesh",
+          "BD",
+          "BGD",
+          "050",
+          ".bd"
+        ],
+        [
+          "20",
+          "Barbados",
+          "BB",
+          "BRB",
+          "052",
+          ".bb"
+        ],
+        [
+          "21",
+          "Belarus",
+          "BY",
+          "BLR",
+          "112",
+          ".by"
+        ],
+        [
+          "22",
+          "Belgium",
+          "BE",
+          "BEL",
+          "056",
+          ".be"
+        ],
+        [
+          "23",
+          "Belize",
+          "BZ",
+          "BLZ",
+          "084",
+          ".bz"
+        ],
+        [
+          "24",
+          "Benin",
+          "BJ",
+          "BEN",
+          "204",
+          ".bj"
+        ],
+        [
+          "25",
+          "Bermuda",
+          "BM",
+          "BMU",
+          "060",
+          ".bm"
+        ],
+        [
+          "26",
+          "Bhutan",
+          "BT",
+          "BTN",
+          "064",
+          ".bt"
+        ],
+        [
+          "27",
+          "Bolivia (Plurinational State of)",
+          "BO",
+          "BOL",
+          "068",
+          ".bo"
+        ],
+        [
+          "28",
+          "Bonaire, Sint Eustatius, Saba",
+          "BQ",
+          "BES",
+          "535",
+          ".bq, .nl"
+        ],
+        [
+          "29",
+          "Bosnia and Herzegovina",
+          "BA",
+          "BIH",
+          "070",
+          ".ba"
+        ],
+        [
+          "30",
+          "Botswana",
+          "BW",
+          "BWA",
+          "072",
+          ".bw"
+        ],
+        [
+          "31",
+          "Bouvet Island",
+          "BV",
+          "BVT",
+          "074",
+          null
+        ],
+        [
+          "32",
+          "Brazil",
+          "BR",
+          "BRA",
+          "076",
+          ".br"
+        ],
+        [
+          "33",
+          "British Indian Ocean Territory (the)",
+          "IO",
+          "IOT",
+          "086",
+          ".io"
+        ],
+        [
+          "34",
+          "Brunei Darussalam",
+          "BN",
+          "BRN",
+          "096",
+          ".bn"
+        ],
+        [
+          "35",
+          "Bulgaria",
+          "BG",
+          "BGR",
+          "100",
+          ".bg"
+        ],
+        [
+          "36",
+          "Burkina Faso",
+          "BF",
+          "BFA",
+          "854",
+          ".bf"
+        ],
+        [
+          "37",
+          "Burundi",
+          "BI",
+          "BDI",
+          "108",
+          ".bi"
+        ],
+        [
+          "38",
+          "Cabo Verde",
+          "CV",
+          "CPV",
+          "132",
+          ".cv"
+        ],
+        [
+          "39",
+          "Cambodia",
+          "KH",
+          "KHM",
+          "116",
+          ".kh"
+        ],
+        [
+          "40",
+          "Cameroon",
+          "CM",
+          "CMR",
+          "120",
+          ".cm"
+        ],
+        [
+          "41",
+          "Canada",
+          "CA",
+          "CAN",
+          "124",
+          ".ca"
+        ],
+        [
+          "42",
+          "Cayman Islands (the)",
+          "KY",
+          "CYM",
+          "136",
+          ".ky"
+        ],
+        [
+          "43",
+          "Central African Republic (the)",
+          "CF",
+          "CAF",
+          "140",
+          ".cf"
+        ],
+        [
+          "44",
+          "Chad",
+          "TD",
+          "TCD",
+          "148",
+          ".td"
+        ],
+        [
+          "45",
+          "Chile",
+          "CL",
+          "CHL",
+          "152",
+          ".cl"
+        ],
+        [
+          "46",
+          "China",
+          "CN",
+          "CHN",
+          "156",
+          ".cn"
+        ],
+        [
+          "47",
+          "Christmas Island",
+          "CX",
+          "CXR",
+          "162",
+          ".cx"
+        ],
+        [
+          "48",
+          "Cocos (Keeling) Islands (the)",
+          "CC",
+          "CCK",
+          "166",
+          ".cc"
+        ],
+        [
+          "49",
+          "Colombia",
+          "CO",
+          "COL",
+          "170",
+          ".co"
+        ],
+        [
+          "50",
+          "Comoros (the)",
+          "KM",
+          "COM",
+          "174",
+          ".km"
+        ],
+        [
+          "51",
+          "Congo (the Democratic Republic of the)",
+          "CD",
+          "COD",
+          "180",
+          ".cd"
+        ],
+        [
+          "52",
+          "Congo (the)",
+          "CG",
+          "COG",
+          "178",
+          ".cg"
+        ],
+        [
+          "53",
+          "Cook Islands (the)",
+          "CK",
+          "COK",
+          "184",
+          ".ck"
+        ],
+        [
+          "54",
+          "Costa Rica",
+          "CR",
+          "CRI",
+          "188",
+          ".cr"
+        ],
+        [
+          "55",
+          "Côte d'Ivoire",
+          "CI",
+          "CIV",
+          "384",
+          ".ci"
+        ],
+        [
+          "56",
+          "Croatia",
+          "HR",
+          "HRV",
+          "191",
+          ".hr"
+        ],
+        [
+          "57",
+          "Cuba",
+          "CU",
+          "CUB",
+          "192",
+          ".cu"
+        ],
+        [
+          "58",
+          "Curaçao",
+          "CW",
+          "CUW",
+          "531",
+          ".cw"
+        ],
+        [
+          "59",
+          "Cyprus",
+          "CY",
+          "CYP",
+          "196",
+          ".cy"
+        ],
+        [
+          "60",
+          "Czechia",
+          "CZ",
+          "CZE",
+          "203",
+          ".cz"
+        ],
+        [
+          "61",
+          "Denmark",
+          "DK",
+          "DNK",
+          "208",
+          ".dk"
+        ],
+        [
+          "62",
+          "Djibouti",
+          "DJ",
+          "DJI",
+          "262",
+          ".dj"
+        ],
+        [
+          "63",
+          "Dominica",
+          "DM",
+          "DMA",
+          "212",
+          ".dm"
+        ],
+        [
+          "64",
+          "Dominican Republic (the)",
+          "DO",
+          "DOM",
+          "214",
+          ".do"
+        ],
+        [
+          "65",
+          "Ecuador",
+          "EC",
+          "ECU",
+          "218",
+          ".ec"
+        ],
+        [
+          "66",
+          "Egypt",
+          "EG",
+          "EGY",
+          "818",
+          ".eg"
+        ],
+        [
+          "67",
+          "El Salvador",
+          "SV",
+          "SLV",
+          "222",
+          ".sv"
+        ],
+        [
+          "68",
+          "Equatorial Guinea",
+          "GQ",
+          "GNQ",
+          "226",
+          ".gq"
+        ],
+        [
+          "69",
+          "Eritrea",
+          "ER",
+          "ERI",
+          "232",
+          ".er"
+        ],
+        [
+          "70",
+          "Estonia",
+          "EE",
+          "EST",
+          "233",
+          ".ee"
+        ],
+        [
+          "71",
+          "Eswatini",
+          "SZ",
+          "SWZ",
+          "748",
+          ".sz"
+        ],
+        [
+          "72",
+          "Ethiopia",
+          "ET",
+          "ETH",
+          "231",
+          ".et"
+        ],
+        [
+          "73",
+          "Falkland Islands (the) [Malvinas]",
+          "FK",
+          "FLK",
+          "238",
+          ".fk"
+        ],
+        [
+          "74",
+          "Faroe Islands (the)",
+          "FO",
+          "FRO",
+          "234",
+          ".fo"
+        ],
+        [
+          "75",
+          "Fiji",
+          "FJ",
+          "FJI",
+          "242",
+          ".fj"
+        ],
+        [
+          "76",
+          "Finland",
+          "FI",
+          "FIN",
+          "246",
+          ".fi"
+        ],
+        [
+          "77",
+          "France",
+          "FR",
+          "FRA",
+          "250",
+          ".fr"
+        ],
+        [
+          "78",
+          "French Guiana",
+          "GF",
+          "GUF",
+          "254",
+          ".gf"
+        ],
+        [
+          "79",
+          "French Polynesia",
+          "PF",
+          "PYF",
+          "258",
+          ".pf"
+        ],
+        [
+          "80",
+          "French Southern Territories (the)",
+          "TF",
+          "ATF",
+          "260",
+          ".tf"
+        ],
+        [
+          "81",
+          "Gabon",
+          "GA",
+          "GAB",
+          "266",
+          ".ga"
+        ],
+        [
+          "82",
+          "Gambia (the)",
+          "GM",
+          "GMB",
+          "270",
+          ".gm"
+        ],
+        [
+          "83",
+          "Georgia",
+          "GE",
+          "GEO",
+          "268",
+          ".ge"
+        ],
+        [
+          "84",
+          "Germany",
+          "DE",
+          "DEU",
+          "276",
+          ".de"
+        ],
+        [
+          "85",
+          "Ghana",
+          "GH",
+          "GHA",
+          "288",
+          ".gh"
+        ],
+        [
+          "86",
+          "Gibraltar",
+          "GI",
+          "GIB",
+          "292",
+          ".gi"
+        ],
+        [
+          "87",
+          "Greece",
+          "GR",
+          "GRC",
+          "300",
+          ".gr"
+        ],
+        [
+          "88",
+          "Greenland",
+          "GL",
+          "GRL",
+          "304",
+          ".gl"
+        ],
+        [
+          "89",
+          "Grenada",
+          "GD",
+          "GRD",
+          "308",
+          ".gd"
+        ],
+        [
+          "90",
+          "Guadeloupe",
+          "GP",
+          "GLP",
+          "312",
+          ".gp"
+        ],
+        [
+          "91",
+          "Guam",
+          "GU",
+          "GUM",
+          "316",
+          ".gu"
+        ],
+        [
+          "92",
+          "Guatemala",
+          "GT",
+          "GTM",
+          "320",
+          ".gt"
+        ],
+        [
+          "93",
+          "Guernsey",
+          "GG",
+          "GGY",
+          "831",
+          ".gg"
+        ],
+        [
+          "94",
+          "Guinea",
+          "GN",
+          "GIN",
+          "324",
+          ".gn"
+        ],
+        [
+          "95",
+          "Guinea-Bissau",
+          "GW",
+          "GNB",
+          "624",
+          ".gw"
+        ],
+        [
+          "96",
+          "Guyana",
+          "GY",
+          "GUY",
+          "328",
+          ".gy"
+        ],
+        [
+          "97",
+          "Haiti",
+          "HT",
+          "HTI",
+          "332",
+          ".ht"
+        ],
+        [
+          "98",
+          "Heard Island and McDonald Islands",
+          "HM",
+          "HMD",
+          "334",
+          ".hm"
+        ],
+        [
+          "99",
+          "Holy See (the)",
+          "VA",
+          "VAT",
+          "336",
+          ".va"
+        ],
+        [
+          "100",
+          "Honduras",
+          "HN",
+          "HND",
+          "340",
+          ".hn"
+        ],
+        [
+          "101",
+          "Hong Kong",
+          "HK",
+          "HKG",
+          "344",
+          ".hk"
+        ],
+        [
+          "102",
+          "Hungary",
+          "HU",
+          "HUN",
+          "348",
+          ".hu"
+        ],
+        [
+          "103",
+          "Iceland",
+          "IS",
+          "ISL",
+          "352",
+          ".is"
+        ],
+        [
+          "104",
+          "India",
+          "IN",
+          "IND",
+          "356",
+          ".in"
+        ],
+        [
+          "105",
+          "Indonesia",
+          "ID",
+          "IDN",
+          "360",
+          ".id"
+        ],
+        [
+          "106",
+          "Iran (Islamic Republic of)",
+          "IR",
+          "IRN",
+          "364",
+          ".ir"
+        ],
+        [
+          "107",
+          "Iraq",
+          "IQ",
+          "IRQ",
+          "368",
+          ".iq"
+        ],
+        [
+          "108",
+          "Ireland",
+          "IE",
+          "IRL",
+          "372",
+          ".ie"
+        ],
+        [
+          "109",
+          "Isle of Man",
+          "IM",
+          "IMN",
+          "833",
+          ".im"
+        ],
+        [
+          "110",
+          "Israel",
+          "IL",
+          "ISR",
+          "376",
+          ".il"
+        ],
+        [
+          "111",
+          "Italy",
+          "IT",
+          "ITA",
+          "380",
+          ".it"
+        ],
+        [
+          "112",
+          "Jamaica",
+          "JM",
+          "JAM",
+          "388",
+          ".jm"
+        ],
+        [
+          "113",
+          "Japan",
+          "JP",
+          "JPN",
+          "392",
+          ".jp"
+        ],
+        [
+          "114",
+          "Jersey",
+          "JE",
+          "JEY",
+          "832",
+          ".je"
+        ],
+        [
+          "115",
+          "Jordan",
+          "JO",
+          "JOR",
+          "400",
+          ".jo"
+        ],
+        [
+          "116",
+          "Kazakhstan",
+          "KZ",
+          "KAZ",
+          "398",
+          ".kz"
+        ],
+        [
+          "117",
+          "Kenya",
+          "KE",
+          "KEN",
+          "404",
+          ".ke"
+        ],
+        [
+          "118",
+          "Kiribati",
+          "KI",
+          "KIR",
+          "296",
+          ".ki"
+        ],
+        [
+          "119",
+          "Korea (the Democratic People's Republic of)",
+          "KP",
+          "PRK",
+          "408",
+          ".kp"
+        ],
+        [
+          "120",
+          "Korea (the Republic of)",
+          "KR",
+          "KOR",
+          "410",
+          ".kr"
+        ],
+        [
+          "121",
+          "Kuwait",
+          "KW",
+          "KWT",
+          "414",
+          ".kw"
+        ],
+        [
+          "122",
+          "Kyrgyzstan",
+          "KG",
+          "KGZ",
+          "417",
+          ".kg"
+        ],
+        [
+          "123",
+          "Lao People's Democratic Republic (the)",
+          "LA",
+          "LAO",
+          "418",
+          ".la"
+        ],
+        [
+          "124",
+          "Latvia",
+          "LV",
+          "LVA",
+          "428",
+          ".lv"
+        ],
+        [
+          "125",
+          "Lebanon",
+          "LB",
+          "LBN",
+          "422",
+          ".lb"
+        ],
+        [
+          "126",
+          "Lesotho",
+          "LS",
+          "LSO",
+          "426",
+          ".ls"
+        ],
+        [
+          "127",
+          "Liberia",
+          "LR",
+          "LBR",
+          "430",
+          ".lr"
+        ],
+        [
+          "128",
+          "Libya",
+          "LY",
+          "LBY",
+          "434",
+          ".ly"
+        ],
+        [
+          "129",
+          "Liechtenstein",
+          "LI",
+          "LIE",
+          "438",
+          ".li"
+        ],
+        [
+          "130",
+          "Lithuania",
+          "LT",
+          "LTU",
+          "440",
+          ".lt"
+        ],
+        [
+          "131",
+          "Luxembourg",
+          "LU",
+          "LUX",
+          "442",
+          ".lu"
+        ],
+        [
+          "132",
+          "Macao",
+          "MO",
+          "MAC",
+          "446",
+          ".mo"
+        ],
+        [
+          "133",
+          "North Macedonia",
+          "MK",
+          "MKD",
+          "807",
+          ".mk"
+        ],
+        [
+          "134",
+          "Madagascar",
+          "MG",
+          "MDG",
+          "450",
+          ".mg"
+        ],
+        [
+          "135",
+          "Malawi",
+          "MW",
+          "MWI",
+          "454",
+          ".mw"
+        ],
+        [
+          "136",
+          "Malaysia",
+          "MY",
+          "MYS",
+          "458",
+          ".my"
+        ],
+        [
+          "137",
+          "Maldives",
+          "MV",
+          "MDV",
+          "462",
+          ".mv"
+        ],
+        [
+          "138",
+          "Mali",
+          "ML",
+          "MLI",
+          "466",
+          ".ml"
+        ],
+        [
+          "139",
+          "Malta",
+          "MT",
+          "MLT",
+          "470",
+          ".mt"
+        ],
+        [
+          "140",
+          "Marshall Islands (the)",
+          "MH",
+          "MHL",
+          "584",
+          ".mh"
+        ],
+        [
+          "141",
+          "Martinique",
+          "MQ",
+          "MTQ",
+          "474",
+          ".mq"
+        ],
+        [
+          "142",
+          "Mauritania",
+          "MR",
+          "MRT",
+          "478",
+          ".mr"
+        ],
+        [
+          "143",
+          "Mauritius",
+          "MU",
+          "MUS",
+          "480",
+          ".mu"
+        ],
+        [
+          "144",
+          "Mayotte",
+          "YT",
+          "MYT",
+          "175",
+          ".yt"
+        ],
+        [
+          "145",
+          "Mexico",
+          "MX",
+          "MEX",
+          "484",
+          ".mx"
+        ],
+        [
+          "146",
+          "Micronesia (Federated States of)",
+          "FM",
+          "FSM",
+          "583",
+          ".fm"
+        ],
+        [
+          "147",
+          "Moldova (the Republic of)",
+          "MD",
+          "MDA",
+          "498",
+          ".md"
+        ],
+        [
+          "148",
+          "Monaco",
+          "MC",
+          "MCO",
+          "492",
+          ".mc"
+        ],
+        [
+          "149",
+          "Mongolia",
+          "MN",
+          "MNG",
+          "496",
+          ".mn"
+        ],
+        [
+          "150",
+          "Montenegro",
+          "ME",
+          "MNE",
+          "499",
+          ".me"
+        ],
+        [
+          "151",
+          "Montserrat",
+          "MS",
+          "MSR",
+          "500",
+          ".ms"
+        ],
+        [
+          "152",
+          "Morocco",
+          "MA",
+          "MAR",
+          "504",
+          ".ma"
+        ],
+        [
+          "153",
+          "Mozambique",
+          "MZ",
+          "MOZ",
+          "508",
+          ".mz"
+        ],
+        [
+          "154",
+          "Myanmar",
+          "MM",
+          "MMR",
+          "104",
+          ".mm"
+        ],
+        [
+          "155",
+          "Namibia",
+          "NA",
+          "NAM",
+          "516",
+          ".na"
+        ],
+        [
+          "156",
+          "Nauru",
+          "NR",
+          "NRU",
+          "520",
+          ".nr"
+        ],
+        [
+          "157",
+          "Nepal",
+          "NP",
+          "NPL",
+          "524",
+          ".np"
+        ],
+        [
+          "158",
+          "Netherlands (the)",
+          "NL",
+          "NLD",
+          "528",
+          ".nl"
+        ],
+        [
+          "159",
+          "New Caledonia",
+          "NC",
+          "NCL",
+          "540",
+          ".nc"
+        ],
+        [
+          "160",
+          "New Zealand",
+          "NZ",
+          "NZL",
+          "554",
+          ".nz"
+        ],
+        [
+          "161",
+          "Nicaragua",
+          "NI",
+          "NIC",
+          "558",
+          ".ni"
+        ],
+        [
+          "162",
+          "Niger (the)",
+          "NE",
+          "NER",
+          "562",
+          ".ne"
+        ],
+        [
+          "163",
+          "Nigeria",
+          "NG",
+          "NGA",
+          "566",
+          ".ng"
+        ],
+        [
+          "164",
+          "Niue",
+          "NU",
+          "NIU",
+          "570",
+          ".nu"
+        ],
+        [
+          "165",
+          "Norfolk Island",
+          "NF",
+          "NFK",
+          "574",
+          ".nf"
+        ],
+        [
+          "166",
+          "Northern Mariana Islands (the)",
+          "MP",
+          "MNP",
+          "580",
+          ".mp"
+        ],
+        [
+          "167",
+          "Norway",
+          "NO",
+          "NOR",
+          "578",
+          ".no"
+        ],
+        [
+          "168",
+          "Oman",
+          "OM",
+          "OMN",
+          "512",
+          ".om"
+        ],
+        [
+          "169",
+          "Pakistan",
+          "PK",
+          "PAK",
+          "586",
+          ".pk"
+        ],
+        [
+          "170",
+          "Palau",
+          "PW",
+          "PLW",
+          "585",
+          ".pw"
+        ],
+        [
+          "171",
+          "Palestine, State of",
+          "PS",
+          "PSE",
+          "275",
+          ".ps"
+        ],
+        [
+          "172",
+          "Panama",
+          "PA",
+          "PAN",
+          "591",
+          ".pa"
+        ],
+        [
+          "173",
+          "Papua New Guinea",
+          "PG",
+          "PNG",
+          "598",
+          ".pg"
+        ],
+        [
+          "174",
+          "Paraguay",
+          "PY",
+          "PRY",
+          "600",
+          ".py"
+        ],
+        [
+          "175",
+          "Peru",
+          "PE",
+          "PER",
+          "604",
+          ".pe"
+        ],
+        [
+          "176",
+          "Philippines (the)",
+          "PH",
+          "PHL",
+          "608",
+          ".ph"
+        ],
+        [
+          "177",
+          "Pitcairn",
+          "PN",
+          "PCN",
+          "612",
+          ".pn"
+        ],
+        [
+          "178",
+          "Poland",
+          "PL",
+          "POL",
+          "616",
+          ".pl"
+        ],
+        [
+          "179",
+          "Portugal",
+          "PT",
+          "PRT",
+          "620",
+          ".pt"
+        ],
+        [
+          "180",
+          "Puerto Rico",
+          "PR",
+          "PRI",
+          "630",
+          ".pr"
+        ],
+        [
+          "181",
+          "Qatar",
+          "QA",
+          "QAT",
+          "634",
+          ".qa"
+        ],
+        [
+          "182",
+          "Réunion",
+          "RE",
+          "REU",
+          "638",
+          ".re"
+        ],
+        [
+          "183",
+          "Romania",
+          "RO",
+          "ROU",
+          "642",
+          ".ro"
+        ],
+        [
+          "184",
+          "Russian Federation (the)",
+          "RU",
+          "RUS",
+          "643",
+          ".ru"
+        ],
+        [
+          "185",
+          "Rwanda",
+          "RW",
+          "RWA",
+          "646",
+          ".rw"
+        ],
+        [
+          "186",
+          "Saint Barthélemy",
+          "BL",
+          "BLM",
+          "652",
+          ".bl"
+        ],
+        [
+          "187",
+          "Saint Helena, Ascension Island, Tristan da Cunha",
+          "SH",
+          "SHN",
+          "654",
+          ".sh"
+        ],
+        [
+          "188",
+          "Saint Kitts and Nevis",
+          "KN",
+          "KNA",
+          "659",
+          ".kn"
+        ],
+        [
+          "189",
+          "Saint Lucia",
+          "LC",
+          "LCA",
+          "662",
+          ".lc"
+        ],
+        [
+          "190",
+          "Saint Martin (French part)",
+          "MF",
+          "MAF",
+          "663",
+          ".mf"
+        ],
+        [
+          "191",
+          "Saint Pierre and Miquelon",
+          "PM",
+          "SPM",
+          "666",
+          ".pm"
+        ],
+        [
+          "192",
+          "Saint Vincent and the Grenadines",
+          "VC",
+          "VCT",
+          "670",
+          ".vc"
+        ],
+        [
+          "193",
+          "Samoa",
+          "WS",
+          "WSM",
+          "882",
+          ".ws"
+        ],
+        [
+          "194",
+          "San Marino",
+          "SM",
+          "SMR",
+          "674",
+          ".sm"
+        ],
+        [
+          "195",
+          "Sao Tome and Principe",
+          "ST",
+          "STP",
+          "678",
+          ".st"
+        ],
+        [
+          "196",
+          "Saudi Arabia",
+          "SA",
+          "SAU",
+          "682",
+          ".sa"
+        ],
+        [
+          "197",
+          "Senegal",
+          "SN",
+          "SEN",
+          "686",
+          ".sn"
+        ],
+        [
+          "198",
+          "Serbia",
+          "RS",
+          "SRB",
+          "688",
+          ".rs"
+        ],
+        [
+          "199",
+          "Seychelles",
+          "SC",
+          "SYC",
+          "690",
+          ".sc"
+        ],
+        [
+          "200",
+          "Sierra Leone",
+          "SL",
+          "SLE",
+          "694",
+          ".sl"
+        ],
+        [
+          "201",
+          "Singapore",
+          "SG",
+          "SGP",
+          "702",
+          ".sg"
+        ],
+        [
+          "202",
+          "Sint Maarten (Dutch part)",
+          "SX",
+          "SXM",
+          "534",
+          ".sx"
+        ],
+        [
+          "203",
+          "Slovakia",
+          "SK",
+          "SVK",
+          "703",
+          ".sk"
+        ],
+        [
+          "204",
+          "Slovenia",
+          "SI",
+          "SVN",
+          "705",
+          ".si"
+        ],
+        [
+          "205",
+          "Solomon Islands",
+          "SB",
+          "SLB",
+          "090",
+          ".sb"
+        ],
+        [
+          "206",
+          "Somalia",
+          "SO",
+          "SOM",
+          "706",
+          ".so"
+        ],
+        [
+          "207",
+          "South Africa",
+          "ZA",
+          "ZAF",
+          "710",
+          ".za"
+        ],
+        [
+          "208",
+          "South Georgia and the South Sandwich Islands",
+          "GS",
+          "SGS",
+          "239",
+          ".gs"
+        ],
+        [
+          "209",
+          "South Sudan",
+          "SS",
+          "SSD",
+          "728",
+          ".ss"
+        ],
+        [
+          "210",
+          "Spain",
+          "ES",
+          "ESP",
+          "724",
+          ".es"
+        ],
+        [
+          "211",
+          "Sri Lanka",
+          "LK",
+          "LKA",
+          "144",
+          ".lk"
+        ],
+        [
+          "212",
+          "Sudan (the)",
+          "SD",
+          "SDN",
+          "729",
+          ".sd"
+        ],
+        [
+          "213",
+          "Suriname",
+          "SR",
+          "SUR",
+          "740",
+          ".sr"
+        ],
+        [
+          "214",
+          "Svalbard, Jan Mayen",
+          "SJ",
+          "SJM",
+          "744",
+          null
+        ],
+        [
+          "215",
+          "Sweden",
+          "SE",
+          "SWE",
+          "752",
+          ".se"
+        ],
+        [
+          "216",
+          "Switzerland",
+          "CH",
+          "CHE",
+          "756",
+          ".ch"
+        ],
+        [
+          "217",
+          "Syrian Arab Republic (the)",
+          "SY",
+          "SYR",
+          "760",
+          ".sy"
+        ],
+        [
+          "218",
+          "Taiwan (Province of China)",
+          "TW",
+          "TWN",
+          "158",
+          ".tw"
+        ],
+        [
+          "219",
+          "Tajikistan",
+          "TJ",
+          "TJK",
+          "762",
+          ".tj"
+        ],
+        [
+          "220",
+          "Tanzania, the United Republic of",
+          "TZ",
+          "TZA",
+          "834",
+          ".tz"
+        ],
+        [
+          "221",
+          "Thailand",
+          "TH",
+          "THA",
+          "764",
+          ".th"
+        ],
+        [
+          "222",
+          "Timor-Leste",
+          "TL",
+          "TLS",
+          "626",
+          ".tl"
+        ],
+        [
+          "223",
+          "Togo",
+          "TG",
+          "TGO",
+          "768",
+          ".tg"
+        ],
+        [
+          "224",
+          "Tokelau",
+          "TK",
+          "TKL",
+          "772",
+          ".tk"
+        ],
+        [
+          "225",
+          "Tonga",
+          "TO",
+          "TON",
+          "776",
+          ".to"
+        ],
+        [
+          "226",
+          "Trinidad and Tobago",
+          "TT",
+          "TTO",
+          "780",
+          ".tt"
+        ],
+        [
+          "227",
+          "Tunisia",
+          "TN",
+          "TUN",
+          "788",
+          ".tn"
+        ],
+        [
+          "228",
+          "Turkey",
+          "TR",
+          "TUR",
+          "792",
+          ".tr"
+        ],
+        [
+          "229",
+          "Turkmenistan",
+          "TM",
+          "TKM",
+          "795",
+          ".tm"
+        ],
+        [
+          "230",
+          "Turks and Caicos Islands (the)",
+          "TC",
+          "TCA",
+          "796",
+          ".tc"
+        ],
+        [
+          "231",
+          "Tuvalu",
+          "TV",
+          "TUV",
+          "798",
+          ".tv"
+        ],
+        [
+          "232",
+          "Uganda",
+          "UG",
+          "UGA",
+          "800",
+          ".ug"
+        ],
+        [
+          "233",
+          "Ukraine",
+          "UA",
+          "UKR",
+          "804",
+          ".ua"
+        ],
+        [
+          "234",
+          "United Arab Emirates (the)",
+          "AE",
+          "ARE",
+          "784",
+          ".ae"
+        ],
+        [
+          "235",
+          "United Kingdom of Great Britain and Northern Ireland (the)",
+          "GB",
+          "GBR",
+          "826",
+          ".gb, .uk"
+        ],
+        [
+          "236",
+          "United States Minor Outlying Islands (the)",
+          "UM",
+          "UMI",
+          "581",
+          null
+        ],
+        [
+          "237",
+          "United States of America (the)",
+          "US",
+          "USA",
+          "840",
+          ".us"
+        ],
+        [
+          "238",
+          "Uruguay",
+          "UY",
+          "URY",
+          "858",
+          ".uy"
+        ],
+        [
+          "239",
+          "Uzbekistan",
+          "UZ",
+          "UZB",
+          "860",
+          ".uz"
+        ],
+        [
+          "240",
+          "Vanuatu",
+          "VU",
+          "VUT",
+          "548",
+          ".vu"
+        ],
+        [
+          "241",
+          "Venezuela (Bolivarian Republic of)",
+          "VE",
+          "VEN",
+          "862",
+          ".ve"
+        ],
+        [
+          "242",
+          "Viet Nam",
+          "VN",
+          "VNM",
+          "704",
+          ".vn"
+        ],
+        [
+          "243",
+          "Virgin Islands (British)",
+          "VG",
+          "VGB",
+          "092",
+          ".vg"
+        ],
+        [
+          "244",
+          "Virgin Islands (U.S.)",
+          "VI",
+          "VIR",
+          "850",
+          ".vi"
+        ],
+        [
+          "245",
+          "Wallis and Futuna",
+          "WF",
+          "WLF",
+          "876",
+          ".wf"
+        ],
+        [
+          "246",
+          "Western Sahara",
+          "EH",
+          "ESH",
+          "732",
+          null
+        ],
+        [
+          "247",
+          "Yemen",
+          "YE",
+          "YEM",
+          "887",
+          ".ye"
+        ],
+        [
+          "248",
+          "Zambia",
+          "ZM",
+          "ZMB",
+          "894",
+          ".zm"
+        ],
+        [
+          "249",
+          "Zimbabwe",
+          "ZW",
+          "ZWE",
+          "716",
+          ".zw"
+        ]
+      ]
+    },
+    "subreports": [],
+    "summary_info": {
+      "author": "",
+      "comments": "",
+      "keywords": "",
+      "last_saved_by": "",
+      "revision_number": "31",
+      "save_with_preview": true,
+      "subject": "Geography, Internet CCTLD, Alpha Codes",
+      "title": "Alpha Codes and Internet CCTLDs by Country"
+    },
+    "version": 1
+  }
+}

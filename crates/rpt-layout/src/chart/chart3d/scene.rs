@@ -4,8 +4,8 @@
 //! its labels last. This module owns that common skeleton so the riser, surface, and area-ribbon
 //! renderers stay geometry-only.
 
-use super::projection::{face, Projection, Vec3};
-use crate::chart::common::{fmt_val, Frame, GRID, LABEL};
+use super::projection::{face, p3, Projection, Vec3, ViewAngle};
+use crate::chart::common::{compute_frame, fmt_val, nice_scale, AxisTitles, Frame, GRID, LABEL};
 use rpt_model::{Color, Rect, Twips};
 use rpt_pages::{
     DrawOp, FontSpec, LineOp, LineStyle, ObjectRef, Point, Stroke, TextAlign, TextRun,
@@ -42,6 +42,57 @@ const EDGE: Color = Color {
     b: 0x66,
 };
 
+/// The shared 3-D scene preamble every family draws before its data faces: builds the Num+Ord frame
+/// off a synthetic per-category max series (so the tallest mark never touches the ceiling), the
+/// perspective projection fit to the plot box, and the assembled background scenery (floor + back
+/// walls + value gridlines + floor grid + room edges). `z_div` are the series-depth floor-grid
+/// divisions (empty for the single-depth families). Returns `(frame, value-scale max, projection,
+/// background ops, axis labels)`; each renderer then emits only its own geometry.
+pub(super) fn setup_3d(
+    rect: Rect,
+    title: &str,
+    categories: &[String],
+    series: &[(String, Vec<f64>)],
+    view_angle: rpt_model::ChartViewAngle,
+    z_div: &[f64],
+    src: &dyn Fn() -> Option<ObjectRef>,
+) -> (Frame, f64, Projection, Vec<DrawOp>, Vec<DrawOp>) {
+    let c_count = categories.len();
+    let global_max = series
+        .iter()
+        .flat_map(|(_, vals)| vals.iter().copied())
+        .fold(0.0_f64, f64::max);
+    let (max_val, _) = nice_scale(global_max);
+    let frame_series: Vec<(String, f64)> = categories
+        .iter()
+        .enumerate()
+        .map(|(c, label)| {
+            let cat_max = series
+                .iter()
+                .map(|(_, vals)| vals.get(c).copied().unwrap_or(0.0))
+                .fold(0.0_f64, f64::max);
+            (label.clone(), cat_max)
+        })
+        .collect();
+    let f = compute_frame(rect, title, AxisTitles::default(), &frame_series);
+    let (pl, pr, pt, pb) = (
+        f.plot_left as f64,
+        f.plot_right as f64,
+        f.plot_top() as f64,
+        f.plot_bottom as f64,
+    );
+    let proj = Projection::perspective(pl, pr, pt, pb, ViewAngle::for_preset(view_angle));
+    let (grid, axis_labels) = axes_3d(&proj, &f, categories, src);
+    let mut background = background_planes(&proj, pl, pr, pt, pb, src).to_vec();
+    let x_div: Vec<f64> = (1..c_count)
+        .map(|c| (f.plot_left + c as i32 * f.slot) as f64)
+        .collect();
+    background.extend(floor_grid(&proj, pb, pl, pr, &x_div, z_div, src));
+    background.extend(grid);
+    background.extend(room_edges(&proj, pl, pr, pt, pb, src));
+    (f, max_val, proj, background, axis_labels)
+}
+
 /// Build the three background planes for a 3-D scene over the plot rectangle `[pl,pr]×[pt,pb]`
 /// (plot-twip units): the category back wall (`z = 1`), the series back wall (`x = pr`), and the floor,
 /// in that draw order (behind all data). The two walls meet at the back vertical edge (`x = pr, z = 1`)
@@ -59,76 +110,28 @@ pub(super) fn background_planes(
     [
         plane(
             [
-                Vec3 {
-                    x: pl,
-                    y: pt,
-                    z: 1.0,
-                },
-                Vec3 {
-                    x: pr,
-                    y: pt,
-                    z: 1.0,
-                },
-                Vec3 {
-                    x: pr,
-                    y: pb,
-                    z: 1.0,
-                },
-                Vec3 {
-                    x: pl,
-                    y: pb,
-                    z: 1.0,
-                },
+                p3(pl, pt, 1.0),
+                p3(pr, pt, 1.0),
+                p3(pr, pb, 1.0),
+                p3(pl, pb, 1.0),
             ],
             BACK_WALL,
         ),
         plane(
             [
-                Vec3 {
-                    x: pr,
-                    y: pt,
-                    z: 0.0,
-                },
-                Vec3 {
-                    x: pr,
-                    y: pt,
-                    z: 1.0,
-                },
-                Vec3 {
-                    x: pr,
-                    y: pb,
-                    z: 1.0,
-                },
-                Vec3 {
-                    x: pr,
-                    y: pb,
-                    z: 0.0,
-                },
+                p3(pr, pt, 0.0),
+                p3(pr, pt, 1.0),
+                p3(pr, pb, 1.0),
+                p3(pr, pb, 0.0),
             ],
             SIDE_WALL,
         ),
         plane(
             [
-                Vec3 {
-                    x: pl,
-                    y: pb,
-                    z: 0.0,
-                },
-                Vec3 {
-                    x: pr,
-                    y: pb,
-                    z: 0.0,
-                },
-                Vec3 {
-                    x: pr,
-                    y: pb,
-                    z: 1.0,
-                },
-                Vec3 {
-                    x: pl,
-                    y: pb,
-                    z: 1.0,
-                },
+                p3(pl, pb, 0.0),
+                p3(pr, pb, 0.0),
+                p3(pr, pb, 1.0),
+                p3(pl, pb, 1.0),
             ],
             FLOOR,
         ),
@@ -276,7 +279,7 @@ pub(super) fn axes_3d(
 ) -> (Vec<DrawOp>, Vec<DrawOp>) {
     const LBL_W: i32 = 780;
     let pl = f.plot_left as f64;
-    let pr = f.plot_right() as f64;
+    let pr = f.plot_right as f64;
     let pb = f.plot_bottom as f64;
     let plot_h = f.plot_h as f64;
     let (max_val, step) = (f.max_val, f.step);
@@ -335,11 +338,7 @@ pub(super) fn axes_3d(
     let slot = f.slot;
     for (c, label) in categories.iter().enumerate() {
         let cx = (f.plot_left + c as i32 * slot + slot / 2) as f64;
-        let a = proj.project(Vec3 {
-            x: cx,
-            y: pb,
-            z: 0.0,
-        });
+        let a = proj.project(p3(cx, pb, 0.0));
         labels.push(axis_text(
             a.x.0 - LBL_W / 2,
             a.y.0 + 40,

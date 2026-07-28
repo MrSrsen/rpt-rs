@@ -9,15 +9,166 @@ use crate::diagnostics::{DiagnosticKind, DiagnosticSink, EvalDiagnostic};
 use crate::running_total::RunningTotals;
 use crate::source::Row;
 use crystal_formula::eval::vm::{self, Chunk};
-use crystal_formula::eval::{EvalContext, Value};
+use crystal_formula::eval::{Date, EvalContext, NullTreatment, Time, Value};
+use crystal_formula::token::{split_reference, strip_braces};
 use crystal_formula::{RefKind, VarScope};
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 
-/// A compiled formula (parsed **and** compiled to bytecode once), keyed by lowercase name. Run on
-/// the [`vm`] per record.
-pub type FormulaRegistry = HashMap<String, Chunk>;
+/// A compiled formula (parsed **and** compiled to bytecode once) plus how it treats a null field
+/// operand. Run on the [`vm`] per record via [`vm::run_with`], threading [`null_treatment`] so a
+/// formula authored with "default values for nulls" substitutes type defaults for null fields.
+#[derive(Debug, Clone)]
+pub struct CompiledFormula {
+    /// The compiled bytecode.
+    pub chunk: Chunk,
+    /// The formula's per-formula null-treatment setting.
+    pub null_treatment: NullTreatment,
+}
+
+/// The report-lifetime date/time specials (`CurrentDate`/`Today`, `CurrentDateTime`, `CurrentTime`)
+/// resolved from a single "as-of" instant captured once per render. Injecting one fixed instant —
+/// rather than reading the clock per cell — keeps a render deterministic and reproducible (frozen
+/// Page-IR baselines) while still letting a report's date-relative formulas evaluate.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct DateTimeSpecials {
+    date: Date,
+    time: Time,
+}
+
+impl DateTimeSpecials {
+    /// The specials for an explicit as-of calendar instant.
+    pub fn new(date: Date, time: Time) -> DateTimeSpecials {
+        DateTimeSpecials { date, time }
+    }
+
+    /// The specials for an instant given as whole seconds since the Unix epoch, interpreted as UTC
+    /// (the caller captures the clock once at render start and passes the value in — the render core
+    /// stays clock-free and WASM-safe).
+    pub fn from_unix_seconds(secs: i64) -> DateTimeSpecials {
+        DateTimeSpecials::new(
+            Date::from_days(secs.div_euclid(86_400)),
+            Time::from_seconds(secs),
+        )
+    }
+
+    /// Resolve a data-time special by its lowercase name, or `None` if `name` is not one of them.
+    /// `Today` aliases `CurrentDate` (both funcID 154), matching the engine.
+    pub(crate) fn resolve(&self, name: &str) -> Option<Value> {
+        match name {
+            "currentdate" | "today" => Some(Value::Date(self.date)),
+            "currentdatetime" => Some(Value::DateTime(self.date, self.time)),
+            "currenttime" => Some(Value::Time(self.time)),
+            _ => None,
+        }
+    }
+}
+
+/// The compiled formulas of a (sub)report, keyed by lowercase name, plus the field type-defaults a
+/// formula substitutes for a null field under [`NullTreatment::DefaultValue`]. Built once by
+/// [`compile_formulas`](crate::compile_formulas) and shared across the record pass.
+#[derive(Debug, Clone, Default)]
+pub struct FormulaRegistry {
+    formulas: HashMap<String, CompiledFormula>,
+    /// Field name (full and short, lowercased) → the type-default [`Value`] to substitute for a null
+    /// field under `DefaultValue` null-treatment.
+    field_defaults: HashMap<String, Value>,
+    /// The render's as-of date/time specials, injected once so every context built from this registry
+    /// resolves `CurrentDate`/`Today`/`CurrentDateTime`/`CurrentTime`. `None` = not supplied (the
+    /// offline/inspection paths that never set an as-of leave these specials unresolved).
+    datetime: Option<DateTimeSpecials>,
+}
+
+impl FormulaRegistry {
+    /// An empty registry.
+    pub fn new() -> FormulaRegistry {
+        FormulaRegistry::default()
+    }
+
+    /// Insert a compiled formula under its lowercase `name`.
+    pub fn insert(&mut self, name: String, formula: CompiledFormula) {
+        self.formulas.insert(name, formula);
+    }
+
+    /// The compiled formula for `name` (lowercase), if registered.
+    pub fn get(&self, name: &str) -> Option<&CompiledFormula> {
+        self.formulas.get(name)
+    }
+
+    /// Whether a formula named `name` (lowercase) is registered.
+    pub fn contains_key(&self, name: &str) -> bool {
+        self.formulas.contains_key(name)
+    }
+
+    /// The number of registered formulas.
+    pub fn len(&self) -> usize {
+        self.formulas.len()
+    }
+
+    /// Whether no formulas are registered.
+    pub fn is_empty(&self) -> bool {
+        self.formulas.is_empty()
+    }
+
+    /// Register a field's type-default value under both its full and short (post-last-`.`) names.
+    pub fn set_field_default(&mut self, name: &str, default: Value) {
+        let lname = name.to_lowercase();
+        let short = short_name(&lname);
+        if short != lname {
+            self.field_defaults
+                .entry(short)
+                .or_insert_with(|| default.clone());
+        }
+        self.field_defaults.insert(lname, default);
+    }
+
+    /// Attach the render's as-of date/time specials (chainable), so every [`DataContext`] built from
+    /// this registry resolves `CurrentDate`/`Today`/`CurrentDateTime`/`CurrentTime`.
+    pub fn with_datetime(mut self, datetime: DateTimeSpecials) -> FormulaRegistry {
+        self.datetime = Some(datetime);
+        self
+    }
+
+    /// The as-of date/time specials attached to this registry, if any. A child (sub)report registry
+    /// is built with the same instant so its date-relative formulas share the parent's as-of.
+    pub fn datetime(&self) -> Option<DateTimeSpecials> {
+        self.datetime
+    }
+
+    /// Resolve a data-time special (`CurrentDate`/…) from the attached as-of instant, or `None` when
+    /// `name` is not a data-time special or no as-of was supplied.
+    fn datetime_special(&self, name: &str) -> Option<Value> {
+        self.datetime.and_then(|d| d.resolve(name))
+    }
+
+    /// The type-default for a null field, if known (see [`EvalContext::null_default`]).
+    fn field_default(&self, name: &str) -> Option<Value> {
+        let lname = name.to_lowercase();
+        self.field_defaults
+            .get(&lname)
+            .or_else(|| self.field_defaults.get(&short_name(&lname)))
+            .cloned()
+    }
+}
+
+/// The bare field name after the last `.` (`countries.id` → `id`).
+fn short_name(name: &str) -> String {
+    name.rsplit('.').next().unwrap_or(name).to_string()
+}
+
+/// Lower-case `name` into `buf` (cleared first), matching [`str::to_lowercase`]. An ASCII name — the
+/// common case on the record-eval hot path — lower-cases in place with no intermediate allocation; a
+/// non-ASCII name (rare) falls back to [`str::to_lowercase`] for full Unicode correctness.
+fn lower_into(buf: &mut String, name: &str) {
+    buf.clear();
+    if name.is_ascii() {
+        buf.push_str(name);
+        buf.make_ascii_lowercase();
+    } else {
+        buf.push_str(&name.to_lowercase());
+    }
+}
 
 /// The report-lifetime store for Crystal `Global`/`Shared` variables.
 ///
@@ -79,14 +230,22 @@ impl SharedState {
 /// caller (CLI/API); a formula's `{?Name}` reference resolves against this.
 pub type Parameters = HashMap<String, Value>;
 
+/// Resolves a summary-function reference (`Sum({field}[, {group}])` inside a formula body) to the
+/// report's computed group/grand-total summary value. The record pipeline computes the summary tree
+/// but the *in-scope* summaries at a print position live in the layout's resolve state, so the layout
+/// injects an implementor into the [`DataContext`]; a formula's summary function then resolves to the
+/// same value a placed summary object would. `op` is the lowercased operation as written, `field` the
+/// summarized field (with a formula's `@` restored), `group` the group scope for the 2-argument form.
+pub trait SummaryScope: std::fmt::Debug {
+    /// The summary value for `op` over `field` in scope `group`, or `Value::Null` when no matching
+    /// summary is in scope (the facility exists, so this is never `None`).
+    fn resolve_summary(&self, op: &str, field: &str, group: Option<&str>) -> Value;
+}
+
 /// Normalize a parameter name for matching: drop surrounding `{}`, a leading `?`, and lowercase — so
 /// `{?DocKey@}`, `?DocKey@`, and `dockey@` all key the same value.
 pub fn normalize_param_name(name: &str) -> String {
-    name.trim()
-        .trim_start_matches('{')
-        .trim_end_matches('}')
-        .trim_start_matches('?')
-        .to_lowercase()
+    split_reference(strip_braces(name)).1.to_lowercase()
 }
 
 /// The per-record evaluation context.
@@ -121,6 +280,14 @@ pub struct DataContext<'a> {
     /// Optional diagnostics sink. When present, a `{@formula}` that errors reports the failure here
     /// before the fail-open fallback to `Null`; when absent, the failure is silently swallowed.
     sink: Option<&'a dyn DiagnosticSink>,
+    /// Optional in-scope summary resolver. When present, a summary function in a formula body
+    /// (`Count({f}, {g})`) resolves to the report's computed summary; when absent, the record-set
+    /// summary form is reported as unsupported (a bare evaluation with no summaries).
+    summaries: Option<&'a dyn SummaryScope>,
+    /// Reusable lower-casing buffer for name-keyed lookups. A formula/parameter reference lower-cases
+    /// its name into this buffer and probes the caches with a borrowed key, so a cache **hit** on the
+    /// record-eval hot path allocates nothing; only a miss clones an owned key for the caches.
+    scratch: RefCell<String>,
 }
 
 impl<'a> DataContext<'a> {
@@ -138,6 +305,8 @@ impl<'a> DataContext<'a> {
             scheduled_row: None,
             cache: RefCell::new(HashMap::new()),
             sink: None,
+            summaries: None,
+            scratch: RefCell::new(String::new()),
         }
     }
 
@@ -151,6 +320,13 @@ impl<'a> DataContext<'a> {
     /// Supply report parameter values so `{?Name}` references resolve (chainable).
     pub fn with_params(mut self, params: &'a Parameters) -> Self {
         self.params = Some(params);
+        self
+    }
+
+    /// Attach the in-scope summary resolver so a summary function in a formula body
+    /// (`Count({f}, {g})`) resolves against the report's computed summaries (chainable).
+    pub fn with_summaries(mut self, summaries: &'a dyn SummaryScope) -> Self {
+        self.summaries = Some(summaries);
         self
     }
 
@@ -198,40 +374,52 @@ impl EvalContext for DataContext<'_> {
         match kind {
             RefKind::Field => self.row.get(name).cloned(),
             RefKind::Formula => {
-                let key = name.to_lowercase();
+                // Lower-case into the reusable scratch buffer and probe every cache with the borrowed
+                // key, so a hit (the common case — a formula referenced N times per record) allocates
+                // nothing. Only the miss path below clones an owned key for the caches.
+                let mut scratch = self.scratch.borrow_mut();
+                lower_into(&mut scratch, name);
+                let key: &str = scratch.as_str();
                 // Pre-scheduled value: a `BeforeReading`/`WhileReading` formula was
                 // already evaluated (side-effects fired) in the scheduled pre-pass — return its
                 // recorded value without re-evaluating, so its side-effects fire exactly once.
-                if let Some(v) = self.scheduled_before.and_then(|m| m.get(&key)) {
+                if let Some(v) = self.scheduled_before.and_then(|m| m.get(key)) {
                     return Some(v.clone());
                 }
-                if let Some(v) = self.scheduled_row.and_then(|m| m.get(&key)) {
+                if let Some(v) = self.scheduled_row.and_then(|m| m.get(key)) {
                     return Some(v.clone());
                 }
                 // Per-record cache: return the already-computed value, so a formula
                 // referenced N times in a record evaluates once — and its running-variable writes
                 // apply once per record, not once per reference.
-                if let Some(v) = self.cache.borrow().get(&key) {
+                if let Some(v) = self.cache.borrow().get(key) {
                     return Some(v.clone());
                 }
                 // Cycle guard: a formula referencing itself (directly or transitively) resolves to
                 // Null rather than recursing forever.
-                if self.in_progress.borrow().contains(&key) {
+                if self.in_progress.borrow().contains(key) {
                     return Some(Value::Null);
                 }
-                let chunk = self.formulas.get(&key)?;
+                let compiled = self.formulas.get(key)?;
+                // Cache miss: take the one owned key the in-progress set and cache need, then release
+                // the scratch borrow before evaluating (the VM re-enters `resolve` and reuses it).
+                let key = key.to_string();
+                drop(scratch);
                 self.in_progress.borrow_mut().insert(key.clone());
                 // Fail-open: a formula that errors resolves to Null. When a sink is attached, report
-                // the underlying error first so a strict caller can surface the broken formula.
-                let result = match vm::run(chunk, self) {
+                // the underlying error first so a strict caller can surface the broken formula. The
+                // formula's null-treatment decides whether a null field it reads propagates or is
+                // replaced by its type default.
+                let result = match vm::run_with(&compiled.chunk, self, compiled.null_treatment) {
                     Ok(value) => value,
                     Err(err) => {
                         if let Some(sink) = self.sink {
-                            sink.report(EvalDiagnostic {
-                                kind: DiagnosticKind::Formula,
-                                detail: err.to_string(),
-                                source: Some(name.to_string()),
-                            });
+                            // No record index here: the evaluation context holds the row, not its
+                            // position in the set.
+                            sink.report(
+                                EvalDiagnostic::new(DiagnosticKind::Formula, err.to_string())
+                                    .from_source(name),
+                            );
                         }
                         Value::Null
                     }
@@ -240,9 +428,15 @@ impl EvalContext for DataContext<'_> {
                 self.cache.borrow_mut().insert(key, result.clone());
                 Some(result)
             }
-            RefKind::Parameter => self
-                .params
-                .and_then(|p| p.get(&normalize_param_name(name)).cloned()),
+            RefKind::Parameter => {
+                let params = self.params?;
+                // Same normalization as `normalize_param_name`, but lower-cased into the scratch
+                // buffer so the lookup probes with a borrowed key instead of a fresh String.
+                let raw = split_reference(strip_braces(name)).1;
+                let mut scratch = self.scratch.borrow_mut();
+                lower_into(&mut scratch, raw);
+                params.get(scratch.as_str()).cloned()
+            }
             // A SQL expression (`{%name}`) is evaluated by the database server, so its value arrives
             // as a column in the result set (live fetch: aliased by rpt-query; saved data: stored
             // under the field name). Resolve it like any fetched field.
@@ -254,8 +448,23 @@ impl EvalContext for DataContext<'_> {
         }
     }
 
+    fn null_default(&self, kind: RefKind, name: &str) -> Option<Value> {
+        // Only a database field (or a server-evaluated SQL expression, fetched as a field) is
+        // null-converted; a null formula/parameter/running-total is left as-is.
+        match kind {
+            RefKind::Field | RefKind::SqlExpr => self.formulas.field_default(name),
+            _ => None,
+        }
+    }
+
     fn special(&self, name: &str) -> Option<Value> {
-        self.specials.get(name).cloned()
+        // Per-position specials (record/page number) take precedence; the report-lifetime data-time
+        // specials (`CurrentDate`/…) come from the registry, so every context resolves them without a
+        // per-site injection.
+        self.specials
+            .get(name)
+            .cloned()
+            .or_else(|| self.formulas.datetime_special(name))
     }
 
     fn var_get(&self, scope: VarScope, name: &str) -> Option<Value> {
@@ -270,5 +479,11 @@ impl EvalContext for DataContext<'_> {
             }
             None => false,
         }
+    }
+
+    fn resolve_summary(&self, op: &str, field: &str, group: Option<&str>) -> Option<Value> {
+        // With an attached scope, a missing summary resolves to Null (the scope answers `Some`); with
+        // no scope, `None` lets the evaluator report the record-set form as unsupported.
+        self.summaries.map(|s| s.resolve_summary(op, field, group))
     }
 }

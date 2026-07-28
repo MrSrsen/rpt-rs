@@ -1,0 +1,3075 @@
+{
+  "model": {
+    "data_definition": {
+      "condition_formula_bodies": [],
+      "custom_functions": [],
+      "field_definitions": [
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 4,
+          "long_name": null,
+          "name": "partner_id",
+          "short_name": "partner_id",
+          "value_type": "Int32s"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 8,
+          "long_name": null,
+          "name": "total",
+          "short_name": "total",
+          "value_type": "Number"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 50,
+          "long_name": null,
+          "name": "state",
+          "short_name": "state",
+          "value_type": "String"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Summary": {
+              "group_index": null,
+              "is_percentage_summary": false,
+              "operation": "Sum",
+              "operation_parameter": 0,
+              "secondary_summarized_field": "",
+              "summarized_field": "orders.total"
+            }
+          },
+          "length": 8,
+          "long_name": null,
+          "name": "",
+          "short_name": null,
+          "value_type": "Number"
+        }
+      ],
+      "field_manager_census": {
+        "database_fields": 3,
+        "formula_bodies": 5
+      },
+      "formula_variables": [],
+      "group_selection": "",
+      "groups": [],
+      "record_selection": "",
+      "record_sorts": [],
+      "running_total_condition_formulas": [],
+      "saved_data_filter": "",
+      "summary_binding_fields": [
+        "orders.total"
+      ]
+    },
+    "database": {
+      "links": [
+        {
+          "join_kind": "Inner",
+          "operator": "Equal",
+          "source_fields": [
+            "order_id"
+          ],
+          "source_table_alias": "order_service",
+          "target_fields": [
+            "id"
+          ],
+          "target_table_alias": "orders"
+        },
+        {
+          "join_kind": "Inner",
+          "operator": "Equal",
+          "source_fields": [
+            "service_id"
+          ],
+          "source_table_alias": "order_service",
+          "target_fields": [
+            "id"
+          ],
+          "target_table_alias": "service"
+        },
+        {
+          "join_kind": "Inner",
+          "operator": "Equal",
+          "source_fields": [
+            "partner_id"
+          ],
+          "source_table_alias": "orders",
+          "target_fields": [
+            "id"
+          ],
+          "target_table_alias": "partner"
+        },
+        {
+          "join_kind": "Inner",
+          "operator": "Equal",
+          "source_fields": [
+            "parking_lot_id"
+          ],
+          "source_table_alias": "orders",
+          "target_fields": [
+            "id"
+          ],
+          "target_table_alias": "parking_lot"
+        }
+      ],
+      "tables": [
+        {
+          "alias": "countries_all_iso",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_odbc.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "ODBC (RDO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "parking"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": "rpt"
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "countries_all_iso.id",
+              "name": "id",
+              "short_name": "id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "countries_all_iso.name",
+              "name": "name",
+              "short_name": "name",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "countries_all_iso.alpha_2_code",
+              "name": "alpha_2_code",
+              "short_name": "alpha_2_code",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "countries_all_iso.alpha_3_code",
+              "name": "alpha_3_code",
+              "short_name": "alpha_3_code",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "countries_all_iso.numeric_code",
+              "name": "numeric_code",
+              "short_name": "numeric_code",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "countries_all_iso.internet_cctld",
+              "name": "internet_cctld",
+              "short_name": "internet_cctld",
+              "value_type": "PersistentMemo"
+            }
+          ],
+          "name": "countries_all_iso",
+          "parameters": [],
+          "qualified_name": "rptfixtures.public.countries_all_iso"
+        },
+        {
+          "alias": "funding_primary",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_odbc.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "ODBC (RDO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "parking"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": "rpt"
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "funding_primary.funder_id",
+              "name": "funder_id",
+              "short_name": "funder_id",
+              "value_type": "Int32s"
+            }
+          ],
+          "name": "funding_primary",
+          "parameters": [],
+          "qualified_name": "rptfixtures.public.funding_primary"
+        },
+        {
+          "alias": "order_service",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_odbc.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "ODBC (RDO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "parking"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": "rpt"
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "order_service.id",
+              "name": "id",
+              "short_name": "id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "order_service.order_id",
+              "name": "order_id",
+              "short_name": "order_id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "order_service.service_id",
+              "name": "service_id",
+              "short_name": "service_id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "order_service.quantity",
+              "name": "quantity",
+              "short_name": "quantity",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "order_service.line_total",
+              "name": "line_total",
+              "short_name": "line_total",
+              "value_type": "Number"
+            }
+          ],
+          "name": "order_service",
+          "parameters": [],
+          "qualified_name": "rptfixtures.public.order_service"
+        },
+        {
+          "alias": "orders",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_odbc.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "ODBC (RDO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "parking"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": "rpt"
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "orders.id",
+              "name": "id",
+              "short_name": "id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 66,
+              "long_name": "orders.order_number",
+              "name": "order_number",
+              "short_name": "order_number",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "orders.partner_id",
+              "name": "partner_id",
+              "short_name": "partner_id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "orders.parking_lot_id",
+              "name": "parking_lot_id",
+              "short_name": "parking_lot_id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 122,
+              "long_name": "orders.customer_first",
+              "name": "customer_first",
+              "short_name": "customer_first",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 162,
+              "long_name": "orders.customer_last",
+              "name": "customer_last",
+              "short_name": "customer_last",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 322,
+              "long_name": "orders.customer_email",
+              "name": "customer_email",
+              "short_name": "customer_email",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "orders.created_at",
+              "name": "created_at",
+              "short_name": "created_at",
+              "value_type": "DateTime"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "orders.arrival_date",
+              "name": "arrival_date",
+              "short_name": "arrival_date",
+              "value_type": "Date"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "orders.departure_date",
+              "name": "departure_date",
+              "short_name": "departure_date",
+              "value_type": "Date"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "orders.arrival_time",
+              "name": "arrival_time",
+              "short_name": "arrival_time",
+              "value_type": "Time"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "orders.departure_time",
+              "name": "departure_time",
+              "short_name": "departure_time",
+              "value_type": "Time"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "orders.passengers",
+              "name": "passengers",
+              "short_name": "passengers",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "orders.nights",
+              "name": "nights",
+              "short_name": "nights",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "orders.price_per_night",
+              "name": "price_per_night",
+              "short_name": "price_per_night",
+              "value_type": "Number"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "orders.subtotal",
+              "name": "subtotal",
+              "short_name": "subtotal",
+              "value_type": "Number"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "orders.discount",
+              "name": "discount",
+              "short_name": "discount",
+              "value_type": "Number"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "orders.tax_rate",
+              "name": "tax_rate",
+              "short_name": "tax_rate",
+              "value_type": "Number"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "orders.tax_amount",
+              "name": "tax_amount",
+              "short_name": "tax_amount",
+              "value_type": "Number"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "orders.total",
+              "name": "total",
+              "short_name": "total",
+              "value_type": "Number"
+            },
+            {
+              "description": null,
+              "length": 12,
+              "long_name": "orders.paid",
+              "name": "paid",
+              "short_name": "paid",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 12,
+              "long_name": "orders.oversized_vehicle",
+              "name": "oversized_vehicle",
+              "short_name": "oversized_vehicle",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 50,
+              "long_name": "orders.state",
+              "name": "state",
+              "short_name": "state",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 34,
+              "long_name": "orders.source",
+              "name": "source",
+              "short_name": "source",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 2002,
+              "long_name": "orders.note",
+              "name": "note",
+              "short_name": "note",
+              "value_type": "String"
+            }
+          ],
+          "name": "orders",
+          "parameters": [],
+          "qualified_name": "rptfixtures.public.orders"
+        },
+        {
+          "alias": "parking_lot",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_odbc.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "ODBC (RDO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "parking"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": "rpt"
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "parking_lot.id",
+              "name": "id",
+              "short_name": "id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 34,
+              "long_name": "parking_lot.code",
+              "name": "code",
+              "short_name": "code",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 202,
+              "long_name": "parking_lot.name",
+              "name": "name",
+              "short_name": "name",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "parking_lot.capacity",
+              "name": "capacity",
+              "short_name": "capacity",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 12,
+              "long_name": "parking_lot.covered",
+              "name": "covered",
+              "short_name": "covered",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 482,
+              "long_name": "parking_lot.address",
+              "name": "address",
+              "short_name": "address",
+              "value_type": "String"
+            }
+          ],
+          "name": "parking_lot",
+          "parameters": [],
+          "qualified_name": "rptfixtures.public.parking_lot"
+        },
+        {
+          "alias": "partner",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_odbc.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "ODBC (RDO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "parking"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": "rpt"
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "partner.id",
+              "name": "id",
+              "short_name": "id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 34,
+              "long_name": "partner.code",
+              "name": "code",
+              "short_name": "code",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 242,
+              "long_name": "partner.name",
+              "name": "name",
+              "short_name": "name",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 162,
+              "long_name": "partner.country",
+              "name": "country",
+              "short_name": "country",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 12,
+              "long_name": "partner.api_enabled",
+              "name": "api_enabled",
+              "short_name": "api_enabled",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 1602,
+              "long_name": "partner.notes",
+              "name": "notes",
+              "short_name": "notes",
+              "value_type": "String"
+            }
+          ],
+          "name": "partner",
+          "parameters": [],
+          "qualified_name": "rptfixtures.public.partner"
+        },
+        {
+          "alias": "provinces_all",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_odbc.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "ODBC (RDO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "parking"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": "rpt"
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "provinces_all.id",
+              "name": "id",
+              "short_name": "id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "provinces_all.name_short",
+              "name": "name_short",
+              "short_name": "name_short",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "provinces_all.name_long",
+              "name": "name_long",
+              "short_name": "name_long",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "provinces_all.country_id",
+              "name": "country_id",
+              "short_name": "country_id",
+              "value_type": "Int32s"
+            }
+          ],
+          "name": "provinces_all",
+          "parameters": [],
+          "qualified_name": "rptfixtures.public.provinces_all"
+        },
+        {
+          "alias": "service",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_odbc.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "ODBC (RDO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "parking"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": "rpt"
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "service.id",
+              "name": "id",
+              "short_name": "id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 42,
+              "long_name": "service.code",
+              "name": "code",
+              "short_name": "code",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 202,
+              "long_name": "service.name",
+              "name": "name",
+              "short_name": "name",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "service.unit_price",
+              "name": "unit_price",
+              "short_name": "unit_price",
+              "value_type": "Number"
+            },
+            {
+              "description": null,
+              "length": 12,
+              "long_name": "service.taxable",
+              "name": "taxable",
+              "short_name": "taxable",
+              "value_type": "String"
+            }
+          ],
+          "name": "service",
+          "parameters": [],
+          "qualified_name": "rptfixtures.public.service"
+        },
+        {
+          "alias": "vw_sports_tabler_output",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_odbc.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "ODBC (RDO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "parking"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": "rpt"
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "vw_sports_tabler_output.id",
+              "name": "id",
+              "short_name": "id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "vw_sports_tabler_output.team",
+              "name": "team",
+              "short_name": "team",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "vw_sports_tabler_output.sport",
+              "name": "sport",
+              "short_name": "sport",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "vw_sports_tabler_output.league",
+              "name": "league",
+              "short_name": "league",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "vw_sports_tabler_output.section",
+              "name": "section",
+              "short_name": "section",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "vw_sports_tabler_output.division",
+              "name": "division",
+              "short_name": "division",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "vw_sports_tabler_output.hometown",
+              "name": "hometown",
+              "short_name": "hometown",
+              "value_type": "PersistentMemo"
+            }
+          ],
+          "name": "vw_sports_tabler_output",
+          "parameters": [],
+          "qualified_name": "rptfixtures.public.vw_sports_tabler_output"
+        }
+      ]
+    },
+    "designer_state": {
+      "connections": [],
+      "guidelines": []
+    },
+    "embeds": [],
+    "has_saved_data": true,
+    "print_options": {
+      "content_height": 15120,
+      "content_width": 11520,
+      "driver_name": null,
+      "margins": {
+        "bottom": 360,
+        "left": 360,
+        "right": 360,
+        "top": 360
+      },
+      "multi_column": null,
+      "paper_orientation": "Portrait",
+      "paper_size": "DefaultPaperSize",
+      "paper_source": "FormSource",
+      "port_name": null,
+      "printer_duplex": "Default",
+      "printer_name": "",
+      "saved_printer_name": ""
+    },
+    "reimport": {
+      "imported_at": {
+        "julian_day": 2451471,
+        "time_fraction": 72148
+      },
+      "reimport_when_opening": 1,
+      "source_path": "",
+      "source_saved_at": {
+        "julian_day": 0,
+        "time_fraction": 0
+      }
+    },
+    "report_definition": {
+      "areas": [
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": true,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "ReportHeader",
+          "name": "Area1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 3477,
+              "kind": "ReportHeader",
+              "name": "Section1",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 1287,
+                    "left": 135,
+                    "top": 135,
+                    "width": 3988
+                  },
+                  "format": {
+                    "can_grow": true,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": false,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "CrossTab": {
+                      "column_axis_options": 0,
+                      "columns": [
+                        {
+                          "field_ref": "",
+                          "period": null,
+                          "suppress_label": false,
+                          "suppress_subtotal": false
+                        },
+                        {
+                          "field_ref": "orders.state",
+                          "period": null,
+                          "suppress_label": false,
+                          "suppress_subtotal": false
+                        }
+                      ],
+                      "dimensions": [
+                        {
+                          "field_ref": "",
+                          "period": null,
+                          "suppress_label": false,
+                          "suppress_subtotal": false
+                        },
+                        {
+                          "field_ref": "orders.state",
+                          "period": null,
+                          "suppress_label": false,
+                          "suppress_subtotal": false
+                        },
+                        {
+                          "field_ref": "",
+                          "period": null,
+                          "suppress_label": false,
+                          "suppress_subtotal": false
+                        },
+                        {
+                          "field_ref": "orders.partner_id",
+                          "period": null,
+                          "suppress_label": false,
+                          "suppress_subtotal": false
+                        }
+                      ],
+                      "field_refs": [
+                        "orders.state",
+                        "orders.partner_id"
+                      ],
+                      "grid_format": {
+                        "cells": [
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": false,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": false,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": false,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": false,
+                            "flags": 0
+                          }
+                        ],
+                        "raw": 20,
+                        "style": {
+                          "column_grand_total_color": {
+                            "a": 255,
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                          },
+                          "keep_columns_together": true,
+                          "repeat_row_labels": false,
+                          "row_grand_total_color": {
+                            "a": 255,
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                          },
+                          "show_cell_margins": true,
+                          "show_grid": true,
+                          "suppress_column_grand_totals": false,
+                          "suppress_empty_columns": false,
+                          "suppress_empty_rows": false,
+                          "suppress_row_grand_totals": true
+                        }
+                      },
+                      "measures": [
+                        {
+                          "field": "orders.total",
+                          "operation": "Sum"
+                        }
+                      ],
+                      "options": {
+                        "column_grand_total_color": null,
+                        "keep_columns_together": true,
+                        "repeat_row_labels": false,
+                        "row_grand_total_color": null,
+                        "show_cell_margins": true,
+                        "show_grid": true,
+                        "suppress_column_grand_totals": false,
+                        "suppress_empty_columns": false,
+                        "suppress_empty_rows": false,
+                        "suppress_row_grand_totals": true
+                      },
+                      "row_axis_options": 0,
+                      "rows": [
+                        {
+                          "field_ref": "",
+                          "period": null,
+                          "suppress_label": false,
+                          "suppress_subtotal": false
+                        },
+                        {
+                          "field_ref": "orders.partner_id",
+                          "period": null,
+                          "suppress_label": false,
+                          "suppress_subtotal": false
+                        }
+                      ]
+                    }
+                  },
+                  "name": "CrossTab1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 6000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 235,
+                    "left": 1913,
+                    "top": 235,
+                    "width": 955
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "Total",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": true,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 700
+                              },
+                              "text": "Total"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "Total"
+                    }
+                  },
+                  "name": "",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 6000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 235,
+                    "left": 3068,
+                    "top": 235,
+                    "width": 955
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "Column #1 Name",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "GroupName",
+                      "summary_code": null,
+                      "value_type": "String"
+                    }
+                  },
+                  "name": "",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 6000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 0,
+                    "left": 3068,
+                    "top": 670,
+                    "width": 955
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "Total",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": true,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 700
+                              },
+                              "text": "Total"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "Total"
+                    }
+                  },
+                  "name": "",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 6000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 226,
+                    "left": 235,
+                    "top": 670,
+                    "width": 1478
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "Total",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": true,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 700
+                              },
+                              "text": "Total"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "Total"
+                    }
+                  },
+                  "name": "",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 6000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 226,
+                    "left": 235,
+                    "top": 1096,
+                    "width": 1478
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "Row #1 Name",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 0,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToUnit",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "GroupName",
+                      "summary_code": null,
+                      "value_type": "String"
+                    }
+                  },
+                  "name": "",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 6000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 226,
+                    "left": 1913,
+                    "top": 1096,
+                    "width": 0
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "Total",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": true,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 700
+                              },
+                              "text": "Total"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "Total"
+                    }
+                  },
+                  "name": "",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 6000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 226,
+                    "left": 1913,
+                    "top": 670,
+                    "width": 955
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "Sum ({orders.total})",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "YearMonthDay",
+                          "day": "LeadingZeroNumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "LeadingZeroNumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "ShortYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "Summary",
+                      "summary_code": 0,
+                      "value_type": "Number"
+                    }
+                  },
+                  "name": "",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 6000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 226,
+                    "left": 1913,
+                    "top": 1096,
+                    "width": 955
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "Sum ({orders.total})",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "YearMonthDay",
+                          "day": "LeadingZeroNumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "LeadingZeroNumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "ShortYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "Summary",
+                      "summary_code": 0,
+                      "value_type": "Number"
+                    }
+                  },
+                  "name": "",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 6000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 226,
+                    "left": 3068,
+                    "top": 670,
+                    "width": 955
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "Sum ({orders.total})",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "YearMonthDay",
+                          "day": "LeadingZeroNumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "LeadingZeroNumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "ShortYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "Summary",
+                      "summary_code": 0,
+                      "value_type": "Number"
+                    }
+                  },
+                  "name": "",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 6000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 226,
+                    "left": 3068,
+                    "top": 1096,
+                    "width": 955
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "Sum ({orders.total})",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "YearMonthDay",
+                          "day": "LeadingZeroNumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "LeadingZeroNumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "ShortYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "Summary",
+                      "summary_code": 0,
+                      "value_type": "Number"
+                    }
+                  },
+                  "name": "",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 6000
+                }
+              ],
+              "section_code": 6000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": true,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "PageHeader",
+          "name": "Area2",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 600,
+              "kind": "PageHeader",
+              "name": "Section2",
+              "objects": [],
+              "section_code": 12000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "Detail",
+          "name": "Area3",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 3625,
+              "kind": "Detail",
+              "name": "Section3",
+              "objects": [],
+              "section_code": 24000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": true,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "ReportFooter",
+          "name": "Area4",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 600,
+              "kind": "ReportFooter",
+              "name": "Section4",
+              "objects": [],
+              "section_code": 48000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": true,
+              "new_page_after": true,
+              "new_page_before": false,
+              "print_at_bottom_of_page": true,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "PageFooter",
+          "name": "Area5",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 600,
+              "kind": "PageFooter",
+              "name": "Section5",
+              "objects": [],
+              "section_code": 42000,
+              "width": 0
+            }
+          ]
+        }
+      ]
+    },
+    "report_options": {
+      "convert_null_field_to_default": false,
+      "convert_other_nulls_to_default": false,
+      "enable_verify_on_every_print": false,
+      "initial_data_context": null,
+      "initial_report_part_name": null,
+      "save_data_with_report": true,
+      "save_preview_picture": false,
+      "save_summaries_with_report": true,
+      "use_dummy_data": false
+    },
+    "save_metadata": [
+      {
+        "key": "Saved Date",
+        "value": "2005.09.20 09:59:29 Pacific Standard Time"
+      },
+      {
+        "key": "Build Version",
+        "value": "11.5.0.240"
+      },
+      {
+        "key": "Print Engine",
+        "value": "CRW"
+      },
+      {
+        "key": "OS",
+        "value": "Windows Server 2003 family"
+      },
+      {
+        "key": "Architecture",
+        "value": "x86"
+      },
+      {
+        "key": "Saved Date",
+        "value": "2007.07.25 11:07:35 Pacific Standard Time"
+      },
+      {
+        "key": "Build Version",
+        "value": "12.0.0.321"
+      },
+      {
+        "key": "Print Engine",
+        "value": "CRVBD"
+      },
+      {
+        "key": "OS",
+        "value": "Windows XP"
+      },
+      {
+        "key": "Architecture",
+        "value": "x86"
+      },
+      {
+        "key": "Saved Date",
+        "value": "2026.07.11 20:58:03 +0100"
+      },
+      {
+        "key": "Build Version",
+        "value": "13.0.40.5789"
+      },
+      {
+        "key": "Print Engine",
+        "value": "CRVBD"
+      },
+      {
+        "key": "OS",
+        "value": "Windows Vista"
+      },
+      {
+        "key": "Architecture",
+        "value": "x86"
+      }
+    ],
+    "saved_data": {
+      "columns": [
+        {
+          "name": "orders.partner_id",
+          "value_type": "Int32s"
+        },
+        {
+          "name": "orders.total",
+          "value_type": "Number"
+        },
+        {
+          "name": "orders.state",
+          "value_type": "String"
+        }
+      ],
+      "record_count": 30,
+      "rows": [
+        [
+          "1",
+          "7259.999999999999",
+          "completed"
+        ],
+        [
+          null,
+          "10164",
+          "completed"
+        ],
+        [
+          "2",
+          "12100",
+          "completed"
+        ],
+        [
+          null,
+          "3629.9999999999995",
+          "cancelled"
+        ],
+        [
+          "3",
+          "7744",
+          "completed"
+        ],
+        [
+          "1",
+          "18150",
+          "completed"
+        ],
+        [
+          null,
+          "1936",
+          "completed"
+        ],
+        [
+          "2",
+          "8712",
+          "paid"
+        ],
+        [
+          null,
+          "3629.9999999999995",
+          "completed"
+        ],
+        [
+          "3",
+          "6776.000000000001",
+          "completed"
+        ],
+        [
+          "1",
+          "21780",
+          "completed"
+        ],
+        [
+          null,
+          "2904",
+          "cart"
+        ],
+        [
+          "2",
+          "12100",
+          "completed"
+        ],
+        [
+          null,
+          "7259.999999999999",
+          "completed"
+        ],
+        [
+          "3",
+          "7744",
+          "completed"
+        ],
+        [
+          "1",
+          "18150",
+          "completed"
+        ],
+        [
+          null,
+          "1936",
+          "completed"
+        ],
+        [
+          "2",
+          "8712",
+          "completed"
+        ],
+        [
+          null,
+          "3629.9999999999995",
+          "cancelled"
+        ],
+        [
+          "3",
+          "6776.000000000001",
+          "completed"
+        ],
+        [
+          "1",
+          "21780",
+          "completed"
+        ],
+        [
+          null,
+          "2904",
+          "completed"
+        ],
+        [
+          "2",
+          "12100",
+          "completed"
+        ],
+        [
+          null,
+          "7259.999999999999",
+          "cart"
+        ],
+        [
+          "3",
+          "7744",
+          "completed"
+        ],
+        [
+          "1",
+          "18150",
+          "completed"
+        ],
+        [
+          null,
+          "1936",
+          "completed"
+        ],
+        [
+          "2",
+          "8712",
+          "completed"
+        ],
+        [
+          null,
+          "3629.9999999999995",
+          "completed"
+        ],
+        [
+          "3",
+          "6776.000000000001",
+          "completed"
+        ]
+      ]
+    },
+    "subreports": [],
+    "summary_info": {
+      "author": "",
+      "comments": "",
+      "keywords": "",
+      "last_saved_by": "",
+      "revision_number": "11",
+      "save_with_preview": false,
+      "subject": "",
+      "title": ""
+    },
+    "version": 1
+  }
+}

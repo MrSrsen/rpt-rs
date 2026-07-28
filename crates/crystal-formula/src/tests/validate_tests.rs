@@ -263,6 +263,34 @@ fn validate_str_locates_unknown_reference_token() {
 }
 
 #[test]
+fn repeated_name_is_located_per_occurrence() {
+    // A name that appears more than once must be flagged at *each* of its own spans — the property
+    // the previous token-order-greedy locator got wrong. Both an unknown function and an unknown
+    // reference are exercised.
+    let src = "Frobnicate(1) + Frobnicate(2)";
+    let ds = validate_str(src, Syntax::Crystal, &ValidationContext::default());
+    let calls: Vec<_> = ds
+        .iter()
+        .filter(|d| d.message.contains("unknown function"))
+        .collect();
+    assert_eq!(calls.len(), 2, "{}", messages(&ds));
+    // Each diagnostic underlines its own `Frobnicate`, at distinct, correct offsets.
+    assert_eq!((calls[0].start, calls[0].end), (0, 10));
+    assert_eq!((calls[1].start, calls[1].end), (16, 26));
+    assert_eq!(&src[calls[0].start..calls[0].end], "Frobnicate");
+    assert_eq!(&src[calls[1].start..calls[1].end], "Frobnicate");
+
+    let ctx = ValidationContext::default().with_parameters(["known"]);
+    let rsrc = "{?Missing} + {?Missing}";
+    let rds = validate_str(rsrc, Syntax::Crystal, &ctx);
+    assert_eq!(rds.len(), 2, "{}", messages(&rds));
+    assert_eq!(&rsrc[rds[0].start..rds[0].end], "{?Missing}");
+    assert_eq!(&rsrc[rds[1].start..rds[1].end], "{?Missing}");
+    // The two reference spans are distinct (the second is further along the source).
+    assert!(rds[0].start < rds[1].start);
+}
+
+#[test]
 fn validate_str_includes_parse_diagnostics() {
     // A syntactic error surfaces from the parser, still with the unknown-function warning.
     let ds = validate_str(

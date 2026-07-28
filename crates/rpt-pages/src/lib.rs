@@ -2,14 +2,13 @@
 //!
 //! A [`Page`] is a list of absolutely-positioned drawing primitives ([`DrawOp`]) in twips, the
 //! output of the layout engine and the input to every backend (SVG/PDF/raster/HTML). It is the
-//! project's frozen contract: backends, the WASM split, and the render parity harness all diff on
-//! it. It mirrors the native engine's positioned page representation, the same shape its own
-//! export filters consume.
+//! contract backends, the WASM split, and the render parity harness all diff on. It mirrors the
+//! native engine's positioned page representation, the same shape its own export filters consume.
 //!
 //! Two design commitments baked in from the start:
 //! - **Object identity travels with every op** ([`ObjectRef`]) — a draw-op knows which report
 //!   object produced it, so hit-testing / drill-down and attribute-level parity diffing are a
-//!   rectangle+identity lookup, not reverse-engineering.
+//!   rectangle+identity lookup rather than an inference from geometry.
 //! - **A page is a checkpoint, not an artifact** ([`PageCheckpoint`]) — a page is defined by where
 //!   it begins plus a snapshot of print-time state, so any page is independently re-formattable
 //!   (random access, drill-down, re-export).
@@ -18,15 +17,28 @@
 //! decoded model. Everything is `serde`-serializable; [`Page::to_normalized_json`] is the exact
 //! surface the render parity tooling consumes.
 //!
-//! > **Status: unfrozen scaffold.** The shape is deliberately provisional and may still gain or
-//! > rename fields as the native page-export format is understood further.
+//! ## Stability policy — additive-stable
+//!
+//! This is a `serde` wire format frozen against golden fixtures, so changes are governed:
+//! - **Additive changes are allowed**: a new field carrying `#[serde(default)]` (so older
+//!   serialized pages still deserialize) and a new [`DrawOp`] variant are non-breaking.
+//! - **Renames and removals are breaking** and must be deliberate — they invalidate every stored
+//!   golden and every consumer, so they are gated (bump the format, re-bless the fixtures) rather
+//!   than made in passing.
+//!
+//! [`PrintState`] and [`PageCheckpoint`] are **excluded** from this guarantee: their field shapes
+//! are provisional stubs (see [`PrintState::variables`]) and may change incompatibly.
 
 use rpt_model::{Color, Rect, Twips};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
+use std::fmt;
 
 mod backend;
 pub use backend::PageBackend;
+
+mod text;
+pub use text::{greedy_wrap, ApproxLayout, TextLayout, TWIPS_PER_PT};
 
 /// A point in twips (page-absolute).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash, Serialize, Deserialize)]
@@ -360,14 +372,32 @@ pub struct PolygonOp {
     pub source: Option<ObjectRef>,
 }
 
+/// How a raster is fitted into an [`ImageOp`]'s `bounds`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+pub enum ImageFit {
+    /// Scale the raster to fill the box on both axes, distorting aspect ratio if they differ.
+    /// The right default for a raster already sized to its box (chart islands, placeholders).
+    #[default]
+    Fill,
+    /// Scale the raster uniformly to the largest size that fits within the box, preserving its
+    /// source pixel aspect ratio, and center it — the surrounding space is left empty (letterbox).
+    /// Crystal renders picture and blob-field images this way.
+    Contain,
+}
+
 /// A placed image (picture object, chart raster, OLE object). `image_id` references bytes held
 /// out-of-band (the IR stays cheap to diff and serialize); the backend resolves it.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ImageOp {
-    /// The placement box in twips (printable-relative, top-left origin); the image is drawn to fill it.
+    /// The placement box in twips (printable-relative, top-left origin); the raster is fitted into
+    /// it per [`Self::fit`].
     pub bounds: Rect,
     /// Key into the document's out-of-band [`assets`](PagedDocument::assets) map for the image bytes.
     pub image_id: String,
+    /// How the raster is scaled into [`Self::bounds`]. Defaults to [`ImageFit::Fill`] so existing
+    /// Page-IR dumps deserialize unchanged.
+    #[serde(default)]
+    pub fit: ImageFit,
     /// The report object this image was formatted from, if known.
     pub source: Option<ObjectRef>,
 }
@@ -402,16 +432,45 @@ pub enum DrawOp {
     Image(ImageOp),
 }
 
+/// Dispatch one uniform expression over every [`DrawOp`] variant, binding each variant's payload to
+/// the caller-named `$inner`. Centralizes the variant walk that the payload-uniform accessors
+/// ([`DrawOp::source`]/[`DrawOp::source_mut`]) share, so adding a variant is one edit here.
+macro_rules! for_each_op {
+    ($op:expr, $inner:ident => $body:expr) => {
+        match $op {
+            DrawOp::Text($inner) => $body,
+            DrawOp::Rect($inner) => $body,
+            DrawOp::Ellipse($inner) => $body,
+            DrawOp::Line($inner) => $body,
+            DrawOp::Polygon($inner) => $body,
+            DrawOp::Image($inner) => $body,
+        }
+    };
+}
+
+/// Dispatch a geometry expression over [`DrawOp`], splitting the box-carrying variants (Text/Rect/
+/// Ellipse/Image, each bound to `$bounded`) from the two variants with their own point geometry.
+/// The bounded arm's body is shared across all four; Line and Polygon get their own bodies.
+macro_rules! for_geometry {
+    ($op:expr, $bounded:ident => $bounded_body:expr, $line:ident => $line_body:expr, $poly:ident => $poly_body:expr $(,)?) => {
+        match $op {
+            DrawOp::Text($bounded) => $bounded_body,
+            DrawOp::Rect($bounded) => $bounded_body,
+            DrawOp::Ellipse($bounded) => $bounded_body,
+            DrawOp::Image($bounded) => $bounded_body,
+            DrawOp::Line($line) => $line_body,
+            DrawOp::Polygon($poly) => $poly_body,
+        }
+    };
+}
+
 impl DrawOp {
     /// The op's bounding box (a line's box is its endpoints' extent). Used by hit-testing and the
     /// parity matcher's geometry key.
     pub fn bounds(&self) -> Rect {
-        match self {
-            DrawOp::Text(t) => t.bounds,
-            DrawOp::Rect(r) => r.bounds,
-            DrawOp::Ellipse(e) => e.bounds,
-            DrawOp::Image(i) => i.bounds,
-            DrawOp::Line(l) => {
+        for_geometry!(self,
+            b => b.bounds,
+            l => {
                 let (x0, x1) = (l.from.x.0.min(l.to.x.0), l.from.x.0.max(l.to.x.0));
                 let (y0, y1) = (l.from.y.0.min(l.to.y.0), l.from.y.0.max(l.to.y.0));
                 Rect {
@@ -420,8 +479,8 @@ impl DrawOp {
                     width: Twips(x1 - x0),
                     height: Twips(y1 - y0),
                 }
-            }
-            DrawOp::Polygon(p) => {
+            },
+            p => {
                 let xs = p.points.iter().map(|pt| pt.x.0);
                 let ys = p.points.iter().map(|pt| pt.y.0);
                 let x0 = xs.clone().min().unwrap_or(0);
@@ -434,58 +493,41 @@ impl DrawOp {
                     width: Twips(x1 - x0),
                     height: Twips(y1 - y0),
                 }
-            }
-        }
+            },
+        )
     }
 
     /// A copy of this op with every coordinate shifted by `(dx, dy)` twips — used to place subreport
     /// content into its box on the containing page. Geometry only; paint attributes are unchanged.
     pub fn translate(&self, dx: i32, dy: i32) -> DrawOp {
         let mut op = self.clone();
-        match &mut op {
-            DrawOp::Text(t) => t.bounds = t.bounds.translate(dx, dy),
-            DrawOp::Rect(r) => r.bounds = r.bounds.translate(dx, dy),
-            DrawOp::Ellipse(e) => e.bounds = e.bounds.translate(dx, dy),
-            DrawOp::Image(i) => i.bounds = i.bounds.translate(dx, dy),
-            DrawOp::Line(l) => {
+        for_geometry!(&mut op,
+            b => b.bounds = b.bounds.translate(dx, dy),
+            l => {
                 l.from.x.0 += dx;
                 l.from.y.0 += dy;
                 l.to.x.0 += dx;
                 l.to.y.0 += dy;
-            }
-            DrawOp::Polygon(p) => {
+            },
+            p => {
                 for pt in &mut p.points {
                     pt.x.0 += dx;
                     pt.y.0 += dy;
                 }
-            }
-        }
+            },
+        );
         op
     }
 
     /// Mutable access to the op's originating [`ObjectRef`], if any — used to remap the instance id
     /// when merging a subreport's ops into the containing page.
     pub fn source_mut(&mut self) -> Option<&mut ObjectRef> {
-        match self {
-            DrawOp::Text(t) => t.source.as_mut(),
-            DrawOp::Rect(r) => r.source.as_mut(),
-            DrawOp::Ellipse(e) => e.source.as_mut(),
-            DrawOp::Line(l) => l.source.as_mut(),
-            DrawOp::Polygon(p) => p.source.as_mut(),
-            DrawOp::Image(i) => i.source.as_mut(),
-        }
+        for_each_op!(self, inner => inner.source.as_mut())
     }
 
     /// The report object this op came from, if known.
     pub fn source(&self) -> Option<&ObjectRef> {
-        match self {
-            DrawOp::Text(t) => t.source.as_ref(),
-            DrawOp::Rect(r) => r.source.as_ref(),
-            DrawOp::Ellipse(e) => e.source.as_ref(),
-            DrawOp::Line(l) => l.source.as_ref(),
-            DrawOp::Polygon(p) => p.source.as_ref(),
-            DrawOp::Image(i) => i.source.as_ref(),
-        }
+        for_each_op!(self, inner => inner.source.as_ref())
     }
 }
 
@@ -531,8 +573,13 @@ impl Page {
         self.ops.push(op);
     }
 
+    /// Append many draw-ops to the top of the paint order, in iteration order.
+    pub fn extend(&mut self, ops: impl IntoIterator<Item = DrawOp>) {
+        self.ops.extend(ops);
+    }
+
     /// The topmost draw-op whose bounds contain `p` (last in paint order wins) — the IR-level
-    /// analogue of the native `PEFindObjectOnPage` hit-test.
+    /// analogue of the native engine's object hit-test.
     pub fn hit_test(&self, p: Point) -> Option<&DrawOp> {
         self.ops
             .iter()
@@ -540,10 +587,15 @@ impl Page {
             .find(|op| op.bounds().contains(p.x, p.y))
     }
 
-    /// The normalized draw-op JSON the `rendermatch.py` parity tool consumes: a stable,
-    /// pretty-printed serialization of this page. Serialization order is paint order (matching how
-    /// the EMF/oracle stream is captured), and enum tags are explicit (`"op"`), so a diff is a
-    /// structural node-level comparison, never a byte comparison.
+    /// A stable, pretty-printed serialization of this page for diffing two renders. Serialization
+    /// order is paint order, and enum tags are explicit (`"op"`), so a diff is a structural
+    /// node-level comparison, never a byte comparison.
+    #[cfg(feature = "json")]
+    ///
+    /// # Panics
+    ///
+    /// Never in practice: the Page IR is a closed data model with no non-string map keys and no custom
+    /// `Serialize` impls, so `serde_json` has nothing it can fail on.
     pub fn to_normalized_json(&self) -> String {
         // serde_json cannot fail on this closed, non-Map-keyed data model.
         serde_json::to_string_pretty(self).expect("Page is always serializable")
@@ -554,16 +606,22 @@ impl Page {
 /// re-formattable. The concrete state (running totals, `WhilePrintingRecords` variables,
 /// page-number counters) is currently a stub map; the type exists so the checkpoint is designed
 /// in, not retrofitted.
+///
+/// Excluded from the crate's additive-stable wire guarantee: the stub encoding below is provisional
+/// and will change incompatibly when typed formula values land.
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct PrintState {
     /// Serialized snapshot of Global/Shared formula variables and running-total accumulators,
-    /// keyed by name. Placeholder representation: values are stored as strings.
+    /// keyed by name. Placeholder representation: values are stored as strings, so the field's
+    /// wire shape is not yet stable.
     pub variables: BTreeMap<String, String>,
 }
 
 /// The checkpoint that begins a page: the record position at the top of the page plus the
 /// print-time state snapshot taken there. Restoring this and formatting forward reproduces the
 /// page exactly (random page access without replaying pages 1..N-1).
+///
+/// Excluded from the crate's additive-stable wire guarantee via its [`PrintState`] field.
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct PageCheckpoint {
     /// The 1-based number of the page this checkpoint begins.
@@ -575,7 +633,7 @@ pub struct PageCheckpoint {
 }
 
 /// How serious a render [`Diagnostic`] is.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Hash)]
 pub enum Severity {
     /// The page was produced but a fidelity gap was hit (object rendered blank, format unwired, …).
     Warning,
@@ -584,7 +642,14 @@ pub enum Severity {
 }
 
 /// What kind of fidelity gap a [`Diagnostic`] reports (so a caller can group/count by cause).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+///
+/// This is the *single* diagnostic vocabulary for the whole pipeline. The data pipeline reports its
+/// own fail-open failures through [`rpt_data::DiagnosticKind`](https://docs.rs/rpt-data) and
+/// `rpt-layout` converts them into these kinds on the way out — so a record-selection failure and a
+/// font substitution reach the caller in one list, comparable and countable, rather than in two
+/// unbridged vocabularies of which only one ever arrived.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Hash)]
+#[non_exhaustive]
 pub enum DiagnosticKind {
     /// An object kind with no real renderer yet was drawn as a placeholder box (chart, cross-tab, …).
     UnsupportedObject,
@@ -592,10 +657,90 @@ pub enum DiagnosticKind {
     UnsupportedFormula,
     /// A formula errored at runtime (type mismatch, divide-by-zero, unknown name, bad arg).
     FormulaError,
+    /// A formula did not **parse**: it was compiled from a partial recovery AST and evaluated anyway,
+    /// so its value is meaningless. Distinct from [`FormulaError`](DiagnosticKind::FormulaError)
+    /// because the user can fix it by editing the report, and because it is reported once per formula
+    /// rather than once per row.
+    FormulaParse,
+    /// A record-selection formula errored or returned a non-boolean, so the row was **dropped**. The
+    /// most consequential fail-open case: enough of these and the report renders empty.
+    RecordSelection,
+    /// A group-selection formula errored or returned a non-boolean, so the group was **kept**.
+    GroupSelection,
+    /// A group's grouping condition is an ordinal the pipeline cannot bucket, so rows were grouped by
+    /// the field's raw value instead.
+    UnsupportedGroupCondition,
+    /// A cell would not parse as its column's declared type, so a different type (or null) was
+    /// substituted — which silently changes sorting, grouping, and summaries.
+    TypeCoercion,
     /// A requested font was not available and a substitute was used.
     FontSubstituted,
     /// Anything else worth surfacing.
     Other,
+}
+
+/// Where a [`Diagnostic`] happened, structurally.
+///
+/// A name alone (`Diagnostic::source`) does not let a user find the problem: the same formula runs on
+/// every row, and the same object appears on every page. Every field is optional and — following the
+/// convention `rpt::StreamLoc` established for decode errors — **never fabricated**: a site fills in
+/// only what it genuinely has in scope.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct DiagnosticLocation {
+    /// 1-based page number, when the diagnostic arose while formatting a page.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub page: Option<u32>,
+    /// The report area being formatted (e.g. `PageHeader`, `Details`).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub area: Option<String>,
+    /// The section within that area.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub section: Option<String>,
+    /// 0-based index of the record that was current, for a per-row failure.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub record_index: Option<u64>,
+    /// Byte range within the formula text that the failure points at, when the evaluator or parser
+    /// reported a span.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub span: Option<std::ops::Range<usize>>,
+}
+
+impl DiagnosticLocation {
+    /// Whether nothing at all is known about where this happened.
+    pub fn is_empty(&self) -> bool {
+        self.page.is_none()
+            && self.area.is_none()
+            && self.section.is_none()
+            && self.record_index.is_none()
+            && self.span.is_none()
+    }
+}
+
+impl fmt::Display for DiagnosticLocation {
+    /// Renders only the fields that are known, as `page 2, Details, record 41, bytes 14..17`.
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut sep = "";
+        if let Some(page) = self.page {
+            write!(f, "{sep}page {page}")?;
+            sep = ", ";
+        }
+        if let Some(area) = &self.area {
+            write!(f, "{sep}{area}")?;
+            sep = ", ";
+        }
+        if let Some(section) = &self.section {
+            write!(f, "{sep}{section}")?;
+            sep = ", ";
+        }
+        if let Some(idx) = self.record_index {
+            write!(f, "{sep}record {idx}")?;
+            sep = ", ";
+        }
+        if let Some(span) = &self.span {
+            write!(f, "{sep}bytes {}..{}", span.start, span.end)?;
+        }
+        Ok(())
+    }
 }
 
 /// A pipeline fidelity warning collected during data/layout/render and returned alongside the
@@ -611,6 +756,10 @@ pub struct Diagnostic {
     pub message: String,
     /// The object/section/formula name this is about, if any.
     pub source: Option<String>,
+    /// Where this happened — page, area/section, record, formula span — as far as the reporting site
+    /// knew.
+    #[serde(default)]
+    pub location: DiagnosticLocation,
 }
 
 impl Diagnostic {
@@ -621,6 +770,15 @@ impl Diagnostic {
             kind,
             message: message.into(),
             source: None,
+            location: DiagnosticLocation::default(),
+        }
+    }
+
+    /// An error-level diagnostic: the element produced no or partial output.
+    pub fn error(kind: DiagnosticKind, message: impl Into<String>) -> Diagnostic {
+        Diagnostic {
+            severity: Severity::Error,
+            ..Diagnostic::warn(kind, message)
         }
     }
 
@@ -628,6 +786,56 @@ impl Diagnostic {
     pub fn with_source(mut self, source: impl Into<String>) -> Diagnostic {
         self.source = Some(source.into());
         self
+    }
+
+    /// Attach the structural location this happened at.
+    pub fn at(mut self, location: DiagnosticLocation) -> Diagnostic {
+        self.location = location;
+        self
+    }
+
+    /// Note the record that was current, for a per-row failure.
+    pub fn at_record(mut self, record_index: u64) -> Diagnostic {
+        self.location.record_index = Some(record_index);
+        self
+    }
+
+    /// Note the byte range within the formula text the failure points at.
+    pub fn at_span(mut self, span: std::ops::Range<usize>) -> Diagnostic {
+        self.location.span = Some(span);
+        self
+    }
+
+    /// Note the section being formatted.
+    pub fn in_section(mut self, section: impl Into<String>) -> Diagnostic {
+        self.location.section = Some(section.into());
+        self
+    }
+
+    /// Note the report area being formatted. Separate from [`in_section`](Diagnostic::in_section) so a
+    /// site that knows only one of the two does not have to invent the other.
+    pub fn in_area(mut self, area: impl Into<String>) -> Diagnostic {
+        self.location.area = Some(area.into());
+        self
+    }
+
+    /// Note the 1-based page being formatted.
+    pub fn on_page(mut self, page: u32) -> Diagnostic {
+        self.location.page = Some(page);
+        self
+    }
+
+    /// The full one-line rendering: `message (source) [location]`, omitting whatever is unknown. What
+    /// a CLI should print.
+    pub fn describe(&self) -> String {
+        let mut s = self.message.clone();
+        if let Some(source) = &self.source {
+            s.push_str(&format!(" ({source})"));
+        }
+        if !self.location.is_empty() {
+            s.push_str(&format!(" [{}]", self.location));
+        }
+        s
     }
 }
 
@@ -653,6 +861,46 @@ pub struct PagedDocument {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_diagnostic_with_no_location_describes_only_what_it_knows() {
+        let d = Diagnostic::warn(DiagnosticKind::Other, "something happened");
+        assert!(d.location.is_empty());
+        assert_eq!(d.describe(), "something happened");
+        assert_eq!(
+            Diagnostic::warn(DiagnosticKind::Other, "boom")
+                .with_source("Field3")
+                .describe(),
+            "boom (Field3)"
+        );
+    }
+
+    #[test]
+    fn a_location_renders_every_field_it_has_and_nothing_it_does_not() {
+        let d = Diagnostic::error(DiagnosticKind::FormulaError, "type mismatch")
+            .with_source("Order Total")
+            .on_page(2)
+            .in_area("Details")
+            .in_section("DetailsA")
+            .at_record(41)
+            .at_span(14..17);
+        assert_eq!(
+            d.describe(),
+            "type mismatch (Order Total) [page 2, Details, DetailsA, record 41, bytes 14..17]"
+        );
+        // Partial knowledge renders partially rather than with placeholders.
+        let partial = Diagnostic::warn(DiagnosticKind::FormulaError, "boom").at_record(7);
+        assert_eq!(partial.describe(), "boom [record 7]");
+        assert_eq!(d.severity, Severity::Error);
+    }
+
+    /// The location is additive on the wire: a page serialized before it existed must still load.
+    #[test]
+    fn a_diagnostic_without_a_serialized_location_deserializes() {
+        let json = r#"{"severity":"Warning","kind":"Other","message":"m","source":null}"#;
+        let d: Diagnostic = serde_json::from_str(json).expect("older payloads must still load");
+        assert!(d.location.is_empty());
+    }
 
     fn sample_page() -> Page {
         let mut page = Page::new(
@@ -696,25 +944,6 @@ mod tests {
         page
     }
 
-    /// Compare `actual` against the committed golden at `tests/golden/<name>`, catching any change to
-    /// the serialized Page-IR contract. Regenerate: `RPT_BLESS=1 cargo test -p rpt-pages`.
-    fn assert_golden(name: &str, actual: &str) {
-        let dir = format!("{}/tests/golden", env!("CARGO_MANIFEST_DIR"));
-        let path = format!("{dir}/{name}");
-        if std::env::var_os("RPT_BLESS").is_some() {
-            std::fs::create_dir_all(&dir).unwrap();
-            std::fs::write(&path, actual).unwrap();
-            return;
-        }
-        let expected = std::fs::read_to_string(&path).unwrap_or_else(|_| {
-            panic!("missing golden {path}; regenerate with RPT_BLESS=1 cargo test -p rpt-pages")
-        });
-        assert_eq!(
-            actual, expected,
-            "Page-IR JSON changed for {name}; if the IR change is intentional, regenerate with RPT_BLESS=1"
-        );
-    }
-
     #[test]
     fn golden_page_ir_json() {
         // The Page IR is serde-serializable precisely so it can be frozen as a contract; this pins its
@@ -730,7 +959,7 @@ mod tests {
             assets: std::collections::BTreeMap::new(),
         };
         let json = serde_json::to_string_pretty(&doc).unwrap();
-        assert_golden("page.json", &json);
+        rpt_test_support::assert_golden(env!("CARGO_MANIFEST_DIR"), "page.json", &json);
     }
 
     #[test]
@@ -775,6 +1004,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "json")]
     fn normalized_json_roundtrips() {
         let page = sample_page();
         let json = page.to_normalized_json();

@@ -1,5 +1,5 @@
-//! Reference-extraction tests: every reference form, aggregation-arg detection (structural),
-//! nested calls, comments/strings excluded, formula/parameter helpers.
+//! Reference-extraction tests: every reference form, enclosing-call attribution, nested calls,
+//! comments/strings excluded.
 
 use crate::refs;
 use crate::token::{RefKind, Syntax};
@@ -35,7 +35,9 @@ fn every_reference_form_with_kind() {
 fn comment_excludes_refs() {
     let body = "{Table.live} // {Table.dead} {@dead}";
     assert_eq!(field_names(body), vec!["Table.live"]);
-    assert!(refs::formula_names(body).next().is_none());
+    assert!(!refs::references(body)
+        .iter()
+        .any(|r| r.kind == RefKind::Formula));
 }
 
 #[test]
@@ -52,41 +54,42 @@ fn doubled_quote_string_excludes_inner_ref() {
     assert_eq!(field_names(body), vec!["Table.g"]);
 }
 
+/// Every argument of a call carries that call's name, whichever argument slot it sits in.
 #[test]
-fn aggregation_first_arg_counts_second_excluded() {
+fn every_argument_carries_the_enclosing_call_name() {
     let refs = refs::references("Sum({Command.value}, {Command.group})");
-    let value = refs.iter().find(|r| r.name == "Command.value").unwrap();
-    let group = refs.iter().find(|r| r.name == "Command.group").unwrap();
-    assert!(!value.is_aggregation_group_arg());
-    assert!(group.is_aggregation_group_arg());
-}
-
-#[test]
-fn non_aggregation_second_arg_counts() {
-    let refs = refs::references("IIf({a.x} = 1, {a.y}, {a.z})");
     for r in &refs {
-        assert!(!r.is_aggregation_group_arg(), "{} excluded wrongly", r.name);
+        assert_eq!(r.enclosing_fn.as_deref(), Some("Sum"), "{}", r.name);
     }
 }
 
+/// A reference is attributed to the innermost call that encloses it, not the outermost.
 #[test]
 fn nested_call_uses_innermost_frame() {
     let refs = refs::references("IIf(true, Sum({a.x}, {a.y}), {a.z})");
-    let y = refs.iter().find(|r| r.name == "a.y").unwrap();
-    let x = refs.iter().find(|r| r.name == "a.x").unwrap();
-    let z = refs.iter().find(|r| r.name == "a.z").unwrap();
-    assert!(y.is_aggregation_group_arg());
-    assert!(!x.is_aggregation_group_arg());
-    assert!(!z.is_aggregation_group_arg());
+    let of = |n: &str| {
+        refs.iter()
+            .find(|r| r.name == n)
+            .unwrap()
+            .enclosing_fn
+            .clone()
+    };
+    assert_eq!(of("a.x").as_deref(), Some("Sum"));
+    assert_eq!(of("a.y").as_deref(), Some("Sum"));
+    assert_eq!(of("a.z").as_deref(), Some("IIf"));
 }
 
+/// Whitespace, newlines, and comments between the function name and its `(` do not break the
+/// name→call association; the name is matched case-insensitively by [`refs::is_aggregation_function`].
 #[test]
-fn aggregation_name_case_insensitive_with_whitespace_and_newlines() {
+fn call_name_survives_whitespace_and_newlines() {
     let refs = refs::references("SUM\n ( {a.x} ,\n {a.grp} )");
-    let grp = refs.iter().find(|r| r.name == "a.grp").unwrap();
-    assert!(grp.is_aggregation_group_arg());
-    let x = refs.iter().find(|r| r.name == "a.x").unwrap();
-    assert!(!x.is_aggregation_group_arg());
+    for r in &refs {
+        assert_eq!(r.enclosing_fn.as_deref(), Some("SUM"), "{}", r.name);
+        assert!(refs::is_aggregation_function(
+            r.enclosing_fn.as_deref().unwrap()
+        ));
+    }
 }
 
 #[test]
@@ -97,21 +100,20 @@ fn enclosing_fn_after_close_paren_is_none() {
     assert_eq!(f.enclosing_fn, None);
 }
 
+/// References of every kind are yielded in source order, each tagged with its kind.
 #[test]
-fn formula_and_parameter_name_helpers() {
-    let body = "{@A} + {?P} + Sum({t.f}) + {@B}";
-    let fs: Vec<_> = refs::formula_names(body).collect();
-    let ps: Vec<_> = refs::parameter_names(body).collect();
-    assert_eq!(fs, vec!["A", "B"]);
-    assert_eq!(ps, vec!["P"]);
-}
-
-#[test]
-fn third_arg_of_aggregation_is_still_excluded() {
-    // Sum({x}, {grp}, "monthly") — the 3rd arg is a literal; {grp} (2nd) is still a group arg.
-    let refs = refs::references("Sum({a.x}, {a.grp}, \"monthly\")");
-    let grp = refs.iter().find(|r| r.name == "a.grp").unwrap();
-    assert!(grp.is_aggregation_group_arg());
+fn mixed_kinds_yield_in_source_order() {
+    let refs = refs::references("{@A} + {?P} + Sum({t.f}) + {@B}");
+    let got: Vec<_> = refs.iter().map(|r| (r.kind, r.name.as_str())).collect();
+    assert_eq!(
+        got,
+        vec![
+            (RefKind::Formula, "A"),
+            (RefKind::Parameter, "P"),
+            (RefKind::Field, "t.f"),
+            (RefKind::Formula, "B"),
+        ]
+    );
 }
 
 #[test]
@@ -130,17 +132,16 @@ fn no_whitespace_both_operands_count() {
     assert_eq!(field_names("{t.a} - {t.b}"), vec!["t.a", "t.b"]);
 }
 
+/// `Sum({t.x},{t.grp})` with no spaces extracts identically to the spaced form.
 #[test]
-fn no_whitespace_aggregation_group_arg_still_excluded() {
-    // `Sum({t.x},{t.grp})` with no spaces must behave like the spaced form.
+fn no_whitespace_call_extracts_like_the_spaced_form() {
     let tight = refs::references("Sum({t.x},{t.grp})");
     let spaced = refs::references("Sum( {t.x} , {t.grp} )");
-    for refs in [&tight, &spaced] {
-        let grp = refs.iter().find(|r| r.name == "t.grp").unwrap();
-        let x = refs.iter().find(|r| r.name == "t.x").unwrap();
-        assert!(grp.is_aggregation_group_arg());
-        assert!(!x.is_aggregation_group_arg());
-    }
+    assert_eq!(tight, spaced);
+    assert_eq!(tight.len(), 2);
+    assert!(tight
+        .iter()
+        .all(|r| r.enclosing_fn.as_deref() == Some("Sum")));
 }
 
 #[test]

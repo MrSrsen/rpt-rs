@@ -2,7 +2,7 @@
 //! ([`chart_frame`]/[`Frame`]) plus the label/format helpers the per-type chart renderers
 //! ([`super::bar`]/[`super::line`]/[`super::pie`]) build on.
 
-use rpt_model::{Color, Rect, Twips};
+use rpt_model::{ChartDefinition, Color, Rect, Twips};
 use rpt_pages::{
     DrawOp, FontSpec, LineOp, ObjectKind, ObjectRef, Point, RectOp, Stroke, TextAlign, TextRun,
 };
@@ -75,20 +75,188 @@ pub(super) const GRID: Color = Color {
     b: 0xdd,
 };
 
-/// The native engine's default chart-title point size (Arial 14, bold), applied to every chart
-/// family's heading. The engine's per-element font defaults are: title 14 bold, axis titles 8 bold,
-/// tick/data/legend labels 7; a subtitle is 10 and a footnote 8 bold-italic — neither is currently
-/// drawn. Custom per-element fonts are not applied; every chart uses these defaults.
+/// A chart text element, keying both the engine's per-element default font ([`chart_font`]) and the
+/// stored per-element font override ([`resolve_chart_font`]). Every chart's text starts from the
+/// shared default table; a variant that maps to a decoded [`ChartElementFont`](rpt_model::ChartElementFont)
+/// prefers the stored face/size when the chart authored one.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ChartText {
+    /// The chart heading — Arial 14 bold.
+    Title,
+    /// The subtitle under the title — Arial 10 normal.
+    Subtitle,
+    /// The footnote at the chart bottom — Arial 8 bold + italic.
+    Footnote,
+    /// A value/category/series axis caption — Arial 8 bold.
+    AxisTitle,
+    /// A tick / data / legend / series label — Arial 7 normal.
+    Label,
+}
+
+impl ChartText {
+    /// The index of this element in a chart's stored [`ChartDefinition::element_fonts`] run, or `None`
+    /// when the element has no single stored entry to prefer over the default table.
+    ///
+    /// Only [`Title`](Self::Title) (index `0`), [`Subtitle`](Self::Subtitle) (`1`), and
+    /// [`Footnote`](Self::Footnote) (`2`) map to a single decoded element. The coarser
+    /// [`AxisTitle`](Self::AxisTitle) (the engine's separate GroupTitle/DataTitle elements) and
+    /// [`Label`](Self::Label) (SeriesTitle/Legend/DataLabel) each conflate several stored elements the
+    /// render enum does not distinguish, so they stay on the default table rather than guess an index.
+    fn font_index(self) -> Option<usize> {
+        match self {
+            Self::Title => Some(0),
+            Self::Subtitle => Some(1),
+            Self::Footnote => Some(2),
+            Self::AxisTitle | Self::Label => None,
+        }
+    }
+}
+
+/// The native engine's default font for a chart text `element`. This is the single source of truth
+/// for the per-element font defaults; the family renderers' size constants below mirror it.
+pub(crate) fn chart_font(element: ChartText) -> FontSpec {
+    let (size_pt, bold, italic) = match element {
+        ChartText::Title => (14.0, true, false),
+        ChartText::Subtitle => (10.0, false, false),
+        ChartText::Footnote => (8.0, true, true),
+        ChartText::AxisTitle => (8.0, true, false),
+        ChartText::Label => (7.0, false, false),
+    };
+    FontSpec {
+        family: "Arial".into(),
+        size_pt,
+        bold,
+        italic,
+        ..Default::default()
+    }
+}
+
+/// The font a chart text `element` renders in: the engine's per-element default ([`chart_font`]) with
+/// the chart's stored per-element override layered on top when one is present.
+///
+/// The default is the single source of truth for size/bold/italic; a stored
+/// [`ChartElementFont`](rpt_model::ChartElementFont) overrides only the face `name` (when it is a real
+/// override — non-empty and not the `"Arial"` default sentinel) and the point `size` (when explicitly
+/// stored). Bold/italic are always taken from the default table (they are engine per-element defaults,
+/// not a stored per-report signal). An element with no stored entry — an empty `element_fonts`, an out-
+/// of-range index, or a variant that maps to no single element ([`ChartText::font_index`]) — falls back
+/// entirely to the default table, so a chart storing all defaults renders identically to [`chart_font`].
+pub(crate) fn resolve_chart_font(def: &ChartDefinition, element: ChartText) -> FontSpec {
+    let mut font = chart_font(element);
+    if let Some(stored) = element.font_index().and_then(|i| def.element_fonts.get(i)) {
+        if !stored.name.is_empty() && stored.name != "Arial" {
+            font.family = stored.name.clone();
+        }
+        if let Some(pt) = stored.size_pt {
+            font.size_pt = f32::from(pt);
+        }
+    }
+    font
+}
+
+/// The native engine's default chart-title point size (Arial 14, bold) — mirrors
+/// [`chart_font`]`(`[`ChartText::Title`]`)`, kept as a constant for the family renderers that build
+/// their own [`FontSpec`].
 pub(super) const TITLE_PT: f32 = 14.0;
-/// The native default axis-title point size (Arial 8, bold) — the value/category axis captions.
-pub(super) const AXIS_TITLE_PT: f32 = 8.0;
+/// The native default data/tick/legend-label point size (Arial 7).
+pub(super) const LABEL_PT: f32 = 7.0;
+/// The white separator stroke drawn between adjacent pie/doughnut slices.
+pub(super) const SLICE_BORDER_W: Twips = Twips(20);
+/// Legend layout (twips): outer padding, colour-swatch size, and gap between stacked entries.
+pub(super) const LEGEND_PAD: i32 = 90;
+pub(super) const LEGEND_SWATCH: i32 = 150;
+pub(super) const LEGEND_GAP: i32 = 60;
+
+/// A centered chart text `TextRun` spanning `bounds` in the `element`'s resolved font (the chart's
+/// stored per-element override, else the default table) — the shared shape for the title / subtitle /
+/// footnote drawn around a chart.
+pub(crate) fn chart_text_op(
+    def: &ChartDefinition,
+    bounds: Rect,
+    text: &str,
+    element: ChartText,
+    src: &dyn Fn() -> Option<ObjectRef>,
+) -> DrawOp {
+    DrawOp::Text(TextRun {
+        bounds,
+        text: text.to_string(),
+        font: resolve_chart_font(def, element),
+        color: LABEL,
+        align: TextAlign::Center,
+        rotation: 0.0,
+        metrics: None,
+        source: src(),
+    })
+}
+
+/// A centered, bold chart title `TextRun` spanning `(x, y, w, h)` — the shared shape the
+/// proportional families (pie/doughnut/funnel/gauge/radar) draw at the top of their area.
+pub(super) fn title_op(
+    def: &ChartDefinition,
+    x: i32,
+    y: i32,
+    w: i32,
+    h: i32,
+    title: &str,
+    src: &dyn Fn() -> Option<ObjectRef>,
+) -> DrawOp {
+    let bounds = Rect {
+        left: Twips(x),
+        top: Twips(y),
+        width: Twips(w),
+        height: Twips(h),
+    };
+    chart_text_op(def, bounds, title, ChartText::Title, src)
+}
+
+/// The centre `(cx, cy)` and radius (twips) of the disc a round family (pie/doughnut/gauge/radar)
+/// draws in the area below the title, leaving a small margin (`pad` = 60) for outer labels. The
+/// radius is returned as `i32`; f64-based renderers cast it.
+pub(super) fn centered_disc(rect: Rect, title_h: i32) -> (i32, i32, i32) {
+    let (rl, rt, rw, rh) = (rect.left.0, rect.top.0, rect.width.0, rect.height.0);
+    let pad = 60;
+    let box_top = rt + title_h + pad;
+    let box_h = (rt + rh - pad - box_top).max(1);
+    let box_w = (rw - 2 * pad).max(1);
+    let cx = rl + rw / 2;
+    let cy = box_top + box_h / 2;
+    let radius = (box_w.min(box_h) / 2 * 4 / 5).max(1);
+    (cx, cy, radius)
+}
+
+/// A category label centered on `(x, y)` — a 1400×200-twip Arial-7 box the pie/doughnut families
+/// draw at each slice's outer midpoint. `text` is pre-truncated by the caller.
+pub(super) fn disc_label(
+    x: i32,
+    y: i32,
+    text: &str,
+    src: &dyn Fn() -> Option<ObjectRef>,
+) -> DrawOp {
+    DrawOp::Text(TextRun {
+        bounds: Rect {
+            left: Twips(x - 700),
+            top: Twips(y - 100),
+            width: Twips(1400),
+            height: Twips(200),
+        },
+        text: text.to_string(),
+        font: chart_font(ChartText::Label),
+        color: LABEL,
+        align: TextAlign::Center,
+        rotation: 0.0,
+        metrics: None,
+        source: src(),
+    })
+}
 
 /// A "nice" value-axis maximum ≥ `max` and a round tick step, via the 1/2/5×10ⁿ rule. Picks the
 /// smallest step keeping the axis to ≲8 divisions, so the top tick lands on the data max where the
 /// data max is a step multiple (140 → step 20, top tick 140), rather than rounding the maximum above
 /// the data. Returns `(nice_max, step)`.
 pub(super) fn nice_scale(max: f64) -> (f64, f64) {
-    if max <= 0.0 || max.is_nan() {
+    // A non-finite (NaN/±Inf) or non-positive max falls back to a unit scale, so an axis never scales
+    // to a NaN/Inf tick step (which would poison every riser height).
+    if !max.is_finite() || max <= 0.0 {
         return (1.0, 1.0);
     }
     // Smallest 1/2/5×10ⁿ step ≥ max/8 → at most ~8 divisions. A larger divisor packs in more ticks;
@@ -138,9 +306,9 @@ pub(crate) fn legend(
     let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(obj_name));
     let (rl, rt, rw, rh) = (rect.left.0, rect.top.0, rect.width.0, rect.height.0);
     let mut ops: Vec<DrawOp> = Vec::new();
-    let pad = 90;
-    let swatch = 150;
-    let gap = 60;
+    let pad = LEGEND_PAD;
+    let swatch = LEGEND_SWATCH;
+    let gap = LEGEND_GAP;
     let font_pt: f32 = 7.0;
 
     let swatch_op = |ops: &mut Vec<DrawOp>, x: i32, y: i32, size: i32, i: usize| {
@@ -288,6 +456,53 @@ pub(crate) struct AxisTitles<'a> {
     pub(crate) category: &'a str,
 }
 
+/// The shared context every chart renderer draws from: the decoded [`ChartDefinition`], the placed
+/// `rect`, the resolved `title`, the axis titles, the source section/object names, and the "show
+/// value" flag. Bundles the arguments formerly threaded verbatim through every renderer signature;
+/// the per-chart data (series/points/values/bars) stays a separate argument.
+#[derive(Debug, Clone, Copy)]
+pub(crate) struct ChartCtx<'a> {
+    pub(crate) def: &'a ChartDefinition,
+    pub(crate) rect: Rect,
+    pub(crate) title: &'a str,
+    pub(crate) axis_titles: AxisTitles<'a>,
+    pub(crate) section_name: &'a str,
+    pub(crate) obj_name: &'a str,
+    /// Whether the report's decoded "show value" flag draws the per-point data labels.
+    pub(crate) show_labels: bool,
+}
+
+impl ChartCtx<'_> {
+    /// The draw-op `source` back-reference for this chart's object — the single construction site the
+    /// renderer's draw-ops share.
+    pub(crate) fn src(&self) -> Option<ObjectRef> {
+        Some(ObjectRef::new(self.section_name, ObjectKind::Chart).named(self.obj_name))
+    }
+}
+
+#[cfg(test)]
+impl ChartCtx<'static> {
+    /// A renderer-test context: the fields that vary per test, with a default definition and fixed
+    /// placeholder section/object names (no unit test asserts on the draw-op source).
+    pub(crate) fn test(
+        rect: Rect,
+        title: &'static str,
+        axis_titles: AxisTitles<'static>,
+        show_labels: bool,
+    ) -> Self {
+        static DEF: std::sync::OnceLock<ChartDefinition> = std::sync::OnceLock::new();
+        ChartCtx {
+            def: DEF.get_or_init(ChartDefinition::default),
+            rect,
+            title,
+            axis_titles,
+            section_name: "S",
+            obj_name: "G",
+            show_labels,
+        }
+    }
+}
+
 /// The Num+Ord plot frame shared by the axis chart families (bar / line / area): the plot rectangle,
 /// the category-slot width, and the 0..max value scale.
 pub(super) struct Frame {
@@ -311,11 +526,6 @@ impl Frame {
     /// riser's label stays inside the frame.
     pub(super) fn plot_top(&self) -> i32 {
         self.plot_bottom - self.plot_h
-    }
-
-    /// Right edge of the plot rectangle.
-    pub(super) fn plot_right(&self) -> i32 {
-        self.plot_right
     }
 }
 
@@ -351,8 +561,13 @@ pub(super) fn compute_frame(
 
     // Value scale: 0..max rounded to nice numbers so the axis reads 0 / step / 2·step / …;
     // bars/points scale to `max_val`, not the raw data max, so the tallest never touches the frame.
-    // Guards against all-zero / negative-only series.
-    let raw_max = series.iter().map(|(_, v)| *v).fold(0.0_f64, f64::max);
+    // Guards against all-zero / negative-only series; non-finite (NaN/Inf) values are excluded so the
+    // scale reflects the real finite data.
+    let raw_max = series
+        .iter()
+        .map(|(_, v)| *v)
+        .filter(|v| v.is_finite())
+        .fold(0.0_f64, f64::max);
     let (max_val, step) = nice_scale(raw_max);
 
     let n = series.len().max(1) as i32;
@@ -372,12 +587,12 @@ pub(super) fn compute_frame(
 /// display bands (title/axis widths) are re-derived from `rect` — deterministically identical to the
 /// reservation in [`compute_frame`].
 pub(super) fn emit_value_axis(
+    def: &ChartDefinition,
     ops: &mut Vec<DrawOp>,
     f: &Frame,
     rect: Rect,
     title: &str,
     axis_titles: AxisTitles,
-    _series: &[(String, f64)],
     src: &dyn Fn() -> Option<ObjectRef>,
 ) {
     let (rl, rt, rw, rh) = (rect.left.0, rect.top.0, rect.width.0, rect.height.0);
@@ -401,12 +616,7 @@ pub(super) fn emit_value_axis(
                 height: Twips(title_h),
             },
             text: title.to_string(),
-            font: FontSpec {
-                family: "Arial".into(),
-                size_pt: TITLE_PT,
-                bold: true,
-                ..Default::default()
-            },
+            font: resolve_chart_font(def, ChartText::Title),
             color: LABEL,
             align: TextAlign::Center,
             rotation: 0.0,
@@ -427,12 +637,7 @@ pub(super) fn emit_value_axis(
                 height: Twips(260),
             },
             text: axis_titles.value.to_string(),
-            font: FontSpec {
-                family: "Arial".into(),
-                size_pt: AXIS_TITLE_PT,
-                bold: true,
-                ..Default::default()
-            },
+            font: resolve_chart_font(def, ChartText::AxisTitle),
             color: LABEL,
             align: TextAlign::Center,
             rotation: 90.0,
@@ -451,12 +656,7 @@ pub(super) fn emit_value_axis(
                 height: Twips(260),
             },
             text: axis_titles.category.to_string(),
-            font: FontSpec {
-                family: "Arial".into(),
-                size_pt: AXIS_TITLE_PT,
-                bold: true,
-                ..Default::default()
-            },
+            font: resolve_chart_font(def, ChartText::AxisTitle),
             color: LABEL,
             align: TextAlign::Center,
             rotation: 0.0,
@@ -548,6 +748,7 @@ pub(super) fn emit_value_axis(
 /// `ops` and return the plot geometry the series builder places into. A thin wrapper over
 /// [`compute_frame`] + [`emit_value_axis`], preserved for the axis-chart renderers.
 pub(super) fn chart_frame(
+    def: &ChartDefinition,
     ops: &mut Vec<DrawOp>,
     rect: Rect,
     title: &str,
@@ -556,7 +757,7 @@ pub(super) fn chart_frame(
     src: &dyn Fn() -> Option<ObjectRef>,
 ) -> Frame {
     let f = compute_frame(rect, title, axis_titles, series);
-    emit_value_axis(ops, &f, rect, title, axis_titles, series, src);
+    emit_value_axis(def, ops, &f, rect, title, axis_titles, src);
     f
 }
 
@@ -589,17 +790,30 @@ pub(super) fn value_label(
             height: Twips(200),
         },
         text: text.to_string(),
-        font: FontSpec {
-            family: "Arial".into(),
-            size_pt: 7.0,
-            ..Default::default()
-        },
+        font: chart_font(ChartText::Label),
         color,
         align: TextAlign::Center,
         rotation: 0.0,
         metrics: None,
         source: src(),
     })
+}
+
+/// The fraction of the value axis a plotted value fills, clamped to `[0, 1]` so a non-finite
+/// (NaN/Inf) or out-of-scale value — e.g. from a divide-by-zero formula, or a value exceeding the
+/// scale because the max was excluded as non-finite — yields a bar/riser bounded by the plot height
+/// rather than runaway (i32-saturating) geometry. Normal values (≤ the nice-scale ceiling) are
+/// unaffected.
+pub(super) fn value_frac(val: f64, max_val: f64) -> f64 {
+    if max_val <= 0.0 || !max_val.is_finite() {
+        return 0.0;
+    }
+    let f = val.max(0.0) / max_val;
+    if f.is_finite() {
+        f.clamp(0.0, 1.0)
+    } else {
+        0.0
+    }
 }
 
 /// The stride at which category labels are drawn so a dense category axis doesn't overlap: when a
@@ -635,11 +849,7 @@ pub(super) fn category_label(
             height: Twips(f.cat_h),
         },
         text: truncate(label, 16),
-        font: FontSpec {
-            family: "Arial".into(),
-            size_pt: 7.0,
-            ..Default::default()
-        },
+        font: chart_font(ChartText::Label),
         color: LABEL,
         align: TextAlign::Center,
         rotation: 0.0,
@@ -672,10 +882,11 @@ pub(super) fn truncate(s: &str, max: usize) -> String {
 #[cfg(test)]
 mod tests {
     use super::{
-        category_stride, chart_frame, compute_frame, emit_value_axis, legend, nice_scale,
-        slice_color, AxisTitles, LegendPosition, PALETTE,
+        category_stride, chart_font, chart_frame, compute_frame, emit_value_axis, legend,
+        nice_scale, resolve_chart_font, slice_color, AxisTitles, ChartText, LegendPosition,
+        LEGEND_SWATCH, PALETTE,
     };
-    use rpt_model::{Rect, Twips};
+    use rpt_model::{ChartDefinition, ChartElementFont, Rect, Twips};
     use rpt_pages::DrawOp;
 
     /// The `compute_frame` + `emit_value_axis` split reproduces the monolithic `chart_frame` output
@@ -700,16 +911,17 @@ mod tests {
             value: "Sum of id",
             category: "created_at",
         };
+        let def = ChartDefinition::default();
         let mut whole: Vec<DrawOp> = Vec::new();
-        let f_whole = chart_frame(&mut whole, rect, "Title", titles, &series, &src);
+        let f_whole = chart_frame(&def, &mut whole, rect, "Title", titles, &series, &src);
 
         let mut split: Vec<DrawOp> = Vec::new();
         let f_split = compute_frame(rect, "Title", titles, &series);
-        emit_value_axis(&mut split, &f_split, rect, "Title", titles, &series, &src);
+        emit_value_axis(&def, &mut split, &f_split, rect, "Title", titles, &src);
 
         assert_eq!(whole, split, "split emits identical ops");
         assert_eq!(f_whole.plot_left, f_split.plot_left);
-        assert_eq!(f_whole.plot_right(), f_split.plot_right());
+        assert_eq!(f_whole.plot_right, f_split.plot_right);
         assert_eq!(f_whole.plot_bottom, f_split.plot_bottom);
         assert_eq!(f_whole.slot, f_split.slot);
     }
@@ -735,7 +947,7 @@ mod tests {
             ops.iter()
                 .filter_map(|o| match o {
                     // Swatches are the 150-twip squares (labels are Text, not Rect).
-                    DrawOp::Rect(r) if r.bounds.width.0 == 150 => Some(r.bounds.left.0),
+                    DrawOp::Rect(r) if r.bounds.width.0 == LEGEND_SWATCH => Some(r.bounds.left.0),
                     _ => None,
                 })
                 .collect()
@@ -743,7 +955,7 @@ mod tests {
         let swatch_ys = |ops: &[DrawOp]| -> Vec<i32> {
             ops.iter()
                 .filter_map(|o| match o {
-                    DrawOp::Rect(r) if r.bounds.width.0 == 150 => Some(r.bounds.top.0),
+                    DrawOp::Rect(r) if r.bounds.width.0 == LEGEND_SWATCH => Some(r.bounds.top.0),
                     _ => None,
                 })
                 .collect()
@@ -821,6 +1033,86 @@ mod tests {
         assert!(drawn < 25, "dense axis thinned to {drawn} of 50 labels");
     }
 
+    /// The value→axis fraction is clamped to `[0, 1]` so no non-finite or out-of-scale value produces
+    /// runaway (i32-saturating) bar/riser geometry; a normal in-scale value passes through.
+    #[test]
+    fn value_frac_clamps_non_finite_and_out_of_scale() {
+        use super::value_frac;
+        // In-scale values pass through unchanged.
+        assert_eq!(value_frac(5.0, 10.0), 0.5);
+        assert_eq!(value_frac(10.0, 10.0), 1.0);
+        // Negatives fold to 0; over-scale clamps to 1.
+        assert_eq!(value_frac(-3.0, 10.0), 0.0);
+        assert_eq!(value_frac(50.0, 10.0), 1.0);
+        // Non-finite value or scale → 0 (never NaN/Inf, never a saturating height).
+        assert_eq!(value_frac(f64::INFINITY, 10.0), 0.0);
+        assert_eq!(value_frac(f64::NAN, 10.0), 0.0);
+        assert_eq!(value_frac(5.0, f64::INFINITY), 0.0);
+        assert_eq!(value_frac(5.0, 0.0), 0.0);
+    }
+
+    /// A stored per-element override (a real face name and an explicit size) wins over the default
+    /// table for the element it maps to (Title → `element_fonts[0]`), while bold/italic stay sourced
+    /// from the default table (they are not a stored per-report signal).
+    #[test]
+    fn resolve_prefers_stored_override_for_title() {
+        let def = ChartDefinition {
+            element_fonts: vec![ChartElementFont {
+                name: "Times New Roman".to_string(),
+                size_pt: Some(20),
+            }],
+            ..Default::default()
+        };
+        let font = resolve_chart_font(&def, ChartText::Title);
+        assert_eq!(
+            font.family, "Times New Roman",
+            "stored face overrides Arial"
+        );
+        assert_eq!(font.size_pt, 20.0, "stored size overrides the default 14");
+        // Bold/italic always come from the default table (Title = bold, not italic).
+        assert!(
+            font.bold && !font.italic,
+            "weight/style stay default-sourced"
+        );
+    }
+
+    /// A chart storing only defaults — every entry the `"Arial"`/`None` sentinel, or no
+    /// `element_fonts` at all — resolves every `ChartText` to exactly the default table, so wiring the
+    /// resolver in shifts no output, since these defaults are what charts store.
+    #[test]
+    fn resolve_defaults_match_the_default_table() {
+        let all_arial = ChartDefinition {
+            element_fonts: vec![
+                ChartElementFont {
+                    name: "Arial".to_string(),
+                    size_pt: None,
+                };
+                8
+            ],
+            ..Default::default()
+        };
+        let empty = ChartDefinition::default();
+        for element in [
+            ChartText::Title,
+            ChartText::Subtitle,
+            ChartText::Footnote,
+            ChartText::AxisTitle,
+            ChartText::Label,
+        ] {
+            let default = chart_font(element);
+            assert_eq!(
+                resolve_chart_font(&all_arial, element),
+                default,
+                "all-Arial/None resolves {element:?} to the default table"
+            );
+            assert_eq!(
+                resolve_chart_font(&empty, element),
+                default,
+                "empty element_fonts resolves {element:?} to the default table"
+            );
+        }
+    }
+
     #[test]
     fn nice_scale_rounds_to_1_2_5_decades() {
         // Top tick lands on the data max: 140 → step 20 → 0/20/40/…/140 (~7 divisions).
@@ -829,10 +1121,18 @@ mod tests {
         assert_eq!(nice_scale(10.0), (10.0, 2.0));
         assert_eq!(nice_scale(1000.0), (1000.0, 200.0));
         assert_eq!(nice_scale(3.0), (3.0, 0.5));
-        // Degenerate inputs fall back to a unit scale.
+        // Degenerate / non-finite inputs fall back to a unit scale (never a NaN/Inf tick step).
         assert_eq!(nice_scale(0.0), (1.0, 1.0));
         assert_eq!(nice_scale(-5.0), (1.0, 1.0));
         assert_eq!(nice_scale(f64::NAN), (1.0, 1.0));
+        assert_eq!(nice_scale(f64::INFINITY), (1.0, 1.0));
+        assert_eq!(nice_scale(f64::NEG_INFINITY), (1.0, 1.0));
+        // A finite extreme magnitude still yields a finite scale + step.
+        let (m, s) = nice_scale(1e18);
+        assert!(
+            m.is_finite() && s.is_finite() && s > 0.0,
+            "1e18 → finite scale"
+        );
     }
 
     /// The 20-colour palette is Crystal's default sequence, and `slice_color` cycles it with

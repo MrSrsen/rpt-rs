@@ -19,7 +19,13 @@ pub use rpt_format_value::{format_number, Date, Time};
 pub enum Value {
     /// A number.
     Number(f64),
-    /// A currency amount (distinct type; formats with the currency symbol).
+    /// A currency amount. Carries a **full-precision** `f64` on the same substrate as
+    /// [`Value::Number`] — the engine applies **no value snap** on construction, assignment, cast,
+    /// or arithmetic; number and currency literals, assigns, and arithmetic all share identical
+    /// handlers. The familiar 2-decimal behaviour is purely the default *display* format
+    /// (`CurrencyFormat`'s 2 decimals), never a rounding of the stored value: `CCur(1.23456)` holds
+    /// `1.23456`, not `1.23`. The tag only selects currency formatting. Do not add a rounding snap
+    /// here.
     Currency(f64),
     /// A string.
     Str(String),
@@ -31,6 +37,10 @@ pub enum Value {
     Time(Time),
     /// A combined date and time.
     DateTime(Date, Time),
+    /// Raw binary bytes (a database blob / image field). Carried through the pipeline so a
+    /// blob-bound picture object can decode the real image bytes; the formula operators and text
+    /// coercion treat it as an opaque, non-textual value.
+    Bytes(Vec<u8>),
     /// An array of values.
     Array(Vec<Value>),
     /// A `To` range. The `_` variants of the operator exclude the marked bound.
@@ -60,6 +70,7 @@ impl Value {
             Value::Date(_) => "Date",
             Value::Time(_) => "Time",
             Value::DateTime(..) => "DateTime",
+            Value::Bytes(_) => "Bytes",
             Value::Array(_) => "Array",
             Value::Range { .. } => "Range",
             Value::Null => "Null",
@@ -94,7 +105,7 @@ impl Value {
                 format_datetime(*d, *t, &DateFormat::default(), &TimeFormat::default())
             }
             Value::Null => String::new(),
-            Value::Array(_) | Value::Range { .. } => return None,
+            Value::Bytes(_) | Value::Array(_) | Value::Range { .. } => return None,
         })
     }
 }

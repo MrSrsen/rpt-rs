@@ -6,12 +6,20 @@
 //! has no array-literal `Median`/`Mode` (they exist only as summary functions), so they are not
 //! implemented here.
 
-use super::{mismatch, Builtin};
 use crate::eval::{EvalError, Value};
 
-/// Handle a statistical [`Builtin`] (routed here by [`super::Builtin::family`]).
-pub(super) fn call(b: Builtin, name: &str, args: &[Value]) -> Result<Value, EvalError> {
-    use Builtin as B;
+/// The statistical-family builtins. Wrapped by [`super::Builtin::Statistical`] in the dispatch table.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum StatisticalFn {
+    StdDev,
+    Variance,
+    PopulationStdDev,
+    PopulationVariance,
+}
+
+/// Handle a statistical builtin (routed here from [`super::call`]).
+pub(super) fn call(b: StatisticalFn, name: &str, args: &[Value]) -> Result<Value, EvalError> {
+    use StatisticalFn as B;
     let sample = matches!(b, B::StdDev | B::Variance);
     let variance = variance_of(name, args, sample)?;
     match variance {
@@ -19,7 +27,6 @@ pub(super) fn call(b: Builtin, name: &str, args: &[Value]) -> Result<Value, Eval
         Some(v) => Ok(Value::Number(match b {
             B::StdDev | B::PopulationStdDev => v.sqrt(),
             B::Variance | B::PopulationVariance => v,
-            other => unreachable!("non-statistical builtin {other:?} routed to statistical"),
         })),
     }
 }
@@ -28,21 +35,7 @@ pub(super) fn call(b: Builtin, name: &str, args: &[Value]) -> Result<Value, Eval
 /// empty (all-null) input, matching the aggregate builtins. A single value with the sample divisor
 /// is undefined (n−1 = 0) and errors.
 fn variance_of(name: &str, args: &[Value], sample: bool) -> Result<Option<f64>, EvalError> {
-    let items = match args {
-        [Value::Array(a)] => a,
-        _ => {
-            return Err(EvalError::Unsupported(format!(
-                "{name} over records (needs data context)"
-            )))
-        }
-    };
-    let mut vals: Vec<f64> = Vec::with_capacity(items.len());
-    for v in items {
-        if v.is_null() {
-            continue;
-        }
-        vals.push(v.as_number().ok_or_else(|| mismatch(name, v))?);
-    }
+    let vals = super::numeric_non_null(name, super::array_arg(name, args)?)?;
     let n = vals.len();
     if n == 0 {
         return Ok(None);

@@ -1,4 +1,4 @@
-//! Round-trip and same-size patch tests for the `.rpt` writer (uy6.13 / uy6.14 / uy6.15).
+//! Round-trip and same-size patch tests for the `.rpt` writer.
 //!
 //! The write pipeline is the inverse of decode: retained logical record bytes → deflate → AES-CFB
 //! encrypt → CFB rewrite. Deflate is non-canonical, so a re-encode is byte-identical only at the
@@ -7,7 +7,7 @@
 //! skips so the suite stays green on a bare checkout.
 
 use rpt::raw::RecordTag;
-use rpt::{Rpt, StreamId};
+use rpt::{EditPolicy, Rpt, StreamId};
 use std::path::{Path, PathBuf};
 
 /// The three committed synthetic fixtures the writer is exercised over.
@@ -33,7 +33,7 @@ fn contents_logical(rpt: &Rpt) -> Vec<u8> {
         .to_vec()
 }
 
-/// uy6.13 — the re-serializable raw record tree reconstructs the logical stream byte-for-byte for
+/// The re-serializable raw record tree reconstructs the logical stream byte-for-byte for
 /// every synthetic fixture (the tree's node spans partition the inflated record bytes exactly).
 #[test]
 fn serialize_tree_reconstructs_logical() {
@@ -56,7 +56,7 @@ fn serialize_tree_reconstructs_logical() {
     }
 }
 
-/// uy6.14 — a NO-OP re-encode re-opens to byte-identical logical bytes for every synthetic fixture.
+/// A NO-OP re-encode re-opens to byte-identical logical bytes for every synthetic fixture.
 /// The whole inverse pipeline runs (deflate → encrypt → CFB rewrite), and the report still opens.
 #[test]
 fn noop_reencode_round_trips_logical() {
@@ -81,7 +81,7 @@ fn noop_reencode_round_trips_logical() {
     }
 }
 
-/// uy6.14 — an identity patch (overwrite a region with its current bytes) also round-trips the
+/// An identity patch (overwrite a region with its current bytes) also round-trips the
 /// logical bytes exactly, confirming the re-mask on the patch path is a true inverse of the demask.
 #[test]
 fn identity_patch_round_trips_logical() {
@@ -92,7 +92,7 @@ fn identity_patch_round_trips_logical() {
     let before = contents_logical(&rpt);
     let (leaf_off, orig) = first_section_name(&rpt);
     let file = rpt
-        .patch_record_leaf(RecordTag(SECTION_RECORD), 0, leaf_off, &orig)
+        .patch_record_leaf_with(RecordTag(SECTION_RECORD), 0, leaf_off, &orig, FORCED)
         .expect("identity patch");
     let reopened = Rpt::read(std::io::Cursor::new(file)).expect("re-open");
     assert_eq!(
@@ -102,7 +102,7 @@ fn identity_patch_round_trips_logical() {
     );
 }
 
-/// uy6.15 — a same-size patch of a Section-name record changes exactly that decoded string and
+/// A same-size patch of a Section-name record changes exactly that decoded string and
 /// leaves every other logical byte untouched, and the re-encoded report re-opens cleanly.
 #[test]
 fn same_size_patch_changes_only_the_target() {
@@ -122,7 +122,7 @@ fn same_size_patch_changes_only_the_target() {
     assert_ne!(replacement, orig);
 
     let file = rpt
-        .patch_record_leaf(RecordTag(SECTION_RECORD), 0, leaf_off, &replacement)
+        .patch_record_leaf_with(RecordTag(SECTION_RECORD), 0, leaf_off, &replacement, FORCED)
         .expect("same-size patch");
     let reopened = Rpt::read(std::io::Cursor::new(file)).expect("re-open patched report");
     let after = contents_logical(&reopened);
@@ -152,7 +152,7 @@ fn same_size_patch_changes_only_the_target() {
     assert_ne!(patched_name, orig);
 }
 
-/// uy6.15 — the writer refuses an edit that would overrun the record's leaf (a length change).
+/// The writer refuses an edit that would overrun the record's leaf (a length change).
 #[test]
 fn patch_rejects_out_of_bounds_region() {
     let Some(rpt) = open("synthetic/single_group.rpt") else {
@@ -164,20 +164,26 @@ fn patch_rejects_out_of_bounds_region() {
     let too_long: Vec<u8> = orig.iter().copied().chain(std::iter::once(b'X')).collect();
     let far_off = leaf_off + 1_000_000;
     assert!(
-        rpt.patch_record_leaf(RecordTag(SECTION_RECORD), 0, far_off, &orig)
+        rpt.patch_record_leaf_with(RecordTag(SECTION_RECORD), 0, far_off, &orig, FORCED)
             .is_err(),
         "an offset past the leaf must be rejected"
     );
     // A region that starts in-bounds but overruns the leaf end is also rejected.
     let node_leaf_len = section_leaf_len(&rpt);
     assert!(
-        rpt.patch_record_leaf(RecordTag(SECTION_RECORD), 0, node_leaf_len - 1, &too_long)
-            .is_err(),
+        rpt.patch_record_leaf_with(
+            RecordTag(SECTION_RECORD),
+            0,
+            node_leaf_len - 1,
+            &too_long,
+            FORCED
+        )
+        .is_err(),
         "a region overrunning the leaf must be rejected"
     );
 }
 
-/// uy6.15 — a target record that does not exist is an error, not a silent no-op.
+/// A target record that does not exist is an error, not a silent no-op.
 #[test]
 fn patch_rejects_missing_record() {
     let Some(rpt) = open("synthetic/single_group.rpt") else {
@@ -185,13 +191,13 @@ fn patch_rejects_missing_record() {
         return;
     };
     assert!(
-        rpt.patch_record_leaf(RecordTag(0xDEAD), 0, 0, &[0])
+        rpt.patch_record_leaf_with(RecordTag(0xDEAD), 0, 0, &[0], FORCED)
             .is_err(),
         "an absent record type must be rejected"
     );
     // Present type, but not enough occurrences.
     assert!(
-        rpt.patch_record_leaf(RecordTag(SECTION_RECORD), 100_000, 0, &[0])
+        rpt.patch_record_leaf_with(RecordTag(SECTION_RECORD), 100_000, 0, &[0], FORCED)
             .is_err(),
         "an out-of-range occurrence index must be rejected"
     );
@@ -222,7 +228,7 @@ fn first_section_lp(rpt: &Rpt) -> (Vec<u8>, usize, usize, Vec<u8>) {
     panic!("no length-prefixed Section name found");
 }
 
-/// uy6.17 — a LONGER Section name: replace the inner length-prefixed name (its `u32-BE` length +
+/// A LONGER Section name: replace the inner length-prefixed name (its `u32-BE` length +
 /// text) with a longer one, recomputing the record (and every ancestor) length prefix. The
 /// re-encoded report re-opens, the stream grows by exactly the delta, and the decoder reads back the
 /// new longer name.
@@ -253,7 +259,7 @@ fn resize_grows_a_section_name() {
     let region = prefix_off..prefix_off + 4 + decl_len;
     let old_region_len = region.len();
     let file = rpt
-        .patch_record_leaf_resize(RecordTag(SECTION_RECORD), 0, region, &new_bytes)
+        .patch_record_leaf_resize_with(RecordTag(SECTION_RECORD), 0, region, &new_bytes, FORCED)
         .expect("resize (grow) a Section name");
     let reopened = Rpt::read(std::io::Cursor::new(file)).expect("re-open resized report");
     let after = contents_logical(&reopened);
@@ -278,7 +284,7 @@ fn resize_grows_a_section_name() {
     assert_ne!(trim(&patched), trim(&name));
 }
 
-/// uy6.17 — a SHORTER Section name shrinks the stream by exactly the delta and re-reads correctly.
+/// A SHORTER Section name shrinks the stream by exactly the delta and re-reads correctly.
 #[test]
 fn resize_shrinks_a_section_name() {
     let Some(rpt) = open("synthetic/single_group.rpt") else {
@@ -305,7 +311,7 @@ fn resize_shrinks_a_section_name() {
     let old_region_len = region.len();
 
     let file = rpt
-        .patch_record_leaf_resize(RecordTag(SECTION_RECORD), 0, region, &new_bytes)
+        .patch_record_leaf_resize_with(RecordTag(SECTION_RECORD), 0, region, &new_bytes, FORCED)
         .expect("resize (shrink) a Section name");
     let reopened = Rpt::read(std::io::Cursor::new(file)).expect("re-open shrunk report");
     let after = contents_logical(&reopened);
@@ -317,7 +323,7 @@ fn resize_shrinks_a_section_name() {
     assert_eq!(trim(&patched), trim(&new_name));
 }
 
-/// uy6.17 — a same-length resize is byte-identical to a same-size patch (no length prefix changes).
+/// A same-length resize is byte-identical to a same-size patch (no length prefix changes).
 #[test]
 fn resize_same_length_matches_same_size_patch() {
     let Some(rpt) = open("synthetic/single_group.rpt") else {
@@ -330,22 +336,23 @@ fn resize_same_length_matches_same_size_patch() {
         .map(|&b| if b == b'Z' { b'A' } else { b + 1 })
         .collect();
     let via_resize = rpt
-        .patch_record_leaf_resize(
+        .patch_record_leaf_resize_with(
             RecordTag(SECTION_RECORD),
             0,
             leaf_off..leaf_off + orig.len(),
             &replacement,
+            FORCED,
         )
         .expect("same-length resize");
     let via_patch = rpt
-        .patch_record_leaf(RecordTag(SECTION_RECORD), 0, leaf_off, &replacement)
+        .patch_record_leaf_with(RecordTag(SECTION_RECORD), 0, leaf_off, &replacement, FORCED)
         .expect("same-size patch");
     let a = contents_logical(&Rpt::read(std::io::Cursor::new(via_resize)).unwrap());
     let b = contents_logical(&Rpt::read(std::io::Cursor::new(via_patch)).unwrap());
     assert_eq!(a, b, "a same-length resize equals the same-size patch");
 }
 
-/// uy6.17 — guard probes: a missing record, and a region that overruns the leaf, both `Err` with no
+/// Guard probes: a missing record, and a region that overruns the leaf, both `Err` with no
 /// file produced.
 #[test]
 fn resize_guards_reject_bad_edits() {
@@ -355,16 +362,28 @@ fn resize_guards_reject_bad_edits() {
     };
     // Absent record type.
     assert!(rpt
-        .patch_record_leaf_resize(RecordTag(0xDEAD), 0, 0..1, &[0, 1, 2])
+        .patch_record_leaf_resize_with(RecordTag(0xDEAD), 0, 0..1, &[0, 1, 2], FORCED)
         .is_err());
     // Region overruns the leaf.
     let leaf_len = section_leaf_len(&rpt);
     assert!(rpt
-        .patch_record_leaf_resize(RecordTag(SECTION_RECORD), 0, 0..leaf_len + 5, b"xyz")
+        .patch_record_leaf_resize_with(
+            RecordTag(SECTION_RECORD),
+            0,
+            0..leaf_len + 5,
+            b"xyz",
+            FORCED
+        )
         .is_err());
     // Region far past the leaf.
     assert!(rpt
-        .patch_record_leaf_resize(RecordTag(SECTION_RECORD), 0, 1_000_000..1_000_001, b"z")
+        .patch_record_leaf_resize_with(
+            RecordTag(SECTION_RECORD),
+            0,
+            1_000_000..1_000_001,
+            b"z",
+            FORCED
+        )
         .is_err());
 }
 
@@ -456,6 +475,12 @@ fn collect_rpts(dir: &Path, out: &mut Vec<PathBuf>) {
 
 /// The Section record tag (`0x008c`) — a leaf record whose name is an ASCII run in its leaf.
 const SECTION_RECORD: u16 = 0x008c;
+
+/// These tests exercise the writer's *mechanics* — round-tripping, length recompute, bounds
+/// rejection — over the Section record, which is not on the cleared-for-editing allow-list. The
+/// clearance gate is a separate concern with its own tests, so it is forced out of the way here
+/// rather than being satisfied by clearing a record type just to keep a test green.
+const FORCED: EditPolicy = EditPolicy::Forced;
 
 /// The `(leaf_offset, bytes)` of the first Section record's name — the first alphabetic ASCII run in
 /// the first `0x008c` record's demasked leaf.

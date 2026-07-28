@@ -6,15 +6,15 @@ use crate::codec::RecordNode;
 use crate::container::SummaryInformation;
 use crate::model::{
     Alignment, Area, AreaSectionKind, ChartDefinition, ChartGraphType, ChartGridType,
-    ChartLegendPosition, Color, ConnectionInfo, DataDefinition, Database, DbField, DbFieldDef,
-    FieldDef, FieldKindData, FieldObject, FieldRefKind, FieldValueType, Font, FontColor, Formula,
-    FormulaField, FormulaVariable, FormulaVariableScope, Group, Hyperlink, HyperlinkType,
-    LineStyle, Node, ParameterField, ParameterValue, ParameterValueKind, PrintOptions,
-    RecordTypeCount, Rect, Report, ReportDefinition, ReportObject, ReportObjectKind,
-    ResetConditionType, RunningTotalField, SaveMetadataEntry, Section, Sort, SummaryInfo,
-    SummaryOperation, Table, TableJoinType, TableLink, TextObject, Twips, Unknown, Value,
+    ChartLegendPosition, Color, CommandParameter, ConnectionInfo, DataDefinition, Database,
+    DbField, DbFieldDef, FieldDef, FieldKindData, FieldObject, FieldRefKind, FieldValueType, Font,
+    FontColor, Formula, FormulaField, FormulaVariable, FormulaVariableScope, Group, Hyperlink,
+    HyperlinkType, LineStyle, ParameterField, ParameterValue, ParameterValueKind, PrintOptions,
+    Rect, Report, ReportDefinition, ReportObject, ReportObjectKind, ResetConditionType,
+    RunningTotalField, SaveMetadataEntry, Section, Sort, SummaryField, SummaryInfo,
+    SummaryOperation, Table, TableJoinKind, TableLink, TableLinkOperator, TextObject, Twips,
 };
-use crate::records::{RecordStream, RecordTag};
+use crate::records::{Node, RecordStream, RecordTypeCount, Unknown, Value};
 
 // Every record-type `u16` is named once in `records::rtype`; glob-import them so this module and
 // its submodules (via `use super::*`) classify records by name.
@@ -22,6 +22,7 @@ pub(crate) use crate::records::rtype::*;
 
 const MAX_STRING_BYTES: i32 = 65534; // Crystal's max string field length: 32767 chars × 2 bytes
 
+pub(crate) mod annotate;
 mod common;
 mod data_def;
 mod database;
@@ -35,27 +36,34 @@ use common::*;
 use data_def::*;
 use database::*;
 use dom::*;
+pub(crate) use dom::{build_inventory, build_record_dom};
 pub(crate) use parameters::parse_report_parameters;
 use parameters::*;
 use print_options::*;
 use report_def::*;
-pub(crate) use subreport::{
-    resolve_sf_handle, subreport_link_bindings, subreport_links, subreport_param_index_names,
-};
+pub(crate) use subreport::{raise_subreports, resolve_sf_handle, subreport_links};
 
 /// The 5-byte marker that begins the report-header's saved-environment trailer (`0x0064`),
 /// immediately following the `EnableSavePreviewPicture` flag byte and preceding the
 /// length-prefixed timezone string.
 const PREVIEW_TRAILER_MARKER: [u8; 5] = [0x10, 0x01, 0x00, 0x00, 0x00];
 
-/// Decode `EnableSavePreviewPicture` from a `0x0064` (report-header) leaf: the byte directly
-/// before the saved-environment trailer marker. Returns `None` when the trailer is absent
-/// (older/edge formats), in which case the caller keeps the thumbnail-presence fallback.
-fn find_preview_flag(leaf: &[u8]) -> Option<bool> {
+/// The report-header option flag byte: the byte directly before the saved-environment trailer
+/// marker in the `0x0064` leaf. Returns `None` when the trailer is absent (older/edge formats).
+/// This one byte carries two report options — `EnableSavePreviewPicture` (nonzero) and
+/// `EnableVerifyOnEveryPrint` (bit 0).
+fn find_report_option_byte(leaf: &[u8]) -> Option<u8> {
     leaf.windows(PREVIEW_TRAILER_MARKER.len())
         .position(|w| w == PREVIEW_TRAILER_MARKER)
         .filter(|&i| i >= 1)
-        .map(|i| leaf[i - 1] != 0)
+        .map(|i| leaf[i - 1])
+}
+
+/// Decode `EnableSavePreviewPicture` from a `0x0064` (report-header) leaf: the option flag byte
+/// directly before the saved-environment trailer marker is nonzero. Returns `None` when the trailer
+/// is absent, in which case the caller keeps the thumbnail-presence fallback.
+fn find_preview_flag(leaf: &[u8]) -> Option<bool> {
+    find_report_option_byte(leaf).map(|b| b != 0)
 }
 
 /// A `(Julian-day, time-fraction)` timestamp pair inside a `0x0142` re-import descriptor: two
@@ -69,7 +77,7 @@ fn read_reimport_timestamp(b: &[u8], off: usize) -> crate::model::ReimportTimest
 
 /// Decode a `0x0142` `SubreportReimportInfo` leaf:
 /// `[u32 BE L][source path: L bytes incl NUL][imported_at: 2×u32][enum 1B][source_saved_at: 2×u32]`.
-/// The path is empty (`L == 1`) across the corpus; the trailer is a fixed 17 bytes.
+/// The path is normally empty (`L == 1`); the trailer is a fixed 17 bytes.
 fn decode_reimport_info(leaf: &[u8]) -> crate::model::SubreportReimportInfo {
     let path_len = u32_be(leaf, 0).unwrap_or(0) as usize;
     let path_end = 4 + path_len;
@@ -122,7 +130,8 @@ fn decode_designer_state(tree: &[RecordNode], logical: &[u8]) -> crate::model::D
 
 /// Project the `Contents` record stream (and report-level metadata) into a [`Report`].
 ///
-/// Total by construction: every decoded record is reflected in the record inventory, in type order.
+/// The raw record DOM and its per-type inventory are not built here — they are projected on demand
+/// from the substrate (see [`build_record_dom`]/[`build_inventory`] and [`crate::Rpt::record_dom`]).
 pub(crate) fn raise(
     contents: Option<&RecordStream>,
     qe: Option<&RecordStream>,
@@ -164,8 +173,6 @@ pub(crate) fn raise(
         if let Some(h) = stream.header() {
             report.version = h.version;
         }
-        report.record_inventory = inventory(stream);
-        report.records = raise_dom(stream);
         let tree = stream.record_tree();
         let logical = stream.logical_bytes();
         // Saved-data signals, read structurally (the saved rows themselves are never decoded):
@@ -192,6 +199,25 @@ pub(crate) fn raise(
                 // saving, so it is a lossy proxy — this flag is the source.
                 if let Some(p) = find_preview_flag(&leaf) {
                     report.report_options.save_preview_picture = p;
+                    // The same stored flag is the SDK's `SummaryInfo.IsSavingWithPreview`; surface it there
+                    // too so the summary-info view is self-consistent (raise_summary can't see this leaf).
+                    report.summary_info.save_with_preview = p;
+                }
+                // `EnableVerifyOnEveryPrint` is bit 0 of the same report-header option flag byte.
+                if let Some(b) = find_report_option_byte(&leaf) {
+                    report.report_options.enable_verify_on_every_print = b & 0x01 != 0;
+                }
+            }
+            // The report-level data-source options record (`0x0160`, one per report) stores the two
+            // NULL-conversion flags as bytes in its leaf: `ConvertNullFieldToDefault` at offset 4 and
+            // `ConvertOtherNullsToDefault` at offset 28 (0 = false, 1 = true).
+            if root.rtype == DATA_SOURCE_OPTIONS {
+                let leaf = root.leaf_bytes(logical);
+                if let Some(&b) = leaf.get(4) {
+                    report.report_options.convert_null_field_to_default = b != 0;
+                }
+                if let Some(&b) = leaf.get(28) {
+                    report.report_options.convert_other_nulls_to_default = b != 0;
                 }
             }
         }
@@ -224,7 +250,7 @@ pub(crate) fn raise(
         report.data_definition =
             raise_data_definition(&tree, logical, &known_db_fields, &field_types);
         report.report_definition =
-            raise_report_definition(&tree, logical, &report.data_definition.groups);
+            raise_report_definition(&tree, logical, &report.data_definition.groups, &field_types);
         report.print_options = raise_print_options(&tree, logical);
         // Save-time environment metadata (`0x0178`): each record's leaf is a length-prefixed
         // key/value string pair (`read_lp_string` reads the key, then the value from just past it).
@@ -251,7 +277,7 @@ pub(crate) fn raise(
             }
         }
         // Subreport re-import provenance (`0x0142`, one per report): source `.rpt` path + import
-        // timestamps. Structural — not on the XML surface.
+        // timestamps. Structural — not on any output surface.
         report.reimport = nodes_where(&tree, |n| n.rtype == REIMPORT_INFO)
             .first()
             .map(|n| decode_reimport_info(&n.leaf_bytes(logical)));
@@ -282,8 +308,8 @@ pub(crate) fn raise(
     }
 
     // Parameter field definitions live in the `PromptManager` stream (CRMetaObjects XML). Only the
-    // stored properties are raised here; the derived `InUse`/`DataFetching` usage flags are an
-    // aggregation computed in the export layer (see `rpt xml-dump`), like `Field.UseCount`.
+    // stored properties are raised here; the engine's `InUse`/`DataFetching` usage flags are an
+    // aggregation over the whole report, not stored, and rpt-rs does not report them.
     //
     // `HasCurrentValue` is True iff the parameter has a saved current value in the
     // `ReportParametersStream` (`!current_values.is_empty()` per param).

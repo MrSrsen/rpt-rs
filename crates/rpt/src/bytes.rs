@@ -93,7 +93,7 @@ pub(crate) fn u32_le(b: &[u8], off: usize) -> Option<u32> {
 
 /// A checked sequential reader over leaf bytes. Every read is `Option` (never panics), so a
 /// decoder over a short or unexpected leaf degrades field-by-field instead of dropping the
-/// whole record — the tolerance the parity corpus depends on.
+/// whole record.
 pub(crate) struct Cursor<'a> {
     b: &'a [u8],
     pos: usize,
@@ -248,7 +248,27 @@ pub(crate) fn read_lp_string(bytes: &[u8]) -> Option<(String, usize)> {
 /// rather than rejecting them, for leaves whose string span is framed by a preceding fixed binary
 /// header (chart/cross-tab records) rather than validated as clean text.
 pub(crate) fn read_be_lp_string_lossy(b: &[u8], off: usize) -> Option<(String, usize)> {
-    read_lp_u32(b, off, 0..=4096, LpText::Lossy, false)
+    read_be_lp_string_lossy_cap(b, off, 4096)
+}
+
+/// [`read_be_lp_string_lossy`] with a caller-chosen length `cap` (its default is 4096). Some leaves
+/// frame longer positional slots (e.g. a connection record's driver/type/server strings).
+pub(crate) fn read_be_lp_string_lossy_cap(
+    b: &[u8],
+    off: usize,
+    cap: usize,
+) -> Option<(String, usize)> {
+    read_lp_u32(b, off, 0..=cap, LpText::Lossy, false)
+}
+
+/// [`read_be_lp_string_lossy_cap`] returning the **absolute** end offset (`off + consumed`) rather
+/// than the bytes consumed — for positional slot chains that thread an absolute cursor between reads.
+pub(crate) fn read_be_lp_string_lossy_at(
+    b: &[u8],
+    off: usize,
+    cap: usize,
+) -> Option<(String, usize)> {
+    read_be_lp_string_lossy_cap(b, off, cap).map(|(s, used)| (s, off + used))
 }
 
 #[cfg(test)]

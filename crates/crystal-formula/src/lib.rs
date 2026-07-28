@@ -15,14 +15,14 @@
 //! - [`ast`] — the AST node model.
 //! - [`parser`] — error-recovering recursive descent with the operator-precedence ladder
 //!   ([`parse`]); the foundation for evaluation, type deduction, and an LSP.
-//! - [`refs`] — token-stream reference extraction ([`references`]) used by `UseCount` /
-//!   parameter-usage counting; cannot fail on an unparseable construct.
+//! - [`refs`] — token-stream reference extraction ([`references`]): what a body names, and the call
+//!   each name sits inside; cannot fail on an unparseable construct.
 //! - [`validate`](mod@validate) — a semantic diagnostics pass over the AST (`validate` /
 //!   `validate_str`): unknown functions, arity, operator type errors, and (with an injected symbol
 //!   context) unknown references — the source for the Crystal LSP.
 //!
-//! The `UseCount` counting path routes through [`refs`], not [`parser`], so partial parses never
-//! affect `Field.UseCount`.
+//! [`refs`] reads the token stream rather than the AST, so a body the [`parser`] can only partly
+//! recover still yields every reference it names.
 //!
 //! # Example
 //!
@@ -54,15 +54,18 @@ pub mod token;
 pub mod types;
 pub mod validate;
 
-pub use ast::{Node, VarScope};
+pub use ast::{Node, NodeKind, VarScope};
 #[cfg(any(test, feature = "differential"))]
 pub use eval::Evaluator;
-pub use eval::{is_print_state_special, is_record_nav, EvalContext, EvalError, Value};
+pub use eval::{
+    is_print_state_special, is_record_nav, EvalContext, EvalError, NullTreatment, SpannedEvalError,
+    Value,
+};
 pub use parser::{Diagnostic, Severity};
 pub use refs::Ref;
 pub use token::{
-    brace_groups, last_segment, op, short_name, split_reference, strip_braces, RefKind, Syntax,
-    Token, TokenKind,
+    brace_groups, last_segment, op, short_name, split_reference, strip_braces, RefKind, Span,
+    Syntax, Token, TokenKind,
 };
 pub use types::{deduce_type, func_id, string_max_bytes, ResultKind};
 pub use validate::{validate, validate_str, ValidationContext};
@@ -78,7 +81,7 @@ pub fn parse(src: &str, syntax: Syntax) -> (Node, Vec<Diagnostic>) {
 }
 
 /// Extract every reference (Crystal syntax) with its enclosing-call context (see
-/// [`refs::references`]). This is the entry point engine counting uses.
+/// [`refs::references`]).
 pub fn references(body: &str) -> impl Iterator<Item = Ref> {
     refs::references(body).into_iter()
 }
@@ -88,6 +91,10 @@ pub fn references(body: &str) -> impl Iterator<Item = Ref> {
 /// tail, and a bare time — yielding [`Value::Date`], [`Value::Time`], or [`Value::DateTime`]. Errors
 /// on any other spelling. Exposed so consumers (e.g. SQL push-down) can reuse the one literal parser
 /// instead of re-implementing it.
+///
+/// # Errors
+///
+/// [`EvalError::BadArg`] if `src` is not one of the recognized spellings.
 pub fn parse_date_literal(src: &str) -> Result<Value, EvalError> {
     eval::parse_date_literal(src)
 }

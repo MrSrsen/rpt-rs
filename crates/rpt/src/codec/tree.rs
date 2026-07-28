@@ -254,7 +254,7 @@ fn serialize_seq(
 }
 
 /// Replace a leaf region of `target` with `new_bytes` of a **possibly different length**, returning
-/// the rewritten logical stream — the length-changing writer primitive (phase-2).
+/// the rewritten logical stream — the length-changing writer primitive.
 ///
 /// TSLV length prefixes are relative and nested: a record's stored length covers its whole content
 /// span, *including* every nested child. So growing/shrinking a leaf by `Δ` grows/shrinks the

@@ -40,7 +40,7 @@ These streams carry the report itself. The big ones (`Contents`, `QESession`, `P
 compressed; see [Stream decoding](03-stream-decoding.md).
 
 | Stream               | What it holds                                                                                                                                                                                                          |
-| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `Contents`           | **The report definition** — the layout, formulas, groups, sections, and report objects. The primary target of decoding.                                                                                                |
 | `QESession`          | The "Query Engine" session: data-source connections, tables, fields, joins, and SQL commands.                                                                                                                          |
 | `PromptManager`      | Parameter prompting definitions, stored as an XML object set.                                                                                                                                                          |
@@ -56,30 +56,35 @@ directly. A report's subreport count tracks its complexity.
 ### Saved data
 
 When a report is saved _with data_, the cached rows are kept in their own top-level streams, indexed like the other
-repeated entries. See [Saved data](10-saved-data.md) for the batch layout.
+repeated entries. See [Saved data](06-saved-data.md) for the batch layout.
 
-| Stream                     | What it holds                                                                   |
-| -------------------------- | ------------------------------------------------------------------------------- |
-| `DataSourceManager N`      | The saved-data batch directory — which batches exist and how to read them.      |
-| `SavedRecordsStream N`     | The saved-record index: the cached rowset's rows.                               |
-| `MemoValuesStream N`       | Saved variable-length field values (memo/blob columns) referenced by the rows.  |
+| Stream                     | What it holds                                                                     |
+|----------------------------|-----------------------------------------------------------------------------------|
+| `DataSourceManager N`      | The saved-data batch directory — which batches exist and how to read them.        |
+| `SavedRecordsStream N`     | The saved-record index: the cached rowset's rows.                                 |
+| `MemoValuesStream N`       | Saved variable-length field values (memo/blob columns) referenced by the rows.    |
 | `ReportParametersStream N` | The saved parameter current values — itself a TSLV record stream like `Contents`. |
 
 ### Embedded objects and other entries
 
 | Entry                                                   | What it is                                                                                               |
-| ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+|---------------------------------------------------------|----------------------------------------------------------------------------------------------------------|
 | `Embedding N` (with inner `CompObj`, `Ole`, `CONTENTS`) | An embedded OLE object — an image, logo, or chart. The inner `CONTENTS` is often itself a nested format. |
 | `CHART N`                                               | A chart definition stream.                                                                               |
 | `zlibBLOB N`                                            | A zlib-compressed payload.                                                                               |
-| `CrystalReportDesignerStream`                           | Designer-only metadata (not always present).                                                             |
-| `ExportFormatOptionsStream N`                           | Saved export options.                                                                                    |
+| `CrystalReportDesignerStream`                           | Designer-only metadata: a 114-byte design-time editor state block (design-time reports only).            |
+| `ExportFormatOptionsStream N`                           | Saved export options. Classified by the reader but absent from every report in the corpus.                |
+
+Several further small top-level streams are enumerated and byte-preserved but not modelled — the engine's own side
+caches, all of them derivable from the report definition: `TotallerStream N` (summary/running-total scratch),
+`AnalysisGridsStream N` (cross-tab/OLAP grid cache), `ConstantRecordsStream N` and `FormulaRecordsStream N` (formula
+constant/record caches), and `ViewInformationStream` (preview view state).
 
 ## How `rpt-rs` uses the container
 
 The library opens the compound file, identifies each entry by name (a fixed classification: any unrecognized entry still
 has a stable identity), and hands the report streams to the stream decoder. Streams the library does not model are still
-enumerable — the [`rpt streams`](08-usage.md) command reports every stream and its record coverage.
+enumerable — the [`rpt streams`](11-usage.md) command reports every stream and its record coverage.
 
 To list the streams in a file and how much of each the library decodes:
 
@@ -93,3 +98,7 @@ sequence of records.
 [MS-CFB]: https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-cfb/
 [MS-OLEPS]: https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-oleps/
 [`cfb`]: https://crates.io/crates/cfb
+
+---
+
+← [Format overview](01-format-overview.md) · [Index](README.md) · **Next:** [Stream decoding](03-stream-decoding.md) →

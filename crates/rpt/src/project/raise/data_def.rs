@@ -20,6 +20,9 @@ pub(super) fn raise_data_definition(
     // `0x0088` across the pre-order walk; the one in effect when a group appears (the immediately
     // preceding one) is that group's format.
     let mut pending_group_format: Option<crate::model::GroupAreaFormat> = None;
+    // The `0x0088` GroupAreaFormat also carries the group's per-level `GroupIndent` (leaf `[6..8]`),
+    // which belongs to a group's hierarchical-grouping options; staged alongside the format.
+    let mut pending_group_indent: Option<crate::model::Twips> = None;
     // Group summary sorts (a `0x29` record with a `0x02` marker) are emitted, in group order,
     // before their groups' `0xe5` records — queue each and bind it to the next raised group (FIFO).
     let mut pending_group_sorts: std::collections::VecDeque<(String, u8)> =
@@ -34,6 +37,13 @@ pub(super) fn raise_data_definition(
             GROUP => {
                 if let Some(mut g) = raise_group(node, logical, field_types) {
                     g.area_format = pending_group_format.take().unwrap_or_default();
+                    // Attach the group's per-level indent (from its `0x0088`) to its hierarchical
+                    // options, if this is a hierarchical group.
+                    if let (Some(h), Some(indent)) =
+                        (g.hierarchical_options.as_mut(), pending_group_indent.take())
+                    {
+                        h.group_indent = indent;
+                    }
                     // A queued summary sort replaces the group's default field sort: the sort field
                     // becomes the group-scoped summary expression, its direction resolved from the
                     // group's Top N limit. It is not also emitted as a record sort.
@@ -49,7 +59,9 @@ pub(super) fn raise_data_definition(
                 }
             }
             GROUP_OPTIONS => {
-                pending_group_format = Some(decode_group_area_format(&node.leaf_bytes(logical)));
+                let lb = node.leaf_bytes(logical);
+                pending_group_format = Some(decode_group_area_format(&lb));
+                pending_group_indent = Some(decode_group_indent(&lb));
             }
             // A `0x00e9` specified-order group value follows its group's `0xe5` (flat siblings), so it
             // binds to the most-recently-raised report group. Grid `0xe5` records raise to `None`, so
@@ -86,6 +98,8 @@ pub(super) fn raise_data_definition(
     let formulas = raise_formulas(tree, logical, known_db_fields, &groups);
     field_definitions.extend(formulas.user_formulas);
     field_definitions.extend(raise_running_totals(tree, logical));
+    field_definitions.extend(raise_summaries(tree, logical));
+    field_definitions.extend(raise_sql_expressions(tree, logical));
     DataDefinition {
         field_definitions,
         groups,
@@ -98,6 +112,7 @@ pub(super) fn raise_data_definition(
         summary_binding_fields: raise_summary_bindings(tree, logical),
         formula_variables: raise_formula_variables(tree, logical),
         field_manager_census: raise_field_manager_census(tree, logical),
+        custom_functions: formulas.custom_functions,
     }
 }
 
@@ -117,8 +132,8 @@ pub(super) fn decode_hierarchical_value(
     })
 }
 
-/// Decode the field-pool census from the `0x006e` `FieldManagerEntry` record (20-byte leaf, writer
-/// `fldmgrbs`, one per report): `[u32 BE database_fields][u16 BE formula-body-count-less-3][…]`.
+/// Decode the field-pool census from the `0x006e` `FieldManagerEntry` record (20-byte leaf, one per
+/// report): `[u32 BE database_fields][u16 BE formula-body-count-less-3][…]`.
 /// Returns `None` when the record is absent. The stored formula-body count omits the three built-in
 /// formulas, so it is reconstructed here (`+ 3`), matching the `0x0076` record count exactly.
 pub(super) fn raise_field_manager_census(
@@ -144,7 +159,7 @@ pub(super) fn raise_field_manager_census(
 /// the variable's declared FL result kind (mapped to [`FieldValueType`]) and
 /// `scope` its `FLScope` (`0`=Shared, `1`=Global; `Local` variables are not persisted). One
 /// [`FormulaVariable`] is materialised per `0x0118` found (the `0x0116` count is redundant). These are
-/// STRUCTURAL — no SDK accessor exposes them, so they are not on the XML surface.
+/// STRUCTURAL — no SDK accessor exposes them, so they are not on any output surface.
 pub(super) fn raise_formula_variables(tree: &[RecordNode], logical: &[u8]) -> Vec<FormulaVariable> {
     let mut out = Vec::new();
     for root in tree {
@@ -179,30 +194,17 @@ pub(super) fn raise_formula_variables(tree: &[RecordNode], logical: &[u8]) -> Ve
 /// report layout (the first `0x8a` area marker). Running totals (`0x7e` preceded by a `0x80` reset
 /// record) are excluded — they are decoded separately — and so are the chart/cross-tab data bindings,
 /// which live inside the layout (after the first area marker). Only the field-shaped summarized field
-/// (`table.field` or `@formula`) of each is returned, in document order. The UseCount counter
-/// reconciles these against the placed summaries to recover orphan summary definitions (see
+/// (`table.field` or `@formula`) of each is returned, in document order. Reconciling these against
+/// the placed summaries is what recovers the orphan summary definitions (see
 /// `DataDefinition.summary_binding_fields`).
 pub(super) fn raise_summary_bindings(tree: &[RecordNode], logical: &[u8]) -> Vec<String> {
-    let nodes = flatten(tree);
     let mut out = Vec::new();
-    for i in 0..nodes.len() {
-        let node = nodes[i];
-        // The layout region begins at the first area marker; summary definitions all precede it.
-        if node.rtype == AREA_MARKER {
-            break;
-        }
-        if node.rtype != SUMMARY_DEF {
-            continue;
-        }
-        // A running total is a `0x7e` immediately preceded by its `0x80` reset record — not a summary.
-        if i > 0 && nodes[i - 1].rtype == RT_RESET {
-            continue;
-        }
+    for node in summary_def_nodes(tree, true) {
         // The summarized field is the first field-shaped length-prefixed string in the record's own
         // leaf (`table.field` or `@formula`); the operation byte precedes it and the name is a child.
         if let Some(f) = own_lp_strings(node, logical)
             .into_iter()
-            .find(|s| s.contains('.') || s.starts_with('@'))
+            .find(|s| is_field_ref(s))
         {
             out.push(f);
         }
@@ -218,13 +220,26 @@ pub(super) struct Formulas {
     group_selection: Option<String>,
     saved_data_filter: Option<String>,
     /// Bodies of conditional/auxiliary formulas (running-total eval/reset conditions, section/object
-    /// conditional formulas) that are not user field definitions — kept for usage aggregation.
+    /// conditional formulas) that are not user field definitions.
     condition_formula_bodies: Vec<String>,
     /// Subset of `condition_formula_bodies`: only the running-total **condition** formulas (names
     /// ending `" Condition Formula"`). Kept separately because, unlike the section/object conditional
-    /// formulas, these are *not* attached to any section/object — so the UseCount counter must scan
-    /// them on their own to count their DB-field references without double-counting the attached ones.
+    /// formulas, these are *not* attached to any section/object, so a consumer walking the report's
+    /// objects reaches them only through this list.
     running_total_condition_formulas: Vec<String>,
+    /// Custom functions: formula records whose body opens with the reserved `Function (args) …`
+    /// header. Not formula fields — the engine lists them under `CustomFunctions` — so they are
+    /// collected here rather than in `user_formulas`.
+    custom_functions: Vec<crate::model::CustomFunction>,
+}
+
+/// Whether a formula body is a Crystal *custom function* declaration (opens with the reserved
+/// `Function` keyword then `(`). The keyword can only begin a custom-function declaration — a report
+/// formula body never starts with it — so the body-shape check is exact.
+fn is_custom_function_body(body: &str) -> bool {
+    body.trim_start()
+        .strip_prefix("Function")
+        .is_some_and(|rest| rest.trim_start().starts_with('('))
 }
 
 /// Crystal's reserved section/object conditional-formula names — these are *not* user formula
@@ -315,15 +330,23 @@ pub(super) fn raise_formulas(
 ) -> Formulas {
     let nodes = nodes_where(tree, |n| n.rtype == FORMULA || n.rtype == NAMED_VALUE);
     let mut out = Formulas::default();
-    let mut pending: Option<(String, crate::model::FormulaSyntax)> = None;
+    let mut pending: Option<(
+        String,
+        crate::model::FormulaSyntax,
+        crate::model::FormulaNullTreatment,
+    )> = None;
     for n in nodes {
         if n.rtype == FORMULA {
             let leaf = n.leaf_bytes(logical);
-            pending = Some((formula_body(n, logical), formula_syntax(&leaf)));
+            pending = Some((
+                formula_body(n, logical),
+                formula_syntax(&leaf),
+                formula_null_treatment(&leaf),
+            ));
             continue;
         }
         // NAMED_VALUE: names the pending body, if any (db-field/parameter names have none).
-        let Some((body, syntax)) = pending.take() else {
+        let Some((body, syntax, null_treatment)) = pending.take() else {
             continue;
         };
         let Some((name, after)) = read_lp_string(&n.leaf_bytes(logical)) else {
@@ -337,9 +360,14 @@ pub(super) fn raise_formulas(
             // pattern (a `#N` index and the " Order" suffix), not merely " #", so a user formula
             // legitimately named with a trailing " #" is not dropped.
             n if n.contains(" #") && n.ends_with(" Order") => {}
+            // A cross-tab with no summarized field carries an empty-bodied "No Summarized Field"
+            // placeholder in the formula stream — an internal sentinel, not a user formula field (the
+            // engine omits it from its formula collection), so drop it. Gated on an empty body so a
+            // real user formula that happened to take this name is not lost.
+            "No Summarized Field" if body.is_empty() => {}
             // Running-total eval/reset condition formulas and section/object conditional formulas:
             // not user field definitions, but their bodies are real stored formula text (and may
-            // reference parameters), so keep them for the export layer's usage aggregation.
+            // reference parameters), so keep them — they are stored facts nothing else records.
             n if n.ends_with(" Condition Formula") || SECTION_FORMULA_NAMES.contains(&n) => {
                 if !body.is_empty() {
                     if n.ends_with(" Condition Formula") {
@@ -347,6 +375,16 @@ pub(super) fn raise_formulas(
                     }
                     out.condition_formula_bodies.push(body);
                 }
+            }
+            // A custom function: its body opens with the reserved `Function (args) …` header. The
+            // engine lists these under `CustomFunctions`, not the formula-field collection — the
+            // `0x71` name is the function's identifier and the body carries its arg list + return type.
+            _ if is_custom_function_body(&body) => {
+                out.custom_functions.push(crate::model::CustomFunction {
+                    name,
+                    syntax,
+                    text: body,
+                });
             }
             _ => {
                 // A user formula field. The engine re-compiles every formula at load time; one
@@ -385,6 +423,7 @@ pub(super) fn raise_formulas(
                         options: 0,
                         number_of_bytes,
                         syntax,
+                        null_treatment,
                     }),
                     ..Default::default()
                 });
@@ -405,6 +444,30 @@ pub(super) fn raise_formulas(
 /// summarized-field reference) immediately preceded by its `0x80` reset record (byte 0 = reset
 /// condition); the `0x7e`'s `0x71` child names it and gives its value type + byte length. A
 /// standalone `0x7e` (no preceding `0x80`) is a summary, handled elsewhere.
+/// The `SecondarySummarizedField` of a `0x7e` summary / running-total record, or an empty string when
+/// there is none. `off` is the leaf offset immediately after the primary field reference.
+///
+/// Each summarized field is serialized as a length-prefixed field reference followed by a fixed 3-byte
+/// value descriptor (`[type][00][bytes]`, e.g. `01 00 04` for a Number formula, `00 00 03` for a
+/// database field). A record that carries a second summarized field writes a full second field
+/// serialization right after the primary's descriptor — so the secondary field reference begins at
+/// `off + 3`. A record with no second field instead writes the record's fixed no-field trailer there
+/// (`00 00 00 01 00 00 ff ff …`), whose leading `u32` reads as an empty/short non-field string that
+/// `is_field_ref` rejects.
+///
+/// This is a stored fact, not gated on the operation: a running total added through
+/// `RunningTotalFieldController.Add` self-mirrors its secondary field to equal the primary, so the
+/// second serialization is present and equals the first; one added in the designer, and a plain
+/// summary, omit it. Reading the actual second field reproduces both cases (emit `==primary` vs
+/// omit) directly from the bytes.
+fn read_secondary_field(leaf: &[u8], off: usize) -> String {
+    leaf.get(off + 3..)
+        .and_then(read_lp_string)
+        .map(|(s, _)| s)
+        .filter(|s| is_field_ref(s))
+        .unwrap_or_default()
+}
+
 pub(super) fn raise_running_totals(tree: &[RecordNode], logical: &[u8]) -> Vec<FieldDef> {
     let nodes = flatten(tree);
     let mut out = Vec::new();
@@ -422,11 +485,17 @@ pub(super) fn raise_running_totals(tree: &[RecordNode], logical: &[u8]) -> Vec<F
         }
         let leaf = node.leaf_bytes(logical);
         let operation = SummaryOperation::from_code(i32::from(leaf.first().copied().unwrap_or(0)));
-        let summarized_field = leaf
-            .get(4..)
-            .and_then(read_lp_string)
-            .map(|(s, _)| s)
-            .unwrap_or_default();
+        // Leaf byte 0 = operation, byte 1 = a constant `0` separator, bytes 2..4 = the operation
+        // parameter (`u16` BE, the archive's scalar convention): the N of NthLargest/NthSmallest/
+        // NthMostFrequent or the target percentile of Percentile; 0 for every other operation.
+        let operation_parameter = u16_be(&leaf, 2).map_or(0, i32::from);
+        let (summarized_field, primary_consumed) =
+            leaf.get(4..).and_then(read_lp_string).unwrap_or_default();
+        // A running total added through the controller API self-mirrors its secondary summarized field
+        // to the primary, storing a full second field serialization after the primary's 3-byte value
+        // descriptor; one added in the designer, and a plain summary, omit it. See
+        // [`read_secondary_field`].
+        let secondary_summarized_field = read_secondary_field(&leaf, 4 + primary_consumed);
         // The `0x71` child: name + value-type code (at the byte after the name) + NumberOfBytes.
         let Some(child) = node.children.iter().find(|c| c.rtype == NAMED_VALUE) else {
             continue;
@@ -471,15 +540,14 @@ pub(super) fn raise_running_totals(tree: &[RecordNode], logical: &[u8]) -> Vec<F
             _ => Eval::from_code(i32::from(reset_bytes.get(3).copied().unwrap_or(0))),
         };
         // An `OnChangeOfField` evaluate/reset condition names the field whose change drives it in the
-        // `0x80` record's own leaf (a field-shaped LP string, e.g. `table.field`). The engine holds it
-        // as a persistent field reference (it counts toward that field's UseCount); an
+        // `0x80` record's own leaf (a field-shaped LP string, e.g. `table.field`). An
         // `OnChangeOfGroup`/`OnFormula`/`NoCondition` condition has no such direct field ref here.
         let on_change_field = if reset == ResetConditionType::OnChangeOfField
             || evaluation == crate::model::EvaluationConditionType::OnChangeOfField
         {
             own_lp_strings(reset_node, logical)
                 .into_iter()
-                .find(|s| s.contains('.') || s.starts_with('@'))
+                .find(|s| is_field_ref(s))
                 .unwrap_or_default()
         } else {
             String::new()
@@ -491,11 +559,110 @@ pub(super) fn raise_running_totals(tree: &[RecordNode], logical: &[u8]) -> Vec<F
             kind: FieldKindData::RunningTotal(RunningTotalField {
                 operation,
                 summarized_field,
-                operation_parameter: 0,
+                secondary_summarized_field,
+                operation_parameter,
                 evaluation,
                 reset,
                 on_change_field,
             }),
+            ..Default::default()
+        });
+    }
+    out
+}
+
+/// Raise **summary** field definitions (`ISummaryField`). Each is a standalone `0x7e` record (not
+/// preceded by a `0x80` running-total reset) appearing before the report layout: byte 0 is the
+/// aggregate operation, the summarized field is a length-prefixed reference at byte 4, and the
+/// `0x71` child is the fixed header `00 00 00 01 00 <vt> 00 <nbytes>` (value-type code at offset 5,
+/// byte length at offset 7). Unlike a running total, a summary carries no stored name, and its group
+/// scope is not in the record — the same summary definition is stored once per placement (group
+/// footer / report footer), so `group_index` is left `None`; the placement recovers the scope.
+pub(super) fn raise_summaries(tree: &[RecordNode], logical: &[u8]) -> Vec<FieldDef> {
+    let mut out = Vec::new();
+    for node in summary_def_nodes(tree, true) {
+        let leaf = node.leaf_bytes(logical);
+        let operation = SummaryOperation::from_code(i32::from(leaf.first().copied().unwrap_or(0)));
+        // Leaf byte 0 = operation, byte 1 = a constant `0` separator, bytes 2..4 = the operation
+        // parameter (`u16` BE): the N of NthLargest/NthSmallest/NthMostFrequent or the target
+        // percentile of Percentile; 0 for every other operation.
+        let operation_parameter = u16_be(&leaf, 2).map_or(0, i32::from);
+        let Some((summarized_field, primary_consumed)) = leaf.get(4..).and_then(read_lp_string)
+        else {
+            continue;
+        };
+        // A two-field summary stores its second field reference after the primary's 3-byte value
+        // descriptor; a single-field summary stores the no-field trailer there instead. See
+        // [`read_secondary_field`].
+        let secondary_summarized_field = read_secondary_field(&leaf, 4 + primary_consumed);
+        // A fixed tail follows the field ref(s): `… ff ff 00 <flag> …`, where the byte 12 past the end
+        // of the primary field ref is the IsPercentageSummary flag (0 = raw aggregate, 1 = shown as a
+        // percentage of a group total). A percentage summary carries two extra trailing bytes.
+        let is_percentage_summary = leaf.get(4 + primary_consumed + 12).is_some_and(|&b| b != 0);
+        // The `0x71` child fixes the value type (offset 5) and byte length (offset 7).
+        let (value_type, length) = node
+            .children
+            .iter()
+            .find(|c| c.rtype == NAMED_VALUE)
+            .map(|c| c.leaf_bytes(logical))
+            .map(|cb| {
+                (
+                    FieldValueType::from_code(i32::from(cb.get(5).copied().unwrap_or(0))),
+                    i32::from(cb.get(7).copied().unwrap_or(0)),
+                )
+            })
+            .unwrap_or_default();
+        out.push(FieldDef {
+            value_type,
+            length,
+            kind: FieldKindData::Summary(SummaryField {
+                operation,
+                summarized_field,
+                secondary_summarized_field,
+                operation_parameter,
+                group_index: None,
+                is_percentage_summary,
+            }),
+            ..Default::default()
+        });
+    }
+    out
+}
+
+/// SQL Expression field definitions (`0x81` records). A SQL Expression is a snippet of raw SQL
+/// evaluated by the database and referenced from the report as `{%Name}`.
+///
+/// Layout: the record's own leaf leads with the SQL expression **text** as a length-prefixed string
+/// (empty for an unbound/blank expression). Its `0x71` `NamedValue` child carries the field **name**
+/// (length-prefixed), then the value-type code (`u16` LE immediately after the name) and the byte
+/// **length** (`u16` BE in the child's final two bytes) — the same trailing type/length shape as a
+/// summary's named-value child.
+pub(super) fn raise_sql_expressions(tree: &[RecordNode], logical: &[u8]) -> Vec<FieldDef> {
+    let mut out = Vec::new();
+    for node in nodes_where(tree, |n| n.rtype == SQL_EXPRESSION) {
+        let leaf = node.leaf_bytes(logical);
+        let text = read_lp_string(&leaf).map(|(s, _)| s).unwrap_or_default();
+        let Some(child) = node.children.iter().find(|c| c.rtype == NAMED_VALUE) else {
+            continue;
+        };
+        let cb = child.leaf_bytes(logical);
+        let Some((name, after)) = read_lp_string(&cb) else {
+            continue;
+        };
+        let value_type = u16_le(&cb, after)
+            .map(|v| FieldValueType::from_code(i32::from(v)))
+            .unwrap_or_default();
+        let length = if cb.len() >= 2 {
+            u16_be(&cb, cb.len() - 2).map_or(0, i32::from)
+        } else {
+            0
+        };
+        out.push(FieldDef {
+            name: name.clone(),
+            value_type,
+            length,
+            short_name: Some(name),
+            kind: FieldKindData::SqlExpression(crate::model::SqlExpressionField { text }),
             ..Default::default()
         });
     }
@@ -511,6 +678,8 @@ pub(super) fn formula_body(node: &RecordNode, logical: &[u8]) -> String {
         return body;
     }
     let strings = all_strings(node, logical);
+    // A byte-presence heuristic, not reference parsing — `rpt` is pure I/O and does not depend on
+    // `crystal-formula`, so this stays a local check rather than using the shared reference walker.
     let is_expr = |s: &&String| {
         s.contains('{')
             || s.contains(" & ")
@@ -554,6 +723,19 @@ pub(super) fn formula_syntax(bytes: &[u8]) -> crate::model::FormulaSyntax {
             FormulaSyntax::Basic
         }
         _ => FormulaSyntax::Crystal,
+    }
+}
+
+/// The formula's null-treatment editor setting (SDK `FormulaNullTreatment`). In a `0x76` record,
+/// byte 17 of the trailer is `1` when the formula treats a null field value as its type's default
+/// (`crTreatNullAsDefaultValue`); otherwise the engine default `crTreatNullAsException` applies.
+pub(super) fn formula_null_treatment(bytes: &[u8]) -> crate::model::FormulaNullTreatment {
+    use crate::model::FormulaNullTreatment;
+    match parse_formula_record(bytes) {
+        Some((_, trailer_start)) if bytes.get(trailer_start + 17) == Some(&1) => {
+            FormulaNullTreatment::DefaultValue
+        }
+        _ => FormulaNullTreatment::Exception,
     }
 }
 
@@ -612,23 +794,32 @@ const E5_OTHERS_NAME_OFFSET: usize = 6;
 /// Decode a summary-based group sort's Top N / Bottom N options (SDK `TopBottomNSortField`) from the
 /// group's `0xe5` record. `number_of_groups` is the group's Top N limit (already resolved by the
 /// caller via [`group_topn_limit`]); `not_in_topn_name` is the length-prefixed "Others"-bucket name
-/// that follows the field reference. `discard_others` has no located byte (always the default
-/// `false`), see [`crate::model::TopBottomNSort`].
+/// that follows the field reference. Just past that name the record carries `[u16 BE N][u16 BE
+/// DiscardOthers]`: `N` (a duplicate of the limit) then a `DiscardOthers` flag short (SDK
+/// `EnableDiscardOtherGroups`, `1` = set), read here from the short's low byte at name-end + 3.
+///
+/// `WithTies` (the designer "Include ties" option) has no located byte in this record and is left
+/// `false`; see the `with_ties_defaults_false` test for the rationale.
 fn decode_group_topn(
     node: &RecordNode,
     logical: &[u8],
     number_of_groups: u16,
 ) -> crate::model::TopBottomNSort {
     let bytes = node.leaf_bytes(logical);
-    let not_in_topn_name = read_lp_string(&bytes)
-        .and_then(|(_, consumed)| read_lp_string(bytes.get(consumed + E5_OTHERS_NAME_OFFSET..)?))
-        .map(|(name, _)| name)
-        .unwrap_or_default();
+    let (not_in_topn_name, discard_others) = (|| {
+        let (_, fieldref_consumed) = read_lp_string(&bytes)?;
+        let name_start = fieldref_consumed + E5_OTHERS_NAME_OFFSET;
+        let (name, name_consumed) = read_lp_string(bytes.get(name_start..)?)?;
+        // Flags sit just past the name: a u16 N duplicate, then the DiscardOthers flag short.
+        let flags_at = name_start + name_consumed;
+        let discard_others = bytes.get(flags_at + 3).copied() == Some(1);
+        Some((name, discard_others))
+    })()
+    .unwrap_or_default();
     crate::model::TopBottomNSort {
         number_of_groups,
-        discard_others: false,
+        discard_others,
         not_in_topn_name,
-        // The WithTies byte has not been located, so it defaults to false (see `TopBottomNSort`).
         with_ties: false,
     }
 }
@@ -658,70 +849,60 @@ fn render_group_sort_summary(operand: &str, group_field: &str) -> String {
     }
 }
 
-/// Decode a `0x0088` GroupAreaFormat record (24 bytes; describes the *next* group): byte 1 is
-/// RepeatGroupHeader, byte 3 KeepGroupTogether, byte 15 a VisibleGroupNumberPerPage>0 flag (only
-/// 0/1 is currently decoded; the full integer location is unknown).
-pub(super) fn decode_group_area_format(lb: &[u8]) -> crate::model::GroupAreaFormat {
-    let flag = |i: usize| lb.get(i).copied().unwrap_or(0) != 0;
+/// Decode a `0x0088` GroupAreaFormat record (the group's AreaPair). The engine serializes big-endian
+/// scalars up front: a `u16` RepeatGroupHeader flag at leaf `[0..2]`, a `u16` KeepGroupTogether flag
+/// at leaf `[2..4]`, and a `u16` VisibleGroupNumberPerPage ("keep N groups together per page"; `0` =
+/// off) at leaf `[4..6]`. Leaf `[6..8]` is a separate (unemitted) group property, so the count must
+/// not span it.
+pub(crate) fn decode_group_area_format(lb: &[u8]) -> crate::model::GroupAreaFormat {
+    let flag = |off: usize| u16_be(lb, off).unwrap_or(0) != 0;
     crate::model::GroupAreaFormat {
-        repeat_group_header: flag(1),
-        keep_group_together: flag(3),
-        visible_groups_per_page: i32::from(flag(15)),
+        repeat_group_header: flag(0),
+        keep_group_together: flag(2),
+        visible_groups_per_page: i32::from(u16_be(lb, 4).unwrap_or(0)),
     }
 }
 
-/// Map the legacy internal date-group period `<code>` (the byte after the `@Group #N Order` marker,
-/// structure `01 00 <code> ff ff`) to the lowercase period name the engine renders as the second
-/// `GroupName` operand (`GroupName ({field}, "Monthly")`, title-cased on emit). Returns `None` for an
-/// unknown code (never panics).
-///
-/// `0x01` = daily, `0x03` = monthly, `0x06`/`0x08` = weekly (there are two week codes — week-of-year
-/// vs. a fixed-weekday week — that both render "Weekly").
-///
-/// This internal `<code>` is *not* the SDK `CrGroupConditionEnum` ordinal — that ordinal lives in a
-/// separate byte ([`sdk_period_name`], `used + 3`). Some reports leave this `<code>` at `0` and carry
-/// the period only in the SDK-ordinal byte, so both are consulted.
-fn date_period_name(code: u8) -> Option<&'static str> {
-    match code {
-        0x01 => Some("daily"),
-        0x03 => Some("monthly"),
-        0x06 | 0x08 => Some("weekly"),
-        _ => None,
+/// Decode the **Hierarchical Grouping** block appended to a `0xe5` group leaf (SDK `IArea`
+/// `EnableHierarchicalGroupSorting` / `ParentIDField` / `InstanceIDField`). The block sits after the
+/// group's `@Group #N Order` marker + boilerplate as `[flag 0x01][LP ParentIDField][00 00 01]
+/// [LP InstanceIDField]`, where each field is a bare `table.field` (NUL-terminated, `u32`-BE length).
+/// Its absolute offset varies with the condition-field name length, so it is anchored on the marker
+/// string rather than a fixed offset. Returns `None` for a plain (non-hierarchical) group, which
+/// carries no such trailing field references. `group_indent` is filled later from the group's
+/// `0x0088` record (not in this leaf).
+pub(super) fn decode_hierarchical_options(
+    leaf: &[u8],
+) -> Option<crate::model::HierarchicalGroupOptions> {
+    let strings: Vec<(usize, String, usize)> = lp_scan(leaf, Scan::Consume).collect();
+    // The hierarchical field references follow the `@Group #N Order` marker.
+    let order_pos = strings
+        .iter()
+        .position(|(_, s, _)| s.starts_with("@Group #") && s.ends_with(" Order"))?;
+    // Bare `table.field` references after the marker: ParentIDField then InstanceIDField.
+    let mut refs = strings[order_pos + 1..]
+        .iter()
+        .filter(|(_, s, _)| !s.is_empty() && s.contains('.') && !s.contains('{'));
+    let parent = refs.next()?;
+    let instance = refs.next()?;
+    // Enable flag: the byte immediately before the ParentIDField length prefix (`0x01` = enabled).
+    let enabled = parent.0.checked_sub(1).and_then(|i| leaf.get(i)).copied() == Some(0x01);
+    if !enabled {
+        return None;
     }
+    Some(crate::model::HierarchicalGroupOptions {
+        enabled: true,
+        parent_id_field: parent.1.clone(),
+        instance_id_field: instance.1.clone(),
+        group_indent: crate::model::Twips(0),
+    })
 }
 
-/// Map the SDK `CrGroupConditionEnum` ordinal — stored in the `0xe5` leaf at `used + 3` (the byte
-/// after the group's field reference) — to the lowercase period name. This byte is populated
-/// consistently (unlike the legacy [`date_period_name`] `<code>`, which some reports leave at `0`),
-/// so it is the primary period source.
-///
-/// Ordinal `1` = weekly, `4` = monthly. Ordinal `0` = daily, but `0` is also the value on
-/// non-periodic groups, so daily is *not* mapped here (to avoid a false positive on a discrete group)
-/// and is detected via the legacy paths instead. Ordinals `2`/`3`/`5`/`6`/`7` (biweekly /
-/// semimonthly / quarterly / semiannually / annually) are the remaining *date* periods; `8`–`11`
-/// (per second / minute / hour / AM-PM) are the *time-of-day* periods a Time/DateTime field also
-/// offers — appended after the eight date periods. These extra ordinals follow the SDK enum ordering
-/// and never collide with the no-period state, so they are safe to map (they only ever fire on a
-/// genuine periodic group).
-///
-/// Returns the lowercase canonical token stored on [`Group::date_condition`]; the exact title-cased
-/// `GroupName` operand string (e.g. `SemiAnnually`, `BySecond`) is produced at emit time, since this
-/// same lowercase token is also matched by the render pipeline's date bucketer.
-fn sdk_period_name(ordinal: u8) -> Option<&'static str> {
-    match ordinal {
-        1 => Some("weekly"),
-        2 => Some("biweekly"),
-        3 => Some("semimonthly"),
-        4 => Some("monthly"),
-        5 => Some("quarterly"),
-        6 => Some("semiannually"),
-        7 => Some("annually"),
-        8 => Some("bysecond"),
-        9 => Some("byminute"),
-        10 => Some("byhour"),
-        11 => Some("byampm"),
-        _ => None,
-    }
+/// The per-level `GroupIndent`, in twips: a big-endian `u16` at leaf `[6..8]` of the `0x0088`
+/// GroupAreaFormat record (`0` for a non-hierarchical group). This slot is deliberately excluded
+/// from [`decode_group_area_format`], which stops at `[6]`.
+pub(crate) fn decode_group_indent(lb: &[u8]) -> crate::model::Twips {
+    crate::model::Twips(i32::from(u16_be(lb, 6).unwrap_or(0)))
 }
 
 pub(super) fn raise_group(
@@ -748,36 +929,35 @@ pub(super) fn raise_group(
     let direction = crate::model::SortDirection::from_code(i32::from(
         bytes.get(used + 5).copied().unwrap_or(0),
     ));
-    // Date-grouping condition. The 6-byte blob that follows the field reference carries a condition
-    // code at byte 4 (`used + 4`): `0x02` = grouped "for each day" (daily), `0x00` = "for each
-    // value" (discrete). Crystal only renders a condition for date/time/boolean fields — the same
-    // byte is non-zero on plain discrete fields too (it doubles as a sort attribute), so the field
-    // type gates it. Only `daily` is decoded via this flag; other codes are left undecoded rather
-    // than guessed. `condition_field` is `Alias.name`; look the type up case-insensitively.
-    use crate::model::FieldValueType::*;
-    // The date-grouping period has two encodings in the `0xe5` leaf, consulted in order:
-    //  1. The SDK `CrGroupConditionEnum` ordinal at `used + 3` (the byte after the field reference) —
-    //     consistently populated (see [`sdk_period_name`]); ordinals >= 1 are the non-daily periods
-    //     and never collide with the no-period state.
-    //  2. The legacy internal `<code>` after the `@Group #N Order` marker (structure `01 00 <code>
-    //     ff ff`, see [`date_period_name`]), plus the older `used + 4 == 0x02` daily flag — used for
-    //     daily and for pre-SDK-ordinal reports. Discrete date grouping leaves all of these clear.
+    // Grouping condition. Crystal's group condition is polymorphic (see `GroupCondition`), selected
+    // by the group field's value type; only a Date/Time/DateTime or Boolean field carries one, so the
+    // field type gates it (`condition_field` is `Alias.name`, looked up case-insensitively).
+    //
+    // The condition ordinal lives in the `0xe5` leaf at `used + 3` (the byte after the field
+    // reference). A Boolean field reads it through the `CrBooleanConditionEnum` table; a date/time
+    // field through `CrDateConditionEnum`, with two legacy fallbacks for reports that leave that byte
+    // at `0`:
+    //  * the internal `<code>` after the `@Group #N Order` marker (`01 00 <code> ff ff`), and
+    //  * the older `used + 4 == 0x02` daily flag.
+    // Discrete grouping leaves all of these clear. (Splitting Boolean out of the date table also fixes
+    // a misread where a boolean ordinal 1–6 was decoded as a date period.)
+    use crate::model::{FieldValueType, GroupCondition};
     let sdk_ordinal = bytes.get(used + 3).copied();
-    let period_code = lp_scan(&bytes, Scan::Consume)
-        .find(|(_, s, _)| s.starts_with("@Group #") && s.ends_with(" Order"))
-        .and_then(|(i, _, consumed)| bytes.get(i + consumed + 2).copied());
-    let date_condition = field_types
-        .get(&field.to_lowercase())
-        .filter(|t| matches!(t, Date | Time | DateTime | Boolean))
-        .and_then(|_| {
+    let date_condition = match field_types.get(&field.to_lowercase()) {
+        Some(FieldValueType::Boolean) => sdk_ordinal.and_then(GroupCondition::from_boolean_ordinal),
+        Some(FieldValueType::Date | FieldValueType::Time | FieldValueType::DateTime) => {
+            let period_code = lp_scan(&bytes, Scan::Consume)
+                .find(|(_, s, _)| s.starts_with("@Group #") && s.ends_with(" Order"))
+                .and_then(|(i, _, consumed)| bytes.get(i + consumed + 2).copied());
             sdk_ordinal
-                .and_then(sdk_period_name)
-                .or_else(|| period_code.and_then(date_period_name))
-                .map(str::to_string)
+                .and_then(GroupCondition::from_date_ordinal)
+                .or_else(|| period_code.and_then(GroupCondition::from_legacy_date_code))
                 .or_else(|| {
-                    (bytes.get(used + 4).copied() == Some(0x02)).then(|| "daily".to_string())
+                    (bytes.get(used + 4).copied() == Some(0x02)).then_some(GroupCondition::Daily)
                 })
-        });
+        }
+        _ => None,
+    };
     Some(Group {
         sort: Sort {
             field: field.clone(),
@@ -792,6 +972,9 @@ pub(super) fn raise_group(
         area_format: Default::default(),
         // Populated by the `0x00e9` pass in `raise_data_definition` (specified-order groups only).
         hierarchical: Vec::new(),
+        // The Hierarchical-Grouping block is appended to this same `0xe5` leaf; its `group_indent`
+        // is filled from the group's `0x0088` record in `raise_data_definition`.
+        hierarchical_options: decode_hierarchical_options(&bytes),
     })
 }
 
@@ -821,6 +1004,73 @@ mod hierarchical_tests {
         let v = decode_hierarchical_value(&lp("Low")).expect("parse");
         assert_eq!(v.value_name, "Low");
         assert_eq!(v.condition, "");
+    }
+}
+
+#[cfg(test)]
+mod hierarchical_options_tests {
+    use super::{decode_group_indent, decode_hierarchical_options};
+
+    /// A `u32`-BE NUL-terminated length-prefixed string.
+    fn lp(s: &str) -> Vec<u8> {
+        let mut v = ((s.len() + 1) as u32).to_be_bytes().to_vec();
+        v.extend_from_slice(s.as_bytes());
+        v.push(0);
+        v
+    }
+
+    /// Build a `0xe5`-style leaf: the condition field, the `@Group #1 Order` marker, then (optionally)
+    /// the appended Hierarchical-Grouping block `[flag][LP parent][00 00 01][LP instance]`. Boilerplate
+    /// separators (`01 00 00 ff ff`, padding) sit between the parts, as in the real record — the
+    /// decoder anchors on the marker, so their exact bytes only need to keep the marker findable.
+    fn e5_leaf(cond: &str, hier: Option<(&str, &str, u8)>) -> Vec<u8> {
+        let mut v = lp(cond);
+        v.extend([0x01, 0x00, 0x00, 0xff, 0xff]); // boilerplate before the marker
+        v.extend(lp("@Group #1 Order"));
+        v.extend([0x01, 0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0x00]); // trailing boilerplate
+        if let Some((parent, instance, flag)) = hier {
+            v.push(flag);
+            v.extend(lp(parent));
+            v.extend([0x00, 0x00, 0x01]);
+            v.extend(lp(instance));
+        }
+        v
+    }
+
+    #[test]
+    fn decodes_enabled_parent_and_instance() {
+        let leaf = e5_leaf(
+            "employee.employee_id",
+            Some(("employee.manager_id", "employee.employee_id", 0x01)),
+        );
+        let h = decode_hierarchical_options(&leaf).expect("hierarchical");
+        assert!(h.enabled);
+        assert_eq!(h.parent_id_field, "employee.manager_id");
+        assert_eq!(h.instance_id_field, "employee.employee_id");
+        // `group_indent` is filled later from the `0x0088` record, not this leaf.
+        assert_eq!(h.group_indent.0, 0);
+    }
+
+    #[test]
+    fn plain_group_has_no_options() {
+        // No appended block → not a hierarchical group.
+        assert!(decode_hierarchical_options(&e5_leaf("region.name", None)).is_none());
+    }
+
+    #[test]
+    fn flag_clear_is_not_hierarchical() {
+        // The trailing field references exist but the enable flag is 0 → treated as non-hierarchical.
+        let leaf = e5_leaf("t.f", Some(("t.parent", "t.f", 0x00)));
+        assert!(decode_hierarchical_options(&leaf).is_none());
+    }
+
+    #[test]
+    fn group_indent_reads_big_endian_u16_at_offset_6() {
+        // `0x0088` leaf: RepeatHeader/KeepTogether/VisiblePerPage occupy [0..6]; GroupIndent is [6..8].
+        let lb = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x2c, 0x39, 0x51];
+        assert_eq!(decode_group_indent(&lb).0, 300);
+        // Plain group: indent slot is zero.
+        assert_eq!(decode_group_indent(&[0u8; 8]).0, 0);
     }
 }
 
@@ -863,28 +1113,87 @@ pub(super) fn raise_field(node: &RecordNode, logical: &[u8]) -> Option<FieldDef>
 
 #[cfg(test)]
 mod group_option_tests {
-    use super::date_period_name;
+    use crate::model::GroupCondition;
 
     #[test]
-    fn confirmed_date_period_codes() {
-        assert_eq!(date_period_name(0x01), Some("daily"));
-        assert_eq!(date_period_name(0x03), Some("monthly"));
-        assert_eq!(date_period_name(0x06), Some("weekly"));
-        assert_eq!(date_period_name(0x08), Some("weekly"));
+    fn legacy_date_codes_map_to_their_conditions() {
+        assert_eq!(
+            GroupCondition::from_legacy_date_code(0x01),
+            Some(GroupCondition::Daily)
+        );
+        assert_eq!(
+            GroupCondition::from_legacy_date_code(0x03),
+            Some(GroupCondition::Monthly)
+        );
+        assert_eq!(
+            GroupCondition::from_legacy_date_code(0x06),
+            Some(GroupCondition::Weekly)
+        );
+        assert_eq!(
+            GroupCondition::from_legacy_date_code(0x08),
+            Some(GroupCondition::Weekly)
+        );
     }
 
     #[test]
-    fn unknown_date_period_codes_fall_back_to_none() {
-        // Codes with no confirmed meaning (incl. the SDK ordinals that would collide with the
-        // confirmed codes if naively applied) must NOT be mapped — they fall back to discrete.
+    fn unknown_legacy_date_codes_fall_back_to_none() {
+        // Codes with no known meaning must NOT be mapped — they fall back to discrete.
         for code in [0x00u8, 0x02, 0x04, 0x05, 0x07, 0xff] {
-            assert_eq!(date_period_name(code), None, "code {code:#04x}");
+            assert_eq!(
+                GroupCondition::from_legacy_date_code(code),
+                None,
+                "code {code:#04x}"
+            );
         }
     }
 
     #[test]
+    fn sdk_date_ordinal_zero_is_discrete_nonzero_are_periods() {
+        // Ordinal 0 is ambiguous (daily vs. discrete) and must not map here — the caller resolves
+        // daily from the legacy flag. 1..=11 are the eleven non-daily periods.
+        assert_eq!(GroupCondition::from_date_ordinal(0), None);
+        assert_eq!(
+            GroupCondition::from_date_ordinal(1),
+            Some(GroupCondition::Weekly)
+        );
+        assert_eq!(
+            GroupCondition::from_date_ordinal(4),
+            Some(GroupCondition::Monthly)
+        );
+        assert_eq!(
+            GroupCondition::from_date_ordinal(11),
+            Some(GroupCondition::ByAMPM)
+        );
+        assert_eq!(
+            GroupCondition::from_date_ordinal(12),
+            Some(GroupCondition::Other(12))
+        );
+    }
+
+    #[test]
+    fn boolean_ordinals_use_the_boolean_table() {
+        // The boolean enum starts at 1; ordinal 0 is a discrete boolean group. Crucially, ordinal 1
+        // is ToYes here, NOT Weekly (the date table) — the field-type-gated split fixes that misread.
+        assert_eq!(GroupCondition::from_boolean_ordinal(0), None);
+        assert_eq!(
+            GroupCondition::from_boolean_ordinal(1),
+            Some(GroupCondition::ToYes)
+        );
+        assert_eq!(
+            GroupCondition::from_boolean_ordinal(6),
+            Some(GroupCondition::NextIsNo)
+        );
+        assert_eq!(
+            GroupCondition::from_boolean_ordinal(9),
+            Some(GroupCondition::Other(9))
+        );
+    }
+
+    #[test]
     fn with_ties_defaults_false() {
-        // WithTies has no located byte; it must default to false.
+        // WithTies (the designer "Include ties" option) is a real RAS property but has no located
+        // storage in the `0xe5` group record: the only Top-N flag scalar there is the DiscardOthers
+        // short. It is left false until a report that exercises it (WithTies=true) is available.
         assert!(!crate::model::TopBottomNSort::default().with_ties);
     }
 }

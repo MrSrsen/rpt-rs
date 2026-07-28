@@ -1,0 +1,5245 @@
+{
+  "model": {
+    "data_definition": {
+      "condition_formula_bodies": [
+        "pagenumber=1\r\n"
+      ],
+      "custom_functions": [],
+      "field_definitions": [
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 22,
+          "long_name": null,
+          "name": "Most_Recent_Structuring",
+          "short_name": "Most_Recent_Structuring",
+          "value_type": "String"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 65534,
+          "long_name": null,
+          "name": "City_Name",
+          "short_name": "City_Name",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 65534,
+          "long_name": null,
+          "name": "Region",
+          "short_name": "Region",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 65534,
+          "long_name": null,
+          "name": "Province",
+          "short_name": "Province",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 4,
+          "long_name": null,
+          "name": "id",
+          "short_name": "id",
+          "value_type": "Int32s"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Formula": {
+              "null_treatment": "Exception",
+              "number_of_bytes": 140,
+              "options": 0,
+              "syntax": "Crystal",
+              "text": "ToText(CDate(GroupName({vw_major_cities_canada.Most_Recent_Structuring})), \"yyyy, MMMM dd\");"
+            }
+          },
+          "length": 0,
+          "long_name": null,
+          "name": "GroupDateFormatted",
+          "short_name": null,
+          "value_type": "String"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Formula": {
+              "null_treatment": "Exception",
+              "number_of_bytes": 140,
+              "options": 0,
+              "syntax": "Crystal",
+              "text": "ToText(CDate(GroupName({vw_major_cities_canada.Most_Recent_Structuring})), \"MMMM dd, yyyy\");"
+            }
+          },
+          "length": 0,
+          "long_name": null,
+          "name": "GroupDateFormatted2",
+          "short_name": null,
+          "value_type": "String"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "RunningTotal": {
+              "evaluation": "NoCondition",
+              "on_change_field": "",
+              "operation": "Count",
+              "operation_parameter": 0,
+              "reset": "OnChangeOfGroup",
+              "secondary_summarized_field": "",
+              "summarized_field": "vw_major_cities_canada.Most_Recent_Structuring"
+            }
+          },
+          "length": 4,
+          "long_name": null,
+          "name": "DateGroupTotal",
+          "short_name": null,
+          "value_type": "Int32s"
+        }
+      ],
+      "field_manager_census": {
+        "database_fields": 5,
+        "formula_bodies": 8
+      },
+      "formula_variables": [],
+      "group_selection": "",
+      "groups": [
+        {
+          "area_format": {
+            "keep_group_together": true,
+            "repeat_group_header": false,
+            "visible_groups_per_page": 0
+          },
+          "condition_field": "vw_major_cities_canada.Most_Recent_Structuring",
+          "date_condition": null,
+          "hierarchical": [],
+          "hierarchical_options": null,
+          "options": {},
+          "sort": {
+            "direction": "DescendingOrder",
+            "field": "vw_major_cities_canada.Most_Recent_Structuring",
+            "kind": "GroupSortField",
+            "topn": null
+          }
+        }
+      ],
+      "record_selection": "",
+      "record_sorts": [
+        {
+          "direction": "DescendingOrder",
+          "field": "vw_major_cities_canada.Most_Recent_Structuring",
+          "kind": "GroupSortField",
+          "topn": null
+        }
+      ],
+      "running_total_condition_formulas": [],
+      "saved_data_filter": "",
+      "summary_binding_fields": []
+    },
+    "database": {
+      "links": [],
+      "tables": [
+        {
+          "alias": "vw_major_cities_canada",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_odbc.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "ODBC (RDO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "BWPortfolio"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": null
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "vw_major_cities_canada.id",
+              "name": "id",
+              "short_name": "id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "vw_major_cities_canada.City_Name",
+              "name": "City_Name",
+              "short_name": "City_Name",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "vw_major_cities_canada.Region",
+              "name": "Region",
+              "short_name": "Region",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "vw_major_cities_canada.Province",
+              "name": "Province",
+              "short_name": "Province",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "vw_major_cities_canada.Country",
+              "name": "Country",
+              "short_name": "Country",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": 22,
+              "long_name": "vw_major_cities_canada.Most_Recent_Structuring",
+              "name": "Most_Recent_Structuring",
+              "short_name": "Most_Recent_Structuring",
+              "value_type": "String"
+            }
+          ],
+          "name": "vw_major_cities_canada",
+          "parameters": [],
+          "qualified_name": "vw_major_cities_canada"
+        }
+      ]
+    },
+    "designer_state": {
+      "connections": [
+        {
+          "destination": 0,
+          "kind": 2,
+          "source": 5
+        },
+        {
+          "destination": 3,
+          "kind": 2,
+          "source": 5
+        },
+        {
+          "destination": 1,
+          "kind": 2,
+          "source": 4
+        },
+        {
+          "destination": 3,
+          "kind": 2,
+          "source": 4
+        }
+      ],
+      "guidelines": [
+        {
+          "flags": 4,
+          "position": 506
+        },
+        {
+          "flags": 0,
+          "position": 2872
+        },
+        {
+          "flags": 0,
+          "position": 5546
+        },
+        {
+          "flags": 0,
+          "position": 8220
+        }
+      ]
+    },
+    "embeds": [],
+    "has_saved_data": true,
+    "print_options": {
+      "content_height": 15120,
+      "content_width": 11520,
+      "driver_name": null,
+      "margins": {
+        "bottom": 360,
+        "left": 360,
+        "right": 360,
+        "top": 360
+      },
+      "multi_column": null,
+      "paper_orientation": "Portrait",
+      "paper_size": "DefaultPaperSize",
+      "paper_source": "FormSource",
+      "port_name": null,
+      "printer_duplex": "Default",
+      "printer_name": "",
+      "saved_printer_name": ""
+    },
+    "reimport": {
+      "imported_at": {
+        "julian_day": 2459221,
+        "time_fraction": 46228
+      },
+      "reimport_when_opening": 1,
+      "source_path": "",
+      "source_saved_at": {
+        "julian_day": 0,
+        "time_fraction": 0
+      }
+    },
+    "report_definition": {
+      "areas": [
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": true,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "ReportHeader",
+          "name": "ReportHeaderArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 1690,
+              "kind": "ReportHeader",
+              "name": "TSection4",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 840,
+                    "left": 510,
+                    "top": 240,
+                    "width": 10530
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "HorizontalCenterAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "Most Recent Structuring of Canadian Cities",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Rockwell Extra Bold",
+                          "size_pt": 20.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": true,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Rockwell Extra Bold",
+                                "size_pt": 20.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 700
+                              },
+                              "text": "Most Recent Structuring of Canadian Cities"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "Most Recent Structuring of Canadian Cities"
+                    }
+                  },
+                  "name": "Text2",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 6000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 240,
+                    "left": 720,
+                    "top": 1200,
+                    "width": 10320
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "* March 25 2019 and Earlier",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              },
+                              "text": "* March 25 2019 and Earlier"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "* March 25 2019 and Earlier"
+                    }
+                  },
+                  "name": "Text3",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 6000
+                }
+              ],
+              "section_code": 6000,
+              "width": 0
+            },
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 2655,
+              "kind": "ReportHeader",
+              "name": "TSection5",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 192,
+                      "g": 192,
+                      "r": 192
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "SingleLine"
+                  },
+                  "bounds": {
+                    "height": 0,
+                    "left": 570,
+                    "top": 0,
+                    "width": 10335
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Line": {
+                      "end_section_name": "TSection5",
+                      "shape": {
+                        "bottom": 0,
+                        "extend_to_bottom_of_section": false,
+                        "line_color": {
+                          "a": 255,
+                          "b": 192,
+                          "g": 192,
+                          "r": 192
+                        },
+                        "line_style": "SingleLine",
+                        "line_thickness": 20,
+                        "right": 10905
+                      }
+                    }
+                  },
+                  "name": "Line2",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 6001
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 1920,
+                    "left": 720,
+                    "top": 480,
+                    "width": 10320
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "* Most recent structuring date is a general figure that implies when a place was last structured, for example:\n\n- Established\n- Incorporated\n- Restructured\n- Promoted to City\n- Demoted to Town\n- Other",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              },
+                              "text": "* Most recent structuring date is a general figure that implies when a place was last structured, for example:"
+                            }
+                          ]
+                        },
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              },
+                              "text": ""
+                            }
+                          ]
+                        },
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              },
+                              "text": "- Established"
+                            }
+                          ]
+                        },
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              },
+                              "text": "- Incorporated"
+                            }
+                          ]
+                        },
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              },
+                              "text": "- Restructured"
+                            }
+                          ]
+                        },
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              },
+                              "text": "- Promoted to City"
+                            }
+                          ]
+                        },
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              },
+                              "text": "- Demoted to Town"
+                            }
+                          ]
+                        },
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              },
+                              "text": "- Other"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "- Other"
+                    }
+                  },
+                  "name": "Text7",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 6001
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 192,
+                      "g": 192,
+                      "r": 192
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "SingleLine"
+                  },
+                  "bounds": {
+                    "height": 0,
+                    "left": 600,
+                    "top": 2520,
+                    "width": 10320
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Line": {
+                      "end_section_name": "TSection5",
+                      "shape": {
+                        "bottom": 2520,
+                        "extend_to_bottom_of_section": false,
+                        "line_color": {
+                          "a": 255,
+                          "b": 192,
+                          "g": 192,
+                          "r": 192
+                        },
+                        "line_style": "SingleLine",
+                        "line_thickness": 20,
+                        "right": 10920
+                      }
+                    }
+                  },
+                  "name": "Line3",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 6001
+                }
+              ],
+              "section_code": 6001,
+              "width": 0
+            },
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 6018,
+              "kind": "ReportHeader",
+              "name": "TSection6",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 5160,
+                    "left": 240,
+                    "top": 120,
+                    "width": 10920
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Chart": {
+                      "category_refs": [
+                        "vw_major_cities_canada.Most_Recent_Structuring"
+                      ],
+                      "data_refs": [
+                        "vw_major_cities_canada.Most_Recent_Structuring"
+                      ],
+                      "definition": {
+                        "category_period": null,
+                        "category_refs": [
+                          "{vw_major_cities_canada.Most_Recent_Structuring}"
+                        ],
+                        "data_axis_title": "Count",
+                        "data_label": "",
+                        "data_labels_show_value": false,
+                        "data_refs": [
+                          "Count ({vw_major_cities_canada.Most_Recent_Structuring}, {vw_major_cities_canada.Most_Recent_Structuring})"
+                        ],
+                        "element_fonts": [
+                          {
+                            "name": "Arial",
+                            "size_pt": null
+                          },
+                          {
+                            "name": "Arial",
+                            "size_pt": null
+                          },
+                          {
+                            "name": "Arial",
+                            "size_pt": null
+                          },
+                          {
+                            "name": "Arial",
+                            "size_pt": null
+                          },
+                          {
+                            "name": "Arial",
+                            "size_pt": null
+                          },
+                          {
+                            "name": "Arial",
+                            "size_pt": null
+                          },
+                          {
+                            "name": "Arial",
+                            "size_pt": null
+                          },
+                          {
+                            "name": "Arial",
+                            "size_pt": null
+                          }
+                        ],
+                        "footnote": "",
+                        "graph_subtype": 0,
+                        "graph_type": "Bar",
+                        "group_axis_gridlines": "None",
+                        "group_axis_title": "Date",
+                        "layout_type": "Detail",
+                        "legend_position": "BottomCenter",
+                        "legend_visible": false,
+                        "series_colors": [],
+                        "subtitle": "",
+                        "title": "Most Recent Structuring by Date",
+                        "value_axis_gridlines": "Major",
+                        "view_angle": "Standard"
+                      }
+                    }
+                  },
+                  "name": "Graph1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 6002
+                }
+              ],
+              "section_code": 6002,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": true,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "PageHeader",
+          "name": "PageHeaderArea1",
+          "sections": [
+            {
+              "condition_formulas": [
+                [
+                  "Section_Visibility",
+                  "pagenumber=1\r\n"
+                ]
+              ],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 751,
+              "kind": "PageHeader",
+              "name": "TSection1",
+              "objects": [],
+              "section_code": 12000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": {
+              "keep_group_together": true,
+              "repeat_group_header": false,
+              "visible_groups_per_page": 0
+            },
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": 0,
+          "kind": "GroupHeader",
+          "name": "GroupHeaderArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 662,
+              "kind": "GroupHeader",
+              "name": "TSection8",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 221,
+                    "left": 9360,
+                    "top": 360,
+                    "width": 1800
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "FieldHeading": {
+                      "field_object_name": "TPhone1",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 255,
+                          "g": 255,
+                          "r": 255
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": true,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "max_lines": 0,
+                      "reading_order": "LeftToRight",
+                      "text": "Province"
+                    }
+                  },
+                  "name": "Text5",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 18000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 221,
+                    "left": 506,
+                    "top": 360,
+                    "width": 4174
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "FieldHeading": {
+                      "field_object_name": "TLastYearsSales1",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 255,
+                          "g": 255,
+                          "r": 255
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": true,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "max_lines": 0,
+                      "reading_order": "LeftToRight",
+                      "text": "City"
+                    }
+                  },
+                  "name": "Text6",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 18000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 221,
+                    "left": 4800,
+                    "top": 360,
+                    "width": 4440
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "FieldHeading": {
+                      "field_object_name": "TCity1",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 255,
+                          "g": 255,
+                          "r": 255
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": true,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "max_lines": 0,
+                      "reading_order": "LeftToRight",
+                      "text": "Region"
+                    }
+                  },
+                  "name": "Text8",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 18000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 360,
+                    "left": 506,
+                    "top": 0,
+                    "width": 8734
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{@GroupDateFormatted}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 165,
+                          "g": 121,
+                          "r": 90
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 14.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "Formula",
+                      "summary_code": null,
+                      "value_type": "String"
+                    }
+                  },
+                  "name": "GroupDateFormatted1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 18000
+                }
+              ],
+              "section_code": 18000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "Detail",
+          "name": "DetailArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 720,
+              "kind": "Detail",
+              "name": "TSection3",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 600,
+                    "left": 506,
+                    "top": 120,
+                    "width": 4174
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{vw_major_cities_canada.City_Name}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 12.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "DatabaseField",
+                      "summary_code": null,
+                      "value_type": "PersistentMemo"
+                    }
+                  },
+                  "name": "TLastYearsSales1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 24000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 600,
+                    "left": 4800,
+                    "top": 120,
+                    "width": 4440
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{vw_major_cities_canada.Region}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 12.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "DatabaseField",
+                      "summary_code": null,
+                      "value_type": "PersistentMemo"
+                    }
+                  },
+                  "name": "TCity1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 24000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 646,
+                    "left": 9360,
+                    "top": 74,
+                    "width": 1800
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{vw_major_cities_canada.Province}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 12.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "DatabaseField",
+                      "summary_code": null,
+                      "value_type": "PersistentMemo"
+                    }
+                  },
+                  "name": "TPhone1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 24000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 165,
+                      "g": 121,
+                      "r": 90
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "SingleLine"
+                  },
+                  "bounds": {
+                    "height": 0,
+                    "left": 506,
+                    "top": 720,
+                    "width": 10656
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Line": {
+                      "end_section_name": "TSection3",
+                      "shape": {
+                        "bottom": 720,
+                        "extend_to_bottom_of_section": false,
+                        "line_color": {
+                          "a": 255,
+                          "b": 165,
+                          "g": 121,
+                          "r": 90
+                        },
+                        "line_style": "SingleLine",
+                        "line_thickness": 20,
+                        "right": 11162
+                      }
+                    }
+                  },
+                  "name": "Line1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 24000
+                }
+              ],
+              "section_code": 24000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": 0,
+          "kind": "GroupFooter",
+          "name": "GroupFooterArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 360,
+              "kind": "GroupFooter",
+              "name": "TSection9",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 328,
+                    "left": 504,
+                    "top": 0,
+                    "width": 5496
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "RightAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "Total for",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 128,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": true,
+                          "name": "Arial",
+                          "size_pt": 14.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": true,
+                                "charset": 0,
+                                "italic": true,
+                                "name": "Arial",
+                                "size_pt": 14.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 700
+                              },
+                              "text": "Total for"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "Total for"
+                    }
+                  },
+                  "name": "Text4",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 30000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 331,
+                    "left": 10200,
+                    "top": 0,
+                    "width": 960
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{#DateGroupTotal}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 165,
+                          "g": 121,
+                          "r": 90
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 14.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "YearMonthDay",
+                          "day": "LeadingZeroNumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "LeadingZeroNumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "ShortYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 0,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToUnit",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "RunningTotal",
+                      "summary_code": null,
+                      "value_type": "Int32s"
+                    }
+                  },
+                  "name": "GroupTotalBW1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 30000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 360,
+                    "left": 6090,
+                    "top": 0,
+                    "width": 3030
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{@GroupDateFormatted2}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 165,
+                          "g": 121,
+                          "r": 90
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 14.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "Formula",
+                      "summary_code": null,
+                      "value_type": "String"
+                    }
+                  },
+                  "name": "GroupDateFormatted21",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 30000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 359,
+                    "left": 9240,
+                    "top": 0,
+                    "width": 360
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": ":",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 128,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 14.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": true,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Arial",
+                                "size_pt": 14.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 700
+                              },
+                              "text": ":"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": ":"
+                    }
+                  },
+                  "name": "Text1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 30000
+                }
+              ],
+              "section_code": 30000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "ReportFooter",
+          "name": "ReportFooterArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": true
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 230,
+              "kind": "ReportFooter",
+              "name": "TSection7",
+              "objects": [],
+              "section_code": 48000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": true,
+              "new_page_after": true,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "PageFooter",
+          "name": "PageFooterArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 600,
+              "kind": "PageFooter",
+              "name": "TSection2",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 290,
+                    "left": 9576,
+                    "top": 175,
+                    "width": 1416
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "RightAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "PageNofM",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 255
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "Special",
+                      "summary_code": null,
+                      "value_type": "String"
+                    }
+                  },
+                  "name": "Field2",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 42000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 255
+                    },
+                    "bottom": "SingleLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "SingleLine",
+                    "right": "SingleLine",
+                    "tight_horizontal": false,
+                    "top": "SingleLine"
+                  },
+                  "bounds": {
+                    "height": 396,
+                    "left": 504,
+                    "top": 72,
+                    "width": 10656
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Box": {
+                      "corner_ellipse_height": 0,
+                      "corner_ellipse_width": 0,
+                      "end_section_name": "TSection2",
+                      "fill_color": {
+                        "a": 255,
+                        "b": 255,
+                        "g": 255,
+                        "r": 255
+                      },
+                      "shape": {
+                        "bottom": 468,
+                        "extend_to_bottom_of_section": false,
+                        "line_color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 255
+                        },
+                        "line_style": "SingleLine",
+                        "line_thickness": 30,
+                        "right": 11160
+                      }
+                    }
+                  },
+                  "name": "Box1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 42000
+                }
+              ],
+              "section_code": 42000,
+              "width": 0
+            }
+          ]
+        }
+      ]
+    },
+    "report_options": {
+      "convert_null_field_to_default": false,
+      "convert_other_nulls_to_default": false,
+      "enable_verify_on_every_print": true,
+      "initial_data_context": null,
+      "initial_report_part_name": null,
+      "save_data_with_report": true,
+      "save_preview_picture": true,
+      "save_summaries_with_report": true,
+      "use_dummy_data": false
+    },
+    "save_metadata": [
+      {
+        "key": "Saved Date",
+        "value": "2021.01.10 11:37:29 -0500"
+      },
+      {
+        "key": "Build Version",
+        "value": "14.3.0.3677"
+      },
+      {
+        "key": "Print Engine",
+        "value": "CRW"
+      },
+      {
+        "key": "OS",
+        "value": "Windows Vista"
+      },
+      {
+        "key": "Architecture",
+        "value": "AMD64"
+      },
+      {
+        "key": "Saved Date",
+        "value": "2021.01.07 12:51:23 -0500"
+      },
+      {
+        "key": "Build Version",
+        "value": "14.3.0.3677"
+      },
+      {
+        "key": "Print Engine",
+        "value": "CRPE"
+      },
+      {
+        "key": "OS",
+        "value": "Windows Vista"
+      },
+      {
+        "key": "Architecture",
+        "value": "AMD64"
+      }
+    ],
+    "saved_data": {
+      "columns": [
+        {
+          "name": "vw_major_cities_canada.Most_Recent_Structuring",
+          "value_type": "String"
+        },
+        {
+          "name": "vw_major_cities_canada.City_Name",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "name": "vw_major_cities_canada.Region",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "name": "vw_major_cities_canada.Province",
+          "value_type": "PersistentMemo"
+        },
+        {
+          "name": "vw_major_cities_canada.id",
+          "value_type": "Int32s"
+        }
+      ],
+      "record_count": 300,
+      "rows": [
+        [
+          "3145778",
+          "Richmond Hill",
+          "York",
+          "Ontario",
+          "155"
+        ],
+        [
+          "3145778",
+          "Beaumont",
+          "Edmonton Metropolitan Region",
+          "Alberta",
+          "2"
+        ],
+        [
+          "3145778",
+          "Delta",
+          "Greater Vancouver",
+          "British Columbia",
+          "31"
+        ],
+        [
+          "3145778",
+          "West Kelowna",
+          "Central Okanagan",
+          "British Columbia",
+          "69"
+        ],
+        [
+          "3145778",
+          "Chestermere",
+          "Calgary Metropolitan Region",
+          "Alberta",
+          "6"
+        ],
+        [
+          "3145778",
+          "Maple Ridge",
+          "Metro Vancouver",
+          "British Columbia",
+          "43"
+        ],
+        [
+          "3145778",
+          "Warman",
+          "Corman Park No. 344",
+          "Saskatchewan",
+          "284"
+        ],
+        [
+          "3145778",
+          "Markham",
+          "York",
+          "Ontario",
+          "140"
+        ],
+        [
+          "3145778",
+          "Morden",
+          "Pembina Valley",
+          "Manitoba",
+          "75"
+        ],
+        [
+          "3145778",
+          "Lacombe",
+          "Central Alberta",
+          "Alberta",
+          "11"
+        ],
+        [
+          "3145778",
+          "Meadow Lake",
+          "Meadow Lake No. 588",
+          "Saskatchewan",
+          "275"
+        ],
+        [
+          "3145778",
+          "Martensville",
+          "Corman Park No. 344",
+          "Saskatchewan",
+          "274"
+        ],
+        [
+          "3145778",
+          "Granby",
+          "Montérégie",
+          "Quebec",
+          "188"
+        ],
+        [
+          "3145778",
+          "Dollard-des-Ormeaux",
+          "Montréal",
+          "Quebec",
+          "191"
+        ],
+        [
+          "3145778",
+          "Boucherville",
+          "Montérégie",
+          "Quebec",
+          "199"
+        ],
+        [
+          "3145778",
+          "La Tuque",
+          "Mauricie",
+          "Quebec",
+          "251"
+        ],
+        [
+          "3145778",
+          "Dorval",
+          "Montréal",
+          "Quebec",
+          "229"
+        ],
+        [
+          "3145778",
+          "Saint-Bruno-de-Montarville",
+          "Montérégie",
+          "Quebec",
+          "214"
+        ],
+        [
+          "3145778",
+          "Pointe-Claire",
+          "Montréal",
+          "Quebec",
+          "205"
+        ],
+        [
+          "3145778",
+          "Beaconsfield",
+          "Montréal",
+          "Quebec",
+          "224"
+        ],
+        [
+          "3145778",
+          "L'Ancienne-Lorette",
+          "Capitale-Nationale",
+          "Quebec",
+          "234"
+        ],
+        [
+          "3145778",
+          "Mount Royal",
+          "Montréal",
+          "Quebec",
+          "226"
+        ],
+        [
+          "3145778",
+          "Brossard",
+          "Montérégie",
+          "Quebec",
+          "185"
+        ],
+        [
+          "3145778",
+          "Côte Saint-Luc",
+          "Montréal",
+          "Quebec",
+          "203"
+        ],
+        [
+          "3145778",
+          "Saint-Lambert",
+          "Montérégie",
+          "Quebec",
+          "220"
+        ],
+        [
+          "3145778",
+          "Westmount",
+          "Montréal",
+          "Quebec",
+          "222"
+        ],
+        [
+          "3145778",
+          "Kirkland",
+          "Montréal",
+          "Quebec",
+          "223"
+        ],
+        [
+          "3145778",
+          "Longueuil",
+          "Montérégie",
+          "Quebec",
+          "177"
+        ],
+        [
+          "3145778",
+          "Saint-Augustin-de-Desmaures",
+          "Capitale-Nationale",
+          "Quebec",
+          "231"
+        ],
+        [
+          "3145778",
+          "Brooks",
+          "Southern Alberta",
+          "Alberta",
+          "3"
+        ],
+        [
+          "3145778",
+          "Drummondville",
+          "Centre-du-Québec",
+          "Quebec",
+          "186"
+        ],
+        [
+          "3145778",
+          "Temiskaming Shores",
+          "Timiskaming",
+          "Ontario",
+          "161"
+        ],
+        [
+          "3145778",
+          "Sept-Îles",
+          "Côte-Nord",
+          "Quebec",
+          "212"
+        ],
+        [
+          "3145778",
+          "Mont-Laurier",
+          "Laurentides",
+          "Quebec",
+          "244"
+        ],
+        [
+          "3145778",
+          "Dieppe",
+          "Westmorland",
+          "New Brunswick",
+          "84"
+        ],
+        [
+          "3145778",
+          "Magog",
+          "Estrie",
+          "Quebec",
+          "216"
+        ],
+        [
+          "3145778",
+          "Saint-Sauveur",
+          "Laurentides",
+          "Quebec",
+          "269"
+        ],
+        [
+          "3145778",
+          "Repentigny",
+          "Lanaudière",
+          "Quebec",
+          "184"
+        ],
+        [
+          "3145778",
+          "Salaberry-de-Valleyfield",
+          "Montérégie",
+          "Quebec",
+          "198"
+        ],
+        [
+          "3145778",
+          "Winkler",
+          "Pembina Valley",
+          "Manitoba",
+          "80"
+        ],
+        [
+          "3145778",
+          "Sainte-Agathe-des-Monts",
+          "Laurentides",
+          "Quebec",
+          "265"
+        ],
+        [
+          "3145778",
+          "Saguenay",
+          "Saguenay–Lac-Saint-Jean",
+          "Quebec",
+          "179"
+        ],
+        [
+          "3145778",
+          "Shawinigan",
+          "Mauricie",
+          "Quebec",
+          "189"
+        ],
+        [
+          "3145778",
+          "Lévis",
+          "Chaudière-Appalaches",
+          "Quebec",
+          "180"
+        ],
+        [
+          "3145778",
+          "Trois-Rivières",
+          "Mauricie",
+          "Quebec",
+          "181"
+        ],
+        [
+          "3145778",
+          "Rimouski",
+          "Bas-Saint-Laurent",
+          "Quebec",
+          "193"
+        ],
+        [
+          "3145778",
+          "Rouyn-Noranda",
+          "Abitibi-Témiscamingue",
+          "Quebec",
+          "197"
+        ],
+        [
+          "3145778",
+          "Beauharnois",
+          "Montérégie",
+          "Quebec",
+          "249"
+        ],
+        [
+          "3145778",
+          "Sherbrooke",
+          "Estrie",
+          "Quebec",
+          "178"
+        ],
+        [
+          "3145778",
+          "Gatineau",
+          "Outaouais",
+          "Quebec",
+          "176"
+        ],
+        [
+          "3145778",
+          "Saint-Jérôme",
+          "Laurentides",
+          "Quebec",
+          "187"
+        ],
+        [
+          "3145778",
+          "Québec City",
+          "Capitale-Nationale",
+          "Quebec",
+          "174"
+        ],
+        [
+          "3145778",
+          "Montreal",
+          "Montréal",
+          "Quebec",
+          "173"
+        ],
+        [
+          "3145778",
+          "Alma",
+          "Saguenay–Lac-Saint-Jean",
+          "Quebec",
+          "206"
+        ],
+        [
+          "3145778",
+          "Val-d'Or",
+          "Abitibi-Témiscamingue",
+          "Quebec",
+          "204"
+        ],
+        [
+          "3145778",
+          "Saint-Hyacinthe",
+          "Montérégie",
+          "Quebec",
+          "190"
+        ],
+        [
+          "3145778",
+          "Thetford Mines",
+          "Chaudière-Appalaches",
+          "Quebec",
+          "211"
+        ],
+        [
+          "3145778",
+          "Matane",
+          "Bas-Saint-Laurent",
+          "Quebec",
+          "240"
+        ],
+        [
+          "3145778",
+          "Saint-Georges",
+          "Chaudière-Appalaches",
+          "Quebec",
+          "207"
+        ],
+        [
+          "3145778",
+          "Terrebonne",
+          "Lanaudière",
+          "Quebec",
+          "182"
+        ],
+        [
+          "3145778",
+          "Lavaltrie",
+          "Lanaudière",
+          "Quebec",
+          "248"
+        ],
+        [
+          "3145778",
+          "Iqaluit",
+          "Qikiqtaaluk",
+          "Nunavut",
+          "118"
+        ],
+        [
+          "3145778",
+          "Saint-Jean-sur-Richelieu",
+          "Montérégie",
+          "Quebec",
+          "183"
+        ],
+        [
+          "3145778",
+          "Norfolk County",
+          "Norfolk",
+          "Ontario",
+          "143"
+        ],
+        [
+          "3145778",
+          "Ottawa",
+          "Ottawa",
+          "Ontario",
+          "147"
+        ],
+        [
+          "3145778",
+          "Kawartha Lakes",
+          "Kawartha Lakes",
+          "Ontario",
+          "135"
+        ],
+        [
+          "3145778",
+          "Haldimand County",
+          "Haldimand",
+          "Ontario",
+          "133"
+        ],
+        [
+          "3145778",
+          "The Blue Mountains",
+          "Grey",
+          "Ontario",
+          "298"
+        ],
+        [
+          "3145778",
+          "Greater Sudbury",
+          "Sudbury",
+          "Ontario",
+          "131"
+        ],
+        [
+          "3145778",
+          "Humboldt",
+          "Humboldt No. 370",
+          "Saskatchewan",
+          "272"
+        ],
+        [
+          "3145778",
+          "Cold Lake",
+          "Central Alberta",
+          "Alberta",
+          "7"
+        ],
+        [
+          "3145778",
+          "L'Assomption",
+          "Lanaudière",
+          "Quebec",
+          "233"
+        ],
+        [
+          "3145778",
+          "Sorel-Tracy",
+          "Montérégie",
+          "Quebec",
+          "201"
+        ],
+        [
+          "3145778",
+          "Saint-Lin-Laurentides",
+          "Lanaudière",
+          "Quebec",
+          "243"
+        ],
+        [
+          "3145778",
+          "Pickering",
+          "Durham",
+          "Ontario",
+          "151"
+        ],
+        [
+          "3145778",
+          "Kenora",
+          "Kenora",
+          "Ontario",
+          "136"
+        ],
+        [
+          "3145778",
+          "Lachute",
+          "Laurentides",
+          "Quebec",
+          "250"
+        ],
+        [
+          "3145778",
+          "Mirabel",
+          "Laurentides",
+          "Quebec",
+          "200"
+        ],
+        [
+          "3735601",
+          "Brant",
+          "Brant",
+          "Ontario",
+          "122"
+        ],
+        [
+          "3735601",
+          "Rivière-du-Loup",
+          "Bas-Saint-Laurent",
+          "Quebec",
+          "228"
+        ],
+        [
+          "3735601",
+          "Coaticook",
+          "Estrie",
+          "Quebec",
+          "268"
+        ],
+        [
+          "3735601",
+          "Prince Edward County",
+          "Prince Edward",
+          "Ontario",
+          "153"
+        ],
+        [
+          "3735601",
+          "Quinte West",
+          "Hastings",
+          "Ontario",
+          "154"
+        ],
+        [
+          "3735601",
+          "Toronto",
+          "Toronto",
+          "Ontario",
+          "165"
+        ],
+        [
+          "3735601",
+          "Kingston",
+          "Frontenac",
+          "Ontario",
+          "137"
+        ],
+        [
+          "3735601",
+          "Clarence-Rockland",
+          "Prescott and Russell",
+          "Ontario",
+          "127"
+        ],
+        [
+          "3735601",
+          "Dryden",
+          "Kenora",
+          "Ontario",
+          "129"
+        ],
+        [
+          "3735601",
+          "Dolbeau-Mistassini",
+          "Saguenay–Lac-Saint-Jean",
+          "Quebec",
+          "241"
+        ],
+        [
+          "3735601",
+          "Sainte-Adèle",
+          "Laurentides",
+          "Quebec",
+          "257"
+        ],
+        [
+          "3735601",
+          "Queens",
+          "Queens",
+          "Nova Scotia",
+          "95"
+        ],
+        [
+          "3735601",
+          "Halifax",
+          "Halifax",
+          "Nova Scotia",
+          "94"
+        ],
+        [
+          "3735601",
+          "Saint-Félicien",
+          "Saguenay–Lac-Saint-Jean",
+          "Quebec",
+          "259"
+        ],
+        [
+          "3735601",
+          "Abbotsford",
+          "Fraser Valley",
+          "British Columbia",
+          "20"
+        ],
+        [
+          "3735601",
+          "Cape Breton",
+          "Cape Breton",
+          "Nova Scotia",
+          "93"
+        ],
+        [
+          "3735601",
+          "Stratford",
+          "Queens",
+          "Prince Edward Island",
+          "296"
+        ],
+        [
+          "3735601",
+          "Summerside",
+          "Prince",
+          "Prince Edward Island",
+          "172"
+        ],
+        [
+          "3735601",
+          "Cornwall",
+          "Queens",
+          "Prince Edward Island",
+          "297"
+        ],
+        [
+          "3735601",
+          "Saint-Raymond",
+          "Capitale-Nationale",
+          "Quebec",
+          "267"
+        ],
+        [
+          "3735601",
+          "Miramichi",
+          "Northumberland",
+          "New Brunswick",
+          "87"
+        ],
+        [
+          "3735601",
+          "Vaudreuil-Dorion",
+          "Montérégie",
+          "Quebec",
+          "210"
+        ],
+        [
+          "3735601",
+          "Victoriaville",
+          "Centre-du-Québec",
+          "Quebec",
+          "196"
+        ],
+        [
+          "3735601",
+          "Langford",
+          "Capital",
+          "British Columbia",
+          "41"
+        ],
+        [
+          "3735601",
+          "Sarnia",
+          "Lambton",
+          "Ontario",
+          "156"
+        ],
+        [
+          "3735601",
+          "Vaughan",
+          "York",
+          "Ontario",
+          "166"
+        ],
+        [
+          "3735601",
+          "Grand Falls-Windsor",
+          "6",
+          "Newfoundland and Labrador",
+          "291"
+        ],
+        [
+          "3735601",
+          "Paradise",
+          "1",
+          "Newfoundland and Labrador",
+          "290"
+        ],
+        [
+          "3735601",
+          "Mount Pearl",
+          "1",
+          "Newfoundland and Labrador",
+          "91"
+        ],
+        [
+          "3735601",
+          "Amos",
+          "Abitibi-Témiscamingue",
+          "Quebec",
+          "246"
+        ],
+        [
+          "3735601",
+          "Spruce Grove",
+          "Edmonton Metropolitan Region",
+          "Alberta",
+          "17"
+        ],
+        [
+          "3735601",
+          "Fort Saskatchewan",
+          "Edmonton Metropolitan Region",
+          "Alberta",
+          "9"
+        ],
+        [
+          "3735601",
+          "Colwood",
+          "Capital",
+          "British Columbia",
+          "26"
+        ],
+        [
+          "3735601",
+          "Airdrie",
+          "Calgary Metropolitan Region",
+          "Alberta",
+          "1"
+        ],
+        [
+          "3735601",
+          "Notre-Dame-de-l'Île-Perrot",
+          "Montérégie",
+          "Quebec",
+          "264"
+        ],
+        [
+          "3735601",
+          "Leduc",
+          "Edmonton Metropolitan Region",
+          "Alberta",
+          "12"
+        ],
+        [
+          "3735601",
+          "Baie-Comeau",
+          "Côte-Nord",
+          "Quebec",
+          "218"
+        ],
+        [
+          "3735601",
+          "Châteauguay",
+          "Montérégie",
+          "Quebec",
+          "194"
+        ],
+        [
+          "3735601",
+          "Melfort",
+          "Star City No. 428",
+          "Saskatchewan",
+          "276"
+        ],
+        [
+          "3735601",
+          "Dawson",
+          "Klondike",
+          "Yukon",
+          "287"
+        ],
+        [
+          "3735601",
+          "Sainte-Marie",
+          "Chaudière-Appalaches",
+          "Quebec",
+          "252"
+        ],
+        [
+          "3735601",
+          "St. Albert",
+          "Edmonton Metropolitan Region",
+          "Alberta",
+          "18"
+        ],
+        [
+          "3735601",
+          "Roberval",
+          "Saguenay–Lac-Saint-Jean",
+          "Quebec",
+          "258"
+        ],
+        [
+          "3735601",
+          "Thorold",
+          "Niagara",
+          "Ontario",
+          "162"
+        ],
+        [
+          "3735601",
+          "Whistler",
+          "Sea to Sky Country",
+          "British Columbia",
+          "300"
+        ],
+        [
+          "3735601",
+          "Burlington",
+          "Halton",
+          "Ontario",
+          "125"
+        ],
+        [
+          "3735601",
+          "Mississauga",
+          "Peel",
+          "Ontario",
+          "141"
+        ],
+        [
+          "3735601",
+          "Castlegar",
+          "Central Kootenay",
+          "British Columbia",
+          "24"
+        ],
+        [
+          "3735601",
+          "Brampton",
+          "Peel Region",
+          "Ontario",
+          "121"
+        ],
+        [
+          "3735601",
+          "Prévost",
+          "Laurentides",
+          "Quebec",
+          "261"
+        ],
+        [
+          "3735601",
+          "Conception Bay South",
+          "1",
+          "Newfoundland and Labrador",
+          "289"
+        ],
+        [
+          "3735601",
+          "Cambridge",
+          "Waterloo",
+          "Ontario",
+          "126"
+        ],
+        [
+          "3735601",
+          "Sainte-Catherine",
+          "Montérégie",
+          "Quebec",
+          "235"
+        ],
+        [
+          "3735601",
+          "Saint-Constant",
+          "Montérégie",
+          "Quebec",
+          "215"
+        ],
+        [
+          "3735601",
+          "Happy Valley-Goose Bay",
+          "10",
+          "Newfoundland and Labrador",
+          "293"
+        ],
+        [
+          "3735601",
+          "Varennes",
+          "Montérégie",
+          "Quebec",
+          "221"
+        ],
+        [
+          "3735601",
+          "Saint-Eustache",
+          "Laurentides",
+          "Quebec",
+          "195"
+        ],
+        [
+          "3735601",
+          "Pembroke",
+          "Renfrew",
+          "Ontario",
+          "149"
+        ],
+        [
+          "3735601",
+          "Sainte-Julie",
+          "Montérégie",
+          "Quebec",
+          "208"
+        ],
+        [
+          "3735601",
+          "Gaspé",
+          "Gaspésie–Îles-de-la-Madeleine",
+          "Quebec",
+          "239"
+        ],
+        [
+          "3735601",
+          "Mascouche",
+          "Lanaudière",
+          "Quebec",
+          "202"
+        ],
+        [
+          "3735601",
+          "Thompson",
+          "Northern Region",
+          "Manitoba",
+          "79"
+        ],
+        [
+          "3735601",
+          "Yellowknife",
+          "North Slave Region",
+          "Northwest Territories",
+          "117"
+        ],
+        [
+          "3735601",
+          "Port Colborne",
+          "Niagara",
+          "Ontario",
+          "152"
+        ],
+        [
+          "3735601",
+          "Thunder Bay",
+          "Thunder Bay",
+          "Ontario",
+          "163"
+        ],
+        [
+          "3735601",
+          "Orillia",
+          "Simcoe",
+          "Ontario",
+          "145"
+        ],
+        [
+          "3735601",
+          "Blainville",
+          "Laurentides",
+          "Quebec",
+          "192"
+        ],
+        [
+          "3735601",
+          "Port Alberni",
+          "Alberni-Clayoquot",
+          "British Columbia",
+          "52"
+        ],
+        [
+          "3735601",
+          "Kamloops",
+          "Thompson-Nicola",
+          "British Columbia",
+          "38"
+        ],
+        [
+          "3735601",
+          "Joliette",
+          "Lanaudière",
+          "Quebec",
+          "225"
+        ],
+        [
+          "3735601",
+          "Montmagny",
+          "Chaudière-Appalaches",
+          "Quebec",
+          "253"
+        ],
+        [
+          "3735601",
+          "Mont-Saint-Hilaire",
+          "Montérégie",
+          "Quebec",
+          "237"
+        ],
+        [
+          "3735601",
+          "Bathurst",
+          "Gloucester",
+          "New Brunswick",
+          "82"
+        ],
+        [
+          "3735601",
+          "Bécancour",
+          "Centre-du-Québec",
+          "Quebec",
+          "256"
+        ],
+        [
+          "3735601",
+          "Chambly",
+          "Montérégie",
+          "Quebec",
+          "217"
+        ],
+        [
+          "3735601",
+          "Laval",
+          "Laval",
+          "Quebec",
+          "175"
+        ],
+        [
+          "3735601",
+          "Deux-Montagnes",
+          "Laurentides",
+          "Quebec",
+          "230"
+        ],
+        [
+          "3735601",
+          "Melville",
+          "Cana No. 214",
+          "Saskatchewan",
+          "277"
+        ],
+        [
+          "3735601",
+          "Lorraine",
+          "Laurentides",
+          "Quebec",
+          "266"
+        ],
+        [
+          "3735601",
+          "Sainte-Marthe-sur-le-Lac",
+          "Laurentides",
+          "Quebec",
+          "254"
+        ],
+        [
+          "3735601",
+          "Labrador City",
+          "19",
+          "Newfoundland and Labrador",
+          "295"
+        ],
+        [
+          "3735601",
+          "Barrie",
+          "Simcoe",
+          "Ontario",
+          "119"
+        ],
+        [
+          "3735601",
+          "Gander",
+          "6",
+          "Newfoundland and Labrador",
+          "292"
+        ],
+        [
+          "3735601",
+          "Lloydminster",
+          "Britannia No. 502",
+          "Saskatchewan",
+          "273"
+        ],
+        [
+          "3735601",
+          "Lloydminster",
+          "Central Alberta",
+          "Alberta",
+          "14"
+        ],
+        [
+          "3735601",
+          "Grande Prairie",
+          "Northern Alberta",
+          "Alberta",
+          "10"
+        ],
+        [
+          "3735601",
+          "Campbellton",
+          "Restigouche",
+          "New Brunswick",
+          "83"
+        ],
+        [
+          "3735601",
+          "White Rock",
+          "Metro Vancouver",
+          "British Columbia",
+          "70"
+        ],
+        [
+          "3735601",
+          "Estevan",
+          "Estevan No. 5",
+          "Saskatchewan",
+          "270"
+        ],
+        [
+          "3735601",
+          "Candiac",
+          "Montérégie",
+          "Quebec",
+          "236"
+        ],
+        [
+          "3735601",
+          "Corner Brook",
+          "5",
+          "Newfoundland and Labrador",
+          "90"
+        ],
+        [
+          "3735601",
+          "Powell River",
+          "Powell River",
+          "British Columbia",
+          "55"
+        ],
+        [
+          "3735601",
+          "Langley",
+          "Metro Vancouver",
+          "British Columbia",
+          "42"
+        ],
+        [
+          "3735601",
+          "Camrose",
+          "Central Alberta",
+          "Alberta",
+          "5"
+        ],
+        [
+          "3735601",
+          "Elliot Lake",
+          "Algoma",
+          "Ontario",
+          "130"
+        ],
+        [
+          "3735601",
+          "Edmundston",
+          "Madawaska",
+          "New Brunswick",
+          "85"
+        ],
+        [
+          "3735601",
+          "Whitehorse",
+          "Whitehorse",
+          "Yukon",
+          "288"
+        ],
+        [
+          "3735601",
+          "Pincourt",
+          "Montérégie",
+          "Quebec",
+          "255"
+        ],
+        [
+          "3735601",
+          "Waterloo",
+          "Waterloo",
+          "Ontario",
+          "167"
+        ],
+        [
+          "3735601",
+          "Fort St. John",
+          "Peace River",
+          "British Columbia",
+          "35"
+        ],
+        [
+          "3735601",
+          "Campbell River",
+          "Strathcona",
+          "British Columbia",
+          "23"
+        ],
+        [
+          "3735601",
+          "Rosemère",
+          "Laurentides",
+          "Quebec",
+          "242"
+        ],
+        [
+          "3735601",
+          "Steinbach",
+          "Eastman",
+          "Manitoba",
+          "78"
+        ],
+        [
+          "3735601",
+          "Boisbriand",
+          "Laurentides",
+          "Quebec",
+          "209"
+        ],
+        [
+          "3735601",
+          "Parksville",
+          "Nanaimo",
+          "British Columbia",
+          "49"
+        ],
+        [
+          "3735601",
+          "Kimberley",
+          "East Kootenay",
+          "British Columbia",
+          "40"
+        ],
+        [
+          "3735601",
+          "Dawson Creek",
+          "Peace River",
+          "British Columbia",
+          "30"
+        ],
+        [
+          "3735601",
+          "Williams Lake",
+          "Cariboo",
+          "British Columbia",
+          "71"
+        ],
+        [
+          "3735601",
+          "Quesnel",
+          "Cariboo",
+          "British Columbia",
+          "58"
+        ],
+        [
+          "3735601",
+          "Yorkton",
+          "Orkney No. 244",
+          "Saskatchewan",
+          "286"
+        ],
+        [
+          "3735601",
+          "Terrace",
+          "Kitimat-Stikine",
+          "British Columbia",
+          "64"
+        ],
+        [
+          "3735601",
+          "Flin Flon",
+          "Manitoba / Saskatchewan",
+          "Manitoba",
+          "74"
+        ],
+        [
+          "3735601",
+          "Flin Flon",
+          "Saskatchewan / Manitoba",
+          "Saskatchewan",
+          "271"
+        ],
+        [
+          "3735601",
+          "Welland",
+          "Niagara",
+          "Ontario",
+          "168"
+        ],
+        [
+          "3735601",
+          "Kitchener",
+          "Waterloo",
+          "Ontario",
+          "138"
+        ],
+        [
+          "3735601",
+          "Prince George",
+          "Fraser-Fort George",
+          "British Columbia",
+          "56"
+        ],
+        [
+          "3735601",
+          "Courtenay",
+          "Comox Valley",
+          "British Columbia",
+          "28"
+        ],
+        [
+          "3735601",
+          "Pitt Meadows",
+          "Metro Vancouver",
+          "British Columbia",
+          "51"
+        ],
+        [
+          "3735601",
+          "Swift Current",
+          "Swift Current No. 137",
+          "Saskatchewan",
+          "283"
+        ],
+        [
+          "3735601",
+          "Beloeil",
+          "Montérégie",
+          "Quebec",
+          "227"
+        ],
+        [
+          "3735601",
+          "Weyburn",
+          "Weyburn No. 67",
+          "Saskatchewan",
+          "285"
+        ],
+        [
+          "3735601",
+          "North Battleford",
+          "North Battleford No. 437",
+          "Saskatchewan",
+          "279"
+        ],
+        [
+          "3735601",
+          "Armstrong",
+          "North Okanagan",
+          "British Columbia",
+          "21"
+        ],
+        [
+          "3735601",
+          "Red Deer",
+          "Central Alberta",
+          "Alberta",
+          "16"
+        ],
+        [
+          "3735601",
+          "Port Moody",
+          "Metro Vancouver",
+          "British Columbia",
+          "54"
+        ],
+        [
+          "3735601",
+          "Port Coquitlam",
+          "Metro Vancouver",
+          "British Columbia",
+          "53"
+        ],
+        [
+          "3735601",
+          "Duncan",
+          "Cowichan Valley",
+          "British Columbia",
+          "32"
+        ],
+        [
+          "3735601",
+          "Timmins",
+          "Cochrane",
+          "Ontario",
+          "164"
+        ],
+        [
+          "3735601",
+          "Sault Ste. Marie",
+          "Algoma",
+          "Ontario",
+          "157"
+        ],
+        [
+          "3735601",
+          "Merritt",
+          "Thompson-Nicola",
+          "British Columbia",
+          "44"
+        ],
+        [
+          "3735601",
+          "Prince Rupert",
+          "Skeena-Queen Charlotte",
+          "British Columbia",
+          "57"
+        ],
+        [
+          "3735601",
+          "Penticton",
+          "Okanagan-Similkameen",
+          "British Columbia",
+          "50"
+        ],
+        [
+          "3735601",
+          "La Prairie",
+          "Montérégie",
+          "Quebec",
+          "219"
+        ],
+        [
+          "3735601",
+          "Portage la Prairie",
+          "Central Plains",
+          "Manitoba",
+          "76"
+        ],
+        [
+          "3735601",
+          "Saskatoon",
+          "Corman Park No. 344",
+          "Saskatchewan",
+          "282"
+        ],
+        [
+          "3735601",
+          "Wetaskiwin",
+          "Central Alberta",
+          "Alberta",
+          "19"
+        ],
+        [
+          "3735601",
+          "Medicine Hat",
+          "Southern Alberta",
+          "Alberta",
+          "15"
+        ],
+        [
+          "3735601",
+          "Lethbridge",
+          "Southern Alberta",
+          "Alberta",
+          "13"
+        ],
+        [
+          "3735601",
+          "Cranbrook",
+          "East Kootenay",
+          "British Columbia",
+          "29"
+        ],
+        [
+          "3735601",
+          "Peterborough",
+          "Peterborough",
+          "Ontario",
+          "150"
+        ],
+        [
+          "3735601",
+          "Salmon Arm",
+          "Columbia Shuswap",
+          "British Columbia",
+          "62"
+        ],
+        [
+          "3735601",
+          "Kelowna",
+          "Central Okanagan",
+          "British Columbia",
+          "39"
+        ],
+        [
+          "3735601",
+          "Enderby",
+          "North Okanagan",
+          "British Columbia",
+          "33"
+        ],
+        [
+          "3735601",
+          "Prince Albert",
+          "Prince Albert No. 461",
+          "Saskatchewan",
+          "280"
+        ],
+        [
+          "3735601",
+          "Edmonton",
+          "Edmonton Metropolitan Region",
+          "Alberta",
+          "8"
+        ],
+        [
+          "3735601",
+          "Fernie",
+          "East Kootenay",
+          "British Columbia",
+          "34"
+        ],
+        [
+          "3735601",
+          "Moose Jaw",
+          "Moose Jaw No. 161",
+          "Saskatchewan",
+          "278"
+        ],
+        [
+          "3735601",
+          "Regina",
+          "Sherwood No. 159",
+          "Saskatchewan",
+          "281"
+        ],
+        [
+          "3735601",
+          "Niagara Falls",
+          "Niagara",
+          "Ontario",
+          "142"
+        ],
+        [
+          "3735601",
+          "Trail",
+          "Kootenay Boundary",
+          "British Columbia",
+          "65"
+        ],
+        [
+          "3735601",
+          "Dauphin",
+          "Parkland",
+          "Manitoba",
+          "73"
+        ],
+        [
+          "3670065",
+          "Revelstoke",
+          "Columbia Shuswap",
+          "British Columbia",
+          "59"
+        ],
+        [
+          "3670065",
+          "Greenwood",
+          "Kootenay Boundary",
+          "British Columbia",
+          "37"
+        ],
+        [
+          "3670065",
+          "Grand Forks",
+          "Kootenay Boundary",
+          "British Columbia",
+          "36"
+        ],
+        [
+          "3670065",
+          "Rossland",
+          "Kootenay Boundary",
+          "British Columbia",
+          "61"
+        ],
+        [
+          "3670065",
+          "Nelson",
+          "Central Kootenay",
+          "British Columbia",
+          "46"
+        ],
+        [
+          "3670065",
+          "Calgary",
+          "Calgary Metropolitan Region",
+          "Alberta",
+          "4"
+        ],
+        [
+          "3670065",
+          "Vernon",
+          "North Okanagan",
+          "British Columbia",
+          "67"
+        ],
+        [
+          "3670065",
+          "Burnaby",
+          "Metro Vancouver",
+          "British Columbia",
+          "22"
+        ],
+        [
+          "3670065",
+          "Windsor",
+          "Essex",
+          "Ontario",
+          "169"
+        ],
+        [
+          "3670065",
+          "North Vancouver",
+          "Metro Vancouver",
+          "British Columbia",
+          "48"
+        ],
+        [
+          "3670065",
+          "Coquitlam",
+          "Metro Vancouver",
+          "British Columbia",
+          "27"
+        ],
+        [
+          "3670065",
+          "North Bay",
+          "Nipissing",
+          "Ontario",
+          "144"
+        ],
+        [
+          "3670065",
+          "Woodstock",
+          "Oxford",
+          "Ontario",
+          "170"
+        ],
+        [
+          "3670065",
+          "St. John's",
+          "1",
+          "Newfoundland and Labrador",
+          "92"
+        ],
+        [
+          "3670065",
+          "Vancouver",
+          "Metro Vancouver",
+          "British Columbia",
+          "66"
+        ],
+        [
+          "3670065",
+          "Stratford",
+          "Perth",
+          "Ontario",
+          "160"
+        ],
+        [
+          "3670065",
+          "Brandon",
+          "Westman",
+          "Manitoba",
+          "72"
+        ],
+        [
+          "3670065",
+          "Selkirk",
+          "Interlake",
+          "Manitoba",
+          "77"
+        ],
+        [
+          "3670065",
+          "St. Thomas",
+          "Elgin",
+          "Ontario",
+          "159"
+        ],
+        [
+          "3670065",
+          "Richmond",
+          "Metro Vancouver",
+          "British Columbia",
+          "60"
+        ],
+        [
+          "3670065",
+          "Surrey",
+          "Metro Vancouver",
+          "British Columbia",
+          "63"
+        ],
+        [
+          "3670065",
+          "Guelph",
+          "Wellington",
+          "Ontario",
+          "132"
+        ],
+        [
+          "3670065",
+          "Victoria",
+          "Victoria",
+          "Nova Scotia",
+          "104"
+        ],
+        [
+          "3670065",
+          "Barrington",
+          "Barrington",
+          "Nova Scotia",
+          "106"
+        ],
+        [
+          "3670065",
+          "Chester",
+          "Chester",
+          "Nova Scotia",
+          "107"
+        ],
+        [
+          "3670065",
+          "Clare",
+          "Clare",
+          "Nova Scotia",
+          "108"
+        ],
+        [
+          "3670065",
+          "Digby",
+          "Digby",
+          "Nova Scotia",
+          "109"
+        ],
+        [
+          "3670065",
+          "Lunenburg",
+          "Lunenburg",
+          "Nova Scotia",
+          "112"
+        ],
+        [
+          "3670065",
+          "Guysborough",
+          "Guysborough",
+          "Nova Scotia",
+          "111"
+        ],
+        [
+          "3670065",
+          "Pictou",
+          "Pictou",
+          "Nova Scotia",
+          "102"
+        ],
+        [
+          "3670065",
+          "Richmond",
+          "Richmond",
+          "Nova Scotia",
+          "103"
+        ],
+        [
+          "3670065",
+          "Shelburne",
+          "Shelburne",
+          "Nova Scotia",
+          "113"
+        ],
+        [
+          "3670065",
+          "St. Mary's",
+          "St. Mary's",
+          "Nova Scotia",
+          "114"
+        ],
+        [
+          "3670065",
+          "West Hants",
+          "West Hants",
+          "Nova Scotia",
+          "115"
+        ],
+        [
+          "3670065",
+          "Yarmouth",
+          "Yarmouth",
+          "Nova Scotia",
+          "116"
+        ],
+        [
+          "3670065",
+          "East Hants",
+          "East Hants",
+          "Nova Scotia",
+          "110"
+        ],
+        [
+          "3670065",
+          "Inverness",
+          "Inverness",
+          "Nova Scotia",
+          "100"
+        ],
+        [
+          "3670065",
+          "Cumberland",
+          "Cumberland",
+          "Nova Scotia",
+          "99"
+        ],
+        [
+          "3670065",
+          "Colchester",
+          "Colchester",
+          "Nova Scotia",
+          "98"
+        ],
+        [
+          "3670065",
+          "Antigonish",
+          "Antigonish",
+          "Nova Scotia",
+          "97"
+        ],
+        [
+          "3670065",
+          "Annapolis",
+          "Annapolis",
+          "Nova Scotia",
+          "96"
+        ],
+        [
+          "3670065",
+          "Kings",
+          "Kings",
+          "Nova Scotia",
+          "101"
+        ],
+        [
+          "3670065",
+          "Argyle",
+          "Argyle",
+          "Nova Scotia",
+          "105"
+        ],
+        [
+          "3670065",
+          "Belleville",
+          "Hastings",
+          "Ontario",
+          "120"
+        ],
+        [
+          "3670065",
+          "Brantford",
+          "Brant",
+          "Ontario",
+          "123"
+        ],
+        [
+          "3670065",
+          "St. Catharines",
+          "Niagara",
+          "Ontario",
+          "158"
+        ],
+        [
+          "3670065",
+          "Cowansville",
+          "Montérégie",
+          "Quebec",
+          "247"
+        ],
+        [
+          "3670065",
+          "Saint-Lazare",
+          "Montérégie",
+          "Quebec",
+          "232"
+        ],
+        [
+          "3670065",
+          "Moncton",
+          "Westmorland",
+          "New Brunswick",
+          "88"
+        ],
+        [
+          "3670065",
+          "Nanaimo",
+          "Nanaimo",
+          "British Columbia",
+          "45"
+        ],
+        [
+          "3670065",
+          "Winnipeg",
+          "Winnipeg Capital",
+          "Manitoba",
+          "81"
+        ],
+        [
+          "3670065",
+          "Chilliwack",
+          "Fraser Valley",
+          "British Columbia",
+          "25"
+        ],
+        [
+          "3670065",
+          "Saint-Basile-le-Grand",
+          "Montérégie",
+          "Quebec",
+          "238"
+        ],
+        [
+          "3670065",
+          "Victoria",
+          "Capital",
+          "British Columbia",
+          "68"
+        ],
+        [
+          "3670065",
+          "New Westminster",
+          "Metro Vancouver",
+          "British Columbia",
+          "47"
+        ],
+        [
+          "3670065",
+          "Collingwood",
+          "Simcoe",
+          "Ontario",
+          "299"
+        ],
+        [
+          "3670065",
+          "Owen Sound",
+          "Grey",
+          "Ontario",
+          "148"
+        ],
+        [
+          "3670065",
+          "L'Île-Perrot",
+          "Montérégie",
+          "Quebec",
+          "263"
+        ],
+        [
+          "3670065",
+          "Sainte-Anne-des-Plaines",
+          "Laurentides",
+          "Quebec",
+          "245"
+        ],
+        [
+          "3670065",
+          "Saint-Colomban",
+          "Laurentides",
+          "Quebec",
+          "260"
+        ],
+        [
+          "3670065",
+          "Mercier",
+          "Montérégie",
+          "Quebec",
+          "262"
+        ],
+        [
+          "3670065",
+          "Charlottetown",
+          "Queens",
+          "Prince Edward Island",
+          "171"
+        ],
+        [
+          "3670065",
+          "London",
+          "Middlesex",
+          "Ontario",
+          "139"
+        ],
+        [
+          "3670065",
+          "Oshawa",
+          "Durham",
+          "Ontario",
+          "146"
+        ],
+        [
+          "3670065",
+          "Sainte-Thérèse",
+          "Laurentides",
+          "Quebec",
+          "213"
+        ],
+        [
+          "3670065",
+          "Hamilton",
+          "Hamilton",
+          "Ontario",
+          "134"
+        ],
+        [
+          "3670065",
+          "Brockville",
+          "Leeds and Grenville",
+          "Ontario",
+          "124"
+        ],
+        [
+          "3604529",
+          "Saint John",
+          "Saint John County",
+          "New Brunswick",
+          "89"
+        ],
+        [
+          "3604529",
+          "Fredericton",
+          "Greater Fredericton",
+          "New Brunswick",
+          "86"
+        ],
+        [
+          "3604529",
+          "Cornwall",
+          "Stormont, Dundas and Glengarry",
+          "Ontario",
+          "128"
+        ],
+        [
+          "3604529",
+          "Torbay",
+          "1",
+          "Newfoundland and Labrador",
+          "294"
+        ]
+      ]
+    },
+    "subreports": [],
+    "summary_info": {
+      "author": "",
+      "comments": "",
+      "keywords": "",
+      "last_saved_by": "",
+      "revision_number": "36",
+      "save_with_preview": true,
+      "subject": "Geography, History, Canada",
+      "title": "Most Recent Structuring of Canadian Cities"
+    },
+    "version": 1
+  }
+}

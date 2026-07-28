@@ -6,8 +6,9 @@
 //! transform ([`projection`]) — a view-angle rotation then a perspective divide.
 //! Faces are emitted as filled [`rpt_pages::DrawOp::Polygon`]s so they render through every backend
 //! with no new dependency, exactly like the 2-D renderers, and are painter-sorted back-to-front. The
-//! per-chart view angle is not currently decoded, so a single preset is used and the caller records
-//! a diagnostic.
+//! per-chart view-angle preset is decoded, but the concrete angle for a non-default preset is an
+//! approximation ([`projection::ViewAngle::for_preset`]), so the caller records a diagnostic when one
+//! is in use.
 
 mod area3d;
 mod projection;

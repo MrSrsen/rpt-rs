@@ -14,7 +14,14 @@ pub struct StreamHeader {
     pub is_encrypted: bool,
     /// Format version word.
     pub version: u16,
-    /// `useFixed` — whether the universal fixed AES key is in play.
+    /// `useFixed` — records whether the stream was encrypted with the universal built-in AES key.
+    ///
+    /// **Inert, and the decode path deliberately ignores it — as the engine does.** It is not a
+    /// selector between two key-derivation schemes; there is no second scheme. The engine reads it
+    /// into the document and echoes it back on save, but sets the cipher up from the document's key,
+    /// which is always the built-in one. Clearing it in a real report changes nothing:
+    /// the designer opens such a file normally, with no password prompt. Reported here for
+    /// inspection (`rpt inspect` prints it) so a file that ever deviates is visible.
     pub use_fixed_key: bool,
     /// The 16-byte initialization vector (empty when not encrypted).
     pub iv: Vec<u8>,

@@ -100,6 +100,80 @@ fn ranges_and_in() {
 }
 
 #[test]
+fn int_field_in_number_array_param_matches() {
+    // A record-selection idiom: an integer database field tested against a multi-value Number
+    // parameter (`{field} IN {?Param}`). Both arrive as `Value::Number`, so membership matches by
+    // numeric value regardless of the field's declared integer type.
+    let ctx = MapContext::default()
+        .with_field(RefKind::Field, "invoice.customer_id", Value::Number(374.0))
+        .with_field(
+            RefKind::Parameter,
+            "customer",
+            Value::Array(vec![Value::Number(374.0)]),
+        );
+    assert_eq!(
+        run_ctx("{invoice.customer_id} IN {?customer}", &ctx),
+        Ok(Value::Bool(true))
+    );
+    // A non-member id is excluded.
+    let other = MapContext::default()
+        .with_field(RefKind::Field, "invoice.customer_id", Value::Number(999.0))
+        .with_field(
+            RefKind::Parameter,
+            "customer",
+            Value::Array(vec![Value::Number(374.0)]),
+        );
+    assert_eq!(
+        run_ctx("{invoice.customer_id} IN {?customer}", &other),
+        Ok(Value::Bool(false))
+    );
+}
+
+#[test]
+fn hasvalue_of_unset_optional_param_is_false() {
+    // An optional parameter left unset resolves to `Null`, so `HasValue` reports false and the
+    // guard `NOT HasValue({?Param})` opens the branch (keep every record).
+    let ctx = MapContext::default().with_field(RefKind::Parameter, "customer", Value::Null);
+    assert_eq!(
+        run_ctx("HasValue({?customer})", &ctx),
+        Ok(Value::Bool(false))
+    );
+    assert_eq!(
+        run_ctx("NOT HasValue({?customer})", &ctx),
+        Ok(Value::Bool(true))
+    );
+    // A supplied value reports true.
+    let set = MapContext::default().with_field(
+        RefKind::Parameter,
+        "customer",
+        Value::Array(vec![Value::Number(374.0)]),
+    );
+    assert_eq!(
+        run_ctx("HasValue({?customer})", &set),
+        Ok(Value::Bool(true))
+    );
+}
+
+#[test]
+fn iif_isnull_guard_yields_zero_not_null() {
+    // The `{@PaidAmount}` idiom over a LEFT-JOIN field that is NULL for unmatched rows:
+    // `IIf(IsNull(x), 0, x)` must return the guarded 0, never propagate Null (a Null would poison
+    // the downstream `{@Balance} >= {?ReportingCurrency}` comparison into dropping the record).
+    let ctx = MapContext::default().with_field(RefKind::Field, "t.paid_total", Value::Null);
+    assert_eq!(
+        run_ctx("IIf(IsNull({t.paid_total}), 0, {t.paid_total})", &ctx),
+        Ok(Value::Number(0.0))
+    );
+    // With a value present the field passes through unchanged.
+    let paid =
+        MapContext::default().with_field(RefKind::Field, "t.paid_total", Value::Number(42.5));
+    assert_eq!(
+        run_ctx("IIf(IsNull({t.paid_total}), 0, {t.paid_total})", &paid),
+        Ok(Value::Number(42.5))
+    );
+}
+
+#[test]
 fn array_subscript_is_one_based() {
     assert_eq!(num("[10, 20, 30][2]"), 20.0);
     assert!(matches!(run("[10][0]"), Err(EvalError::BadArg(_))));
@@ -129,7 +203,8 @@ fn variables_and_declarations() {
 
 #[test]
 fn worrall_cctld_formula_shape() {
-    // The phase-1 gate formula (worrall_AlphaISOsByCountry `@CCTLD_formatted`).
+    // A common formula shape: a declared Local StringVar that falls back to a placeholder when the
+    // underlying field is empty.
     let src = "Local StringVar DotCode := {countries_all_iso.internet_cctld};\n\
                If Length(DotCode) = 0 Then \"-\" Else DotCode;";
     let ctx = MapContext::default().with_field(
@@ -301,7 +376,7 @@ fn specials_route_through_context() {
 
 #[test]
 fn switch_heavy_shape() {
-    // The corpus' dominant pattern (3,740 Switch calls).
+    // A common formula shape: a `Switch` chain ending in an unconditional (`true`) default case.
     let src = r#"Switch({t.code} = 1, "one", {t.code} = 2, "two", true, "other")"#;
     let ctx = MapContext::default().with_field(RefKind::Field, "t.code", Value::Number(2.0));
     assert_eq!(run_ctx(src, &ctx), Ok(Value::Str("two".into())));
@@ -320,6 +395,61 @@ fn civil_date_roundtrip() {
     ] {
         let date = Date::new(y, m, d);
         assert_eq!(Date::from_days(date.to_days()), date, "{y}-{m}-{d}");
+    }
+}
+
+#[test]
+fn builtins_return_error_not_panic_on_missing_args() {
+    // A panic-never engine (LSP/WASM sandbox) must turn a too-few-arguments call into an EvalError,
+    // never an index-out-of-bounds panic. Each formula here formerly panicked by indexing `args[i]`
+    // directly; all must now evaluate to a clean `Err`. Parse diagnostics are ignored on purpose —
+    // the guarantee is about the evaluator, which runs on whatever AST the parser produces.
+    let cases = [
+        // math (map_numeric / UBound)
+        "Abs()",
+        "Int()",
+        "Fix()",
+        "Floor()",
+        "Ceiling()",
+        "RoundUp()",
+        "MRound()",
+        "Truncate()",
+        "Round()",
+        "UBound()",
+        // conversion
+        "IsNumeric()",
+        "ToNumber()",
+        "CCur()",
+        "CBool()",
+        // string
+        "Join()",
+        "Filter()",
+        // date/time
+        "Year()",
+        "Month()",
+        "Day()",
+        "Hour()",
+        "Minute()",
+        "Second()",
+        "Weekday()",
+        "IsDate()",
+        "IsTime()",
+        "IsDateTime()",
+        // date/time functions missing their trailing (temporal) argument
+        "DateAdd(\"d\", 1)",
+        "DateDiff(\"d\", #1/1/2004#)",
+        // color constructor missing components
+        "RGB(1, 2)",
+    ];
+    for src in cases {
+        let (ast, _) = parse(src, Syntax::Crystal);
+        let result =
+            std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| eval(&ast, &EmptyContext)));
+        match result {
+            Ok(Err(_)) => {}
+            Ok(Ok(v)) => panic!("`{src}` should error on missing args, got Ok({v:?})"),
+            Err(_) => panic!("`{src}` panicked instead of returning EvalError"),
+        }
     }
 }
 
@@ -378,6 +508,19 @@ fn vm_matches_tree_walker() {
         "Time(9, 30, 0)",
         // Nested If with a null guard in the outer condition.
         "If {t.z} > 5 Then 1 Else If {t.x} > 5 Then 2 Else 3",
+        // Missing-argument (arity error) builtin calls: both evaluators must agree on the same clean
+        // EvalError rather than one of them panicking (the panic-never guarantee, differentially).
+        "Abs()",
+        "Int()",
+        "UBound()",
+        "IsNumeric()",
+        "CCur()",
+        "Join()",
+        "Filter()",
+        "Year()",
+        "IsDate()",
+        "DateAdd(\"d\", 1)",
+        "DateDiff(\"d\", #1/1/2004#)",
     ];
     for src in cases {
         let (ast, _) = parse(src, Syntax::Crystal);
@@ -387,6 +530,82 @@ fn vm_matches_tree_walker() {
         let vmr = format!("{:?}", vm::run(&chunk, &ctx));
         assert_eq!(tw, vmr, "VM != tree-walker for {src:?}");
     }
+}
+
+#[test]
+fn vm_matches_tree_walker_generative_ops() {
+    use crate::eval::{vm, Evaluator};
+    use crate::{parse, RefKind, Syntax};
+
+    // Generative differential coverage: every operator in the supported set, applied to a small
+    // matrix of literal/reference operands (numbers, currency, strings, bools, and a Null field), is
+    // evaluated by both the tree-walker and the VM and must agree — value or error. This sweeps far
+    // more operand/operator combinations (and their null-propagation / type-mismatch corners) than
+    // the fixed corpus, catching any evaluator divergence on the op set without a hand-written list.
+    let ctx = MapContext::default()
+        .with_field(RefKind::Field, "t.x", Value::Number(10.0))
+        .with_field(RefKind::Field, "t.z", Value::Null);
+
+    let operands = [
+        "0", "1", "3", "10", "2.5", "$4", "{t.x}", "{t.z}", "\"a\"", "\"b\"", "true", "false",
+    ];
+    let binops = [
+        "+",
+        "-",
+        "*",
+        "/",
+        "\\",
+        "Mod",
+        "%",
+        "^",
+        "&",
+        "=",
+        "<>",
+        "<",
+        ">",
+        ">=",
+        "<=",
+        "And",
+        "Or",
+        "Xor",
+        "Eqv",
+        "Imp",
+        "To",
+        "_To",
+        "To_",
+        "_To_",
+        "In",
+        "Like",
+        "StartsWith",
+    ];
+    let mut checked = 0u32;
+    for op in binops {
+        for a in operands {
+            for b in operands {
+                let src = format!("({a}) {op} ({b})");
+                let (ast, _) = parse(&src, Syntax::Crystal);
+                let tw = format!("{:?}", Evaluator::new(&ctx).eval(&ast));
+                let vmr = format!("{:?}", vm::run(&vm::compile(&ast), &ctx));
+                assert_eq!(tw, vmr, "VM != tree-walker for {src:?}");
+                checked += 1;
+            }
+        }
+    }
+    // Unary operators over the same operands.
+    for op in ["Not ", "-", "+"] {
+        for a in operands {
+            let src = format!("{op}({a})");
+            let (ast, _) = parse(&src, Syntax::Crystal);
+            let tw = format!("{:?}", Evaluator::new(&ctx).eval(&ast));
+            let vmr = format!("{:?}", vm::run(&vm::compile(&ast), &ctx));
+            assert_eq!(tw, vmr, "VM != tree-walker for {src:?}");
+            checked += 1;
+        }
+    }
+    assert!(
+        checked > 3000,
+        "generative sweep unexpectedly small: {checked}"
+    );
 }
 
 #[test]
@@ -430,7 +649,7 @@ fn vm_aborts_a_runaway_loop_at_its_per_loop_cap() {
     let src = "Dim n As Number\nn = 0\nDo\nn = n + 1\nLoop\nformula = n";
     let (ast, _) = parse(src, Syntax::Basic);
     let chunk = vm::compile(&ast);
-    let r = vm::run_with_loop_limit(&chunk, &EmptyContext, 1000);
+    let r = vm::run_with_loop_limit(&chunk, &EmptyContext, crate::NullTreatment::Exception, 1000);
     assert!(
         r.is_err() && format!("{r:?}").contains("loop iteration limit"),
         "expected a loop-limit error, got {r:?}"
@@ -450,7 +669,7 @@ fn vm_counts_loop_iterations_per_loop_not_globally() {
     let (ast, _) = parse(src, Syntax::Basic);
     let tw = crate::eval::Evaluator::new(&EmptyContext).eval(&ast);
     let chunk = vm::compile(&ast);
-    let vmr = vm::run_with_loop_limit(&chunk, &EmptyContext, 5000);
+    let vmr = vm::run_with_loop_limit(&chunk, &EmptyContext, crate::NullTreatment::Exception, 5000);
     assert_eq!(format!("{tw:?}"), format!("{vmr:?}"));
     assert_eq!(
         format!("{vmr:?}"),
@@ -482,6 +701,82 @@ fn vm_matches_tree_walker_non_bool_condition_errors() {
         assert!(
             tw.contains("condition"),
             "expected a condition error for {src:?}: {tw}"
+        );
+    }
+}
+
+/// Null-treatment tests: a context whose one field is null and that supplies a numeric type default.
+mod null_treatment {
+    use crate::eval::{eval, eval_with, Value};
+    use crate::token::RefKind;
+    use crate::{parse, EvalContext, NullTreatment, Syntax};
+
+    /// Resolves `{orders.total}` to Null, with a Number(0) type default for the DefaultValue path.
+    struct NullField;
+
+    impl EvalContext for NullField {
+        fn resolve(&self, kind: RefKind, name: &str) -> Option<Value> {
+            (kind == RefKind::Field && name.eq_ignore_ascii_case("orders.total"))
+                .then_some(Value::Null)
+        }
+        fn null_default(&self, kind: RefKind, name: &str) -> Option<Value> {
+            (kind == RefKind::Field && name.eq_ignore_ascii_case("orders.total"))
+                .then_some(Value::Number(0.0))
+        }
+    }
+
+    fn ast(src: &str) -> crate::Node {
+        let (ast, diags) = parse(src, Syntax::Crystal);
+        assert!(diags.is_empty(), "parse diagnostics for `{src}`: {diags:?}");
+        ast
+    }
+
+    #[test]
+    fn exception_propagates_null_through_arithmetic() {
+        // The engine default: a null operand makes the whole expression null.
+        let a = ast("{orders.total} + 1");
+        assert_eq!(eval(&a, &NullField), Ok(Value::Null));
+        assert_eq!(
+            eval_with(&a, &NullField, NullTreatment::Exception),
+            Ok(Value::Null)
+        );
+    }
+
+    #[test]
+    fn default_value_substitutes_type_default() {
+        // "Default values for nulls": the null field becomes 0, so the sum is 1.
+        let a = ast("{orders.total} + 1");
+        assert_eq!(
+            eval_with(&a, &NullField, NullTreatment::DefaultValue),
+            Ok(Value::Number(1.0))
+        );
+    }
+
+    #[test]
+    fn default_value_changes_null_comparison() {
+        // Under Exception a null comparison is false; under DefaultValue it compares the 0 default.
+        let a = ast("{orders.total} = 0");
+        assert_eq!(eval(&a, &NullField), Ok(Value::Bool(false)));
+        assert_eq!(
+            eval_with(&a, &NullField, NullTreatment::DefaultValue),
+            Ok(Value::Bool(true))
+        );
+    }
+
+    #[test]
+    fn default_value_without_typed_default_leaves_null() {
+        // A context that cannot supply a typed default (the trait default `null_default`) keeps the
+        // null even under DefaultValue, so the result is still null.
+        struct NoDefault;
+        impl EvalContext for NoDefault {
+            fn resolve(&self, _kind: RefKind, _name: &str) -> Option<Value> {
+                Some(Value::Null)
+            }
+        }
+        let a = ast("{orders.total} + 1");
+        assert_eq!(
+            eval_with(&a, &NoDefault, NullTreatment::DefaultValue),
+            Ok(Value::Null)
         );
     }
 }

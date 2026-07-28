@@ -6,13 +6,13 @@ rules differ. Both lower to the same AST, type system, and evaluator.
 
 ## Lexical structure
 
-| Aspect | Crystal syntax | Basic syntax |
-| ------ | -------------- | ------------ |
-| Statement separator | `;` | newline |
-| Assignment | `:=` | `=` |
-| String delimiters | `"` or `'` (doubled-quote escaping) | `"` only (`'` starts a comment) |
-| Comments | `//` to end of line | `//`, `'`, or `Rem` to end of line |
-| Return value | the last expression | the value assigned to the implicit `formula` variable |
+| Aspect              | Crystal syntax                      | Basic syntax                                          |
+|---------------------|-------------------------------------|-------------------------------------------------------|
+| Statement separator | `;`                                 | newline                                               |
+| Assignment          | `:=`                                | `=`                                                   |
+| String delimiters   | `"` or `'` (doubled-quote escaping) | `"` only (`'` starts a comment)                       |
+| Comments            | `//` to end of line                 | `//`, `'`, or `Rem` to end of line                    |
+| Return value        | the last expression                 | the value assigned to the implicit `formula` variable |
 
 Shared lexis: identifiers are `[A-Za-z_][A-Za-z0-9_]*`; numbers are `digits[.digits]`; `{...}` is a single reference
 token read to the first `}`; `#...#` is a date/time literal; word operators (`And`, `Or`, `Mod`, `Not`, `To`, `In`,
@@ -25,21 +25,21 @@ Lowest to highest binding (each level is a rung of the recursive-descent ladder)
 relational operators, and neither chains (both are non-associative); `&` binds tighter than comparison but looser than
 `+`/`-`; unary `-`/`Not` bind looser than `^` (so `-2^2` = `-(2^2)`).
 
-| Level | Operators | Assoc. |
-| ----- | --------- | ------ |
-| 1–5 | `Imp`, `Eqv`, `Xor`, `Or`, `And` | left |
-| 6 | `=` `<>` `In` `Like` `StartsWith` | non-assoc |
-| 7 | `<` `>` `>=` `<=` | non-assoc |
-| 8 | `&` (concat) | left |
-| 9 | `To` `_To` `To_` `_To_` (range) | non-assoc |
-| 10 | `+` `-` | left |
-| 11 | `Mod` | left |
-| 12 | `\` (integer division) | left |
-| 13 | `*` `/` `%` | left |
-| 14 | prefix `-` `+` `$` `Not` | right |
-| 15 | `^` (power) | left |
-| 16 | postfix `expr[index]` (1-based subscript) | left |
-| 17 | primary atoms | — |
+| Level | Operators                                 | Assoc.    |
+|-------|-------------------------------------------|-----------|
+| 1–5   | `Imp`, `Eqv`, `Xor`, `Or`, `And`          | left      |
+| 6     | `=` `<>` `In` `Like` `StartsWith`         | non-assoc |
+| 7     | `<` `>` `>=` `<=`                         | non-assoc |
+| 8     | `&` (concat)                              | left      |
+| 9     | `To` `_To` `To_` `_To_` (range)           | non-assoc |
+| 10    | `+` `-`                                   | left      |
+| 11    | `Mod`                                     | left      |
+| 12    | `\` (integer division)                    | left      |
+| 13    | `*` `/` `%`                               | left      |
+| 14    | prefix `-` `+` `$` `Not`                  | right     |
+| 15    | `^` (power)                               | left      |
+| 16    | postfix `expr[index]` (1-based subscript) | left      |
+| 17    | primary atoms                             | —         |
 
 `$` is the currency prefix (`$2` is `Currency(2)`); binary `%` is "percent of" (`x % y` = `100*x/y`); `In` tests
 substring / array membership / range containment; `Like` is VB wildcard matching (`*` any run, `?` any one char).
@@ -47,7 +47,7 @@ substring / array membership / range containment; `Like` is VB wildcard matching
 ## Expressions
 
 Primary atoms: number/string/boolean (`True`/`Yes`, `False`/`No`) literals, `#...#` date literals, `{...}` references,
-`( expr )` grouping, `[ e, … ]` array literals, function calls `name(args)`, bare identifiers (variables / 0-ary
+`( … )` grouping, `[ e, … ]` array literals, function calls `name(args)`, bare identifiers (variables / 0-ary
 builtins), and — as *expressions* in Crystal syntax — `If` and `Select`:
 
 ```
@@ -56,6 +56,31 @@ If {orders.amount} > 1000 Then "large" Else If {orders.amount} > 100 Then "mediu
 
 `If` without `Else` yields the then-branch type's default (`0`, `""`, `False`, …). `IIf`, `Switch`, and `Choose` are
 lazy: only the selected branch evaluates.
+
+### Grouping holds a statement sequence
+
+`( … )` is not merely expression grouping: it holds a `;`-separated **statement sequence** with an optional trailing
+separator, and the group's value is its last statement. This is how a loop body and a multi-statement branch are
+written, and it is common in real reports:
+
+```
+For Index := 1 To StringLength Step 1 Do (
+    If ({Product.Size}[Index] = "x")
+    Then (Xcount := Xcount + 1;)
+    Else (Xcount := Xcount;)
+);
+Xcount
+```
+
+An ordinary single-expression group (`(1 + 2) * 3`) is just that expression, unchanged.
+
+### Nesting depth
+
+Expression nesting is capped at 128 levels; beyond that the parser reports `expression nests too deeply` instead of
+recursing further. This is a recursive-descent parser, so nesting depth is stack depth, and formula text comes from an
+arbitrary `.rpt` — without the cap a pathologically nested formula overflows the stack, which *aborts the process* and,
+unlike a panic, cannot be caught by an embedding host. The limit is far above anything a real formula reaches (the
+deepest in the corpus is single digits).
 
 ## Statements and declarations
 
@@ -151,7 +176,8 @@ an `If`/`ElseIf` chain (`Case Else` in Basic / `Default` in Crystal becomes the 
 ### Exit (loop break)
 
 `Exit For` / `Exit While` / `Exit Do` break out of the innermost enclosing loop; the loop keyword is kept for AST
-fidelity but the break is independent of kind. Both evaluators (tree-walker and bytecode VM) implement it identically. An
+fidelity but the break is independent of kind. Both evaluators (tree-walker and bytecode VM) implement it identically.
+An
 `Exit` with no enclosing loop is a clean evaluation error (`BadArg`), not a panic.
 
 ## Literals
@@ -191,6 +217,11 @@ varDecl     = [ "Local"|"Global"|"Shared" ] typeVar [ "Array" ] ident { "," iden
             | ("Dim"|"ReDim") ident [ "(" … ")" ] { "," ident } [ "As" typeName ] ;                    (* Basic *)
 assignment  = ident assign expr ;                 (* assign = ":=" (Crystal) | "=" (Basic) *)
 expr        = <precedence ladder, levels 1..17> ;
-primary     = number | string | boolean | dateLit | reference | "(" expr ")"
+primary     = number | string | boolean | dateLit | reference | group
             | "[" [ expr { "," expr } ] "]" | call | ident | ifExpr | selectExpr ;   (* ifExpr/selectExpr: Crystal *)
+group       = "(" [ statement { ";" statement } [ ";" ] ] ")" ;   (* value = the last statement *)
 ```
+
+---
+
+← [Architecture & VM](01-architecture.md) · [Index](../README.md) · **Next:** [Builtin functions](03-builtins.md) →

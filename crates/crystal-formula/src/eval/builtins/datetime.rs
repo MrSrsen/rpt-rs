@@ -1,7 +1,7 @@
 //! Date/time builtins, built on the zero-dependency civil calendar in
 //! [`rpt_format_value::civil`] (`Date`/`Time` day-number and second arithmetic).
 
-use super::{bad_arg, mismatch, num_arg, str_arg, Builtin};
+use super::{arg, bad_arg, mismatch, num_arg, str_arg};
 use crate::eval::{parse_date_literal, Date, EvalError, Time, Value};
 
 const MONTHS: [&str; 12] = [
@@ -29,9 +29,37 @@ const DAYS: [&str; 7] = [
     "Saturday",
 ];
 
-/// Handle a date/time [`Builtin`] (routed here by [`super::Builtin::family`]).
-pub(super) fn call(b: Builtin, name: &str, args: &[Value]) -> Result<Value, EvalError> {
-    use Builtin as B;
+/// The date/time-family builtins. Wrapped by [`super::Builtin::DateTime`] in the dispatch table.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum DateTimeFn {
+    DateCtor,
+    TimeCtor,
+    DateTimeCtor,
+    DateValue,
+    TimeValue,
+    DateSerial,
+    TimeSerial,
+    DatePart,
+    Year,
+    Month,
+    Day,
+    Hour,
+    Minute,
+    Second,
+    DayOfWeek,
+    Weekday,
+    MonthName,
+    WeekdayName,
+    DateAdd,
+    DateDiff,
+    IsDate,
+    IsTime,
+    IsDateTime,
+}
+
+/// Handle a date/time builtin (routed here from [`super::call`]).
+pub(super) fn call(b: DateTimeFn, name: &str, args: &[Value]) -> Result<Value, EvalError> {
+    use DateTimeFn as B;
     match b {
         B::DateCtor => match args {
             [Value::DateTime(d, _)] => Ok(Value::Date(*d)),
@@ -106,16 +134,28 @@ pub(super) fn call(b: Builtin, name: &str, args: &[Value]) -> Result<Value, Eval
             Ok(Value::Time(Time::from_seconds(h * 3600 + m * 60 + s)))
         }
         B::DatePart => date_part(name, args),
-        B::Year => Ok(Value::Number(f64::from(date_of(name, &args[0])?.year))),
-        B::Month => Ok(Value::Number(f64::from(date_of(name, &args[0])?.month))),
-        B::Day => Ok(Value::Number(f64::from(date_of(name, &args[0])?.day))),
-        B::Hour => Ok(Value::Number(f64::from(time_of(name, &args[0])?.hour))),
-        B::Minute => Ok(Value::Number(f64::from(time_of(name, &args[0])?.minute))),
-        B::Second => Ok(Value::Number(f64::from(time_of(name, &args[0])?.second))),
+        B::Year => Ok(Value::Number(f64::from(
+            date_of(name, arg(name, args, 0)?)?.year,
+        ))),
+        B::Month => Ok(Value::Number(f64::from(
+            date_of(name, arg(name, args, 0)?)?.month,
+        ))),
+        B::Day => Ok(Value::Number(f64::from(
+            date_of(name, arg(name, args, 0)?)?.day,
+        ))),
+        B::Hour => Ok(Value::Number(f64::from(
+            time_of(name, arg(name, args, 0)?)?.hour,
+        ))),
+        B::Minute => Ok(Value::Number(f64::from(
+            time_of(name, arg(name, args, 0)?)?.minute,
+        ))),
+        B::Second => Ok(Value::Number(f64::from(
+            time_of(name, arg(name, args, 0)?)?.second,
+        ))),
         B::DayOfWeek | B::Weekday => {
             let first = first_day_of_week(name, args.get(1))?;
             Ok(Value::Number(f64::from(weekday_num(
-                date_of(name, &args[0])?,
+                date_of(name, arg(name, args, 0)?)?,
                 first,
             ))))
         }
@@ -138,7 +178,7 @@ pub(super) fn call(b: Builtin, name: &str, args: &[Value]) -> Result<Value, Eval
         }
         B::DateAdd => date_add(name, args),
         B::DateDiff => date_diff(name, args),
-        B::IsDate => Ok(Value::Bool(match &args[0] {
+        B::IsDate => Ok(Value::Bool(match arg(name, args, 0)? {
             Value::Date(_) | Value::DateTime(..) => true,
             Value::Str(s) => matches!(
                 parse_date_literal(s),
@@ -146,17 +186,16 @@ pub(super) fn call(b: Builtin, name: &str, args: &[Value]) -> Result<Value, Eval
             ),
             _ => false,
         })),
-        B::IsTime => Ok(Value::Bool(match &args[0] {
+        B::IsTime => Ok(Value::Bool(match arg(name, args, 0)? {
             Value::Time(_) | Value::DateTime(..) => true,
             Value::Str(s) => matches!(parse_date_literal(s), Ok(Value::Time(_))),
             _ => false,
         })),
-        B::IsDateTime => Ok(Value::Bool(match &args[0] {
+        B::IsDateTime => Ok(Value::Bool(match arg(name, args, 0)? {
             Value::DateTime(..) => true,
             Value::Str(s) => matches!(parse_date_literal(s), Ok(Value::DateTime(..))),
             _ => false,
         })),
-        other => unreachable!("non-datetime builtin {other:?} routed to datetime"),
     }
 }
 
@@ -395,7 +434,7 @@ fn interval_arg(name: &str, args: &[Value]) -> Result<Interval, EvalError> {
 fn date_add(name: &str, args: &[Value]) -> Result<Value, EvalError> {
     let interval = interval_arg(name, args)?;
     let n = num_arg(name, args, 1)?.trunc() as i64;
-    let (d, t) = temporal(name, &args[2])?;
+    let (d, t) = temporal(name, arg(name, args, 2)?)?;
     // DateAdd always returns a DateTime (VB semantics).
     let (nd, nt) = match interval {
         Interval::Year => (add_months(d, (n * 12) as i32), t),
@@ -421,8 +460,8 @@ fn date_add(name: &str, args: &[Value]) -> Result<Value, EvalError> {
 
 fn date_diff(name: &str, args: &[Value]) -> Result<Value, EvalError> {
     let interval = interval_arg(name, args)?;
-    let (d1, t1) = temporal(name, &args[1])?;
-    let (d2, t2) = temporal(name, &args[2])?;
+    let (d1, t1) = temporal(name, arg(name, args, 1)?)?;
+    let (d2, t2) = temporal(name, arg(name, args, 2)?)?;
     let n = match interval {
         Interval::Year => i64::from(d2.year - d1.year),
         Interval::Quarter => i64::from(

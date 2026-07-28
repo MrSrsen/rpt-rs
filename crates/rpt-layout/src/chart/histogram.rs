@@ -3,31 +3,31 @@
 //! fall in it. The value axis is the frequency count; the category axis is the bin
 //! boundaries.
 
+#[cfg(test)]
+use super::common::AxisTitles;
 use super::common::{
-    category_stride, chart_frame, fmt_val, value_label, AxisTitles, LABEL, PALETTE,
+    category_stride, chart_frame, fmt_val, value_frac, value_label, ChartCtx, LABEL, PALETTE,
 };
 use rpt_model::{Rect, Twips};
-use rpt_pages::{DrawOp, FontSpec, ObjectKind, ObjectRef, RectOp, TextAlign, TextRun};
+use rpt_pages::{DrawOp, FontSpec, RectOp, TextAlign, TextRun};
 
 /// Build the draw-ops for a histogram of `values` binned into `bins` equal-width ranges: the shared
 /// value-axis frame (the value axis being the bin frequency), one contiguous bar per bin, and the
 /// bin-boundary labels along the category axis. `show_labels` gates the per-bar frequency labels.
 /// Returns an empty vec when there are no values or fewer than one bin.
-#[allow(clippy::too_many_arguments)]
-pub(crate) fn histogram_chart(
-    rect: Rect,
-    title: &str,
-    axis_titles: AxisTitles,
-    values: &[f64],
-    bins: usize,
-    show_labels: bool,
-    section_name: &str,
-    obj_name: &str,
-) -> Vec<DrawOp> {
+pub(crate) fn histogram_chart(cx: &ChartCtx, values: &[f64], bins: usize) -> Vec<DrawOp> {
     if values.is_empty() || bins == 0 {
         return Vec::new();
     }
-    let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(obj_name));
+    let &ChartCtx {
+        def,
+        rect,
+        title,
+        axis_titles,
+        show_labels,
+        ..
+    } = cx;
+    let src = || cx.src();
 
     // Bin the values into `bins` equal-width ranges over [min, max]. A degenerate span (all equal)
     // collapses to a single populated bin.
@@ -55,13 +55,13 @@ pub(crate) fn histogram_chart(
         .map(|(i, c)| (fmt_val(min + i as f64 * width), *c as f64))
         .collect();
     let mut ops: Vec<DrawOp> = Vec::new();
-    let f = chart_frame(&mut ops, rect, title, axis_titles, &series, &src);
+    let f = chart_frame(def, &mut ops, rect, title, axis_titles, &series, &src);
 
     // Contiguous bars (histogram bars touch), one per bin, cycling the base palette.
     let bar_w = (f.slot * 9 / 10).max(15);
     let stride = category_stride(&f, bins + 1);
     for (i, count) in counts.iter().enumerate() {
-        let h = ((*count as f64 / f.max_val) * f.plot_h as f64) as i32;
+        let h = (value_frac(*count as f64, f.max_val) * f.plot_h as f64) as i32;
         let bx = f.plot_left + i as i32 * f.slot + (f.slot - bar_w) / 2;
         let by = f.plot_bottom - h;
         ops.push(DrawOp::Rect(RectOp {
@@ -134,9 +134,12 @@ mod tests {
 
     #[test]
     fn empty_values_yield_no_ops() {
-        assert!(
-            histogram_chart(rect(), "T", AxisTitles::default(), &[], 7, false, "S", "G").is_empty()
-        );
+        assert!(histogram_chart(
+            &ChartCtx::test(rect(), "T", AxisTitles::default(), false),
+            &[],
+            7
+        )
+        .is_empty());
     }
 
     /// Seven bins over a 0..70 span yield seven bars, and a value lands in the bin whose range covers
@@ -145,14 +148,9 @@ mod tests {
     fn bins_values_into_seven_bars() {
         let values = vec![1.0, 5.0, 35.0, 65.0, 69.0];
         let ops = histogram_chart(
-            rect(),
-            "",
-            AxisTitles::default(),
+            &ChartCtx::test(rect(), "", AxisTitles::default(), false),
             &values,
             7,
-            false,
-            "RH",
-            "G",
         );
         let bars: Vec<&RectOp> = ops
             .iter()
@@ -177,14 +175,9 @@ mod tests {
     fn show_labels_true_draws_frequency() {
         let values = vec![1.0, 2.0, 3.0];
         let ops = histogram_chart(
-            rect(),
-            "",
-            AxisTitles::default(),
+            &ChartCtx::test(rect(), "", AxisTitles::default(), true),
             &values,
             3,
-            true,
-            "RH",
-            "G",
         );
         let texts: Vec<String> = ops
             .iter()

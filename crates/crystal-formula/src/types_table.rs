@@ -1,4 +1,9 @@
-// @generated — do not edit by hand.
+// Hand-maintained funcID lookup tables for the formula type system — `include!`d into `types.rs`
+// (which owns the `ReturnRule`/`StrLenRule`/`Sig` types these tables build). The names and funcIDs
+// mirror the native engine's function-ID space: the stable IDs the compiled formula bytecode
+// references, so they are fixed values recorded here rather than numbers assigned by this crate. Add
+// or adjust an entry by hand when a builtin gains a type or signature (see
+// docs/formula-engine/03-builtins.md); no generator produces this file.
 
 /// Lowercased builtin/function name -> funcID. Sorted for binary search.
 pub(super) static NAME_FUNCID: &[(&str, u16)] = &[
@@ -884,5 +889,76 @@ pub(super) fn str_len_rule(id: u16) -> StrLenRule {
         393 => Unbounded,
         394 => Unbounded,
         _ => Unbounded,
+    }
+}
+
+/// funcID -> argument-count signature ([`Sig`]), for arity checking. Hand-maintained (no generator
+/// yet): the eager, dispatched builtins and the lazy conditional forms (`IIf`/`Switch`/`Choose`) get
+/// a real bound; every other funcID is left [`Sig::Any`] (unchecked) so a valid call to a
+/// not-yet-bounded name is never wrongly rejected. Where two builtins share a funcID (e.g.
+/// `Fix`/`Truncate` = 91, `CStr`/`ToText` = 169), the bound is the union that admits both.
+pub(super) fn sig(id: u16) -> Sig {
+    use Sig::*;
+    match id {
+        // Conditional forms (`Choose`/`IIf`/`Switch`) — validated on the AST; the evaluators compile
+        // these to jumps, so they only reach dispatch's arity check on a fall-through.
+        86 => AtLeast(2),   // Choose(index, v1, v2, …)
+        87 => Exact(3),     // IIf(cond, a, b)
+        88 => EvenAtLeast(2), // Switch(c1, v1, c2, v2, …)
+        // Math (single numeric arg).
+        18 | 19 | 20 | 22 | 23 | 24 | 25 | 26 | 27 | 28 => Exact(1), // Abs/Int/Sgn/Sin/Cos/Tan/Atn/Sqr/Exp/Log
+        21 => Exact(0),                                              // crPi
+        17 => Exact(2),                                              // Remainder(a, b)
+        90 | 95 => Range(1, 2),                                      // Round/RoundUp([, places])
+        91 => Range(1, 2),                                          // Fix / Truncate([, places])
+        92 | 93 => Range(1, 2),                                      // Ceiling/Floor([, multiple])
+        94 => Exact(2),                                              // MRound(n, multiple)
+        // Aggregates over an array/record set (variadic tail: [, group[, condition]]).
+        100 | 101 | 106 | 107 | 108 => AtLeast(1), // Sum/Average/Maximum/Minimum/Count
+        184 => Exact(1),                           // UBound(array)
+        // Statistical (array or record-set form).
+        102..=105 => AtLeast(1), // StdDev/PopulationStdDev/Variance/PopulationVariance
+        // Financial.
+        31 => Range(4, 5),  // DDB(cost, salvage, life, period[, factor])
+        32 | 38 | 40 => Range(3, 5), // FV/Pmt/PV(rate, nper, x[, y[, type]])
+        34 => Range(1, 2),  // IRR(flows[, guess])
+        37 => AtLeast(2),   // NPV(rate, flows…)
+        41 => Range(3, 6),  // Rate(nper, pmt, pv[, fv[, type[, guess]]])
+        42 => Exact(3),     // SLN(cost, salvage, life)
+        85 => Exact(4),     // SYD(cost, salvage, life, period)
+        // Conversion.
+        166 | 167 | 168 | 170 | 187 => Exact(1), // IsNumeric/ToNumber/CCur/CBool/Val
+        169 => Range(1, 4),                       // ToText/CStr(x[, fmt[, thouSep[, decSep]]])
+        // Null predicates.
+        7 | 9 => Exact(1), // IsNull / HasValue
+        // Colour constructors.
+        241 => Exact(3), // Color / RGB(r, g, b)
+        // String.
+        160 | 161 | 162 | 163 | 164 | 165 | 175 | 177 | 186 => Exact(1), // Len/L?Trim/U?Case/ProperCase/Space/Trim/StrReverse
+        172 => Exact(2),        // ReplicateString(s, n)
+        173 => Range(2, 3),     // Mid(s, start[, length])
+        174 | 185 => Range(2, 3), // InStr / InStrRev
+        176 => Range(2, 3),     // StrCmp(a, b[, fold])
+        178 | 179 => Exact(2),  // Left / Right(s, n)
+        180 => Range(2, 4),     // Filter(array, match[, include[, compare]])
+        181 => Exact(3),        // Replace(s, find, repl)
+        182 => Range(1, 2),     // Join(array[, delim])
+        183 => Range(1, 4),     // Split(s[, delim[, count[, compare]]])
+        188..=191 => Exact(1), // Chr/ChrW/Asc/AscW
+        // Numeral.
+        30 | 171 => Range(1, 2), // Roman(n[, form]) / ToWords(n[, decimals])
+        // Date & time.
+        125 | 126 => Range(1, 3), // DateValue/CDate, TimeValue/CTime (scalar or y,m,d / h,m,s)
+        127 => Range(1, 6),       // DateTimeValue/CDateTime (scalar, (date,time), y,m,d[,h,m,s])
+        131 => Range(1, 2),       // MonthName(n[, abbrev])
+        132 => Range(1, 3),       // WeekdayName(n[, abbrev[, firstDayOfWeek]])
+        133 => Exact(3),          // DateAdd(interval, n, date)
+        134 => Range(3, 4),       // DateDiff(interval, d1, d2[, firstDayOfWeek])
+        135 => Range(2, 4),       // DatePart(interval, date[, firstDayOfWeek[, firstWeekOfYear]])
+        136 | 137 => Exact(3),    // DateSerial(y,m,d) / TimeSerial(h,m,s)
+        150 | 151 | 152 | 156 | 157 | 158 => Exact(1), // Hour/Minute/Second/Year/Month/Day
+        159 => Range(1, 2),       // Weekday/DayOfWeek(date[, firstDayOfWeek])
+        128..=130 => Exact(1), // IsDate/IsTime/IsDateTime
+        _ => Any,
     }
 }

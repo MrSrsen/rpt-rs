@@ -1,18 +1,43 @@
 //! Hand-written, error-recovering recursive-descent parser over the 17-level operator-precedence
 //! ladder and the primary grammar. Crystal syntax is primary; the expression grammar is shared with
 //! Basic. The parser never panics: on an unexpected token it records a [`Diagnostic`], emits
-//! [`Node::Error`], and makes progress, so it is safe to run on any formula and is a foundation for
+//! [`NodeKind::Error`], and makes progress, so it is safe to run on any formula and is a foundation for
 //! eval/validation/LSP.
 //!
 //! Control flow (`If`/`Select…Case`, `For`/`While`/`Do` loops), declarations (`Local/Global/Shared
 //! <Type>Var`, Basic `Dim`), and Basic statement bodies all parse to real AST nodes. Crystal
 //! `If`/`Select` are expressions; the loops are statements. `Exit For/While/Do` parses to a
-//! [`Node::Exit`] that breaks the innermost enclosing loop. Reference *counting* never depends on
-//! this parser (see [`super::refs`]).
+//! [`NodeKind::Exit`] that breaks the innermost enclosing loop. Reference *extraction* never depends
+//! on this parser (see [`super::refs`]).
 
-use super::ast::{ExitKind, Node, VarKind, VarScope};
+use super::ast::{ExitKind, Node, NodeKind, VarKind, VarScope};
 use super::lexer::tokenize;
-use super::token::{op, Syntax, Token, TokenKind};
+use super::token::{op, Span, Syntax, Token, TokenKind};
+
+/// A binary-operator node spanning both operands (`left.span ∪ right.span`).
+fn binary(op: u8, left: Node, right: Node) -> Node {
+    let span = left.span.to(right.span);
+    Node::new(
+        NodeKind::Binary {
+            op,
+            left: Box::new(left),
+            right: Box::new(right),
+        },
+        span,
+    )
+}
+
+/// A unary-operator node spanning `op_span` through its operand.
+fn unary(op: u8, expr: Node, op_span: Span) -> Node {
+    let span = op_span.to(expr.span);
+    Node::new(
+        NodeKind::Unary {
+            op,
+            expr: Box::new(expr),
+        },
+        span,
+    )
+}
 
 /// The `<Type>Var` declaration keywords (Crystal syntax).
 const TYPE_VAR_KWS: [(&str, VarKind); 7] = [
@@ -68,12 +93,15 @@ pub fn parse(src: &str, syntax: Syntax) -> (Node, Vec<Diagnostic>) {
         pos: 0,
         syntax,
         diags: Vec::new(),
+        depth: 0,
     };
     let node = p.parse_stmt_seq();
     // In Basic syntax the return value is whatever was assigned to the implicit `formula` variable,
     // not the last statement — so read it back at the end when the body assigns it.
     let node = if syntax == Syntax::Basic && assigns_formula(&node) {
-        Node::Seq(vec![node, Node::Ident("formula".to_string())])
+        let span = node.span;
+        let formula = Node::new(NodeKind::Ident("formula".to_string()), span);
+        Node::new(NodeKind::Seq(vec![node, formula]), span)
     } else {
         node
     };
@@ -82,31 +110,56 @@ pub fn parse(src: &str, syntax: Syntax) -> (Node, Vec<Diagnostic>) {
 
 /// Whether a (sub)tree contains an assignment to the Basic `formula` result variable.
 fn assigns_formula(node: &Node) -> bool {
-    match node {
-        Node::Assign { name, .. } => name.eq_ignore_ascii_case("formula"),
-        Node::Seq(stmts) => stmts.iter().any(assigns_formula),
-        Node::If {
+    match &node.kind {
+        NodeKind::Assign { name, .. } => name.eq_ignore_ascii_case("formula"),
+        NodeKind::Seq(stmts) => stmts.iter().any(assigns_formula),
+        NodeKind::If {
             then, elifs, els, ..
         } => {
             assigns_formula(then)
                 || elifs.iter().any(|(_, b)| assigns_formula(b))
                 || els.as_deref().is_some_and(assigns_formula)
         }
-        Node::While { body, .. } | Node::For { body, .. } => assigns_formula(body),
+        NodeKind::While { body, .. } | NodeKind::For { body, .. } => assigns_formula(body),
         _ => false,
     }
 }
+
+/// How deeply expressions may nest before the parser refuses to recurse further.
+///
+/// This is a recursive-descent parser, so nesting depth is stack depth. Formula text comes from an
+/// arbitrary `.rpt`, and a deeply-nested expression would overflow the stack — which **aborts the
+/// process** and cannot be caught, unlike a panic. Refusing with a diagnostic keeps the failure
+/// reportable. The limit is far above the single-digit depth a real formula reaches, and well below
+/// what the default stack can take.
+const MAX_DEPTH: u32 = 128;
 
 struct Parser {
     toks: Vec<Token>,
     pos: usize,
     syntax: Syntax,
     diags: Vec<Diagnostic>,
+    /// Current expression-nesting depth, against [`MAX_DEPTH`].
+    depth: u32,
 }
 
 impl Parser {
     fn cur(&self) -> &Token {
         &self.toks[self.pos.min(self.toks.len() - 1)]
+    }
+    /// The end offset of the most recently consumed token (0 before any is consumed) — the closing
+    /// bound for a span that starts at some earlier token.
+    fn prev_end(&self) -> usize {
+        if self.pos == 0 {
+            0
+        } else {
+            self.toks[self.pos - 1].end
+        }
+    }
+    /// A span from `start` to the end of the last consumed token — the extent of a construct whose
+    /// leading token began at `start`.
+    fn span_from(&self, start: usize) -> Span {
+        Span::new(start, self.prev_end())
     }
     fn at_eof(&self) -> bool {
         matches!(self.cur().kind, TokenKind::Eof)
@@ -188,9 +241,53 @@ impl Parser {
             }
         }
         match stmts.len() {
-            0 => Node::Empty,
+            0 => {
+                let at = self.cur().start;
+                Node::new(NodeKind::Empty, Span::new(at, at))
+            }
             1 => stmts.pop().unwrap(),
-            _ => Node::Seq(stmts),
+            _ => {
+                let span = stmts.first().unwrap().span.to(stmts.last().unwrap().span);
+                Node::new(NodeKind::Seq(stmts), span)
+            }
+        }
+    }
+
+    /// The body of a parenthesised group: a statement **sequence**, not a single expression.
+    ///
+    /// Crystal treats `(…)` as a grouping construct that may hold several `;`-separated statements
+    /// with an optional trailing separator, and the group's value is its last statement. This is how a
+    /// loop body and a multi-statement `If … Then` branch are written:
+    ///
+    /// ```text
+    /// For i := 1 To n Do ( If x[i] = "x" Then (c := c + 1;) Else (c := c;) );
+    /// ```
+    ///
+    /// Parsing only a single expression here rejected that at the first `;`, and the recovery AST it
+    /// produced then evaluated to a wrong value with nothing said about it.
+    fn parse_paren_body(&mut self) -> Node {
+        let start = self.cur().start;
+        let mut stmts = Vec::new();
+        loop {
+            while self.eat_op(op::SEMI) {}
+            if self.is_op(op::RPAREN) || self.at_eof() {
+                break;
+            }
+            let before = self.pos;
+            stmts.push(self.parse_statement());
+            if self.pos == before {
+                // No progress: leave the token for the caller's `)` check to report, rather than
+                // consuming it here and losing the position.
+                break;
+            }
+        }
+        match stmts.len() {
+            0 => Node::new(NodeKind::Empty, Span::new(start, self.cur().start)),
+            1 => stmts.pop().unwrap(),
+            _ => {
+                let span = stmts.first().unwrap().span.to(stmts.last().unwrap().span);
+                Node::new(NodeKind::Seq(stmts), span)
+            }
         }
     }
 
@@ -240,20 +337,42 @@ impl Parser {
             // declaration (`[scope] <Type>Var name …`) never matches: its second token is the
             // variable name, not `=`.
             if matches!(self.cur().kind, TokenKind::Ident) && self.peek_op(1, op::EQ) {
+                let start = self.cur().start;
                 let name = self.advance().text;
                 self.advance(); // `=`
                 let value = self.parse_expr();
-                return Node::Assign {
-                    name,
-                    value: Box::new(value),
-                };
+                return Node::new(
+                    NodeKind::Assign {
+                        name,
+                        value: Box::new(value),
+                    },
+                    self.span_from(start),
+                );
             }
         }
         self.parse_expr()
     }
 
     fn parse_expr(&mut self) -> Node {
-        self.parse_imp()
+        // Every nesting construct funnels through here, so one guard covers the whole ladder.
+        if self.depth >= MAX_DEPTH {
+            // Report once at the outermost refusal, not once per remaining token.
+            if self.depth == MAX_DEPTH {
+                self.diag("expression nests too deeply");
+            }
+            self.depth += 1;
+            // Consume a token so the caller's loop still makes progress and cannot spin.
+            let at = self.cur().span();
+            if !self.at_eof() {
+                self.advance();
+            }
+            self.depth -= 1;
+            return Node::new(NodeKind::Empty, at);
+        }
+        self.depth += 1;
+        let node = self.parse_imp();
+        self.depth -= 1;
+        node
     }
 
     // --- precedence ladder (low → high) ---
@@ -265,11 +384,7 @@ impl Parser {
         while let Some(code) = self.word_op(ops) {
             self.advance();
             let right = next(self);
-            left = Node::Binary {
-                op: code,
-                left: Box::new(left),
-                right: Box::new(right),
-            };
+            left = binary(code, left, right);
         }
         left
     }
@@ -281,11 +396,7 @@ impl Parser {
         while let Some(code) = ops.iter().copied().find(|&c| self.is_op(c)) {
             self.advance();
             let right = next(self);
-            left = Node::Binary {
-                op: code,
-                left: Box::new(left),
-                right: Box::new(right),
-            };
+            left = binary(code, left, right);
         }
         left
     }
@@ -326,11 +437,7 @@ impl Parser {
         match code {
             Some(op) => {
                 let right = self.parse_relational();
-                Node::Binary {
-                    op,
-                    left: Box::new(left),
-                    right: Box::new(right),
-                }
+                binary(op, left, right)
             }
             None => left,
         }
@@ -346,11 +453,7 @@ impl Parser {
             Some(op) => {
                 self.advance();
                 let right = self.parse_concat();
-                Node::Binary {
-                    op,
-                    left: Box::new(left),
-                    right: Box::new(right),
-                }
+                binary(op, left, right)
             }
             None => left,
         }
@@ -372,11 +475,7 @@ impl Parser {
         ]) {
             self.advance();
             let right = self.parse_additive();
-            return Node::Binary {
-                op: code,
-                left: Box::new(left),
-                right: Box::new(right),
-            };
+            return binary(code, left, right);
         }
         left
     }
@@ -416,12 +515,10 @@ impl Parser {
         };
         match code {
             Some(op) => {
+                let op_span = self.cur().span();
                 self.advance();
                 let expr = self.parse_unary();
-                Node::Unary {
-                    op,
-                    expr: Box::new(expr),
-                }
+                unary(op, expr, op_span)
             }
             None => self.parse_power(),
         }
@@ -433,11 +530,7 @@ impl Parser {
         while self.is_op(op::CARET) {
             self.advance();
             let right = self.parse_subscript();
-            left = Node::Binary {
-                op: op::CARET,
-                left: Box::new(left),
-                right: Box::new(right),
-            };
+            left = binary(op::CARET, left, right);
         }
         left
     }
@@ -451,10 +544,14 @@ impl Parser {
             if !self.eat_op(op::RBRACKET) {
                 self.diag("expected `]`");
             }
-            base = Node::Index {
-                base: Box::new(base),
-                index: Box::new(index),
-            };
+            let span = Span::new(base.span.start, self.prev_end());
+            base = Node::new(
+                NodeKind::Index {
+                    base: Box::new(base),
+                    index: Box::new(index),
+                },
+                span,
+            );
         }
         base
     }
@@ -462,8 +559,16 @@ impl Parser {
     // level 17: primary atoms
     fn parse_primary(&mut self) -> Node {
         match self.cur().kind.clone() {
-            TokenKind::Number => Node::Number(self.advance().text),
-            TokenKind::Str => Node::Str(self.advance().text),
+            TokenKind::Number => {
+                let t = self.advance();
+                let span = t.span();
+                Node::new(NodeKind::Number(t.text), span)
+            }
+            TokenKind::Str => {
+                let t = self.advance();
+                let span = t.span();
+                Node::new(NodeKind::Str(t.text), span)
+            }
             TokenKind::DateLit => {
                 let t = self.advance();
                 // Validate the internals now so a malformed literal surfaces as a diagnostic; the
@@ -476,21 +581,24 @@ impl Parser {
                         severity: Severity::Error,
                     });
                 }
-                Node::DateLit(t.text)
+                let span = t.span();
+                Node::new(NodeKind::DateLit(t.text), span)
             }
             TokenKind::Reference(kind) => {
-                let name = self.advance().text;
-                Node::Reference { kind, name }
+                let t = self.advance();
+                let span = t.span();
+                Node::new(NodeKind::Reference { kind, name: t.text }, span)
             }
             TokenKind::Op(op::LPAREN) => {
                 self.advance();
-                let inner = self.parse_expr();
+                let inner = self.parse_paren_body();
                 if !self.eat_op(op::RPAREN) {
                     self.diag("expected `)`");
                 }
                 inner
             }
             TokenKind::Op(op::LBRACKET) => {
+                let start = self.cur().start;
                 self.advance();
                 let mut items = Vec::new();
                 if !self.is_op(op::RBRACKET) {
@@ -502,17 +610,19 @@ impl Parser {
                 if !self.eat_op(op::RBRACKET) {
                     self.diag("expected `]`");
                 }
-                Node::Array(items)
+                Node::new(NodeKind::Array(items), self.span_from(start))
             }
             TokenKind::Ident => self.parse_ident_primary(),
             TokenKind::Eof => {
                 self.diag("unexpected end of input");
-                Node::Error
+                let at = self.cur().start;
+                Node::new(NodeKind::Error, Span::new(at, at))
             }
             _ => {
+                let span = self.cur().span();
                 self.diag("unexpected token");
                 self.advance();
-                Node::Error
+                Node::new(NodeKind::Error, span)
             }
         }
     }
@@ -520,12 +630,12 @@ impl Parser {
     fn parse_ident_primary(&mut self) -> Node {
         // boolean literals
         if self.is_kw("true") || self.is_kw("yes") {
-            self.advance();
-            return Node::Bool(true);
+            let t = self.advance();
+            return Node::new(NodeKind::Bool(true), t.span());
         }
         if self.is_kw("false") || self.is_kw("no") {
-            self.advance();
-            return Node::Bool(false);
+            let t = self.advance();
+            return Node::new(NodeKind::Bool(false), t.span());
         }
         // Crystal If-expression
         if self.is_kw("if") {
@@ -549,6 +659,7 @@ impl Parser {
         if self.is_kw("select") {
             return self.parse_select();
         }
+        let start = self.cur().start;
         let name = self.advance().text;
         // call: name(args)
         if self.is_op(op::LPAREN) {
@@ -563,7 +674,7 @@ impl Parser {
             if !self.eat_op(op::RPAREN) {
                 self.diag("expected `)`");
             }
-            return Node::Call { name, args };
+            return Node::new(NodeKind::Call { name, args }, self.span_from(start));
         }
         // Assignment `name := value` (Crystal). In Basic, `=` at statement position is an
         // assignment handled in `parse_statement`; the atom is reached only in expression
@@ -571,17 +682,21 @@ impl Parser {
         // so the atom never consumes `=` as an assignment.
         if self.syntax == Syntax::Crystal && self.eat_op(op::ASSIGN) {
             let value = self.parse_expr();
-            return Node::Assign {
-                name,
-                value: Box::new(value),
-            };
+            return Node::new(
+                NodeKind::Assign {
+                    name,
+                    value: Box::new(value),
+                },
+                self.span_from(start),
+            );
         }
-        Node::Ident(name)
+        Node::new(NodeKind::Ident(name), self.span_from(start))
     }
 
     /// `[Local|Global|Shared] <Type>Var [Array] name[, name…] [:= init]`. The caller has verified
     /// the shape up to the `<Type>Var` keyword.
     fn parse_declare(&mut self) -> Node {
+        let start = self.cur().start;
         let scope = if self.eat_kw("local") {
             VarScope::Local
         } else if self.eat_kw("shared") {
@@ -611,16 +726,20 @@ impl Parser {
             self.eat_op(op::EQ)
         };
         let init = assign.then(|| Box::new(self.parse_expr()));
-        Node::Declare {
-            scope,
-            kind,
-            array,
-            names,
-            init,
-        }
+        Node::new(
+            NodeKind::Declare {
+                scope,
+                kind,
+                array,
+                names,
+                init,
+            },
+            self.span_from(start),
+        )
     }
 
     fn parse_if(&mut self) -> Node {
+        let start = self.cur().start;
         self.advance(); // `If`
         let cond = self.parse_expr();
         if !self.eat_kw("then") {
@@ -654,16 +773,20 @@ impl Parser {
         } else {
             None
         };
-        Node::If {
-            cond: Box::new(cond),
-            then: Box::new(then),
-            elifs,
-            els,
-        }
+        Node::new(
+            NodeKind::If {
+                cond: Box::new(cond),
+                then: Box::new(then),
+                elifs,
+                els,
+            },
+            self.span_from(start),
+        )
     }
 
     /// `While cond Wend` (Basic) or `While cond Do stmt` (Crystal). A pre-test loop.
     fn parse_while(&mut self) -> Node {
+        let start = self.cur().start;
         self.advance(); // While
         let cond = self.parse_expr();
         let body = if self.syntax == Syntax::Basic {
@@ -678,16 +801,20 @@ impl Parser {
             }
             self.parse_statement()
         };
-        Node::While {
-            cond: Box::new(cond),
-            body: Box::new(body),
-            test_after: false,
-        }
+        Node::new(
+            NodeKind::While {
+                cond: Box::new(cond),
+                body: Box::new(body),
+                test_after: false,
+            },
+            self.span_from(start),
+        )
     }
 
     /// `Do [While|Until cond] … Loop [While|Until cond]` (Basic). The condition may lead (pre-test)
     /// or trail (post-test); `Until` desugars to a `Not`-wrapped condition.
     fn parse_do(&mut self) -> Node {
+        let start = self.cur().start;
         self.advance(); // Do
         let pre = self.parse_loop_cond();
         let body = self.parse_stmt_seq_until(&["loop"]);
@@ -700,17 +827,23 @@ impl Parser {
             (None, Some(c)) => (c, true),
             // A bare `Do … Loop` with no guard is an infinite loop, exited via `Exit Do`
             // (the loop cap in the evaluator guards against a missing `Exit`).
-            (None, None) => (Node::Bool(true), false),
+            (None, None) => (
+                Node::new(NodeKind::Bool(true), Span::new(start, start)),
+                false,
+            ),
             (Some(c), Some(_)) => {
                 self.diag("`Do` has both a leading and a trailing condition");
                 (c, false)
             }
         };
-        Node::While {
-            cond: Box::new(cond),
-            body: Box::new(body),
-            test_after,
-        }
+        Node::new(
+            NodeKind::While {
+                cond: Box::new(cond),
+                body: Box::new(body),
+                test_after,
+            },
+            self.span_from(start),
+        )
     }
 
     /// A `While cond` / `Until cond` loop condition; `Until` desugars to `Not (cond)`.
@@ -718,11 +851,9 @@ impl Parser {
         if self.eat_kw("while") {
             Some(self.parse_expr())
         } else if self.eat_kw("until") {
+            // `Until c` desugars to `Not c`; the synthetic `Not` spans its operand.
             let c = self.parse_expr();
-            Some(Node::Unary {
-                op: op::NOT,
-                expr: Box::new(c),
-            })
+            Some(unary(op::NOT, c, Span::default()))
         } else {
             None
         }
@@ -731,6 +862,7 @@ impl Parser {
     /// `For i := a To b [Step s] Do stmt` (Crystal) or `For i = a To b [Step s] … Next [i]` (Basic).
     /// The bounds parse at additive precedence so the `To` isn't consumed as a range operator.
     fn parse_for(&mut self) -> Node {
+        let start = self.cur().start;
         self.advance(); // For
         let var = if let TokenKind::Ident = self.cur().kind {
             self.advance().text
@@ -768,40 +900,47 @@ impl Parser {
             }
             self.parse_statement()
         };
-        Node::For {
-            var,
-            from: Box::new(from),
-            to: Box::new(to),
-            step,
-            body: Box::new(body),
-        }
+        Node::new(
+            NodeKind::For {
+                var,
+                from: Box::new(from),
+                to: Box::new(to),
+                step,
+                body: Box::new(body),
+            },
+            self.span_from(start),
+        )
     }
 
     /// Basic `If cond Then …`. Block form when a newline follows `Then` (`… [ElseIf] [Else] End If`),
-    /// else a single-line `If cond Then stmt [Else stmt]`. Both lower to [`Node::If`].
+    /// else a single-line `If cond Then stmt [Else stmt]`. Both lower to [`NodeKind::If`].
     fn parse_basic_if(&mut self) -> Node {
+        let start = self.cur().start;
         self.advance(); // If
         let cond = self.parse_expr();
         if !self.eat_kw("then") {
             self.diag("expected `Then`");
         }
         if matches!(self.cur().kind, TokenKind::Newline) {
-            return self.parse_basic_if_block(cond);
+            return self.parse_basic_if_block(start, cond);
         }
         // Single-line form.
         let then = self.parse_statement();
         let els = self
             .eat_kw("else")
             .then(|| Box::new(self.parse_statement()));
-        Node::If {
-            cond: Box::new(cond),
-            then: Box::new(then),
-            elifs: Vec::new(),
-            els,
-        }
+        Node::new(
+            NodeKind::If {
+                cond: Box::new(cond),
+                then: Box::new(then),
+                elifs: Vec::new(),
+                els,
+            },
+            self.span_from(start),
+        )
     }
 
-    fn parse_basic_if_block(&mut self, cond: Node) -> Node {
+    fn parse_basic_if_block(&mut self, start: usize, cond: Node) -> Node {
         let then = self.parse_stmt_seq_until(&["elseif", "else", "end"]);
         let mut elifs = Vec::new();
         loop {
@@ -831,18 +970,22 @@ impl Parser {
             self.diag("expected `End If`");
         }
         self.eat_kw("if");
-        Node::If {
-            cond: Box::new(cond),
-            then: Box::new(then),
-            elifs,
-            els,
-        }
+        Node::new(
+            NodeKind::If {
+                cond: Box::new(cond),
+                then: Box::new(then),
+                elifs,
+                els,
+            },
+            self.span_from(start),
+        )
     }
 
     /// `Select expr … Case … [Default|Case Else]` — a Crystal expression or a Basic `Select Case …
     /// End Select` statement. Lowered to an `If`/`ElseIf` chain: each case's test list becomes a
     /// boolean condition on the (re-evaluated) subject.
     fn parse_select(&mut self) -> Node {
+        let start = self.cur().start;
         self.advance(); // Select
         if self.syntax == Syntax::Basic {
             self.eat_kw("case"); // `Select Case`
@@ -865,11 +1008,7 @@ impl Parser {
             let mut cond = self.parse_case_test(&subject);
             while self.eat_op(op::COMMA) {
                 let t = self.parse_case_test(&subject);
-                cond = Node::Binary {
-                    op: op::OR,
-                    left: Box::new(cond),
-                    right: Box::new(t),
-                };
+                cond = binary(op::OR, cond, t);
             }
             self.eat_op(op::COLON);
             clauses.push((cond, self.parse_case_body()));
@@ -886,15 +1025,18 @@ impl Parser {
             self.eat_kw("select");
         }
         if clauses.is_empty() {
-            return default.unwrap_or(Node::Empty);
+            return default.unwrap_or_else(|| Node::new(NodeKind::Empty, self.span_from(start)));
         }
         let (cond, then) = clauses.remove(0);
-        Node::If {
-            cond: Box::new(cond),
-            then: Box::new(then),
-            elifs: clauses,
-            els: default.map(Box::new),
-        }
+        Node::new(
+            NodeKind::If {
+                cond: Box::new(cond),
+                then: Box::new(then),
+                elifs: clauses,
+                els: default.map(Box::new),
+            },
+            self.span_from(start),
+        )
     }
 
     /// A single `Case` test, lowered to a boolean condition on `subject`: `Is <rel> v` →
@@ -919,31 +1061,15 @@ impl Parser {
                 op::EQ
             };
             let rhs = self.parse_additive();
-            return Node::Binary {
-                op: code,
-                left: Box::new(subject.clone()),
-                right: Box::new(rhs),
-            };
+            return binary(code, subject.clone(), rhs);
         }
         let lo = self.parse_additive();
         if self.eat_kw("to") {
             let hi = self.parse_additive();
-            let range = Node::Binary {
-                op: op::RANGE_TO,
-                left: Box::new(lo),
-                right: Box::new(hi),
-            };
-            Node::Binary {
-                op: op::IN,
-                left: Box::new(subject.clone()),
-                right: Box::new(range),
-            }
+            let range = binary(op::RANGE_TO, lo, hi);
+            binary(op::IN, subject.clone(), range)
         } else {
-            Node::Binary {
-                op: op::EQ,
-                left: Box::new(subject.clone()),
-                right: Box::new(lo),
-            }
+            binary(op::EQ, subject.clone(), lo)
         }
     }
 
@@ -956,8 +1082,9 @@ impl Parser {
         }
     }
 
-    /// Basic `Dim name[(dims)][, name…] [As Type]` — lowered to a `Local` [`Node::Declare`].
+    /// Basic `Dim name[(dims)][, name…] [As Type]` — lowered to a `Local` [`NodeKind::Declare`].
     fn parse_dim(&mut self) -> Node {
+        let start = self.cur().start;
         self.advance(); // Dim / ReDim
         let mut names = Vec::new();
         let mut array = false;
@@ -991,18 +1118,22 @@ impl Parser {
         } else {
             VarKind::Number
         };
-        Node::Declare {
-            scope: VarScope::Local,
-            kind,
-            array,
-            names,
-            init: None,
-        }
+        Node::new(
+            NodeKind::Declare {
+                scope: VarScope::Local,
+                kind,
+                array,
+                names,
+                init: None,
+            },
+            self.span_from(start),
+        )
     }
 
     /// `Exit For`/`Exit While`/`Exit Do` — breaks the innermost enclosing loop. The loop keyword is
     /// captured for AST fidelity (`For` when absent/unknown); evaluation breaks regardless of kind.
     fn parse_exit(&mut self) -> Node {
+        let start = self.cur().start;
         self.advance(); // Exit
         let kind = if matches!(self.cur().kind, TokenKind::Ident) {
             let k = match self.cur().text.to_ascii_lowercase().as_str() {
@@ -1015,7 +1146,7 @@ impl Parser {
         } else {
             ExitKind::For
         };
-        Node::Exit(kind)
+        Node::new(NodeKind::Exit(kind), self.span_from(start))
     }
 
     fn peek_kw(&self, ahead: usize, kw: &str) -> bool {
@@ -1033,6 +1164,7 @@ impl Parser {
 
     /// Best-effort recovery for a deferred construct: collect primaries until a statement end.
     fn parse_unparsed_to_stmt_end(&mut self) -> Node {
+        let start = self.cur().start;
         let mut children = Vec::new();
         while !self.at_eof() && !self.is_op(op::SEMI) {
             if matches!(self.cur().kind, TokenKind::Newline) {
@@ -1051,7 +1183,7 @@ impl Parser {
                 self.advance();
             }
         }
-        Node::Unparsed(children)
+        Node::new(NodeKind::Unparsed(children), self.span_from(start))
     }
 }
 

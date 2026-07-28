@@ -3,20 +3,25 @@
 
 use crate::codec::crypto::{cfb_decrypt, encrypt_block};
 
-use super::crack::{batch_iv, inflate_zlib_counted};
+use super::crack::{batch_iv, inflate_zlib_counted, ZLIB_CMF};
+use super::schema::MEMO_CELL_SIZE;
 
 /// Decode the per-batch memo heaps from `MemoValuesStream`: each batch is `zlib`-then-CFB with the
 /// shared memo IV `(memo_cols, memo_cols*12, 12, 0)`, laid back-to-back. Returns each batch's inflated
 /// heap bytes (the raw `(u32 len)(utf16z)` entry region, indexed by the descriptor-cell offsets). The
 /// k-th heap aligns 1:1 with the k-th descriptor batch (both split by the same memo batch size).
 pub(crate) fn decode_memo_heaps(memo_raw: &[u8], memo_cols: u32) -> Vec<Vec<u8>> {
-    let iv = batch_iv(memo_cols, memo_cols.saturating_mul(12), 12);
+    let iv = batch_iv(
+        memo_cols,
+        memo_cols.saturating_mul(MEMO_CELL_SIZE),
+        MEMO_CELL_SIZE,
+    );
     let ks = encrypt_block(&iv);
     let mut heaps = Vec::new();
     let mut off = 0usize;
     while off + 16 <= memo_raw.len() {
         let ct = &memo_raw[off..];
-        if ct[0] ^ ks[0] != 0x78 {
+        if ct[0] ^ ks[0] != ZLIB_CMF {
             break;
         }
         let plain = cfb_decrypt(&iv, ct);

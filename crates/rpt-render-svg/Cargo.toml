@@ -16,5 +16,8 @@ rpt-model = { workspace = true }
 rpt-pages = { workspace = true }
 rpt-render-util = { workspace = true }
 
+[dev-dependencies]
+rpt-test-support = { workspace = true }
+
 [lints]
 workspace = true

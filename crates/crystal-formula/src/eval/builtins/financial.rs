@@ -3,12 +3,26 @@
 //! convention (money paid out is negative) all follow the Excel/VB6 financial functions Crystal
 //! mirrors.
 
-use super::{bad_arg, mismatch, num_arg, opt_num, Builtin};
+use super::{bad_arg, mismatch, num_arg, opt_num};
 use crate::eval::{EvalError, Value};
 
-/// Handle a financial [`Builtin`] (routed here by [`super::Builtin::family`]).
-pub(super) fn call(b: Builtin, name: &str, args: &[Value]) -> Result<Value, EvalError> {
-    use Builtin as B;
+/// The financial-family builtins. Wrapped by [`super::Builtin::Financial`] in the dispatch table.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) enum FinancialFn {
+    Pmt,
+    FV,
+    PV,
+    Npv,
+    Irr,
+    Rate,
+    Ddb,
+    Sln,
+    Syd,
+}
+
+/// Handle a financial builtin (routed here from [`super::call`]).
+pub(super) fn call(b: FinancialFn, name: &str, args: &[Value]) -> Result<Value, EvalError> {
+    use FinancialFn as B;
     match b {
         B::Pmt => {
             let (rate, nper, pv) = (
@@ -112,7 +126,6 @@ pub(super) fn call(b: Builtin, name: &str, args: &[Value]) -> Result<Value, Eval
                 (cost - salvage) * (life - period + 1.0) * 2.0 / (life * (life + 1.0)),
             ))
         }
-        other => unreachable!("non-financial builtin {other:?} routed to financial"),
     }
 }
 
@@ -257,7 +270,7 @@ mod tests {
 
     #[test]
     fn rate_solves_for_the_periodic_rate() {
-        // Inverse of the confirmed Pmt fixture: Pmt(0.05/12, 36, 10000) = -299.71, so the periodic
+        // Inverse of the Pmt case: Pmt(0.05/12, 36, 10000) = -299.71, so the periodic
         // rate that produces that payment is 0.05/12.
         approx("Rate(36, -299.7085, 10000)", 0.05 / 12.0);
         // Paying back less (36 × 750 = 27000) than the 35000 borrowed implies a negative rate.

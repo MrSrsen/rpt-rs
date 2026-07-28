@@ -8,13 +8,14 @@
 //! the square root), clamped to a legible pixel range. It shares this module's axis/gridline frame,
 //! differing only in the marker shape (a sized circle rather than a fixed square).
 
+#[cfg(test)]
+use super::common::AxisTitles;
 use super::common::{
-    compute_frame, emit_value_axis, fmt_val, nice_scale, AxisTitles, GRID, LABEL, PALETTE,
+    compute_frame, emit_value_axis, fmt_val, nice_scale, value_frac, ChartCtx, GRID, LABEL, PALETTE,
 };
 use rpt_model::{Rect, Twips};
 use rpt_pages::{
-    DrawOp, EllipseOp, FontSpec, LineOp, ObjectKind, ObjectRef, Point, PolygonOp, Stroke,
-    TextAlign, TextRun,
+    DrawOp, EllipseOp, FontSpec, LineOp, Point, PolygonOp, Stroke, TextAlign, TextRun,
 };
 
 /// Build the draw-ops for a scatter chart of `points` (`(x, y)` pairs, one per detail row): the two
@@ -28,18 +29,21 @@ use rpt_pages::{
 /// range) rather than the fixed square drawn for a plain scatter (`None`). A `sizes` slice shorter
 /// than `points` falls back to the minimum radius for the missing points.
 pub(crate) fn scatter_chart(
-    rect: Rect,
-    title: &str,
-    axis_titles: AxisTitles,
+    cx: &ChartCtx,
     points: &[(f64, f64)],
     sizes: Option<&[f64]>,
-    section_name: &str,
-    obj_name: &str,
 ) -> Vec<DrawOp> {
     if points.is_empty() {
         return Vec::new();
     }
-    let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(obj_name));
+    let &ChartCtx {
+        def,
+        rect,
+        title,
+        axis_titles,
+        ..
+    } = cx;
+    let src = || cx.src();
     let mut ops: Vec<DrawOp> = Vec::new();
 
     // The Y scale, plot rectangle, axes and gridlines come from the shared value-axis frame, driven
@@ -47,14 +51,14 @@ pub(crate) fn scatter_chart(
     // slots). The X numeric scale is layered on below.
     let y_series: Vec<(String, f64)> = points.iter().map(|(_, y)| (String::new(), *y)).collect();
     let f = compute_frame(rect, title, axis_titles, &y_series);
-    emit_value_axis(&mut ops, &f, rect, title, axis_titles, &y_series, &src);
+    emit_value_axis(def, &mut ops, &f, rect, title, axis_titles, &src);
 
     // X numeric scale: 0..nice_max over the x values, mapped across the plot rectangle.
     let x_data_max = points.iter().map(|(x, _)| *x).fold(0.0_f64, f64::max);
     let (x_max, x_step) = nice_scale(x_data_max);
-    let plot_w = (f.plot_right() - f.plot_left).max(1) as f64;
+    let plot_w = (f.plot_right - f.plot_left).max(1) as f64;
     let x_at = |x: f64| f.plot_left + ((x.max(0.0) / x_max) * plot_w) as i32;
-    let y_at = |y: f64| f.plot_bottom - ((y.max(0.0) / f.max_val) * f.plot_h as f64) as i32;
+    let y_at = |y: f64| f.plot_bottom - (value_frac(y, f.max_val) * f.plot_h as f64) as i32;
 
     // Vertical gridlines + X tick labels at each division (behind the markers). The 0-line is the
     // Y axis itself, so skip its gridline.
@@ -189,7 +193,12 @@ mod tests {
 
     #[test]
     fn empty_points_yield_no_ops() {
-        assert!(scatter_chart(rect(), "T", AxisTitles::default(), &[], None, "S", "G").is_empty());
+        assert!(scatter_chart(
+            &ChartCtx::test(rect(), "T", AxisTitles::default(), false),
+            &[],
+            None
+        )
+        .is_empty());
     }
 
     /// One marker polygon per point, no connecting line, and both numeric axes' tick labels present.
@@ -200,7 +209,7 @@ mod tests {
             value: "Sum of total",
             category: "Sum of id",
         };
-        let ops = scatter_chart(rect(), "", titles, &pts, None, "RH", "G");
+        let ops = scatter_chart(&ChartCtx::test(rect(), "", titles, false), &pts, None);
         // One closed polygon marker per point; no connecting line between markers.
         let markers = ops
             .iter()
@@ -244,13 +253,9 @@ mod tests {
         // sits half-way between min and max, and the 0 bubble collapses to the min radius.
         let sizes = vec![100.0, 25.0, 0.0];
         let ops = scatter_chart(
-            rect(),
-            "",
-            AxisTitles::default(),
+            &ChartCtx::test(rect(), "", AxisTitles::default(), false),
             &pts,
             Some(&sizes),
-            "RH",
-            "G",
         );
         // One ellipse per point; no square polygon markers.
         let radii: Vec<i32> = ops
@@ -290,13 +295,9 @@ mod tests {
         let pts = vec![(1.0, 1.0), (2.0, 2.0)];
         let sizes = vec![10.0];
         let ops = scatter_chart(
-            rect(),
-            "",
-            AxisTitles::default(),
+            &ChartCtx::test(rect(), "", AxisTitles::default(), false),
             &pts,
             Some(&sizes),
-            "RH",
-            "G",
         );
         let circles = ops
             .iter()

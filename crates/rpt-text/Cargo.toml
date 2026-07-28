@@ -14,17 +14,19 @@ rust-version.workspace = true
 [features]
 # The cosmic-text shaping stack (CosmicLayout + FontProvider), on by default. Disable it
 # (`default-features = false`) to get only the fontdb-based `FontDb` face resolver — what the physical
-# render backends need, without pulling cosmic-text (or rpt-layout).
+# render backends need, without pulling cosmic-text.
 default = ["cosmic"]
-cosmic = ["dep:cosmic-text", "dep:rpt-layout"]
+cosmic = ["dep:cosmic-text"]
 
 [dependencies]
 # Always compiled: the shared face-resolution policy (FontDb) is fontdb-only.
-fontdb = "0.23"
+fontdb = { workspace = true }
+# Per-glyph cmap coverage lookup (does this face have a glyph for codepoint c?) driving the
+# symbol-fallback segmentation. Version matches the one already in the graph via rustybuzz.
+ttf-parser = { workspace = true }
 rpt-pages = { workspace = true }
-# The cosmic-text shaping stack and the TextLayout trait it implements — only under `cosmic`.
-rpt-layout = { workspace = true, optional = true }
-cosmic-text = { version = "0.19", optional = true }
+# The cosmic-text shaping stack; it implements the `TextLayout` trait from rpt-pages — only under `cosmic`.
+cosmic-text = { workspace = true, optional = true }
 
 [lints]
 workspace = true

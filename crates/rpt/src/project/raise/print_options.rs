@@ -2,9 +2,6 @@
 
 use super::*;
 
-/// Multi-column detail layout ("Format with Multiple Columns"): a report-level singleton record.
-const MULTI_COLUMN: u16 = 0x6c;
-
 /// SDK `PrintOptions`: the page margins (`0x66`), the printable content size (`0x18e` paper
 /// rectangle less the margins) and the DEVMODE orientation / paper size / source (`0x07`). The
 /// printer driver / name / port come from the printer record (`0x03`); the printer name is emitted
@@ -40,67 +37,38 @@ pub(super) fn raise_print_options(tree: &[RecordNode], logical: &[u8]) -> PrintO
         }
     }
 
-    // The page DEVMODE (0x07): a Crystal big-endian variant of a Windows DEVMODE. A fixed 8-byte
-    // header (sub-type[0..2], `dmFields` bitfield[2..4], orientation[4..6], paper size[6..8]) is
-    // followed by a variable section: each Windows `dmFields` bit that is set contributes one
-    // big-endian u16, in bit order — so the paper source (bit 9) and duplex (bit 12) sit at offsets
-    // that shift with the earlier present fields.
+    // The page DEVMODE (0x07): a Crystal-compacted big-endian variant of the Win32 `DEVMODEW`
+    // printer struct. Rather than the full struct, it stores an 8-byte header
+    // (sub-type[0..2], the low word of `dmFields`[2..4], `dmOrientation`[4..6], `dmPaperSize`[6..8])
+    // then one big-endian u16 for every *further* printer-union member whose `dmFields` bit is set,
+    // in DEVMODE struct order. `DM_ORIENTATION`/`DM_PAPERSIZE` are always set (so those two members
+    // occupy the fixed header slots); the remaining members are walked in order, advancing two bytes
+    // per present member — so `dmDefaultSource` (paper source) and `dmDuplex` sit at offsets that
+    // shift with which earlier members are present. Members past `dmCollate` and any trailing bytes
+    // are ignored (only orientation / paper size / source / duplex are exposed by the SDK).
     if let Some(b) = leaves_of(tree, logical, PAPER_DEVMODE).into_iter().next() {
-        let u16be = |off: usize| u16_be(&b, off).map(i32::from);
-        if let Some(c) = u16be(4) {
-            opts.paper_orientation = crate::model::PaperOrientation::from_code(c);
+        let dm = decode_devmode(&b);
+        if let Some(o) = dm.orientation {
+            opts.paper_orientation = o;
         }
-        if let Some(c) = u16be(6) {
-            opts.paper_size = crate::model::PaperSize::from_code(c);
+        if let Some(sz) = dm.paper_size {
+            opts.paper_size = sz;
         }
-        let dm_fields = u16_be(&b, 2).unwrap_or(0);
-        let mut off = 8;
-        // Conditional fields up to the source (bit 9): paper length/width (2/3), scale (4),
-        // copies (8). Each present field is one u16.
-        for bit in [0x0004u16, 0x0008, 0x0010, 0x0100] {
-            if dm_fields & bit != 0 {
-                off += 2;
-            }
+        if let Some(src) = dm.source {
+            opts.paper_source = src;
         }
-        if dm_fields & 0x0200 != 0 {
-            if let Some(c) = u16be(off) {
-                opts.paper_source = crate::model::PaperSource::from_code(c);
-            }
-            off += 2;
-        }
-        // Between source and duplex (bit 12): print quality (10) and color (11).
-        for bit in [0x0400u16, 0x0800] {
-            if dm_fields & bit != 0 {
-                off += 2;
-            }
-        }
-        if dm_fields & 0x1000 != 0 {
-            if let Some(c) = u16be(off) {
-                opts.printer_duplex = crate::model::PrinterDuplex::from_code(c);
-            }
+        if let Some(d) = dm.duplex {
+            opts.printer_duplex = d;
         }
     }
 
     // The page rectangle (0x18e): the paper width then height as big-endian u32 twips.
     // PageContentWidth/Height are the printable area — the paper dimensions less the margins. The
-    // rect is stored in either edge order; when it is a *standard* sheet (its sorted edges match the
-    // `PaperSize`), the dimensions are oriented to `PaperOrientation` — so a standard sheet saved in
-    // the wrong order (e.g. a Legal sheet stored landscape but flagged Portrait) is re-oriented here.
-    // A rect that is NOT a standard sheet is a genuine custom page and is kept exactly as stored.
+    // engine reports these directly from the stored rect's edge order and does NOT re-orient it to
+    // `PaperOrientation`: a landscape report whose rect is stored portrait-first (A4 11906×16838)
+    // reports portrait content dims (width < height) with the orientation carried only by the flag.
     if let Some(b) = leaves_of(tree, logical, PAPER_RECT).into_iter().next() {
-        if let (Some(pw), Some(ph)) = (sane(i32_be(&b, 0)), sane(i32_be(&b, 4))) {
-            let (mut paper_w, mut paper_h) = (pw, ph);
-            if let Some((short, long)) = opts.paper_size.std_dims() {
-                // Recognise the stored rect as this standard sheet (edge order ignored, small
-                // tolerance for mm rounding), then lay it out per the orientation.
-                let (lo, hi) = (pw.min(ph), pw.max(ph));
-                let matches = (lo - short).abs() <= 30 && (hi - long).abs() <= 30;
-                if matches {
-                    let landscape =
-                        opts.paper_orientation == crate::model::PaperOrientation::Landscape;
-                    (paper_w, paper_h) = if landscape { (hi, lo) } else { (lo, hi) };
-                }
-            }
+        if let (Some(paper_w), Some(paper_h)) = (sane(i32_be(&b, 0)), sane(i32_be(&b, 4))) {
             let cw = paper_w - opts.margins.left.0 - opts.margins.right.0;
             let ch = paper_h - opts.margins.top.0 - opts.margins.bottom.0;
             if cw > 0 && ch > 0 {
@@ -163,40 +131,102 @@ pub(super) fn raise_print_options(tree: &[RecordNode], logical: &[u8]) -> PrintO
 
     if let Some(node) = tree.iter().find(|n| n.rtype == PRINTER) {
         let strings = all_strings(node, logical);
-        // Order: driver ("winspool"), printer name, port. The printer name is emitted empty (the
-        // saved printer is not resolved in the reader's environment), and neither driver nor port is
-        // emitted, so these decoded values are kept out of the export.
+        // Order: driver ("winspool"), saved printer/device name, port. `driver_name`/`port_name` map
+        // to the SDK `SavedDriverName`/`SavedPortName`; string[1] is the `SavedPrinterName` device
+        // string (e.g. a network printer path). The live `printer_name` (SDK `PrinterName`) is
+        // reported empty by the engine, so it is kept empty here.
         opts.driver_name = strings.first().cloned();
         opts.printer_name = String::new();
+        opts.saved_printer_name = strings.get(1).cloned().unwrap_or_default();
         opts.port_name = strings.get(2).cloned();
     }
     opts
 }
 
+/// The page DEVMODE members this project surfaces, each `None` when the leaf does not carry it.
+pub(crate) struct Devmode {
+    pub(crate) orientation: Option<crate::model::PaperOrientation>,
+    pub(crate) paper_size: Option<crate::model::PaperSize>,
+    pub(crate) source: Option<crate::model::PaperSource>,
+    pub(crate) duplex: Option<crate::model::PrinterDuplex>,
+}
+
+/// Decode a page-setup DEVMODE (`0x07`) leaf: a Crystal-compacted big-endian variant of the Win32
+/// `DEVMODEW` printer struct. Rather than the full struct, it stores an 8-byte header
+/// (sub-type `[0..2]`, the low word of `dmFields` `[2..4]`, `dmOrientation` `[4..6]`, `dmPaperSize`
+/// `[6..8]`) then one big-endian `u16` for every *further* printer-union member whose `dmFields` bit
+/// is set, in DEVMODE struct order. `DM_ORIENTATION`/`DM_PAPERSIZE` are always set (so those two
+/// members occupy the fixed header slots); the remaining members are walked in order, advancing two
+/// bytes per present member — so `dmDefaultSource` (paper source) and `dmDuplex` sit at offsets that
+/// shift with which earlier members are present. Members past `dmCollate` and any trailing bytes are
+/// ignored (only orientation / paper size / source / duplex are exposed by the SDK).
+pub(crate) fn decode_devmode(b: &[u8]) -> Devmode {
+    let u16be = |off: usize| u16_be(b, off).map(i32::from);
+    let mut dm = Devmode {
+        orientation: u16be(4).map(crate::model::PaperOrientation::from_code),
+        paper_size: u16be(6).map(crate::model::PaperSize::from_code),
+        source: None,
+        duplex: None,
+    };
+
+    let dm_fields = u16_be(b, 2).unwrap_or(0);
+    // The printer-union members that follow `dmPaperSize` in DEVMODE struct order, each with its
+    // `DM_*` `dmFields` bit. Every member whose bit is set contributes one big-endian u16.
+    const DM_PAPERLENGTH: u16 = 0x0004;
+    const DM_PAPERWIDTH: u16 = 0x0008;
+    const DM_SCALE: u16 = 0x0010;
+    const DM_COPIES: u16 = 0x0100;
+    const DM_DEFAULTSOURCE: u16 = 0x0200;
+    const DM_PRINTQUALITY: u16 = 0x0400;
+    const DM_COLOR: u16 = 0x0800;
+    const DM_DUPLEX: u16 = 0x1000;
+    const DM_YRESOLUTION: u16 = 0x2000;
+    const DM_TTOPTION: u16 = 0x4000;
+    const DM_COLLATE: u16 = 0x8000;
+    const TAIL_MEMBERS: [u16; 11] = [
+        DM_PAPERLENGTH,
+        DM_PAPERWIDTH,
+        DM_SCALE,
+        DM_COPIES,
+        DM_DEFAULTSOURCE,
+        DM_PRINTQUALITY,
+        DM_COLOR,
+        DM_DUPLEX,
+        DM_YRESOLUTION,
+        DM_TTOPTION,
+        DM_COLLATE,
+    ];
+    let mut off = 8;
+    for bit in TAIL_MEMBERS {
+        if dm_fields & bit == 0 {
+            continue;
+        }
+        match bit {
+            DM_DEFAULTSOURCE => dm.source = u16be(off).map(crate::model::PaperSource::from_code),
+            DM_DUPLEX => dm.duplex = u16be(off).map(crate::model::PrinterDuplex::from_code),
+            _ => {}
+        }
+        off += 2;
+    }
+    dm
+}
+
 #[cfg(test)]
 mod tests {
-    //! `samples/` is git-ignored; these tests locate reports by path and skip when absent so a
-    //! clean checkout still runs green. Only numeric layout values are asserted.
-    use std::path::PathBuf;
+    //! Decoded against the committed public fixture corpus. Only numeric layout values are
+    //! asserted; the printer test asserts shape, never the device string.
 
-    fn sample(name: &str) -> PathBuf {
-        std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-            .ancestors()
-            .nth(2)
-            .expect("workspace root")
-            .join("samples")
-            .join(name)
+    /// Open a committed fixture under `tests/fixtures/reports/`.
+    fn fixture(rel: &str) -> crate::Rpt {
+        let path = rpt_test_support::fixture("tests/fixtures/reports").join(rel);
+        crate::Rpt::open(&path).unwrap_or_else(|e| panic!("open {}: {e}", path.display()))
     }
 
     /// The multi-column report decodes to 3 columns; the geometry reproduces the engine's render
     /// (column pitch ≈ 3810 twips tiling the 11520-twip printable width three across).
     #[test]
     fn multi_column_us_states() {
-        let path = sample("worrall_USStatesWithAbbreviations.rpt");
-        let Ok(rpt) = crate::Rpt::open(&path) else {
-            eprintln!("[skip] sample absent: {}", path.display());
-            return;
-        };
+        let rpt = fixture("worrall/USStatesWithAbbreviations.rpt");
         let mc = rpt
             .report()
             .print_options
@@ -211,14 +241,23 @@ mod tests {
         assert!((mc.column_width.0 + mc.gap_h.0 - 3810).abs() <= 20);
     }
 
+    /// A report with a saved printer decodes `SavedPrinterName` (the DEVMODE device string) while
+    /// the live `PrinterName` stays empty. Asserts shape only, never the (schema-carrying) value.
+    #[test]
+    fn saved_printer_name_populated() {
+        let rpt = fixture("benbrahim777/Customer List.rpt");
+        let po = &rpt.report().print_options;
+        assert!(
+            !po.saved_printer_name.is_empty(),
+            "saved printer device name decoded"
+        );
+        assert!(po.printer_name.is_empty(), "live printer name stays empty");
+    }
+
     /// The single-column control report has no multi-column layout.
     #[test]
     fn single_column_alpha_isos() {
-        let path = sample("worrall_AlphaISOsByCountry.rpt");
-        let Ok(rpt) = crate::Rpt::open(&path) else {
-            eprintln!("[skip] sample absent: {}", path.display());
-            return;
-        };
+        let rpt = fixture("worrall/AlphaISOsByCountry.rpt");
         assert!(rpt.report().print_options.multi_column.is_none());
     }
 }

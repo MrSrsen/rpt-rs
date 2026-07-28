@@ -13,8 +13,27 @@ pub(crate) const PAGE_SETUP: u16 = 0x66; // page setup: the four page margins (B
 pub(crate) const PAPER_RECT: u16 = 0x018e; // the page rectangle: paper width + height (BE u32 twips)
 pub(crate) const PAPER_DEVMODE: u16 = 0x0007; // page-setup DEVMODE: orientation / paper size / source
 pub(crate) const SAVE_METADATA: u16 = 0x0178; // one save-time environment key/value pair
+pub(crate) const DATA_SOURCE_OPTIONS: u16 = 0x0160; // report-level data-source options (ConvertNull/ConvertOther flags)
 pub(crate) const AREA_MARKER: u16 = 0x8a; // an area, named e.g. "DetailArea1"
 pub(crate) const SECTION_MARKER: u16 = 0x8c; // a section: Height (u32 BE twips) + Name
+
+// Band markers: each parents its `0x008c` section and its record type is the authoritative band
+// kind (the area/section name is user-renameable — a group band is often named after its group
+// field, e.g. `nameHeader`/`customeridHeader`, so the name cannot be trusted for classification).
+pub(crate) const REPORT_HEADER_BAND: u16 = 0x8d;
+pub(crate) const REPORT_FOOTER_BAND: u16 = 0x8f;
+pub(crate) const PAGE_HEADER_BAND: u16 = 0x91;
+pub(crate) const PAGE_FOOTER_BAND: u16 = 0x93;
+pub(crate) const DETAIL_BAND: u16 = 0x95;
+pub(crate) const GROUP_HEADER_BAND: u16 = 0x97;
+pub(crate) const GROUP_FOOTER_BAND: u16 = 0x99;
+
+// `SectionCodeHeaderFooter` (0x9c): the per-area section-code wrapper that directly parents one
+// `SectionCodeAreaType` (0x9b) leaf. That leaf's byte 0 is the area-type (01=Page, 02=Report,
+// 03=Group, 04=Detail) and — for a group area (03) — byte 2 is the 0-based group nesting level.
+// This is the authoritative source of an area's group level (the area *name* is user-renameable and
+// its binary storage order need not match the group sequence).
+pub(crate) const SECTION_CODE_HEADER_FOOTER: u16 = 0x9c;
 
 // Each report object is a flat run of records: an *opener* (text / field / shape / picture)
 // followed by the *attribute* records that decorate it (name+size, position, format, border,
@@ -33,8 +52,10 @@ pub(crate) const SUBREPORT_OBJECT: u16 = 0xa3; // opens a subreport placeholder 
 pub(crate) const SUBREPORT_LINK: u16 = 0x0106; // a subreport link record (follows the 0xa3 object)
 pub(crate) const CROSSTAB_OBJECT: u16 = 0xb8; // opens a cross-tab object (wrapped by 0xb9; parents the 0x9e name)
 pub(crate) const CROSSTAB_WRAPPER: u16 = 0xb9; // wraps the 0xb8 cross-tab opener; starts the cross-tab binding block
+pub(crate) const CROSSTAB_CUSTOM_MEMBERS_BEGIN: u16 = 0x017e; // opens a cross-tab's custom-group-members collection; 4B leaf = u32 count
 pub(crate) const CHART_BINDING: u16 = 0xb4; // starts a chart's binding block (nests the chart's ObjectName)
 pub(crate) const CHART_DATA: u16 = 0x7f; // wraps a chart's data ("show value") field ref (0x7e child)
+pub(crate) const CHART_ANALYTIC: u16 = 0x011c; // chart analytic header; leaf byte 2 = ChartLayoutType (0 Detail/1 Group/2 CrossTab)
 pub(crate) const CHART_DATA_VALUE: u16 = 0x011f; // labeled-value analytic record ("Count of Command.some_field")
 pub(crate) const CHART_DEFINITION2: u16 = 0x0121; // v2 chart-definition/styling leaf (type + titles)
 pub(crate) const OBJECT_NAME: u16 = 0x9e; // an object's Name + Width/Height
@@ -60,7 +81,7 @@ pub(crate) const FF_BOOLEAN_WRAPPER: u16 = 0xef; // wraps 0xee BooleanFieldForma
 pub(crate) const FF_DATE_WRAPPER: u16 = 0xf3; // wraps 0xf2 DateFieldFormat (classified for coverage; runtime-resolved)
 pub(crate) const FF_TIME_WRAPPER: u16 = 0xf7; // wraps 0xf6 TimeFieldFormat (runtime-resolved)
 pub(crate) const FF_DATETIME_WRAPPER: u16 = 0xf5; // wraps 0xf4 DateTimeFieldFormat (runtime-resolved)
-pub(crate) const FF_STRING_WRAPPER: u16 = 0xfb; // wraps 0xfa StringFieldFormat (decoded, not oracle-validated)
+pub(crate) const FF_STRING_WRAPPER: u16 = 0xfb; // wraps 0xfa StringFieldFormat
 
 // The value child parented by each wrapper above (wrapper − 1). Only the byte-derived ones are
 // matched by the `FieldFormatBlock` decode arm.
@@ -68,6 +89,9 @@ pub(crate) const FF_COMMON_VALUE: u16 = 0xf0; // CommonFieldFormat
 pub(crate) const FF_NUMERIC_VALUE: u16 = 0xf8; // NumericFieldFormat
 pub(crate) const FF_BOOLEAN_VALUE: u16 = 0xee; // BooleanFieldFormat
 pub(crate) const FF_DATE_VALUE: u16 = 0xf2; // DateFieldFormat (stored day/month/year enums)
+pub(crate) const FF_TIME_VALUE: u16 = 0xf6; // TimeFieldFormat (stored hour/minute/second enums)
+pub(crate) const FF_DATETIME_VALUE: u16 = 0xf4; // DateTimeFieldFormat (order + date/time separator)
+pub(crate) const FF_STRING_VALUE: u16 = 0xfa; // StringFieldFormat (text-format/word-wrap/reading-order)
 
 pub(crate) const GROUP: u16 = 0xe5; // a group: its condition field (+ "@Group #N Order")
 pub(crate) const HIER_GROUP: u16 = 0xe9; // a specified-order group value: [LP name][LP condition]
@@ -84,14 +108,30 @@ pub(crate) const OBJECT_CONNECTION: u16 = 0x0111; // a designer object-connectio
 pub(crate) const RECORD_SORT_FIELD: u16 = 0x29; // a record-level sort: field ref + direction (last byte)
 pub(crate) const SUMMARY_DEF: u16 = 0x7e; // a summary/running-total def (operation byte + summarized field)
 pub(crate) const RT_RESET: u16 = 0x80; // a running total's reset condition (precedes its 0x7e)
+pub(crate) const SQL_EXPRESSION: u16 = 0x81; // a SQL Expression field: SQL text (LP) + 0x71 name/type/length child
 pub(crate) const FORMULA_VARIABLE: u16 = 0x0118; // one persisted Global/Shared formula variable (name+type+scope)
                                                  // (the preceding `0x0116` table header just holds the count — redundant, so not parsed)
 pub(crate) const REPORT_HEADER: u16 = 0x0064; // top-level report header (option bits: byte 24 bit 0 = save-data)
 pub(crate) const SAVED_DATA: u16 = 0x0061; // saved-data block descriptor (present ⟺ ReportDocument.HasSavedData)
+pub(crate) const MULTI_COLUMN: u16 = 0x6c; // multi-column detail layout ("Format with Multiple Columns"); report-level singleton
+
+// ---- `ReportParametersStream` record types ----
+
+pub(crate) const CURRENT_VALUE_RECORD: u16 = 0x0031; // a parameter's current-value record (index + per-type entries)
 
 // ---- `QESession` (Query Engine) record types — the database/connection metadata ----
 
 pub(crate) const QE_CONNECTION: u16 = 0x02; // connection container (Database_DLL / type / database name)
 pub(crate) const QE_TABLE: u16 = 0x03; // a table: name (+ alias), the SQL command text, and its fields
 pub(crate) const QE_FIELD: u16 = 0x04; // a table data field: name + value-type code + length
+pub(crate) const QE_COMMAND_PARAM: u16 = 0x07; // a command/stored-proc bind parameter: name + value type
 pub(crate) const QE_TABLE_LINK: u16 = 0x0a; // a table link: src/dst field ids + join type
+pub(crate) const QE_EMPTY_MARKER: u16 = 0x00; // empty child record; on a String field marks an `nvarchar` column
+
+// ---- `DataSourceManager` record types — the saved-data catalog and batch directory ----
+
+pub(crate) const DSM_STRUCTURE: u16 = 0x2d; // saved-records structure record (parents the batch directory)
+pub(crate) const DSM_BATCH_ENTRY: u16 = 0x6d; // one batch directory entry: count + item_size (+ packed column table)
+pub(crate) const DSM_FIELD_CONTAINER: u16 = 0x07; // container of stored database-field descriptors
+pub(crate) const DSM_FIELD_HEADER: u16 = 0x41; // a stored field's header (record-layout index + byte offset)
+pub(crate) const DSM_FIELD_DESC: u16 = 0x40; // a stored field's descriptor (name + variable-length marker)

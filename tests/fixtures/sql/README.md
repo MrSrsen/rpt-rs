@@ -1,5 +1,10 @@
 # SQL render fixtures — data-driven render testing
 
+> **DEPRECATED.** This is the legacy render-fixture corpus and harness. New synthetic-corpus work lives
+> in the self-contained [`tests/meridian/`](../../meridian/) corpus (one seed at
+> `tests/meridian/sql/meridian.sql`, recursive report discovery). This directory is slated for removal
+> once the corpus migration completes; do not add new fixtures here.
+
 Each fixture seeds a database with **synthetic** rows so a report can be rendered *with data* and
 checked against an oracle. **PostgreSQL is the single DB technology** for render testing: the same
 portable `.sql` migration drives two consumers, so the only variable under test is rendering, not the
@@ -37,7 +42,7 @@ against a `postgres:16` service.
 ## Fixture layout
 
 Fixtures are grouped one directory deep by report set; each baseline mirrors that `<group>/<name>`
-path (like the XML baseline harness). A seed drives its reports in one of two cardinalities:
+path. A seed drives its reports in one of two cardinalities:
 
 | File                                                   | What                                                              |
 | ------------------------------------------------------ | ---------------------------------------------------------------- |
@@ -51,15 +56,13 @@ The group-shared seed is the render-parity corpus model: one synthetic database 
 domain), many reports authored against it. A per-report seed still wins over the group-shared one for
 that report; a group with no reports yet contributes no fixtures.
 
-A fixture runs only when its report is present: **public** reports live in `tests/fixtures/reports/`
-(committed); **private** reports in `samples/` (gitignored). Fixtures whose report is absent are
-skipped, so a clean CI checkout runs the public set and stays green.
+A fixture runs only when its report is present under `tests/fixtures/reports/`. A seed whose report
+is absent is skipped, so a checkout always runs the full committed set and stays green.
 
 ## HTML baselines
 
-The test compares the **whole rendered HTML** against the committed baseline, exactly like the XML
-exporter's baseline test (`crates/rpt-cli/tests/baseline.rs`). Rendering uses the dependency-free
-`ApproxLayout` (no system fonts) so the HTML is **byte-deterministic across hosts**. What makes a
+The test compares the **whole rendered HTML** against the committed baseline. Rendering uses the
+dependency-free `ApproxLayout` (no system fonts) so the HTML is **byte-deterministic across hosts**. What makes a
 baseline *correct* (not just stable) is the out-of-band cross-engine oracle: it renders the same
 seed through the real Crystal engine and reports positioned parity — so a blessed baseline is a snapshot of
 an engine-verified render. Regenerate after an intentional render change:

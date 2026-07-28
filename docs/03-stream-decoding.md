@@ -19,11 +19,11 @@ A `Contents`-style report stream begins with a single plaintext record of type `
 `PromptManager` streams differ — see [Sibling streams](#sibling-streams) below). It is not encrypted, because it carries
 the information needed to start decryption. Its body is:
 
-| Field         | Size     | Meaning                                       |
-| ------------- | -------- | --------------------------------------------- |
-| `isEncrypted` | 2 bytes  | whether the payload is encrypted              |
-| `version`     | 2 bytes  | format version                                |
-| `useFixedKey` | 2 bytes  | whether the fixed engine key is used          |
+| Field         | Size     | Meaning                                                         |
+|---------------|----------|-----------------------------------------------------------------|
+| `isEncrypted` | 2 bytes  | whether the payload is encrypted                                |
+| `version`     | 2 bytes  | format version                                                  |
+| `useFixedKey` | 2 bytes  | whether the fixed engine key is used                            |
 | `IV`          | 16 bytes | the AES initialization vector — present only when `isEncrypted` |
 
 The IV is **per stream**: each stream in the file (and in each subreport) has its own. This is why two streams with
@@ -40,9 +40,13 @@ The payload after the header is encrypted with **AES-128 in CFB-128 mode**:
   **transposed state layout** (the output mixes a different permutation of the input bytes than textbook AES) and a
   **non-standard key schedule**. Because the key schedule differs from the standard, the 44 expanded round-key words are
   treated as constants rather than re-derived.
-- **Key — a fixed constant.** When `useFixedKey` is set (the common case), the key is a single constant embedded in the
-  Crystal engine; it is the same for every fixed-key file. The expanded round keys are stored in the library
-  (`crates/rpt/src/codec/crypto.rs`).
+- **Key — a fixed constant, always.** The key is a single constant embedded in the Crystal engine, the same for every
+  file. The expanded round keys are stored in the library (`crates/rpt/src/codec/crypto.rs`).
+- **`useFixedKey` is inert — decoding ignores it, exactly as the engine does.** It is not a selector between two key
+  schemes; there is no second scheme, and no password ever reaches the cipher. The engine reads the flag out of the
+  header into the document and echoes it back on save, but sets the cipher up from the document's key, which is
+  initialized to the built-in constant and never replaced. Clearing the flag in a real report changes nothing: such a
+  file opens normally in the designer, with no prompt.
 - **IV — per stream**, taken from the stream header above.
 
 ### Sibling streams
@@ -52,8 +56,9 @@ streams are close variants:
 
 - **`QESession`** begins with a plaintext `QENG` header rather than the type-`0xFFFF` record. It uses **textbook**
   AES-128-CFB (standard Rijndael, not the transposed variant) with its own fixed engine key — a different constant from
-  the `Contents` key — and takes its IV from the QENG header. After decryption it inflates and tiles just like
-  `Contents`.
+  the `Contents` key — and takes its IV from the QENG header (`crates/rpt/src/codec/qe_crypto.rs`). After decryption it
+  inflates and tiles just like `Contents`, but its records use varied subtypes (see
+  [The record tree](04-record-tree.md)).
 - **`PromptManager`** uses the same modified cipher as `Contents`, but with a **zero IV** and no stream header: the
   encrypted, compressed payload starts at byte 0. It inflates to one or more `CRMetaObjects` XML documents (the
   parameter definitions) rather than a record stream.
@@ -72,10 +77,10 @@ them. Cutting this sequence into individual records is _tiling_.
 Each record is framed in **TSLV** form — Type, Subtype, Length, Value:
 
 | Part          | Encoding                                                                                                                                          |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
 | flag word     | the first 2 bytes are a bit-packed flag word; clearing the flag bits gives the inline **type** read **big-endian** (e.g. `f8 64` → type `0x0064`) |
 | extended type | if the flag word signals it, a 2-byte type follows instead of the inline one, read **little-endian**                                              |
-| subtype       | if the flag word signals it, a 2-byte subtype word follows, read **little-endian**; its leading byte is `0x07` for `Contents` records            |
+| subtype       | if the flag word signals it, a 2-byte subtype word follows, read **little-endian**; its leading byte is `0x07` for `Contents` records             |
 | length        | the value length, read **big-endian**, in 0/1/2/4 bytes per the flag word's length-size bits                                                      |
 | value         | exactly `length` bytes of content; the next record begins immediately after                                                                       |
 
@@ -99,3 +104,7 @@ The next step is to descend _into_ each record's content, where records nest and
 see [The record tree](04-record-tree.md).
 
 [`miniz_oxide`]: https://crates.io/crates/miniz_oxide
+
+---
+
+← [The container](02-container.md) · [Index](README.md) · **Next:** [The record tree](04-record-tree.md) →

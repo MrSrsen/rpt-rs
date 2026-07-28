@@ -59,6 +59,11 @@ pub fn classify_eval_time(body: &str) -> EvalTime {
     {
         return EvalTime::WhilePrintingRecords;
     }
+    // A summary/subtotal function (`Sum({f})`, `Count({f}, {g})`) reads a report summary, which is
+    // only computed once every record has been read and grouped — so it evaluates in the print pass.
+    if crystal_formula::refs::has_summary_function(body) {
+        return EvalTime::WhilePrintingRecords;
+    }
     let refs = references(body);
     if refs.iter().any(|r| r.kind == RefKind::Field) {
         return EvalTime::WhileReadingRecords;
@@ -143,6 +148,29 @@ mod tests {
         assert_eq!(
             classify_eval_time("{orders.amount} * 2"),
             EvalTime::WhileReadingRecords
+        );
+    }
+
+    #[test]
+    fn summary_function_forces_print_time() {
+        // A summary reads a subtotal that only exists after the record pass, so a formula using one
+        // must run in the print pass — even though it also reads a database field (which alone would
+        // make it read-time).
+        assert_eq!(
+            classify_eval_time(
+                "100 * Count({shipment.shipment_id}, {shipment_mode.name}) \
+                 / Count({shipment.shipment_id})"
+            ),
+            EvalTime::WhilePrintingRecords
+        );
+        assert_eq!(
+            classify_eval_time("Sum({orders.amount})"),
+            EvalTime::WhilePrintingRecords
+        );
+        // The array-literal aggregate is not a summary — it stays a pure (before-reading) expression.
+        assert_eq!(
+            classify_eval_time("Sum([1, 2, 3])"),
+            EvalTime::BeforeReadingRecords
         );
     }
 

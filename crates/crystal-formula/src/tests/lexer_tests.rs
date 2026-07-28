@@ -5,9 +5,9 @@ use crate::tokenize;
 
 #[test]
 fn lex_basic_reference_token() {
-    let toks = tokenize("{Command.drug_name}", Syntax::Crystal);
+    let toks = tokenize("{Command.some_field}", Syntax::Crystal);
     assert_eq!(toks[0].kind, TokenKind::Reference(RefKind::Field));
-    assert_eq!(toks[0].text, "Command.drug_name");
+    assert_eq!(toks[0].text, "Command.some_field");
     assert!(matches!(toks.last().unwrap().kind, TokenKind::Eof));
 }
 

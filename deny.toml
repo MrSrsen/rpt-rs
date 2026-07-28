@@ -1,0 +1,23 @@
+# cargo-deny configuration.
+#
+# Licenses are intentionally NOT configured or checked here — license policy is owned by a separate
+# effort. The CI job runs `cargo deny check advisories bans sources`, so the missing [licenses]
+# section is never evaluated. Keep it that way until the license gate lands.
+
+[advisories]
+# Fail on any RUSTSEC vulnerability. Add advisory IDs here to record a reviewed, time-boxed waiver.
+ignore = []
+# A dependency pinned to a yanked crates.io release is a warning, not a hard failure.
+yanked = "warn"
+
+[bans]
+# Duplicate versions and wildcard version requirements are surfaced (drift signal) but do not fail
+# the build — the dependency tree legitimately carries a few duplicates today.
+multiple-versions = "warn"
+wildcards = "warn"
+
+[sources]
+# crates.io is the only sanctioned source; anything from an unknown registry or git remote fails.
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]

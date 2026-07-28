@@ -8,11 +8,14 @@
 //! - a flat list of [`Record`]s when the framing parses cleanly end-to-end, each marked
 //!   [`Record::Known`] or [`Record::Unknown`] by whether its [`RecordTag`] is identified.
 
+mod dom;
 mod raw;
 pub(crate) mod rtype;
+mod tag;
 
+pub use dom::{Node, RecordTypeCount, Unknown, Value};
 pub use raw::{Origin, RawRecord};
-pub use rpt_model::RecordTag;
+pub use tag::RecordTag;
 
 use crate::codec::{self, RecordNode, StreamHeader};
 use crate::container::StreamId;
@@ -74,6 +77,11 @@ pub struct RecordStream {
     records: Vec<Record>,
     /// True if the cleanly-delimited record prefix consumed the whole stream exactly.
     fully_parsed: bool,
+    /// Why the payload could not be decoded, when it could not be. Decoding is deliberately
+    /// non-fatal — a stream we cannot read still round-trips byte-identically and the rest of the
+    /// report stays inspectable — but the reason must not be lost, or an undecryptable report is
+    /// indistinguishable from a genuinely empty one.
+    decode_error: Option<String>,
 }
 
 impl RecordStream {
@@ -89,13 +97,17 @@ impl RecordStream {
         // `Contents` modified-Rijndael path. Route by the on-disk magic so subreport
         // `Subdocument N/QESession` streams (classified as `Other`) decode too.
         if codec::is_qe(bytes) {
+            let mut decode_error = None;
             let (logical, records, fully_parsed) = match codec::decode_qe(bytes) {
                 Ok(report) => {
                     let result = codec::tile(&report);
                     let recs = result.records.iter().map(tiled_to_record).collect();
                     (report, recs, result.complete)
                 }
-                Err(_) => (Vec::new(), Vec::new(), false),
+                Err(e) => {
+                    decode_error = Some(e.to_string());
+                    (Vec::new(), Vec::new(), false)
+                }
             };
             return RecordStream {
                 id,
@@ -104,17 +116,29 @@ impl RecordStream {
                 header: None,
                 records,
                 fully_parsed,
+                decode_error,
             };
         }
 
         if !id.is_tslv() {
+            // The `DataSourceManager` (saved-data catalog) stream is encrypted with the
+            // `Contents` cipher but carries QE-dialect records, so it does not tile like a
+            // `Contents` TSLV stream. Decode just its logical payload (decrypt + inflate) so
+            // inspection can read its record tree via `qe_record_tree`; the saved-data path
+            // reads these same logical bytes.
+            let logical = if matches!(id, StreamId::DataSourceManager(_)) {
+                codec::decode_contents(bytes).unwrap_or_default()
+            } else {
+                Vec::new()
+            };
             return RecordStream {
                 id,
                 raw: bytes.to_vec(),
-                logical: Vec::new(),
+                logical,
                 header: None,
                 records: Vec::new(),
                 fully_parsed: false,
+                decode_error: None,
             };
         }
 
@@ -122,13 +146,17 @@ impl RecordStream {
         // Full pipeline: decrypt + inflate the payload, then tile the logical report into
         // flat TSLV records. The substrate still retains the raw bytes for lossless
         // round-trip; the records are the decoded view over the logical report.
+        let mut decode_error = None;
         let (logical, records, fully_parsed) = match codec::decode_contents(bytes) {
             Ok(report) => {
                 let result = codec::tile(&report);
                 let recs = result.records.iter().map(tiled_to_record).collect();
                 (report, recs, result.complete)
             }
-            Err(_) => (Vec::new(), Vec::new(), false),
+            Err(e) => {
+                decode_error = Some(e.to_string());
+                (Vec::new(), Vec::new(), false)
+            }
         };
 
         RecordStream {
@@ -138,6 +166,7 @@ impl RecordStream {
             header,
             records,
             fully_parsed,
+            decode_error,
         }
     }
 
@@ -154,6 +183,7 @@ impl RecordStream {
             header: None,
             records,
             fully_parsed: result.complete,
+            decode_error: None,
         }
     }
 
@@ -254,6 +284,15 @@ impl RecordStream {
             .iter()
             .filter(|r| matches!(r, Record::Unknown(_)))
             .count()
+    }
+
+    /// Why this stream's payload could not be decoded, if it could not be. `None` on success.
+    ///
+    /// Decoding is non-fatal by design, so a caller that reports "0 records" must check this to tell
+    /// an unreadable stream (e.g. encrypted with a key that is not the built-in one) apart from a
+    /// genuinely empty one.
+    pub fn decode_error(&self) -> Option<&str> {
+        self.decode_error.as_deref()
     }
 
     /// Whether the flat record walk consumed the whole stream exactly.

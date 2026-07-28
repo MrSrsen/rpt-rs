@@ -7,7 +7,7 @@
 #
 # Targets x86_64 musl so the binaries are statically linked and depend on no
 # system libraries — letting the final image be `scratch` (just the binaries).
-FROM rust:1.85-slim-bookworm AS builder
+FROM rust:1.89-slim-bookworm AS builder
 WORKDIR /src
 
 RUN rustup target add x86_64-unknown-linux-musl
@@ -20,23 +20,24 @@ COPY . .
 # binaries out to /out where the final stage can pick them up.
 RUN --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=/src/target \
-    cargo build --release --target x86_64-unknown-linux-musl -p rpt-cli -p rpt-to-xml \
+    cargo build --release --target x86_64-unknown-linux-musl -p rpt-cli -p rpt-render-cli \
     && mkdir -p /out \
     && cp target/x86_64-unknown-linux-musl/release/rpt \
-          target/x86_64-unknown-linux-musl/release/rpt-to-xml /out/
+          target/x86_64-unknown-linux-musl/release/rpt-render /out/
 
 # Runtime stage: nothing but the binaries.
 FROM scratch AS runtime
 
 # Static binaries, so no libc, shell, or package manager is needed.
-COPY --from=builder /out/rpt /out/rpt-to-xml /usr/local/bin/
+COPY --from=builder /out/rpt /out/rpt-render /usr/local/bin/
 
 ENV PATH=/usr/local/bin
 WORKDIR /data
 USER 10001:10001
 
-# `rpt` is the inspection CLI; `rpt-to-xml` is also on PATH. Override the command
-# to run either, e.g.:
+# `rpt` is the inspection/export CLI; `rpt-render` renders a report. Override the
+# command to run either, e.g.:
 #   docker run --rm -v "$PWD:/data" IMAGE rpt inspect report.rpt
-#   docker run --rm -v "$PWD:/data" IMAGE rpt-to-xml report.rpt out.xml
+#   docker run --rm -v "$PWD:/data" IMAGE rpt json-dump report.rpt out.json
+#   docker run --rm -v "$PWD:/data" IMAGE rpt-render report.rpt -o out.pdf
 CMD ["rpt", "--help"]

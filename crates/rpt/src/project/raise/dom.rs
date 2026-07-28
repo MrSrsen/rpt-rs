@@ -3,8 +3,9 @@
 use super::*;
 
 /// Project the record tree into the type-strict DOM: dispatch each record to its domain DTO
-/// [`Node`], falling through to [`Node::Unknown`] for types not yet modelled.
-pub(super) fn raise_dom(stream: &RecordStream) -> Vec<Node> {
+/// [`Node`], falling through to [`Node::Unknown`] for types not yet modelled. Built on demand from
+/// the substrate (see [`crate::Rpt::record_dom`]).
+pub(crate) fn build_record_dom(stream: &RecordStream) -> Vec<Node> {
     let logical = stream.logical_bytes();
     stream
         .record_tree()
@@ -17,7 +18,7 @@ pub(super) fn build_node(node: &RecordNode, logical: &[u8]) -> Node {
     match node.rtype {
         FIELD_DEF => {
             if let Some(field) = raise_field(node, logical) {
-                return Node::FieldDef(field);
+                return Node::FieldDef(Box::new(field));
             }
             unknown_node(node, logical)
         }
@@ -70,6 +71,10 @@ pub(super) fn raise_summary(si: &SummaryInformation) -> SummaryInfo {
         author: si.author.clone().unwrap_or_default(),
         keywords: si.keywords.clone().unwrap_or_default(),
         comments: si.comments.clone().unwrap_or_default(),
+        // Authoring provenance from the OLE property set: `RevisionNumber` (PID 0x09, kept in the
+        // engine's stored string form) and `LastSavedBy` (PID 0x08, `PID_LAST_AUTHOR`).
+        revision_number: si.revision_number.clone().unwrap_or_default(),
+        last_saved_by: si.last_author.clone().unwrap_or_default(),
         ..Default::default()
     }
 }
@@ -77,7 +82,7 @@ pub(super) fn raise_summary(si: &SummaryInformation) -> SummaryInfo {
 /// Build the typed record inventory: count every record in the **full nested tree** (not just
 /// the top-level tiling) per type, sorted by descending frequency then type, attaching the
 /// symbolic name where the type is identified.
-pub(super) fn inventory(stream: &RecordStream) -> Vec<RecordTypeCount> {
+pub(crate) fn build_inventory(stream: &RecordStream) -> Vec<RecordTypeCount> {
     let mut counts: BTreeMap<u16, usize> = BTreeMap::new();
     for root in stream.record_tree() {
         root.walk(&mut |node| {
@@ -86,11 +91,7 @@ pub(super) fn inventory(stream: &RecordStream) -> Vec<RecordTypeCount> {
     }
     let mut out: Vec<RecordTypeCount> = counts
         .into_iter()
-        .map(|(tag, count)| RecordTypeCount {
-            tag,
-            name: RecordTag(tag).name(),
-            count,
-        })
+        .map(|(tag, count)| RecordTypeCount { tag, count })
         .collect();
     out.sort_by(|a, b| b.count.cmp(&a.count).then(a.tag.cmp(&b.tag)));
     out

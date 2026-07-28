@@ -1,13 +1,14 @@
 //! Object formatting DTOs (SDK: `IObjectFormat`, `IBorder`, `IFont`, `IFieldFormat`).
 
 use super::enums::{
-    Alignment, BooleanOutputType, CurrencySymbolFormat, DateSystemDefaultType, DayFormat,
-    DayOfWeekFormat, HyperlinkType, LineStyle, MonthFormat, NegativeFormat, RoundingFormat,
-    TextRotationAngle, YearFormat,
+    Alignment, BooleanOutputType, CurrencyPosition, CurrencySymbolFormat, DateOrder,
+    DateSystemDefaultType, DateTimeOrder, DayFormat, DayOfWeekFormat, HourFormat, HyperlinkType,
+    LineStyle, MinuteFormat, MonthFormat, NegativeFormat, ReadingOrder, RoundingFormat,
+    SecondFormat, TextFormat, TextRotationAngle, VerticalAlignment, YearFormat,
 };
 use super::primitives::{Color, Conditioned};
 
-/// SDK: `IObjectFormat` (XML `<ObjectFormat>`).
+/// SDK: `IObjectFormat`.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct ObjectFormat {
@@ -21,6 +22,9 @@ pub struct ObjectFormat {
     pub close_at_page_break: bool,
     /// SDK `HorizontalAlignment` — the object's horizontal text alignment.
     pub horizontal_alignment: Alignment,
+    /// SDK `VerticalAlignment` — the object's vertical text alignment within its box. Stored in the
+    /// `0x00fc` ObjectFormat leaf (byte 3); defaults to [`VerticalAlignment::Top`].
+    pub vertical_alignment: VerticalAlignment,
     /// SDK `CssClass` — the CSS class name applied when exporting to HTML.
     pub css_class: Option<String>,
     /// SDK `Hyperlink` — the object's drill-down/navigation hyperlink, if any.
@@ -29,8 +33,9 @@ pub struct ObjectFormat {
     pub tooltip_text: Option<String>,
     /// SDK `TextRotationAngle` — the object's text rotation (0°, 90°, or 270°).
     pub text_rotation: TextRotationAngle,
-    /// Conditional-format formulas attached to this object, as `(attribute name, formula text)`
-    /// pairs in `<ObjectFormatConditionFormulas>` emit order (e.g. `("EnableSuppress", "…")`).
+    /// Conditional-format formulas attached to this object, as `(reserved formula name, formula
+    /// text)` pairs in record order (e.g. `("Object_Visibility", "…")`, `("Display_String", "…")`).
+    /// The key is the stored Crystal reserved formula name, not any output-surface attribute name.
     pub condition_formulas: Vec<(String, String)>,
 }
 
@@ -44,7 +49,7 @@ pub struct Hyperlink {
     pub kind: HyperlinkType,
 }
 
-/// SDK: `IBorder` (XML `<Border>`).
+/// SDK: `IBorder`.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Border {
@@ -64,13 +69,13 @@ pub struct Border {
     pub background_color: Option<Color>,
     /// SDK `EnableTightHorizontal` — removes inner horizontal padding between border and content.
     pub tight_horizontal: bool,
-    /// Conditional-format formulas for the border, as `(attribute name, formula text)` pairs in
-    /// `<BorderConditionFormulas>` emit order (e.g. `("BackgroundColor", "…")`,
-    /// `("BorderColor", "…")`).
+    /// Conditional-format formulas for the border, as `(reserved formula name, formula text)` pairs
+    /// in record order (e.g. `("Back_Color", "…")`, `("Fore_Color", "…")`). The key is the stored
+    /// Crystal reserved formula name, not any output-surface attribute name.
     pub condition_formulas: Vec<(String, String)>,
 }
 
-/// SDK: `IFont` (XML `<Font>`).
+/// SDK: `IFont`.
 #[derive(Debug, Clone, PartialEq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Font {
@@ -92,7 +97,7 @@ pub struct Font {
     pub charset: i16,
 }
 
-/// SDK: `IFontColor` (XML `<Color>`).
+/// SDK: `IFontColor`.
 #[derive(Debug, Clone, PartialEq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct FontColor {
@@ -100,47 +105,99 @@ pub struct FontColor {
     pub color: Color,
     /// SDK `Font` — the font definition (face, size, style).
     pub font: Font,
-    /// Conditional-format formulas for the font, as `(attribute name, formula text)` pairs in
-    /// `<FontColorConditionFormulas>` emit order (e.g. `("Color", "…")`, `("Style", "…")`).
+    /// Conditional-format formulas for the font, as `(reserved formula name, formula text)` pairs
+    /// in record order (e.g. `("Font_Color", "…")`, `("Font_Style", "…")`). The key is the stored
+    /// Crystal reserved formula name, not any output-surface attribute name.
     pub condition_formulas: Vec<(String, String)>,
 }
 
 /// SDK: `IFieldFormat` — the type-specific display formatting of a field object.
 ///
 /// The **byte-derived** sub-formats are stored here: [`CommonFieldFormat`], [`NumericFieldFormat`],
-/// [`BooleanFieldFormat`], the (unvalidated) [`StringFieldFormat`], and the per-field **stored**
-/// [`DateFieldFormat`].
+/// [`BooleanFieldFormat`], [`StringFieldFormat`], and the per-field **stored** [`DateFieldFormat`],
+/// [`TimeFieldFormat`], and [`DateTimeFieldFormat`].
 ///
 /// The stored date format really does vary per field — its `dayType`/`monthType`/`yearType` enums are
-/// decoded into [`DateFieldFormat`]. The engine, however, only *reports* this stored format verbatim
-/// for a **date-valued** field with `EnableUseSystemDefaults == false`; for a system-default field, or
-/// a non-date field, it resolves the effective date format at runtime from the field's value type
-/// (and, for a date field's `windowsDefaultType`, the host locale). That resolution is the
-/// derive-layer's job (the XML exporter's effective-format derivation), not a stored fact — the same
-/// boundary as `NumberOfBytes`. The **time** sub-format stays fully runtime-resolved (host-locale
-/// gated even for non-system-default fields), so it is *not* modelled as a stored fact.
+/// decoded into [`DateFieldFormat`] (and, likewise, the time elements into [`TimeFieldFormat`]). The
+/// engine, however, only *reports* this stored format verbatim for an explicit field with
+/// `EnableUseSystemDefaults == false`; for a system-default field, or a value type the format doesn't
+/// apply to, it resolves the effective format at runtime from the field's value type (and, for a date
+/// field's `windowsDefaultType`, the host locale). That resolution belongs to the consumer that needs
+/// it — `rpt-layout` does it for rendering — not to the decoder: it is not a stored fact, the same
+/// boundary as a formula's runtime `NumberOfBytes`.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct FieldFormat {
     /// SDK `CommonFormat` — options common to all field types.
     pub common: CommonFieldFormat,
-    /// SDK `NumericFormat` — the number format, applies to Number/Currency fields.
+    /// SDK `NumericFormat` — the number format the engine reports for this field. Each field stores
+    /// *two* numeric-format slots (a currency-format slot and a number-format slot); the engine
+    /// surfaces the currency slot for a Currency-valued field and the number slot otherwise. This
+    /// holds the number slot as decoded; the value-type resolution pass swaps in
+    /// [`currency_numeric`](Self::currency_numeric) for Currency-valued fields, so this ends up
+    /// holding the reported format.
     pub numeric: NumericFieldFormat,
+    /// The stored **currency-format** numeric slot (the first `0x00f8` of the pair). A stored fact
+    /// used only to resolve [`numeric`](Self::numeric) for Currency-valued fields; not part of the
+    /// exported surface.
+    #[cfg_attr(feature = "serde", serde(skip))]
+    pub currency_numeric: NumericFieldFormat,
     /// SDK `BooleanFormat` — the boolean output format, applies to Boolean fields.
     pub boolean: BooleanFieldFormat,
-    /// SDK `StringFormat` — the string format, decoded but not exported (see struct docs).
+    /// SDK `StringFormat` — the string format (text-format / word-wrap / reading-order / max-lines).
     pub string: StringFieldFormat,
     /// The per-field **stored** date format. Only meaningful (reported by the engine verbatim) for a
     /// date-valued field with `EnableUseSystemDefaults == false`; otherwise the runtime-resolved
-    /// effective format wins — resolved by the XML exporter's effective-format derivation.
+    /// effective format wins, resolved by the consumer (`rpt-layout` for the render path).
     pub date: DateFieldFormat,
+    /// The per-field **stored** time format (hour / minute / second element display). Meaningful only
+    /// for an explicit (non-system-default) time/datetime field; system-default fields resolve the
+    /// effective format from the host locale (as do `TimeBase`/`AMString`/… which are not stored in
+    /// the leaf at all).
+    pub time: TimeFieldFormat,
+    /// The per-field **stored** date-time format: its `DateTimeOrder` (which of the date/time parts
+    /// show, and in what order) and `DateTimeSeparator` (the string placed between them).
+    pub date_time: DateTimeFieldFormat,
 }
 
-/// SDK: `IDateFieldFormat` (XML `<DateFieldFormat>`) — the **stored** per-field date format. Only the
+/// SDK: `IDateTimeFieldFormat` — the **stored** per-field date-time format. The nested date and time
+/// renderings are resolved at runtime from the host locale; only the two stored facts the SDK
+/// surfaces at this level are modelled: `DateTimeOrder` and `DateTimeSeparator`.
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct DateTimeFieldFormat {
+    /// SDK `DateTimeOrder` — which of the date/time parts is shown and in what order (date-only,
+    /// date-then-time, …). Stored in the `0x00f4` leaf byte 0.
+    pub order: DateTimeOrder,
+    /// SDK `DateTimeSeparator` — the string placed between the date and time parts (e.g. `"  "`).
+    pub separator: String,
+}
+
+/// SDK: `ITimeFieldFormat` — the **stored** per-field time format. Only the hour/minute/second
+/// element-display enums are modelled: they are stored in the `0x00f6` leaf (bytes 2/3/4) and are a
+/// genuine per-field fact on an explicit (non-system-default) field. The rest of the SDK's
+/// `TimeFieldFormat` surface (`TimeBase`, `AMString`/`PMString`, `AMPMFormat`, the hour/minute/second
+/// separators) is **not** in the stored leaf — the engine resolves it at runtime from the host
+/// locale — so it is not modelled as a stored fact.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct TimeFieldFormat {
+    /// SDK `HourFormat` — the hour element's display style.
+    pub hour: HourFormat,
+    /// SDK `MinuteFormat` — the minute element's display style.
+    pub minute: MinuteFormat,
+    /// SDK `SecondFormat` — the second element's display style.
+    pub second: SecondFormat,
+}
+
+/// SDK: `IDateFieldFormat` — the **stored** per-field date format. Only the
 /// three elements the SDK exposes (day / month / year) are modelled here.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct DateFieldFormat {
+    /// SDK `DateOrder` — the relative order of the day/month/year elements. Stored in the `0x00f2`
+    /// leaf byte 0.
+    pub date_order: DateOrder,
     /// SDK `DayFormat` — the day-of-month display style.
     pub day: DayFormat,
     /// SDK `MonthFormat` — the month display style (numeric, short/long name).
@@ -149,8 +206,8 @@ pub struct DateFieldFormat {
     pub year: YearFormat,
     /// SDK `SystemDefaultType`. When not `NotUsingWindowsDefaults`, the engine renders the field's
     /// date with the host's Windows long/short date pattern, overriding the stored day/month/year —
-    /// so the derive layer must resolve the effective format from this + the host locale, not report
-    /// the stored enums verbatim.
+    /// so a consumer that needs the displayed format must resolve it from this + the host locale
+    /// rather than reading the stored enums verbatim.
     pub system_default: DateSystemDefaultType,
     /// SDK `DayOfWeekType` — the weekday element of the date. Not exported, so decoded for record
     /// completeness only.
@@ -161,9 +218,9 @@ pub struct DateFieldFormat {
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct CommonFieldFormat {
-    /// XML `EnableSuppressIfDuplicated`.
+    /// SDK `EnableSuppressIfDuplicated`.
     pub suppress_if_duplicated: bool,
-    /// XML `EnableUseSystemDefaults`.
+    /// SDK `EnableUseSystemDefaults`.
     pub use_system_defaults: bool,
 }
 
@@ -184,6 +241,14 @@ pub struct NumericFieldFormat {
     pub negative: NegativeFormat,
     /// SDK `CurrencySymbolFormat` — whether/where a currency symbol is shown.
     pub currency_symbol: CurrencySymbolFormat,
+    /// SDK `CurrencyPosition` — where the currency symbol sits relative to the value and the
+    /// negative sign/brackets. Stored at leaf byte 13.
+    pub currency_position: CurrencyPosition,
+    /// SDK `ThousandsSeparator` — whether the thousands grouping separator is shown. Stored at leaf
+    /// byte 4 (default `true`).
+    pub thousands_separator: bool,
+    /// SDK `EnableSuppressIfZero` — hide the field when its value is zero. Stored at leaf byte 1.
+    pub suppress_if_zero: bool,
     /// SDK `DecimalSymbol` — the decimal separator string (e.g. `"."`).
     pub decimal_symbol: String,
     /// SDK `ThousandSymbol` — the thousands separator string (e.g. `","`).
@@ -194,13 +259,17 @@ pub struct NumericFieldFormat {
 
 impl Default for NumericFieldFormat {
     /// The engine's generic default number format (2 decimals, round to hundredth, leading minus,
-    /// no currency symbol) — what a non-numeric field reports.
+    /// no currency symbol, thousands separator on, leading currency inside the negative) — what a
+    /// non-numeric field reports.
     fn default() -> Self {
         Self {
             decimal_places: 2,
             rounding: RoundingFormat::RoundToHundredth,
             negative: NegativeFormat::LeadingMinus,
             currency_symbol: CurrencySymbolFormat::NoSymbol,
+            currency_position: CurrencyPosition::LeadingCurrencyInsideNegative,
+            thousands_separator: true,
+            suppress_if_zero: false,
             decimal_symbol: String::new(),
             thousand_symbol: String::new(),
             currency_symbol_text: String::new(),
@@ -216,8 +285,27 @@ pub struct BooleanFieldFormat {
     pub output_type: BooleanOutputType,
 }
 
-/// SDK: `IStringFieldFormat`. Decoded for record coverage but the engine's managed `FieldFormat`
-/// wrapper exposes no string sub-format, so it is not exported.
-#[derive(Debug, Clone, PartialEq, Eq, Default)]
+/// SDK: `IStringFieldFormat` — a string field's stored layout format. Decoded from the `0x00fa` leaf:
+/// `EnableWordWrap` (byte 0), the three indent longs (bytes 1-12, `u32` BE, into
+/// [`indent`](StringFieldFormat::indent)),
+/// `MaxNumberOfLines` (bytes 13-14, `u16` BE), `TextFormat` (byte 15), `ReadingOrder` (byte 16).
+/// These are genuine stored facts on every string field (not runtime-resolved like the date/time
+/// effective formats). `TextFormat` is the render-relevant one (plain / HTML / RTF interpretation).
+/// The leaf's trailing spacing members (`LineSpacing` at bytes 17-20 as a 16.16 fixed-point multiple —
+/// `0x00010000` = `1.0`; `CharacterSpacing` at bytes 21-24; `LineSpacingType` at byte 25 — `0` =
+/// `crLineSpacingTypeMultiple`) are invariant and not modelled.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-pub struct StringFieldFormat {}
+pub struct StringFieldFormat {
+    /// SDK `TextFormat` — how the text is interpreted when rendered (plain / HTML / RTF).
+    pub text_format: TextFormat,
+    /// SDK `EnableWordWrap` — whether the text wraps within the object.
+    pub enable_word_wrap: bool,
+    /// SDK `MaxNumberOfLines` — the maximum number of lines to display (`0` = unlimited).
+    pub max_number_of_lines: u16,
+    /// SDK `ReadingOrder` — the text reading order (left-to-right / right-to-left).
+    pub reading_order: ReadingOrder,
+    /// SDK `IndentAndSpacingFormat` — the field's left/right/first-line indentation, in twips.
+    /// Only `right_indent` is ever non-zero on a placed field.
+    pub indent: crate::objects::IndentAndSpacingFormat,
+}

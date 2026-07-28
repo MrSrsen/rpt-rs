@@ -1,0 +1,4711 @@
+{
+  "model": {
+    "data_definition": {
+      "condition_formula_bodies": [],
+      "custom_functions": [],
+      "field_definitions": [
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 62,
+          "long_name": null,
+          "name": "Region",
+          "short_name": "Region",
+          "value_type": "String"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 82,
+          "long_name": null,
+          "name": "Customer Name",
+          "short_name": "Customer Name",
+          "value_type": "String"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 102,
+          "long_name": null,
+          "name": "Product Type Name",
+          "short_name": "Product Type Name",
+          "value_type": "String"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 8,
+          "long_name": null,
+          "name": "Order Amount",
+          "short_name": "Order Amount",
+          "value_type": "Currency"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 62,
+          "long_name": null,
+          "name": "Country",
+          "short_name": "Country",
+          "value_type": "String"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Summary": {
+              "group_index": null,
+              "is_percentage_summary": false,
+              "operation": "Sum",
+              "operation_parameter": 0,
+              "secondary_summarized_field": "",
+              "summarized_field": "Orders.Order Amount"
+            }
+          },
+          "length": 8,
+          "long_name": null,
+          "name": "",
+          "short_name": null,
+          "value_type": "Currency"
+        }
+      ],
+      "field_manager_census": {
+        "database_fields": 5,
+        "formula_bodies": 7
+      },
+      "formula_variables": [],
+      "group_selection": "",
+      "groups": [
+        {
+          "area_format": {
+            "keep_group_together": false,
+            "repeat_group_header": false,
+            "visible_groups_per_page": 0
+          },
+          "condition_field": "Customer.Region",
+          "date_condition": null,
+          "hierarchical": [],
+          "hierarchical_options": null,
+          "options": {},
+          "sort": {
+            "direction": "AscendingOrder",
+            "field": "Customer.Region",
+            "kind": "GroupSortField",
+            "topn": null
+          }
+        }
+      ],
+      "record_selection": "{Customer.Country} = \"Canada\"",
+      "record_sorts": [
+        {
+          "direction": "AscendingOrder",
+          "field": "Customer.Region",
+          "kind": "GroupSortField",
+          "topn": null
+        }
+      ],
+      "running_total_condition_formulas": [],
+      "saved_data_filter": "",
+      "summary_binding_fields": [
+        "Orders.Order Amount"
+      ]
+    },
+    "database": {
+      "links": [
+        {
+          "join_kind": "Inner",
+          "operator": "Equal",
+          "source_fields": [
+            "Order ID"
+          ],
+          "source_table_alias": "Orders_Detail",
+          "target_fields": [
+            "Order ID"
+          ],
+          "target_table_alias": "Orders"
+        },
+        {
+          "join_kind": "Inner",
+          "operator": "Equal",
+          "source_fields": [
+            "Product ID"
+          ],
+          "source_table_alias": "Orders_Detail",
+          "target_fields": [
+            "Product ID"
+          ],
+          "target_table_alias": "Product"
+        },
+        {
+          "join_kind": "Inner",
+          "operator": "Equal",
+          "source_fields": [
+            "Product Type ID"
+          ],
+          "source_table_alias": "Product",
+          "target_fields": [
+            "Product Type ID"
+          ],
+          "target_table_alias": "Product_Type"
+        },
+        {
+          "join_kind": "Inner",
+          "operator": "Equal",
+          "source_fields": [
+            "Customer ID"
+          ],
+          "source_table_alias": "Orders",
+          "target_fields": [
+            "Customer ID"
+          ],
+          "target_table_alias": "Customer"
+        }
+      ],
+      "tables": [
+        {
+          "alias": "Customer",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_dao.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "Access/Excel (DAO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "E:\\Documents\\Ed2Go\\Crystal_Reports\\xtreme.mdb"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": null
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "Customer.Customer ID",
+              "name": "Customer ID",
+              "short_name": "Customer ID",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "Customer.Customer Credit ID",
+              "name": "Customer Credit ID",
+              "short_name": "Customer Credit ID",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 82,
+              "long_name": "Customer.Customer Name",
+              "name": "Customer Name",
+              "short_name": "Customer Name",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 62,
+              "long_name": "Customer.Contact First Name",
+              "name": "Contact First Name",
+              "short_name": "Contact First Name",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 62,
+              "long_name": "Customer.Contact Last Name",
+              "name": "Contact Last Name",
+              "short_name": "Contact Last Name",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 12,
+              "long_name": "Customer.Contact Title",
+              "name": "Contact Title",
+              "short_name": "Contact Title",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 62,
+              "long_name": "Customer.Contact Position",
+              "name": "Contact Position",
+              "short_name": "Contact Position",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "Customer.Last Year's Sales",
+              "name": "Last Year's Sales",
+              "short_name": "Last Year's Sales",
+              "value_type": "Currency"
+            },
+            {
+              "description": null,
+              "length": 122,
+              "long_name": "Customer.Address1",
+              "name": "Address1",
+              "short_name": "Address1",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 42,
+              "long_name": "Customer.Address2",
+              "name": "Address2",
+              "short_name": "Address2",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 42,
+              "long_name": "Customer.City",
+              "name": "City",
+              "short_name": "City",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 62,
+              "long_name": "Customer.Region",
+              "name": "Region",
+              "short_name": "Region",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 62,
+              "long_name": "Customer.Country",
+              "name": "Country",
+              "short_name": "Country",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 22,
+              "long_name": "Customer.Postal Code",
+              "name": "Postal Code",
+              "short_name": "Postal Code",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 102,
+              "long_name": "Customer.E-mail",
+              "name": "E-mail",
+              "short_name": "E-mail",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 102,
+              "long_name": "Customer.Web Site",
+              "name": "Web Site",
+              "short_name": "Web Site",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 42,
+              "long_name": "Customer.Phone",
+              "name": "Phone",
+              "short_name": "Phone",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 42,
+              "long_name": "Customer.Fax",
+              "name": "Fax",
+              "short_name": "Fax",
+              "value_type": "String"
+            }
+          ],
+          "name": "Customer",
+          "parameters": [],
+          "qualified_name": "Customer"
+        },
+        {
+          "alias": "Orders",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_dao.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "Access/Excel (DAO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "E:\\Documents\\Ed2Go\\Crystal_Reports\\xtreme.mdb"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": null
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "Orders.Order ID",
+              "name": "Order ID",
+              "short_name": "Order ID",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "Orders.Order Amount",
+              "name": "Order Amount",
+              "short_name": "Order Amount",
+              "value_type": "Currency"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "Orders.Customer ID",
+              "name": "Customer ID",
+              "short_name": "Customer ID",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "Orders.Employee ID",
+              "name": "Employee ID",
+              "short_name": "Employee ID",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "Orders.Order Date",
+              "name": "Order Date",
+              "short_name": "Order Date",
+              "value_type": "DateTime"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "Orders.Required Date",
+              "name": "Required Date",
+              "short_name": "Required Date",
+              "value_type": "DateTime"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "Orders.Ship Date",
+              "name": "Ship Date",
+              "short_name": "Ship Date",
+              "value_type": "DateTime"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "Orders.Courier Website",
+              "name": "Courier Website",
+              "short_name": "Courier Website",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": 42,
+              "long_name": "Orders.Ship Via",
+              "name": "Ship Via",
+              "short_name": "Ship Via",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 2,
+              "long_name": "Orders.Shipped",
+              "name": "Shipped",
+              "short_name": "Shipped",
+              "value_type": "Boolean"
+            },
+            {
+              "description": null,
+              "length": 102,
+              "long_name": "Orders.PO#",
+              "name": "PO#",
+              "short_name": "PO#",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 2,
+              "long_name": "Orders.Payment Received",
+              "name": "Payment Received",
+              "short_name": "Payment Received",
+              "value_type": "Boolean"
+            }
+          ],
+          "name": "Orders",
+          "parameters": [],
+          "qualified_name": "Orders"
+        },
+        {
+          "alias": "Orders_Detail",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_dao.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "Access/Excel (DAO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "E:\\Documents\\Ed2Go\\Crystal_Reports\\xtreme.mdb"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": null
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "Orders_Detail.Order ID",
+              "name": "Order ID",
+              "short_name": "Order ID",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "Orders_Detail.Product ID",
+              "name": "Product ID",
+              "short_name": "Product ID",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "Orders_Detail.Unit Price",
+              "name": "Unit Price",
+              "short_name": "Unit Price",
+              "value_type": "Currency"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "Orders_Detail.Quantity",
+              "name": "Quantity",
+              "short_name": "Quantity",
+              "value_type": "Int32s"
+            }
+          ],
+          "name": "Orders Detail",
+          "parameters": [],
+          "qualified_name": "Orders Detail"
+        },
+        {
+          "alias": "Product",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_dao.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "Access/Excel (DAO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "E:\\Documents\\Ed2Go\\Crystal_Reports\\xtreme.mdb"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": null
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "Product.Product ID",
+              "name": "Product ID",
+              "short_name": "Product ID",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 102,
+              "long_name": "Product.Product Name",
+              "name": "Product Name",
+              "short_name": "Product Name",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 42,
+              "long_name": "Product.Color",
+              "name": "Color",
+              "short_name": "Color",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 22,
+              "long_name": "Product.Size",
+              "name": "Size",
+              "short_name": "Size",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 22,
+              "long_name": "Product.M/F",
+              "name": "M/F",
+              "short_name": "M/F",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "Product.Price (SRP)",
+              "name": "Price (SRP)",
+              "short_name": "Price (SRP)",
+              "value_type": "Currency"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "Product.Product Type ID",
+              "name": "Product Type ID",
+              "short_name": "Product Type ID",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 102,
+              "long_name": "Product.Product Class",
+              "name": "Product Class",
+              "short_name": "Product Class",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "Product.Supplier ID",
+              "name": "Supplier ID",
+              "short_name": "Supplier ID",
+              "value_type": "Int32s"
+            }
+          ],
+          "name": "Product",
+          "parameters": [],
+          "qualified_name": "Product"
+        },
+        {
+          "alias": "Product_Type",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_dao.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                ""
+              ],
+              [
+                "QE_DatabaseType",
+                "Access/Excel (DAO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "E:\\Documents\\Ed2Go\\Crystal_Reports\\xtreme.mdb"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": null
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "Product_Type.Product Type ID",
+              "name": "Product Type ID",
+              "short_name": "Product Type ID",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 102,
+              "long_name": "Product_Type.Product Type Name",
+              "name": "Product Type Name",
+              "short_name": "Product Type Name",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "Product_Type.Description",
+              "name": "Description",
+              "short_name": "Description",
+              "value_type": "PersistentMemo"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "Product_Type.Picture",
+              "name": "Picture",
+              "short_name": "Picture",
+              "value_type": "Blob"
+            }
+          ],
+          "name": "Product Type",
+          "parameters": [],
+          "qualified_name": "Product Type"
+        }
+      ]
+    },
+    "designer_state": {
+      "connections": [
+        {
+          "destination": 0,
+          "kind": 515,
+          "source": 1
+        },
+        {
+          "destination": 0,
+          "kind": 515,
+          "source": 6
+        }
+      ],
+      "guidelines": [
+        {
+          "flags": 1,
+          "position": 399
+        },
+        {
+          "flags": 1,
+          "position": 620
+        }
+      ]
+    },
+    "embeds": [],
+    "has_saved_data": true,
+    "print_options": {
+      "content_height": 11520,
+      "content_width": 15120,
+      "driver_name": "winspool",
+      "margins": {
+        "bottom": 360,
+        "left": 360,
+        "right": 360,
+        "top": 360
+      },
+      "multi_column": null,
+      "paper_orientation": "Landscape",
+      "paper_size": "PaperLetter",
+      "paper_source": "FormSource",
+      "port_name": "Ne00:",
+      "printer_duplex": "Simplex",
+      "printer_name": "",
+      "saved_printer_name": "Microsoft XPS Document Writer"
+    },
+    "reimport": {
+      "imported_at": {
+        "julian_day": 2456210,
+        "time_fraction": 80955
+      },
+      "reimport_when_opening": 1,
+      "source_path": "",
+      "source_saved_at": {
+        "julian_day": 0,
+        "time_fraction": 0
+      }
+    },
+    "report_definition": {
+      "areas": [
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": true,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "ReportHeader",
+          "name": "ReportHeaderArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 675,
+              "kind": "ReportHeader",
+              "name": "ReportHeaderSection1",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 480,
+                    "left": 3240,
+                    "top": 120,
+                    "width": 5400
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "HorizontalCenterAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "Product Type Sales by Province",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 15.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": true,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Arial",
+                                "size_pt": 15.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 700
+                              },
+                              "text": "Product Type Sales by Province"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "Product Type Sales by Province"
+                    }
+                  },
+                  "name": "Text1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 6000
+                }
+              ],
+              "section_code": 6000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": true,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "PageHeader",
+          "name": "PageHeaderArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 442,
+              "kind": "PageHeader",
+              "name": "PageHeaderSection1",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 221,
+                    "left": 0,
+                    "top": 221,
+                    "width": 994
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "PrintDate",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "Special",
+                      "summary_code": null,
+                      "value_type": "Date"
+                    }
+                  },
+                  "name": "PrintDate1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 12000
+                }
+              ],
+              "section_code": 12000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": {
+              "keep_group_together": false,
+              "repeat_group_header": false,
+              "visible_groups_per_page": 0
+            },
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": 0,
+          "kind": "GroupHeader",
+          "name": "GroupHeaderArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 1752,
+              "kind": "GroupHeader",
+              "name": "GroupHeaderSection1",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 221,
+                    "left": 0,
+                    "top": 0,
+                    "width": 2554
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "GroupName ({Customer.Region})",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "GroupName",
+                      "summary_code": null,
+                      "value_type": "String"
+                    }
+                  },
+                  "name": "GroupNameRegion1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 18000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 1272,
+                    "left": 240,
+                    "top": 480,
+                    "width": 5008
+                  },
+                  "format": {
+                    "can_grow": true,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": false,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "CrossTab": {
+                      "column_axis_options": 0,
+                      "columns": [
+                        {
+                          "field_ref": "",
+                          "period": null,
+                          "suppress_label": false,
+                          "suppress_subtotal": false
+                        },
+                        {
+                          "field_ref": "Product_Type.Product Type Name",
+                          "period": null,
+                          "suppress_label": false,
+                          "suppress_subtotal": false
+                        }
+                      ],
+                      "dimensions": [
+                        {
+                          "field_ref": "",
+                          "period": null,
+                          "suppress_label": false,
+                          "suppress_subtotal": false
+                        },
+                        {
+                          "field_ref": "Product_Type.Product Type Name",
+                          "period": null,
+                          "suppress_label": false,
+                          "suppress_subtotal": false
+                        },
+                        {
+                          "field_ref": "",
+                          "period": null,
+                          "suppress_label": false,
+                          "suppress_subtotal": false
+                        },
+                        {
+                          "field_ref": "Customer.Customer Name",
+                          "period": null,
+                          "suppress_label": false,
+                          "suppress_subtotal": false
+                        }
+                      ],
+                      "field_refs": [
+                        "Product_Type.Product Type Name",
+                        "Customer.Customer Name"
+                      ],
+                      "grid_format": {
+                        "cells": [
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": true,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": false,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": false,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": false,
+                            "flags": 0
+                          },
+                          {
+                            "background_color": null,
+                            "enabled": false,
+                            "flags": 0
+                          }
+                        ],
+                        "raw": 20,
+                        "style": {
+                          "column_grand_total_color": {
+                            "a": 255,
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                          },
+                          "keep_columns_together": true,
+                          "repeat_row_labels": false,
+                          "row_grand_total_color": {
+                            "a": 255,
+                            "b": 255,
+                            "g": 255,
+                            "r": 255
+                          },
+                          "show_cell_margins": true,
+                          "show_grid": true,
+                          "suppress_column_grand_totals": false,
+                          "suppress_empty_columns": false,
+                          "suppress_empty_rows": false,
+                          "suppress_row_grand_totals": false
+                        }
+                      },
+                      "measures": [
+                        {
+                          "field": "Orders.Order Amount",
+                          "operation": "Sum"
+                        }
+                      ],
+                      "options": {
+                        "column_grand_total_color": null,
+                        "keep_columns_together": true,
+                        "repeat_row_labels": false,
+                        "row_grand_total_color": null,
+                        "show_cell_margins": true,
+                        "show_grid": true,
+                        "suppress_column_grand_totals": false,
+                        "suppress_empty_columns": false,
+                        "suppress_empty_rows": false,
+                        "suppress_row_grand_totals": false
+                      },
+                      "row_axis_options": 0,
+                      "rows": [
+                        {
+                          "field_ref": "",
+                          "period": null,
+                          "suppress_label": false,
+                          "suppress_subtotal": false
+                        },
+                        {
+                          "field_ref": "Customer.Customer Name",
+                          "period": null,
+                          "suppress_label": false,
+                          "suppress_subtotal": false
+                        }
+                      ]
+                    }
+                  },
+                  "name": "CrossTab1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 18000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 230,
+                    "left": 1992,
+                    "top": 580,
+                    "width": 1478
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "Total",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": true,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 700
+                              },
+                              "text": "Total"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "Total"
+                    }
+                  },
+                  "name": "",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 18000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 230,
+                    "left": 3670,
+                    "top": 580,
+                    "width": 1478
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "GroupName ({Customer.Region})",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "GroupName",
+                      "summary_code": null,
+                      "value_type": "String"
+                    }
+                  },
+                  "name": "",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 18000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 0,
+                    "left": 3670,
+                    "top": 1010,
+                    "width": 1478
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "Total",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": true,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 700
+                              },
+                              "text": "Total"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "Total"
+                    }
+                  },
+                  "name": "",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 18000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 221,
+                    "left": 340,
+                    "top": 1431,
+                    "width": 1452
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "Total",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": true,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 700
+                              },
+                              "text": "Total"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "Total"
+                    }
+                  },
+                  "name": "",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 18000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 221,
+                    "left": 340,
+                    "top": 1010,
+                    "width": 1452
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "GroupName ({Customer.Region})",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "NumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NoLeadingZeroNumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "GroupName",
+                      "summary_code": null,
+                      "value_type": "String"
+                    }
+                  },
+                  "name": "",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 18000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 221,
+                    "left": 1992,
+                    "top": 1010,
+                    "width": 0
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Text": {
+                      "display": "Total",
+                      "embedded_fields": [],
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "max_lines": 0,
+                      "paragraphs": [
+                        {
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "runs": [
+                            {
+                              "field_ref": null,
+                              "font": {
+                                "bold": true,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Arial",
+                                "size_pt": 10.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 700
+                              },
+                              "text": "Total"
+                            }
+                          ]
+                        }
+                      ],
+                      "reading_order": "LeftToRight",
+                      "text": "Total"
+                    }
+                  },
+                  "name": "",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 18000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 221,
+                    "left": 1992,
+                    "top": 1431,
+                    "width": 1478
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "Sum ({Orders.Order Amount}, {Customer.Region})",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": false
+                        },
+                        "date": {
+                          "date_order": "YearMonthDay",
+                          "day": "LeadingZeroNumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "LeadingZeroNumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "ShortYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "Bracketed",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "Summary",
+                      "summary_code": 0,
+                      "value_type": "Currency"
+                    }
+                  },
+                  "name": "",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 18000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 221,
+                    "left": 1992,
+                    "top": 1010,
+                    "width": 1478
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "Sum ({Orders.Order Amount}, {Customer.Region})",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": false
+                        },
+                        "date": {
+                          "date_order": "YearMonthDay",
+                          "day": "LeadingZeroNumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "LeadingZeroNumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "ShortYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "Bracketed",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "Summary",
+                      "summary_code": 0,
+                      "value_type": "Currency"
+                    }
+                  },
+                  "name": "",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 18000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 221,
+                    "left": 3670,
+                    "top": 1431,
+                    "width": 1478
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "Sum ({Orders.Order Amount}, {Customer.Region})",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": false
+                        },
+                        "date": {
+                          "date_order": "YearMonthDay",
+                          "day": "LeadingZeroNumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "LeadingZeroNumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "ShortYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "Bracketed",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "Summary",
+                      "summary_code": 0,
+                      "value_type": "Currency"
+                    }
+                  },
+                  "name": "",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 18000
+                },
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 221,
+                    "left": 3670,
+                    "top": 1010,
+                    "width": 1478
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "Sum ({Orders.Order Amount}, {Customer.Region})",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": false
+                        },
+                        "date": {
+                          "date_order": "YearMonthDay",
+                          "day": "LeadingZeroNumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "LeadingZeroNumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "ShortYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "negative": "Bracketed",
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "Summary",
+                      "summary_code": 0,
+                      "value_type": "Currency"
+                    }
+                  },
+                  "name": "",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 18000
+                }
+              ],
+              "section_code": 18000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "Detail",
+          "name": "DetailArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": true
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 220,
+              "kind": "Detail",
+              "name": "DetailSection1",
+              "objects": [],
+              "section_code": 24000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": 0,
+          "kind": "GroupFooter",
+          "name": "GroupFooterArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 220,
+              "kind": "GroupFooter",
+              "name": "GroupFooterSection1",
+              "objects": [],
+              "section_code": 30000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": true,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "ReportFooter",
+          "name": "ReportFooterArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 220,
+              "kind": "ReportFooter",
+              "name": "ReportFooterSection1",
+              "objects": [],
+              "section_code": 48000,
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": true,
+              "new_page_after": true,
+              "new_page_before": false,
+              "print_at_bottom_of_page": true,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "PageFooter",
+          "name": "PageFooterArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": {
+                  "a": 255,
+                  "b": 255,
+                  "g": 255,
+                  "r": 255
+                },
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 663,
+              "kind": "PageFooter",
+              "name": "PageFooterSection1",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 255,
+                      "g": 255,
+                      "r": 255
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 221,
+                    "left": 0,
+                    "top": 442,
+                    "width": 950
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "PageNumber",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "date": {
+                          "date_order": "YearMonthDay",
+                          "day": "LeadingZeroNumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "month": "LeadingZeroNumericMonth",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "ShortYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 0,
+                          "decimal_symbol": ".",
+                          "negative": "LeadingMinus",
+                          "rounding": "RoundToUnit",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "hour": "NumericHour",
+                          "minute": "NumericMinute",
+                          "second": "NumericSecond"
+                        }
+                      },
+                      "ref_kind": "Special",
+                      "summary_code": null,
+                      "value_type": "Int32u"
+                    }
+                  },
+                  "name": "PageNumber1",
+                  "origin": {
+                    "index": 0
+                  },
+                  "section_code": 42000
+                }
+              ],
+              "section_code": 42000,
+              "width": 0
+            }
+          ]
+        }
+      ]
+    },
+    "report_options": {
+      "convert_null_field_to_default": false,
+      "convert_other_nulls_to_default": false,
+      "enable_verify_on_every_print": true,
+      "initial_data_context": null,
+      "initial_report_part_name": null,
+      "save_data_with_report": true,
+      "save_preview_picture": true,
+      "save_summaries_with_report": true,
+      "use_dummy_data": false
+    },
+    "save_metadata": [
+      {
+        "key": "Saved Date",
+        "value": "2012.10.10 22:53:30 Eastern Standard Time"
+      },
+      {
+        "key": "Build Version",
+        "value": "12.0.0.683"
+      },
+      {
+        "key": "Print Engine",
+        "value": "CRW"
+      },
+      {
+        "key": "OS",
+        "value": "Windows Server 2003 family"
+      },
+      {
+        "key": "Architecture",
+        "value": "x86"
+      }
+    ],
+    "saved_data": {
+      "columns": [
+        {
+          "name": "Customer.Region",
+          "value_type": "String"
+        },
+        {
+          "name": "Customer.Customer Name",
+          "value_type": "String"
+        },
+        {
+          "name": "Product_Type.Product Type Name",
+          "value_type": "String"
+        },
+        {
+          "name": "Orders.Order Amount",
+          "value_type": "Currency"
+        },
+        {
+          "name": "Customer.Country",
+          "value_type": "String"
+        }
+      ],
+      "record_count": 208,
+      "rows": [
+        [
+          "BC",
+          "Cycles and Sports",
+          "Mountain",
+          "323942",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Hybrid",
+          "754440",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Saddles",
+          "890771",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Kids",
+          "46995",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Helmets",
+          "46995",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Helmets",
+          "46995",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Mountain",
+          "70120",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Gloves",
+          "70120",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Gloves",
+          "70120",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Hybrid",
+          "339690",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Competition",
+          "339690",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Competition",
+          "890771",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Gloves",
+          "165055",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Kids",
+          "56370",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Competition",
+          "323942",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Mountain",
+          "37175",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Helmets",
+          "37175",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Mountain",
+          "94008",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Mountain",
+          "229455",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Gloves",
+          "4050",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Kids",
+          "84555",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Competition",
+          "349365",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Gloves",
+          "349365",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Competition",
+          "273525",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Competition",
+          "347970",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Hybrid",
+          "165055",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Kids",
+          "34475",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Helmets",
+          "581196",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Saddles",
+          "87133",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Locks",
+          "87133",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Helmets",
+          "27730",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Helmets",
+          "27730",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Helmets",
+          "27730",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Kids",
+          "87945",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Helmets",
+          "87945",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Helmets",
+          "12570",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Competition",
+          "306555",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Saddles",
+          "890771",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Mountain",
+          "152970",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Hybrid",
+          "754440",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Helmets",
+          "34475",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Gloves",
+          "34475",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Hybrid",
+          "74912",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Locks",
+          "2994",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Mountain",
+          "107106",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Helmets",
+          "107106",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Gloves",
+          "107106",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Helmets",
+          "7962",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Helmets",
+          "16170",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Saddles",
+          "3273",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Gloves",
+          "3273",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Helmets",
+          "306555",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Mountain",
+          "47985",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Locks",
+          "273525",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Locks",
+          "11370",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Gloves",
+          "2700",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Competition",
+          "881955",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Locks",
+          "4380",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Helmets",
+          "10780",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Mountain",
+          "614899",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Competition",
+          "614899",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Locks",
+          "614899",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Helmets",
+          "21560",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Gloves",
+          "297085",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Helmets",
+          "10170",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Competition",
+          "297085",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Mountain",
+          "248940",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Mountain",
+          "248940",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Helmets",
+          "5390",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Competition",
+          "273555",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Saddles",
+          "273555",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Locks",
+          "3570",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Competition",
+          "1088679",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Competition",
+          "1088679",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Helmets",
+          "1088679",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Mountain",
+          "581196",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Competition",
+          "581196",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Helmets",
+          "21560",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Helmets",
+          "112742",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Competition",
+          "754440",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Competition",
+          "296175",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Locks",
+          "296175",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Mountain",
+          "76485",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Mountain",
+          "241885",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Gloves",
+          "241885",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Helmets",
+          "241885",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Mountain",
+          "337125",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Competition",
+          "337125",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Helmets",
+          "337125",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Mountain",
+          "95970",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Hybrid",
+          "112742",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Gloves",
+          "170236",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Kids",
+          "54870",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Gloves",
+          "4050",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Hybrid",
+          "531204",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Competition",
+          "531204",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Helmets",
+          "8611",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Helmets",
+          "8611",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Competition",
+          "883746",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Competition",
+          "883746",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Competition",
+          "881955",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Helmets",
+          "8330",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Pedal Pusher Bikes Inc.",
+          "Gloves",
+          "8330",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Cycles and Sports",
+          "Helmets",
+          "6780",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Helmets",
+          "29662",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Hybrid",
+          "323691",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Mountain",
+          "65970",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Mountain",
+          "98955",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Kids",
+          "398259",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Mountain",
+          "398259",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Hybrid",
+          "398259",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Mountain",
+          "153042",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Mountain",
+          "153042",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Helmets",
+          "153042",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Kids",
+          "52126",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Helmets",
+          "29662",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Helmets",
+          "1155300",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Competition",
+          "269955",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Locks",
+          "11370",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Competition",
+          "587970",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Gloves",
+          "1650",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Mountain",
+          "98955",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Hybrid",
+          "145761",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Saddles",
+          "7050",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Saddles",
+          "13160",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Hybrid",
+          "87133",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Locks",
+          "3500",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Saddles",
+          "29662",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Mountain",
+          "257925",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Mountain",
+          "112140",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Helmets",
+          "112140",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Locks",
+          "900",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Helmets",
+          "12570",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Mountain",
+          "265425",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Hybrid",
+          "265425",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Saddles",
+          "2400",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Saddles",
+          "900",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Saddles",
+          "7200",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Helmets",
+          "13470",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Mountain",
+          "323691",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Hybrid",
+          "161955",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Mountain",
+          "152970",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Hybrid",
+          "257925",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Mountain",
+          "162514",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Mountain",
+          "162514",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Helmets",
+          "162514",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Mountain",
+          "229455",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Gloves",
+          "1650",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Gloves",
+          "4650",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Competition",
+          "1155300",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Competition",
+          "1155300",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Competition",
+          "587970",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Bikes for Tykes",
+          "Gloves",
+          "13470",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Competition",
+          "1085917",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Mountain",
+          "395955",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Saddles",
+          "13160",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Competition",
+          "589320",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Gloves",
+          "589320",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Competition",
+          "347970",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Mountain",
+          "156525",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Helmets",
+          "156525",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Locks",
+          "7580",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Helmets",
+          "10170",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Locks",
+          "2994",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Mountain",
+          "92655",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Helmets",
+          "5531",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Gloves",
+          "4350",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Competition",
+          "1085917",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Helmets",
+          "1085917",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Mountain",
+          "143955",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Competition",
+          "359790",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Helmets",
+          "359790",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Gloves",
+          "359790",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Helmets",
+          "8931",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Gloves",
+          "8931",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Competition",
+          "170236",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Gloves",
+          "170236",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Gloves",
+          "5531",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Gloves",
+          "2900",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Saddles",
+          "92655",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Helmets",
+          "92655",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Helmets",
+          "8380",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Mountain",
+          "621810",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Competition",
+          "621810",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Saddles",
+          "621810",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Competition",
+          "293985",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Competition",
+          "395955",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Mountain",
+          "98955",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Crazy Wheels",
+          "Helmets",
+          "16170",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Competition",
+          "801501",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Helmets",
+          "8380",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Gloves",
+          "3300",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Kids",
+          "82305",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Mountain",
+          "92361",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Saddles",
+          "801501",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Mountain",
+          "229455",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Saddles",
+          "139108",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Mountain",
+          "139108",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Mountain",
+          "229455",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Competition",
+          "641955",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Competition",
+          "641955",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Helmets",
+          "801501",
+          "Canada"
+        ],
+        [
+          "BC",
+          "Biking's It Industries",
+          "Gloves",
+          "92361",
+          "Canada"
+        ],
+        [
+          "MB",
+          "Dag City Cycle",
+          "Mountain",
+          "86374",
+          "Canada"
+        ],
+        [
+          "NS",
+          "Halifax Cycle Centre",
+          "Mountain",
+          "95970",
+          "Canada"
+        ],
+        [
+          "ON",
+          "Don't Tread On Me",
+          "Kids",
+          "27435",
+          "Canada"
+        ],
+        [
+          "ON",
+          "Cycle Fever",
+          "Competition",
+          "881955",
+          "Canada"
+        ],
+        [
+          "PQ",
+          "Wheels 'n' Deals",
+          "Competition",
+          "179970",
+          "Canada"
+        ]
+      ]
+    },
+    "subreports": [],
+    "summary_info": {
+      "author": "",
+      "comments": "",
+      "keywords": "",
+      "last_saved_by": "",
+      "revision_number": "1",
+      "save_with_preview": true,
+      "subject": "",
+      "title": ""
+    },
+    "version": 1
+  }
+}

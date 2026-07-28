@@ -1,5 +1,5 @@
 -- Fixture for worrall_SportsTeams.rpt (PUBLIC; worrallbrian/crystal_reports).
--- SYNTHETIC invented teams (nothing real, nothing from samples/). Portable DDL seeds both the SQLite
+-- SYNTHETIC invented teams (nothing real). Portable DDL seeds both the SQLite
 -- test DB and the postgres DB the Crystal engine re-queries. Table/columns match the report's stored
 -- ODBC bindings (view `vw_sports_tabler_output`: id Int32s; team/sport/league/section/division/
 -- hometown text). Several sports/leagues so grouping + per-group summaries have real rows to fold.

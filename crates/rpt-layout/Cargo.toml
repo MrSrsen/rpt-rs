@@ -12,6 +12,7 @@ categories.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+metafile = { workspace = true }
 rpt-model = { workspace = true }
 crystal-formula = { workspace = true }
 rpt-data = { workspace = true }

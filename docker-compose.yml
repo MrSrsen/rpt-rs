@@ -34,6 +34,12 @@ services:
       # init scripts always run). This makes the tables/fields available for authoring in Crystal
       # Designer via ODBC, not just for the render tests (which re-seed idempotently anyway).
       - ./tests/fixtures/sql/parking/parking.sql:/docker-entrypoint-initdb.d/10-parking.sql:ro
+      # Permanent "meridian" corpus in its own database (for Crystal Designer authoring via ODBC and
+      # the meridian render fixtures). The seed is mounted outside initdb.d so the entrypoint does not
+      # run it against rptfixtures; 20-meridian.sh creates the DB and loads it. See tests/meridian/.
+      - ./tests/meridian/sql/meridian.sql:/opt/meridian/meridian.sql:ro
+      - ./tests/meridian/sql/pg-init/20-meridian.sh:/docker-entrypoint-initdb.d/20-meridian.sh:ro
+      - ./tests/meridian/sql/pg-init/25-meridian-views.sql:/opt/meridian/25-meridian-views.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U rpt -d rptfixtures"]
       interval: 2s
