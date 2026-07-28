@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+WIP.
+
+## [0.3.0]
+
 This release replaces the RptToXml-compatible XML export with a plain, exhaustive **JSON** dump of the decoded model as
 the decode regression surface, finishes the stored-vs-derived separation, adds a lossless KDL projection and a `.rpt`
 anonymizer, pushes the render pipeline through typography, subreport flow, charts, and live-database work, and closes a
