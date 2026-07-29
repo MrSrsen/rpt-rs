@@ -12,9 +12,9 @@
 //! deliberately **conservative**: when in doubt a field is included, since an extra fetched column is
 //! harmless while a missing one breaks rendering.
 
-use crystal_formula::refs::references;
-use crystal_formula::token::{split_reference, strip_braces};
-use crystal_formula::RefKind;
+use rpt_formula::refs::references;
+use rpt_formula::token::{split_reference, strip_braces};
+use rpt_formula::RefKind;
 use rpt_model::{
     Database, FieldKindData, FontColor, Report, ReportObject, ReportObjectKind, Table,
 };
@@ -100,6 +100,12 @@ fn collect(r: &Report, live: &HashSet<String>, used: &mut HashSet<String>) {
     for g in &dd.groups {
         add_field_ref(used, &g.condition_field);
         add_body_fields(used, &g.sort.field);
+        // Hierarchical grouping walks a parent/child tree over the group's instances, so both ID
+        // fields are read per record even though neither need be placed anywhere.
+        if let Some(h) = g.hierarchical_options.as_ref().filter(|h| h.enabled) {
+            add_field_ref(used, &h.parent_id_field);
+            add_field_ref(used, &h.instance_id_field);
+        }
     }
     for s in &dd.record_sorts {
         add_field_ref(used, &s.field);
@@ -522,6 +528,7 @@ mod tests {
                     }],
                     ..Default::default()
                 }],
+                ..Default::default()
             },
             ..Default::default()
         }
@@ -585,6 +592,38 @@ mod tests {
                 .map(|t| t.alias.as_str())
                 .collect::<Vec<_>>(),
             vec!["orders"]
+        );
+    }
+
+    #[test]
+    fn hierarchical_grouping_fetches_its_id_fields() {
+        // A hierarchically sorted group reads a parent-ID field per record to build its tree, and
+        // that field is typically placed nowhere on the report. Missing it leaves every instance
+        // parentless, so the tree flattens back to a plain group.
+        use rpt_model::{Group, HierarchicalGroupOptions, Twips};
+        let db = Database {
+            tables: vec![tbl("employee", &["employee_id", "manager_id", "name"])],
+            links: vec![],
+        };
+        let mut r = report(db, vec![field_obj("{employee.name}")], &[]);
+        r.data_definition.groups = vec![Group {
+            condition_field: "employee.employee_id".into(),
+            hierarchical_options: Some(HierarchicalGroupOptions {
+                enabled: true,
+                parent_id_field: "employee.manager_id".into(),
+                instance_id_field: "employee.employee_id".into(),
+                group_indent: Twips(300),
+            }),
+            ..Default::default()
+        }];
+        let used = used_database_fields(&r);
+        assert!(
+            used.contains("employee.manager_id"),
+            "hierarchy parent-ID field not fetched: {used:?}"
+        );
+        assert!(
+            used.contains("employee.employee_id"),
+            "hierarchy instance-ID field not fetched: {used:?}"
         );
     }
 

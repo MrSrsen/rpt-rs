@@ -1,0 +1,3345 @@
+{
+  "model": {
+    "authoring_version": {
+      "letter": 0,
+      "major": 14,
+      "minor": 0
+    },
+    "data_definition": {
+      "condition_formula_bodies": [],
+      "custom_functions": [],
+      "field_definitions": [
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 4,
+          "long_name": null,
+          "name": "customer_id",
+          "short_name": "customer_id",
+          "value_type": "Int32s"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 242,
+          "long_name": null,
+          "name": "name",
+          "short_name": "name",
+          "value_type": "String"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 66,
+          "long_name": null,
+          "name": "account_code",
+          "short_name": "account_code",
+          "value_type": "String"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Formula": {
+              "null_treatment": "Exception",
+              "number_of_bytes": 2,
+              "options": 0,
+              "syntax": "Crystal",
+              "text": "WhilePrintingRecords;\r\nShared NumberVar acc := 0;\r\n\"\""
+            }
+          },
+          "length": 0,
+          "long_name": null,
+          "name": "SharedInit",
+          "short_name": null,
+          "value_type": "String"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Formula": {
+              "null_treatment": "Exception",
+              "number_of_bytes": 8,
+              "options": 0,
+              "syntax": "Crystal",
+              "text": "WhilePrintingRecords;\r\nShared NumberVar acc;\r\nacc"
+            }
+          },
+          "length": 0,
+          "long_name": null,
+          "name": "SharedRead",
+          "short_name": null,
+          "value_type": "Number"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Formula": {
+              "null_treatment": "Exception",
+              "number_of_bytes": 70,
+              "options": 0,
+              "syntax": "Crystal",
+              "text": "\"SHARED-VARIABLE PROBE (main<->sub)\""
+            }
+          },
+          "length": 0,
+          "long_name": null,
+          "name": "LblTitle",
+          "short_name": null,
+          "value_type": "String"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Formula": {
+              "null_treatment": "Exception",
+              "number_of_bytes": 18,
+              "options": 0,
+              "syntax": "Crystal",
+              "text": "\"Customer\""
+            }
+          },
+          "length": 0,
+          "long_name": null,
+          "name": "LblName",
+          "short_name": null,
+          "value_type": "String"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Formula": {
+              "null_treatment": "Exception",
+              "number_of_bytes": 16,
+              "options": 0,
+              "syntax": "Crystal",
+              "text": "\"Account\""
+            }
+          },
+          "length": 0,
+          "long_name": null,
+          "name": "LblAccount",
+          "short_name": null,
+          "value_type": "String"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Formula": {
+              "null_treatment": "Exception",
+              "number_of_bytes": 74,
+              "options": 0,
+              "syntax": "Crystal",
+              "text": "\"This customer's invoices (subreport)\""
+            }
+          },
+          "length": 0,
+          "long_name": null,
+          "name": "LblInvoices",
+          "short_name": null,
+          "value_type": "String"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Formula": {
+              "null_treatment": "Exception",
+              "number_of_bytes": 148,
+              "options": 0,
+              "syntax": "Crystal",
+              "text": "\"Grand total (via Shared NumberVar acc, accumulated inside the subreport):\""
+            }
+          },
+          "length": 0,
+          "long_name": null,
+          "name": "LblSharedRead",
+          "short_name": null,
+          "value_type": "String"
+        }
+      ],
+      "field_manager_census": {
+        "database_fields": 3,
+        "formula_bodies": 10
+      },
+      "formula_variables": [
+        {
+          "name": "acc",
+          "scope": "Shared",
+          "value_type": "Number"
+        }
+      ],
+      "group_selection": "",
+      "groups": [],
+      "record_selection": "{customer.customer_id} <= 10",
+      "record_sorts": [],
+      "running_total_condition_formulas": [],
+      "saved_data_filter": "",
+      "summary_binding_fields": []
+    },
+    "database": {
+      "links": [],
+      "tables": [
+        {
+          "alias": "customer",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_odbc.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                "meridian"
+              ],
+              [
+                "QE_DatabaseType",
+                "ODBC (RDO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "meridian"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": "rpt"
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "customer.customer_id",
+              "name": "customer_id",
+              "short_name": "customer_id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "customer.city_id",
+              "name": "city_id",
+              "short_name": "city_id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "customer.industry_id",
+              "name": "industry_id",
+              "short_name": "industry_id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 242,
+              "long_name": "customer.name",
+              "name": "name",
+              "short_name": "name",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 66,
+              "long_name": "customer.account_code",
+              "name": "account_code",
+              "short_name": "account_code",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "customer.credit_limit",
+              "name": "credit_limit",
+              "short_name": "credit_limit",
+              "value_type": "Number"
+            },
+            {
+              "description": null,
+              "length": 14,
+              "long_name": "customer.currency_code",
+              "name": "currency_code",
+              "short_name": "currency_code",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "customer.since_date",
+              "name": "since_date",
+              "short_name": "since_date",
+              "value_type": "Date"
+            },
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "customer.sales_rep_id",
+              "name": "sales_rep_id",
+              "short_name": "sales_rep_id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 66,
+              "long_name": "customer.tier",
+              "name": "tier",
+              "short_name": "tier",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 12,
+              "long_name": "customer.is_active",
+              "name": "is_active",
+              "short_name": "is_active",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": -1,
+              "long_name": "customer.logo",
+              "name": "logo",
+              "short_name": "logo",
+              "value_type": "Blob"
+            }
+          ],
+          "name": "customer",
+          "parameters": [],
+          "qualified_name": "meridian.public.customer"
+        }
+      ]
+    },
+    "designer_state": {
+      "connections": [],
+      "guidelines": []
+    },
+    "embeds": [],
+    "has_saved_data": false,
+    "print_options": {
+      "content_height": 15398,
+      "content_width": 10459,
+      "driver_name": null,
+      "margins": {
+        "bottom": 720,
+        "left": 720,
+        "right": 720,
+        "top": 720
+      },
+      "multi_column": null,
+      "paper_orientation": "Portrait",
+      "paper_size": "PaperA4",
+      "paper_source": "FormSource",
+      "port_name": null,
+      "printer_duplex": "Default",
+      "printer_name": "",
+      "saved_printer_name": ""
+    },
+    "reimport": {
+      "imported_at": {
+        "julian_day": 2461245,
+        "time_fraction": 34542
+      },
+      "reimport_when_opening": 1,
+      "source_path": "",
+      "source_saved_at": {
+        "julian_day": 0,
+        "time_fraction": 0
+      }
+    },
+    "report_definition": {
+      "areas": [
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": true,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "ReportHeader",
+          "name": "ReportHeaderArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": null,
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 400,
+              "kind": "ReportHeader",
+              "name": "ReportHeaderSection1",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": {
+                      "a": 255,
+                      "b": 31,
+                      "g": 58,
+                      "r": 95
+                    },
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 340,
+                    "left": 0,
+                    "top": 0,
+                    "width": 10467
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Box": {
+                      "corner_ellipse_height": 0,
+                      "corner_ellipse_width": 0,
+                      "shape": {
+                        "bottom": 340,
+                        "end_section_index": 0,
+                        "extend_to_bottom_of_section": false,
+                        "line_thickness": 20,
+                        "right": 10467
+                      }
+                    }
+                  },
+                  "name": "TitleBar",
+                  "origin": {
+                    "index": 0
+                  }
+                },
+                {
+                  "border": {
+                    "background_color": null,
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 240,
+                    "left": 100,
+                    "top": 60,
+                    "width": 6000
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{@LblTitle}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 255,
+                          "g": 255,
+                          "r": 255
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Tahoma",
+                          "size_pt": 12.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
+                        "date": {
+                          "calendar": "GregorianCalendar",
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
+                          "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
+                          "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
+                          "minute": "NumericMinute",
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
+                        }
+                      },
+                      "ref_kind": "Formula",
+                      "summary_code": null,
+                      "value_type": "Unknown"
+                    }
+                  },
+                  "name": "TitleLbl",
+                  "origin": {
+                    "index": 0
+                  }
+                },
+                {
+                  "border": {
+                    "background_color": null,
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 100,
+                    "left": 6100,
+                    "top": 60,
+                    "width": 4267
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "RightAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{@SharedInit}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 255,
+                          "g": 255,
+                          "r": 255
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Tahoma",
+                          "size_pt": 1.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
+                        "date": {
+                          "calendar": "GregorianCalendar",
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
+                          "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
+                          "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
+                          "minute": "NumericMinute",
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
+                        }
+                      },
+                      "ref_kind": "Formula",
+                      "summary_code": null,
+                      "value_type": "Unknown"
+                    }
+                  },
+                  "name": "SharedInitField",
+                  "origin": {
+                    "index": 0
+                  }
+                }
+              ],
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": true,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "PageHeader",
+          "name": "PageHeaderArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": null,
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 340,
+              "kind": "PageHeader",
+              "name": "PageHeaderSection1",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": null,
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 240,
+                    "left": 0,
+                    "top": 60,
+                    "width": 3200
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{@LblName}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 34,
+                          "g": 34,
+                          "r": 34
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Tahoma",
+                          "size_pt": 8.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
+                        "date": {
+                          "calendar": "GregorianCalendar",
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
+                          "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
+                          "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
+                          "minute": "NumericMinute",
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
+                        }
+                      },
+                      "ref_kind": "Formula",
+                      "summary_code": null,
+                      "value_type": "Unknown"
+                    }
+                  },
+                  "name": "HeadName",
+                  "origin": {
+                    "index": 0
+                  }
+                },
+                {
+                  "border": {
+                    "background_color": null,
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 240,
+                    "left": 3200,
+                    "top": 60,
+                    "width": 1600
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{@LblAccount}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 34,
+                          "g": 34,
+                          "r": 34
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Tahoma",
+                          "size_pt": 8.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
+                        "date": {
+                          "calendar": "GregorianCalendar",
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
+                          "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
+                          "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
+                          "minute": "NumericMinute",
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
+                        }
+                      },
+                      "ref_kind": "Formula",
+                      "summary_code": null,
+                      "value_type": "Unknown"
+                    }
+                  },
+                  "name": "HeadAccount",
+                  "origin": {
+                    "index": 0
+                  }
+                },
+                {
+                  "border": {
+                    "background_color": null,
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 240,
+                    "left": 4800,
+                    "top": 60,
+                    "width": 5667
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{@LblInvoices}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 34,
+                          "g": 34,
+                          "r": 34
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Tahoma",
+                          "size_pt": 8.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
+                        "date": {
+                          "calendar": "GregorianCalendar",
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
+                          "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
+                          "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
+                          "minute": "NumericMinute",
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
+                        }
+                      },
+                      "ref_kind": "Formula",
+                      "summary_code": null,
+                      "value_type": "Unknown"
+                    }
+                  },
+                  "name": "HeadInvoices",
+                  "origin": {
+                    "index": 0
+                  }
+                }
+              ],
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "Detail",
+          "name": "DetailArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": null,
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 760,
+              "kind": "Detail",
+              "name": "DetailSection1",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": null,
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 220,
+                    "left": 0,
+                    "top": 20,
+                    "width": 3200
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{customer.name}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 34,
+                          "g": 34,
+                          "r": 34
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Tahoma",
+                          "size_pt": 9.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
+                        "date": {
+                          "calendar": "GregorianCalendar",
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
+                          "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
+                          "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
+                          "minute": "NumericMinute",
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
+                        }
+                      },
+                      "ref_kind": "DatabaseField",
+                      "summary_code": null,
+                      "value_type": "Unknown"
+                    }
+                  },
+                  "name": "DetName",
+                  "origin": {
+                    "index": 0
+                  }
+                },
+                {
+                  "border": {
+                    "background_color": null,
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 220,
+                    "left": 3200,
+                    "top": 20,
+                    "width": 1600
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{customer.account_code}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 34,
+                          "g": 34,
+                          "r": 34
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Tahoma",
+                          "size_pt": 9.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
+                        "date": {
+                          "calendar": "GregorianCalendar",
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
+                          "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
+                          "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
+                          "minute": "NumericMinute",
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
+                        }
+                      },
+                      "ref_kind": "DatabaseField",
+                      "summary_code": null,
+                      "value_type": "Unknown"
+                    }
+                  },
+                  "name": "DetAccount",
+                  "origin": {
+                    "index": 0
+                  }
+                },
+                {
+                  "border": {
+                    "background_color": null,
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "SingleLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "SingleLine",
+                    "right": "SingleLine",
+                    "tight_horizontal": false,
+                    "top": "SingleLine"
+                  },
+                  "bounds": {
+                    "height": 240,
+                    "left": 4800,
+                    "top": 0,
+                    "width": 5667
+                  },
+                  "format": {
+                    "can_grow": true,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Subreport": {
+                      "enable_reimport": false,
+                      "is_imported": false,
+                      "links": [
+                        {
+                          "linked_parameter": "Pm-customer.customer_id",
+                          "main_report_field": "customer.customer_id",
+                          "subreport_field": "invoice.customer_id"
+                        }
+                      ],
+                      "on_demand": false,
+                      "subdoc_index": 1,
+                      "subreport_name": "InvoiceAccSub"
+                    }
+                  },
+                  "name": "Subreport1",
+                  "origin": {
+                    "index": 0
+                  }
+                }
+              ],
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": true,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "ReportFooter",
+          "name": "ReportFooterArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": null,
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 400,
+              "kind": "ReportFooter",
+              "name": "ReportFooterSection1",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": null,
+                    "border_color": {
+                      "a": 255,
+                      "b": 44,
+                      "g": 140,
+                      "r": 153
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "SingleLine"
+                  },
+                  "bounds": {
+                    "height": 0,
+                    "left": 0,
+                    "top": 40,
+                    "width": 10467
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Line": {
+                      "shape": {
+                        "bottom": 40,
+                        "end_section_index": 3,
+                        "extend_to_bottom_of_section": false,
+                        "line_thickness": 30,
+                        "right": 10467
+                      }
+                    }
+                  },
+                  "name": "RfRule",
+                  "origin": {
+                    "index": 0
+                  }
+                },
+                {
+                  "border": {
+                    "background_color": null,
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 260,
+                    "left": 0,
+                    "top": 120,
+                    "width": 7000
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "LeftAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{@LblSharedRead}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 31,
+                          "g": 58,
+                          "r": 95
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Tahoma",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
+                        "date": {
+                          "calendar": "GregorianCalendar",
+                          "date_order": "MonthDayYear",
+                          "day": "NumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
+                          "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "LongYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
+                          "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
+                          "minute": "NumericMinute",
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
+                        }
+                      },
+                      "ref_kind": "Formula",
+                      "summary_code": null,
+                      "value_type": "Unknown"
+                    }
+                  },
+                  "name": "SharedReadLbl",
+                  "origin": {
+                    "index": 0
+                  }
+                },
+                {
+                  "border": {
+                    "background_color": null,
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 300,
+                    "left": 7000,
+                    "top": 100,
+                    "width": 3467
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "RightAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "{@SharedRead}",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 31,
+                          "g": 58,
+                          "r": 95
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": true,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Tahoma",
+                          "size_pt": 14.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 700
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": true
+                        },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
+                        "date": {
+                          "calendar": "GregorianCalendar",
+                          "date_order": "YearMonthDay",
+                          "day": "LeadingZeroNumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
+                          "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "ShortYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
+                          "hour": "NumericHour",
+                          "hour_minute_separator": ":",
+                          "minute": "NumericMinute",
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
+                        }
+                      },
+                      "ref_kind": "Formula",
+                      "summary_code": null,
+                      "value_type": "Unknown"
+                    }
+                  },
+                  "name": "SharedReadAmt",
+                  "origin": {
+                    "index": 0
+                  }
+                }
+              ],
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": true,
+              "new_page_after": true,
+              "new_page_before": false,
+              "print_at_bottom_of_page": true,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "PageFooter",
+          "name": "PageFooterArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": null,
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 600,
+              "kind": "PageFooter",
+              "name": "PageFooterSection1",
+              "objects": [],
+              "width": 0
+            }
+          ]
+        }
+      ],
+      "kind": "ColumnarReport",
+      "style": "Standard"
+    },
+    "report_options": {
+      "convert_null_field_to_default": false,
+      "convert_other_nulls_to_default": false,
+      "enable_verify_on_every_print": true,
+      "initial_data_context": null,
+      "initial_report_part_name": null,
+      "save_data_with_report": true,
+      "save_preview_picture": true,
+      "save_summaries_with_report": true,
+      "use_dummy_data": false
+    },
+    "save_metadata": [
+      {
+        "key": "Saved Date",
+        "value": "2026.07.24 09:35:42 +0100"
+      },
+      {
+        "key": "Build Version",
+        "value": "13.0.40.5789"
+      },
+      {
+        "key": "Print Engine",
+        "value": "CRVBD"
+      },
+      {
+        "key": "OS",
+        "value": "Windows Vista"
+      },
+      {
+        "key": "Architecture",
+        "value": "x86"
+      },
+      {
+        "key": "Saved Date",
+        "value": "2026.07.24 07:37:50 -0000"
+      },
+      {
+        "key": "Build Version",
+        "value": "13.0.39.5601"
+      },
+      {
+        "key": "Print Engine",
+        "value": "CRPE"
+      },
+      {
+        "key": "OS",
+        "value": "Windows Vista"
+      },
+      {
+        "key": "Architecture",
+        "value": "x86"
+      }
+    ],
+    "saved_data": null,
+    "subreports": [
+      {
+        "links": [
+          {
+            "linked_parameter": "Pm-customer.customer_id",
+            "main_report_field": "customer.customer_id",
+            "subreport_field": "invoice.customer_id"
+          }
+        ],
+        "name": "InvoiceAccSub",
+        "report": {
+          "authoring_version": {
+            "letter": 0,
+            "major": 14,
+            "minor": 0
+          },
+          "data_definition": {
+            "condition_formula_bodies": [],
+            "custom_functions": [],
+            "field_definitions": [
+              {
+                "description": null,
+                "formula_form": null,
+                "heading_text": null,
+                "kind": {
+                  "Database": {
+                    "table_alias": "",
+                    "unique_id": ""
+                  }
+                },
+                "length": 4,
+                "long_name": null,
+                "name": "invoice_id",
+                "short_name": "invoice_id",
+                "value_type": "Int32s"
+              },
+              {
+                "description": null,
+                "formula_form": null,
+                "heading_text": null,
+                "kind": {
+                  "Database": {
+                    "table_alias": "",
+                    "unique_id": ""
+                  }
+                },
+                "length": 8,
+                "long_name": null,
+                "name": "amount_gross",
+                "short_name": "amount_gross",
+                "value_type": "Number"
+              },
+              {
+                "description": null,
+                "formula_form": null,
+                "heading_text": null,
+                "kind": {
+                  "Database": {
+                    "table_alias": "",
+                    "unique_id": ""
+                  }
+                },
+                "length": 4,
+                "long_name": null,
+                "name": "customer_id",
+                "short_name": "customer_id",
+                "value_type": "Int32s"
+              },
+              {
+                "description": null,
+                "formula_form": null,
+                "heading_text": null,
+                "kind": {
+                  "Formula": {
+                    "null_treatment": "Exception",
+                    "number_of_bytes": 8,
+                    "options": 0,
+                    "syntax": "Crystal",
+                    "text": "WhilePrintingRecords;\r\nShared NumberVar acc;\r\nacc := acc + {invoice.amount_gross};\r\nacc"
+                  }
+                },
+                "length": 0,
+                "long_name": null,
+                "name": "SharedAccumulate",
+                "short_name": null,
+                "value_type": "Number"
+              },
+              {
+                "description": null,
+                "formula_form": null,
+                "heading_text": null,
+                "kind": {
+                  "Parameter": {
+                    "allow_custom_values": true,
+                    "allow_editing_default_value": true,
+                    "allow_multiple_values": false,
+                    "allow_null_value": false,
+                    "current_values": [],
+                    "default_value_display_type": "DescriptionAndValue",
+                    "default_value_sort_order": "NoSort",
+                    "default_values": [],
+                    "dynamic_lov": null,
+                    "edit_mask": null,
+                    "editable_on_panel": false,
+                    "has_current_value": false,
+                    "initial_values": [],
+                    "mutually_exclusive_group": true,
+                    "optional_prompt": false,
+                    "parameter_type": "ReportParameter",
+                    "part_of_group": false,
+                    "prompt_group": "crobj://{D5082E85-33D5-4BE9-84A3-82542F412C9F}",
+                    "prompt_text": "Pm-customer.customer_id",
+                    "report_name": null,
+                    "show_on_panel": false,
+                    "value_kind": "NumberParameter"
+                  }
+                },
+                "length": 0,
+                "long_name": null,
+                "name": "Pm-customer.customer_id",
+                "short_name": null,
+                "value_type": "Number"
+              }
+            ],
+            "field_manager_census": {
+              "database_fields": 3,
+              "formula_bodies": 4
+            },
+            "formula_variables": [
+              {
+                "name": "acc",
+                "scope": "Shared",
+                "value_type": "Number"
+              }
+            ],
+            "group_selection": "",
+            "groups": [],
+            "record_selection": "{invoice.customer_id}={?Pm-customer.customer_id}",
+            "record_sorts": [],
+            "running_total_condition_formulas": [],
+            "saved_data_filter": "",
+            "summary_binding_fields": []
+          },
+          "database": {
+            "links": [],
+            "tables": [
+              {
+                "alias": "invoice",
+                "class_name": "CrystalReports.Table",
+                "command_text": null,
+                "connection": {
+                  "attributes": [
+                    [
+                      "Database_DLL",
+                      "crdb_odbc.dll"
+                    ],
+                    [
+                      "QE_DatabaseName",
+                      "meridian"
+                    ],
+                    [
+                      "QE_DatabaseType",
+                      "ODBC (RDO)"
+                    ],
+                    [
+                      "QE_LogonProperties",
+                      "System.__ComObject"
+                    ],
+                    [
+                      "QE_ServerDescription",
+                      "meridian"
+                    ],
+                    [
+                      "QE_SQLDB",
+                      "True"
+                    ],
+                    [
+                      "SSO_Enabled",
+                      "False"
+                    ]
+                  ],
+                  "kind": "Unknown",
+                  "user_name": "rpt"
+                },
+                "data_fields": [
+                  {
+                    "description": null,
+                    "length": 4,
+                    "long_name": "invoice.invoice_id",
+                    "name": "invoice_id",
+                    "short_name": "invoice_id",
+                    "value_type": "Int32s"
+                  },
+                  {
+                    "description": null,
+                    "length": 4,
+                    "long_name": "invoice.order_id",
+                    "name": "order_id",
+                    "short_name": "order_id",
+                    "value_type": "Int32s"
+                  },
+                  {
+                    "description": null,
+                    "length": 4,
+                    "long_name": "invoice.customer_id",
+                    "name": "customer_id",
+                    "short_name": "customer_id",
+                    "value_type": "Int32s"
+                  },
+                  {
+                    "description": null,
+                    "length": 4,
+                    "long_name": "invoice.invoice_date",
+                    "name": "invoice_date",
+                    "short_name": "invoice_date",
+                    "value_type": "Date"
+                  },
+                  {
+                    "description": null,
+                    "length": 4,
+                    "long_name": "invoice.due_date",
+                    "name": "due_date",
+                    "short_name": "due_date",
+                    "value_type": "Date"
+                  },
+                  {
+                    "description": null,
+                    "length": 14,
+                    "long_name": "invoice.currency_code",
+                    "name": "currency_code",
+                    "short_name": "currency_code",
+                    "value_type": "String"
+                  },
+                  {
+                    "description": null,
+                    "length": 8,
+                    "long_name": "invoice.amount_net",
+                    "name": "amount_net",
+                    "short_name": "amount_net",
+                    "value_type": "Number"
+                  },
+                  {
+                    "description": null,
+                    "length": 8,
+                    "long_name": "invoice.tax_amount",
+                    "name": "tax_amount",
+                    "short_name": "tax_amount",
+                    "value_type": "Number"
+                  },
+                  {
+                    "description": null,
+                    "length": 8,
+                    "long_name": "invoice.amount_gross",
+                    "name": "amount_gross",
+                    "short_name": "amount_gross",
+                    "value_type": "Number"
+                  },
+                  {
+                    "description": null,
+                    "length": 4,
+                    "long_name": "invoice.status_id",
+                    "name": "status_id",
+                    "short_name": "status_id",
+                    "value_type": "Int32s"
+                  }
+                ],
+                "name": "invoice",
+                "parameters": [],
+                "qualified_name": "meridian.public.invoice"
+              }
+            ]
+          },
+          "designer_state": {
+            "connections": [],
+            "guidelines": []
+          },
+          "embeds": [],
+          "has_saved_data": false,
+          "print_options": {
+            "content_height": 16118,
+            "content_width": 11179,
+            "driver_name": null,
+            "margins": {
+              "bottom": 360,
+              "left": 360,
+              "right": 360,
+              "top": 360
+            },
+            "multi_column": null,
+            "paper_orientation": "Portrait",
+            "paper_size": "DefaultPaperSize",
+            "paper_source": "FormSource",
+            "port_name": null,
+            "printer_duplex": "Default",
+            "printer_name": "",
+            "saved_printer_name": ""
+          },
+          "reimport": {
+            "imported_at": {
+              "julian_day": 2461245,
+              "time_fraction": 27470
+            },
+            "reimport_when_opening": 1,
+            "source_path": "",
+            "source_saved_at": {
+              "julian_day": 2461245,
+              "time_fraction": 27470
+            }
+          },
+          "report_definition": {
+            "areas": [
+              {
+                "format": {
+                  "base": {
+                    "keep_together": false,
+                    "new_page_after": false,
+                    "new_page_before": true,
+                    "print_at_bottom_of_page": false,
+                    "reset_page_number_after": false,
+                    "suppress": false
+                  },
+                  "clamp_page_footer": false,
+                  "group": null,
+                  "hide_for_drill_down": false,
+                  "visible_records_per_page": 0
+                },
+                "group_level": null,
+                "kind": "ReportHeader",
+                "name": "ReportHeaderArea1",
+                "sections": [
+                  {
+                    "condition_formulas": [],
+                    "format": {
+                      "background_color": null,
+                      "base": {
+                        "keep_together": true,
+                        "new_page_after": false,
+                        "new_page_before": false,
+                        "print_at_bottom_of_page": false,
+                        "reset_page_number_after": false,
+                        "suppress": false
+                      },
+                      "css_class": null,
+                      "page_orientation": null,
+                      "suppress_if_blank": false,
+                      "underlay_section": false
+                    },
+                    "height": 600,
+                    "kind": "ReportHeader",
+                    "name": "ReportHeaderSection1",
+                    "objects": [],
+                    "width": 0
+                  },
+                  {
+                    "condition_formulas": [],
+                    "format": {
+                      "background_color": null,
+                      "base": {
+                        "keep_together": true,
+                        "new_page_after": false,
+                        "new_page_before": false,
+                        "print_at_bottom_of_page": false,
+                        "reset_page_number_after": false,
+                        "suppress": false
+                      },
+                      "css_class": null,
+                      "page_orientation": null,
+                      "suppress_if_blank": false,
+                      "underlay_section": false
+                    },
+                    "height": 600,
+                    "kind": "ReportHeader",
+                    "name": "ReportHeaderSection2",
+                    "objects": [],
+                    "width": 0
+                  }
+                ]
+              },
+              {
+                "format": {
+                  "base": {
+                    "keep_together": false,
+                    "new_page_after": false,
+                    "new_page_before": false,
+                    "print_at_bottom_of_page": false,
+                    "reset_page_number_after": false,
+                    "suppress": false
+                  },
+                  "clamp_page_footer": false,
+                  "group": null,
+                  "hide_for_drill_down": false,
+                  "visible_records_per_page": 0
+                },
+                "group_level": null,
+                "kind": "Detail",
+                "name": "DetailArea1",
+                "sections": [
+                  {
+                    "condition_formulas": [],
+                    "format": {
+                      "background_color": null,
+                      "base": {
+                        "keep_together": true,
+                        "new_page_after": false,
+                        "new_page_before": false,
+                        "print_at_bottom_of_page": false,
+                        "reset_page_number_after": false,
+                        "suppress": false
+                      },
+                      "css_class": null,
+                      "page_orientation": null,
+                      "suppress_if_blank": false,
+                      "underlay_section": false
+                    },
+                    "height": 220,
+                    "kind": "Detail",
+                    "name": "DetailSection1",
+                    "objects": [
+                      {
+                        "border": {
+                          "background_color": null,
+                          "border_color": {
+                            "a": 255,
+                            "b": 0,
+                            "g": 0,
+                            "r": 0
+                          },
+                          "bottom": "NoLine",
+                          "condition_formulas": [],
+                          "has_drop_shadow": false,
+                          "left": "NoLine",
+                          "right": "NoLine",
+                          "tight_horizontal": false,
+                          "top": "NoLine"
+                        },
+                        "bounds": {
+                          "height": 200,
+                          "left": 0,
+                          "top": 10,
+                          "width": 1700
+                        },
+                        "format": {
+                          "can_grow": false,
+                          "close_at_page_break": false,
+                          "condition_formulas": [],
+                          "css_class": null,
+                          "horizontal_alignment": "LeftAlign",
+                          "hyperlink": null,
+                          "keep_together": true,
+                          "suppress": {
+                            "formula": null,
+                            "value": false
+                          },
+                          "text_rotation": "Rotate0",
+                          "tooltip_text": null,
+                          "vertical_alignment": "Top"
+                        },
+                        "kind": {
+                          "Field": {
+                            "data_source": "{invoice.invoice_id}",
+                            "font_color": {
+                              "color": {
+                                "a": 255,
+                                "b": 34,
+                                "g": 34,
+                                "r": 34
+                              },
+                              "condition_formulas": [],
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Tahoma",
+                                "size_pt": 8.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              }
+                            },
+                            "format": {
+                              "boolean": {
+                                "output_type": "TrueOrFalse"
+                              },
+                              "common": {
+                                "suppress_if_duplicated": false,
+                                "use_system_defaults": true
+                              },
+                              "currency_numeric": {
+                                "currency_position": "LeadingCurrencyInsideNegative",
+                                "currency_symbol": "NoSymbol",
+                                "currency_symbol_text": "$",
+                                "decimal_places": 2,
+                                "decimal_symbol": ".",
+                                "display_reverse_sign": false,
+                                "negative": "LeadingMinus",
+                                "one_currency_symbol_per_page": false,
+                                "rounding": "RoundToHundredth",
+                                "suppress_if_zero": false,
+                                "thousand_symbol": ",",
+                                "thousands_separator": true,
+                                "use_lead_zero": true,
+                                "zero_value_string": "<Default Format>"
+                              },
+                              "date": {
+                                "calendar": "GregorianCalendar",
+                                "date_order": "YearMonthDay",
+                                "day": "LeadingZeroNumericDay",
+                                "day_of_week": "NoDayOfWeek",
+                                "day_of_week_enclosure": "NotEnclosed",
+                                "day_of_week_position": "LeadingPosition",
+                                "day_of_week_separator": "",
+                                "era": "NoEra",
+                                "first_separator": "-",
+                                "month": "LeadingZeroNumericMonth",
+                                "prefix_separator": "",
+                                "second_separator": "-",
+                                "suffix_separator": "",
+                                "system_default": "UseWindowsShortDate",
+                                "year": "ShortYear"
+                              },
+                              "date_time": {
+                                "order": "DateThenTime",
+                                "separator": "  "
+                              },
+                              "numeric": {
+                                "currency_position": "LeadingCurrencyInsideNegative",
+                                "currency_symbol": "NoSymbol",
+                                "currency_symbol_text": "",
+                                "decimal_places": 0,
+                                "decimal_symbol": ".",
+                                "display_reverse_sign": false,
+                                "negative": "LeadingMinus",
+                                "one_currency_symbol_per_page": false,
+                                "rounding": "RoundToUnit",
+                                "suppress_if_zero": false,
+                                "thousand_symbol": ",",
+                                "thousands_separator": true,
+                                "use_lead_zero": true,
+                                "zero_value_string": "<Default Format>"
+                              },
+                              "string": {
+                                "enable_word_wrap": true,
+                                "indent": {
+                                  "first_line_indent": 0,
+                                  "left_indent": 0,
+                                  "line_spacing": {
+                                    "raw": 65536,
+                                    "spacing_type": "Multiple"
+                                  },
+                                  "right_indent": 0
+                                },
+                                "max_number_of_lines": 0,
+                                "reading_order": "LeftToRight",
+                                "text_format": "StandardText"
+                              },
+                              "time": {
+                                "am_pm_format": "AMPMAfter",
+                                "am_string": " AM",
+                                "hour": "NumericHour",
+                                "hour_minute_separator": ":",
+                                "minute": "NumericMinute",
+                                "minute_second_separator": ":",
+                                "pm_string": " PM",
+                                "second": "NumericSecond",
+                                "time_base": "TwelveHour"
+                              }
+                            },
+                            "ref_kind": "DatabaseField",
+                            "summary_code": null,
+                            "value_type": "Unknown"
+                          }
+                        },
+                        "name": "SubInvoiceId",
+                        "origin": {
+                          "index": 0
+                        }
+                      },
+                      {
+                        "border": {
+                          "background_color": null,
+                          "border_color": {
+                            "a": 255,
+                            "b": 0,
+                            "g": 0,
+                            "r": 0
+                          },
+                          "bottom": "NoLine",
+                          "condition_formulas": [],
+                          "has_drop_shadow": false,
+                          "left": "NoLine",
+                          "right": "NoLine",
+                          "tight_horizontal": false,
+                          "top": "NoLine"
+                        },
+                        "bounds": {
+                          "height": 200,
+                          "left": 1700,
+                          "top": 10,
+                          "width": 1900
+                        },
+                        "format": {
+                          "can_grow": false,
+                          "close_at_page_break": false,
+                          "condition_formulas": [],
+                          "css_class": null,
+                          "horizontal_alignment": "RightAlign",
+                          "hyperlink": null,
+                          "keep_together": true,
+                          "suppress": {
+                            "formula": null,
+                            "value": false
+                          },
+                          "text_rotation": "Rotate0",
+                          "tooltip_text": null,
+                          "vertical_alignment": "Top"
+                        },
+                        "kind": {
+                          "Field": {
+                            "data_source": "{invoice.amount_gross}",
+                            "font_color": {
+                              "color": {
+                                "a": 255,
+                                "b": 34,
+                                "g": 34,
+                                "r": 34
+                              },
+                              "condition_formulas": [],
+                              "font": {
+                                "bold": false,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Tahoma",
+                                "size_pt": 8.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 400
+                              }
+                            },
+                            "format": {
+                              "boolean": {
+                                "output_type": "TrueOrFalse"
+                              },
+                              "common": {
+                                "suppress_if_duplicated": false,
+                                "use_system_defaults": true
+                              },
+                              "currency_numeric": {
+                                "currency_position": "LeadingCurrencyInsideNegative",
+                                "currency_symbol": "NoSymbol",
+                                "currency_symbol_text": "$",
+                                "decimal_places": 2,
+                                "decimal_symbol": ".",
+                                "display_reverse_sign": false,
+                                "negative": "LeadingMinus",
+                                "one_currency_symbol_per_page": false,
+                                "rounding": "RoundToHundredth",
+                                "suppress_if_zero": false,
+                                "thousand_symbol": ",",
+                                "thousands_separator": true,
+                                "use_lead_zero": true,
+                                "zero_value_string": "<Default Format>"
+                              },
+                              "date": {
+                                "calendar": "GregorianCalendar",
+                                "date_order": "YearMonthDay",
+                                "day": "LeadingZeroNumericDay",
+                                "day_of_week": "NoDayOfWeek",
+                                "day_of_week_enclosure": "NotEnclosed",
+                                "day_of_week_position": "LeadingPosition",
+                                "day_of_week_separator": "",
+                                "era": "NoEra",
+                                "first_separator": "-",
+                                "month": "LeadingZeroNumericMonth",
+                                "prefix_separator": "",
+                                "second_separator": "-",
+                                "suffix_separator": "",
+                                "system_default": "UseWindowsShortDate",
+                                "year": "ShortYear"
+                              },
+                              "date_time": {
+                                "order": "DateThenTime",
+                                "separator": "  "
+                              },
+                              "numeric": {
+                                "currency_position": "LeadingCurrencyInsideNegative",
+                                "currency_symbol": "NoSymbol",
+                                "currency_symbol_text": "",
+                                "decimal_places": 2,
+                                "decimal_symbol": ".",
+                                "display_reverse_sign": false,
+                                "negative": "LeadingMinus",
+                                "one_currency_symbol_per_page": false,
+                                "rounding": "RoundToHundredth",
+                                "suppress_if_zero": false,
+                                "thousand_symbol": ",",
+                                "thousands_separator": true,
+                                "use_lead_zero": true,
+                                "zero_value_string": "<Default Format>"
+                              },
+                              "string": {
+                                "enable_word_wrap": true,
+                                "indent": {
+                                  "first_line_indent": 0,
+                                  "left_indent": 0,
+                                  "line_spacing": {
+                                    "raw": 65536,
+                                    "spacing_type": "Multiple"
+                                  },
+                                  "right_indent": 0
+                                },
+                                "max_number_of_lines": 0,
+                                "reading_order": "LeftToRight",
+                                "text_format": "StandardText"
+                              },
+                              "time": {
+                                "am_pm_format": "AMPMAfter",
+                                "am_string": " AM",
+                                "hour": "NumericHour",
+                                "hour_minute_separator": ":",
+                                "minute": "NumericMinute",
+                                "minute_second_separator": ":",
+                                "pm_string": " PM",
+                                "second": "NumericSecond",
+                                "time_base": "TwelveHour"
+                              }
+                            },
+                            "ref_kind": "DatabaseField",
+                            "summary_code": null,
+                            "value_type": "Unknown"
+                          }
+                        },
+                        "name": "SubAmount",
+                        "origin": {
+                          "index": 0
+                        }
+                      },
+                      {
+                        "border": {
+                          "background_color": null,
+                          "border_color": {
+                            "a": 255,
+                            "b": 0,
+                            "g": 0,
+                            "r": 0
+                          },
+                          "bottom": "NoLine",
+                          "condition_formulas": [],
+                          "has_drop_shadow": false,
+                          "left": "NoLine",
+                          "right": "NoLine",
+                          "tight_horizontal": false,
+                          "top": "NoLine"
+                        },
+                        "bounds": {
+                          "height": 200,
+                          "left": 3600,
+                          "top": 10,
+                          "width": 2067
+                        },
+                        "format": {
+                          "can_grow": false,
+                          "close_at_page_break": false,
+                          "condition_formulas": [],
+                          "css_class": null,
+                          "horizontal_alignment": "RightAlign",
+                          "hyperlink": null,
+                          "keep_together": true,
+                          "suppress": {
+                            "formula": null,
+                            "value": false
+                          },
+                          "text_rotation": "Rotate0",
+                          "tooltip_text": null,
+                          "vertical_alignment": "Top"
+                        },
+                        "kind": {
+                          "Field": {
+                            "data_source": "{@SharedAccumulate}",
+                            "font_color": {
+                              "color": {
+                                "a": 255,
+                                "b": 44,
+                                "g": 140,
+                                "r": 153
+                              },
+                              "condition_formulas": [],
+                              "font": {
+                                "bold": true,
+                                "charset": 0,
+                                "italic": false,
+                                "name": "Tahoma",
+                                "size_pt": 8.0,
+                                "strikethrough": false,
+                                "underline": false,
+                                "weight": 700
+                              }
+                            },
+                            "format": {
+                              "boolean": {
+                                "output_type": "TrueOrFalse"
+                              },
+                              "common": {
+                                "suppress_if_duplicated": false,
+                                "use_system_defaults": true
+                              },
+                              "currency_numeric": {
+                                "currency_position": "LeadingCurrencyInsideNegative",
+                                "currency_symbol": "NoSymbol",
+                                "currency_symbol_text": "$",
+                                "decimal_places": 2,
+                                "decimal_symbol": ".",
+                                "display_reverse_sign": false,
+                                "negative": "LeadingMinus",
+                                "one_currency_symbol_per_page": false,
+                                "rounding": "RoundToHundredth",
+                                "suppress_if_zero": false,
+                                "thousand_symbol": ",",
+                                "thousands_separator": true,
+                                "use_lead_zero": true,
+                                "zero_value_string": "<Default Format>"
+                              },
+                              "date": {
+                                "calendar": "GregorianCalendar",
+                                "date_order": "YearMonthDay",
+                                "day": "LeadingZeroNumericDay",
+                                "day_of_week": "NoDayOfWeek",
+                                "day_of_week_enclosure": "NotEnclosed",
+                                "day_of_week_position": "LeadingPosition",
+                                "day_of_week_separator": "",
+                                "era": "NoEra",
+                                "first_separator": "-",
+                                "month": "LeadingZeroNumericMonth",
+                                "prefix_separator": "",
+                                "second_separator": "-",
+                                "suffix_separator": "",
+                                "system_default": "UseWindowsShortDate",
+                                "year": "ShortYear"
+                              },
+                              "date_time": {
+                                "order": "DateThenTime",
+                                "separator": "  "
+                              },
+                              "numeric": {
+                                "currency_position": "LeadingCurrencyInsideNegative",
+                                "currency_symbol": "NoSymbol",
+                                "currency_symbol_text": "",
+                                "decimal_places": 2,
+                                "decimal_symbol": ".",
+                                "display_reverse_sign": false,
+                                "negative": "LeadingMinus",
+                                "one_currency_symbol_per_page": false,
+                                "rounding": "RoundToHundredth",
+                                "suppress_if_zero": false,
+                                "thousand_symbol": ",",
+                                "thousands_separator": true,
+                                "use_lead_zero": true,
+                                "zero_value_string": "<Default Format>"
+                              },
+                              "string": {
+                                "enable_word_wrap": true,
+                                "indent": {
+                                  "first_line_indent": 0,
+                                  "left_indent": 0,
+                                  "line_spacing": {
+                                    "raw": 65536,
+                                    "spacing_type": "Multiple"
+                                  },
+                                  "right_indent": 0
+                                },
+                                "max_number_of_lines": 0,
+                                "reading_order": "LeftToRight",
+                                "text_format": "StandardText"
+                              },
+                              "time": {
+                                "am_pm_format": "AMPMAfter",
+                                "am_string": " AM",
+                                "hour": "NumericHour",
+                                "hour_minute_separator": ":",
+                                "minute": "NumericMinute",
+                                "minute_second_separator": ":",
+                                "pm_string": " PM",
+                                "second": "NumericSecond",
+                                "time_base": "TwelveHour"
+                              }
+                            },
+                            "ref_kind": "Formula",
+                            "summary_code": null,
+                            "value_type": "Unknown"
+                          }
+                        },
+                        "name": "SubRunningAcc",
+                        "origin": {
+                          "index": 0
+                        }
+                      }
+                    ],
+                    "width": 0
+                  }
+                ]
+              },
+              {
+                "format": {
+                  "base": {
+                    "keep_together": false,
+                    "new_page_after": true,
+                    "new_page_before": false,
+                    "print_at_bottom_of_page": false,
+                    "reset_page_number_after": false,
+                    "suppress": false
+                  },
+                  "clamp_page_footer": false,
+                  "group": null,
+                  "hide_for_drill_down": false,
+                  "visible_records_per_page": 0
+                },
+                "group_level": null,
+                "kind": "ReportFooter",
+                "name": "ReportFooterArea1",
+                "sections": [
+                  {
+                    "condition_formulas": [],
+                    "format": {
+                      "background_color": null,
+                      "base": {
+                        "keep_together": true,
+                        "new_page_after": false,
+                        "new_page_before": false,
+                        "print_at_bottom_of_page": false,
+                        "reset_page_number_after": false,
+                        "suppress": false
+                      },
+                      "css_class": null,
+                      "page_orientation": null,
+                      "suppress_if_blank": false,
+                      "underlay_section": false
+                    },
+                    "height": 600,
+                    "kind": "ReportFooter",
+                    "name": "ReportFooterSection1",
+                    "objects": [],
+                    "width": 0
+                  },
+                  {
+                    "condition_formulas": [],
+                    "format": {
+                      "background_color": null,
+                      "base": {
+                        "keep_together": true,
+                        "new_page_after": false,
+                        "new_page_before": false,
+                        "print_at_bottom_of_page": false,
+                        "reset_page_number_after": false,
+                        "suppress": false
+                      },
+                      "css_class": null,
+                      "page_orientation": null,
+                      "suppress_if_blank": false,
+                      "underlay_section": false
+                    },
+                    "height": 600,
+                    "kind": "ReportFooter",
+                    "name": "ReportFooterSection2",
+                    "objects": [],
+                    "width": 0
+                  }
+                ]
+              }
+            ],
+            "kind": "ColumnarReport",
+            "style": "Standard"
+          },
+          "report_options": {
+            "convert_null_field_to_default": false,
+            "convert_other_nulls_to_default": false,
+            "enable_verify_on_every_print": true,
+            "initial_data_context": null,
+            "initial_report_part_name": null,
+            "save_data_with_report": false,
+            "save_preview_picture": true,
+            "save_summaries_with_report": true,
+            "use_dummy_data": false
+          },
+          "save_metadata": [
+            {
+              "key": "Saved Date",
+              "value": "2026.07.24 09:35:59 +0100"
+            },
+            {
+              "key": "Build Version",
+              "value": "13.0.40.5789"
+            },
+            {
+              "key": "Print Engine",
+              "value": "CRVBD"
+            },
+            {
+              "key": "OS",
+              "value": "Windows Vista"
+            },
+            {
+              "key": "Architecture",
+              "value": "x86"
+            },
+            {
+              "key": "Saved Date",
+              "value": "2026.07.24 07:37:50 -0000"
+            },
+            {
+              "key": "Build Version",
+              "value": "13.0.39.5601"
+            },
+            {
+              "key": "Print Engine",
+              "value": "CRPE"
+            },
+            {
+              "key": "OS",
+              "value": "Windows Vista"
+            },
+            {
+              "key": "Architecture",
+              "value": "x86"
+            }
+          ],
+          "saved_data": null,
+          "subreports": [],
+          "summary_info": {
+            "author": "",
+            "comments": "",
+            "created": null,
+            "keywords": "",
+            "last_printed": null,
+            "last_saved": null,
+            "last_saved_by": "",
+            "revision_number": "",
+            "save_with_preview": true,
+            "subject": "",
+            "title": ""
+          },
+          "version": 1
+        }
+      }
+    ],
+    "summary_info": {
+      "author": "",
+      "comments": "",
+      "created": 134293521425873263,
+      "keywords": "",
+      "last_printed": null,
+      "last_saved": 134293522707183658,
+      "last_saved_by": "",
+      "revision_number": "3",
+      "save_with_preview": true,
+      "subject": "",
+      "title": ""
+    },
+    "version": 1
+  }
+}

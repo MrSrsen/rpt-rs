@@ -1,8 +1,8 @@
 # GitHub language statistics (linguist).
 #
-# This is a Rust workspace, but the render backends' committed regression baselines are megabytes of
-# machine-generated HTML/SVG/JSON — enough to make linguist report the repository as an HTML project.
-# Marking them `linguist-generated` keeps them out of the language breakdown.
+# This is a Rust workspace, but the committed render/decode regression baselines are megabytes of
+# machine-generated JSON — enough to skew the language breakdown. Marking them
+# `linguist-generated` keeps them out of it.
 tests/fixtures/baselines/** linguist-generated=true
 tests/meridian/baselines/** linguist-generated=true
 crates/*/tests/golden/** linguist-generated=true
@@ -10,3 +10,7 @@ crates/*/tests/golden/** linguist-generated=true
 # The design mock-up is a hand-written reference page, not a Rust source file, and it is not something
 # the language stats should count either.
 tests/meridian/template/design-mockup/** linguist-documentation=true
+
+# Generated from the lock file by scripts/gen-third-party-notices.sh — reproduced upstream licence
+# texts, not prose anyone writes here.
+THIRD-PARTY-NOTICES.md linguist-generated=true

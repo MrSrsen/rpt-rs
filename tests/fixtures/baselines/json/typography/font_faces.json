@@ -1,5 +1,10 @@
 {
   "model": {
+    "authoring_version": {
+      "letter": 0,
+      "major": 14,
+      "minor": 0
+    },
     "data_definition": {
       "condition_formula_bodies": [],
       "custom_functions": [],
@@ -82,12 +87,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -186,6 +186,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -209,8 +210,7 @@
                   "name": "Txt1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
@@ -293,6 +293,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -316,8 +317,7 @@
                   "name": "Txt2",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
@@ -400,6 +400,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -423,8 +424,7 @@
                   "name": "Txt3",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
@@ -507,6 +507,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -530,8 +531,7 @@
                   "name": "Txt4",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
@@ -614,6 +614,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -637,8 +638,7 @@
                   "name": "Txt5",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
@@ -721,6 +721,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -744,8 +745,7 @@
                   "name": "Txt6",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
@@ -828,6 +828,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -851,8 +852,7 @@
                   "name": "Txt7",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
@@ -935,6 +935,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -958,8 +959,7 @@
                   "name": "Txt8",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
@@ -1042,6 +1042,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -1065,8 +1066,7 @@
                   "name": "Txt9",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
@@ -1149,6 +1149,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -1172,8 +1173,7 @@
                   "name": "Txt10",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
@@ -1256,6 +1256,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -1279,8 +1280,7 @@
                   "name": "Txt11",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
@@ -1363,6 +1363,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -1386,8 +1387,7 @@
                   "name": "Txt12",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
@@ -1470,6 +1470,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -1493,8 +1494,7 @@
                   "name": "Txt13",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
@@ -1577,6 +1577,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -1600,8 +1601,7 @@
                   "name": "Txt14",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
@@ -1684,6 +1684,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -1707,11 +1708,9 @@
                   "name": "Txt15",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 }
               ],
-              "section_code": 6000,
               "width": 0
             }
           ]
@@ -1738,12 +1737,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -1761,7 +1755,6 @@
               "kind": "PageHeader",
               "name": "PageHeaderSection1",
               "objects": [],
-              "section_code": 12000,
               "width": 0
             }
           ]
@@ -1788,12 +1781,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -1811,7 +1799,6 @@
               "kind": "Detail",
               "name": "DetailSection1",
               "objects": [],
-              "section_code": 24000,
               "width": 0
             }
           ]
@@ -1838,12 +1825,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -1861,7 +1843,6 @@
               "kind": "ReportFooter",
               "name": "ReportFooterSection1",
               "objects": [],
-              "section_code": 48000,
               "width": 0
             }
           ]
@@ -1888,12 +1869,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -1911,12 +1887,13 @@
               "kind": "PageFooter",
               "name": "PageFooterSection1",
               "objects": [],
-              "section_code": 42000,
               "width": 0
             }
           ]
         }
-      ]
+      ],
+      "kind": "ColumnarReport",
+      "style": "Standard"
     },
     "report_options": {
       "convert_null_field_to_default": false,
@@ -1956,7 +1933,10 @@
     "summary_info": {
       "author": "",
       "comments": "",
+      "created": 134294534514467554,
       "keywords": "",
+      "last_printed": null,
+      "last_saved": 134294534516497551,
       "last_saved_by": "",
       "revision_number": "1",
       "save_with_preview": false,

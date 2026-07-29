@@ -1,5 +1,10 @@
 {
   "model": {
+    "authoring_version": {
+      "letter": 0,
+      "major": 12,
+      "minor": 0
+    },
     "data_definition": {
       "condition_formula_bodies": [],
       "custom_functions": [],
@@ -108,7 +113,6 @@
               "default_value_display_type": "DescriptionAndValue",
               "default_value_sort_order": "NoSort",
               "default_values": [],
-              "discrete_or_range_kind": "RangeValue",
               "dynamic_lov": null,
               "edit_mask": null,
               "editable_on_panel": true,
@@ -905,12 +909,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -930,12 +929,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1009,6 +1003,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": true,
@@ -1032,11 +1027,9 @@
                   "name": "Text6",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 }
               ],
-              "section_code": 6000,
               "width": 0
             }
           ]
@@ -1063,12 +1056,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -1088,12 +1076,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1160,17 +1143,11 @@
                   "name": "Text1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1237,17 +1214,11 @@
                   "name": "Text2",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1314,17 +1285,11 @@
                   "name": "Text3",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1391,17 +1356,11 @@
                   "name": "Text4",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1468,17 +1427,11 @@
                   "name": "Text5",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1545,11 +1498,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -1563,11 +1541,15 @@
                           "currency_symbol_text": "$",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1585,24 +1567,28 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Special",
                       "summary_code": null,
-                      "value_type": "Date"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "PrintDate1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 }
               ],
-              "section_code": 12000,
               "width": 0
             }
           ]
@@ -1629,12 +1615,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -1654,12 +1635,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1726,11 +1702,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -1744,11 +1745,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1766,30 +1771,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "DatabaseField",
                       "summary_code": null,
-                      "value_type": "String"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "CustomerName1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1856,11 +1861,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -1874,11 +1904,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1896,30 +1930,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "DatabaseField",
                       "summary_code": null,
-                      "value_type": "String"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "LastName1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1986,11 +2020,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "YearMonthDay",
                           "day": "LeadingZeroNumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
                           "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "ShortYear"
                         },
@@ -2004,11 +2063,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 0,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToUnit",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2026,30 +2089,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "DatabaseField",
                       "summary_code": null,
-                      "value_type": "Int32s"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "OrderID1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2116,11 +2179,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": false
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "YearMonthDay",
                           "day": "LeadingZeroNumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
                           "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "ShortYear"
                         },
@@ -2129,16 +2217,20 @@
                           "separator": "  "
                         },
                         "numeric": {
-                          "currency_position": "LeadingCurrencyOutsideNegative",
-                          "currency_symbol": "FloatingSymbol",
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
                           "currency_symbol_text": "$",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
-                          "negative": "Bracketed",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2156,30 +2248,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "DatabaseField",
                       "summary_code": null,
-                      "value_type": "Currency"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "OrderAmount1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2246,11 +2338,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -2264,11 +2381,15 @@
                           "currency_symbol_text": "$",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2286,24 +2407,28 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "DatabaseField",
                       "summary_code": null,
-                      "value_type": "DateTime"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "OrderDate1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 }
               ],
-              "section_code": 24000,
               "width": 0
             }
           ]
@@ -2330,12 +2455,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -2353,7 +2473,6 @@
               "kind": "ReportFooter",
               "name": "ReportFooterSection1",
               "objects": [],
-              "section_code": 48000,
               "width": 0
             }
           ]
@@ -2380,12 +2499,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -2405,12 +2519,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2477,11 +2586,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "YearMonthDay",
                           "day": "LeadingZeroNumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
                           "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "ShortYear"
                         },
@@ -2495,11 +2629,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 0,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToUnit",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2517,29 +2655,35 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Special",
                       "summary_code": null,
-                      "value_type": "Int32u"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "PageNumber1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 42000
+                  }
                 }
               ],
-              "section_code": 42000,
               "width": 0
             }
           ]
         }
-      ]
+      ],
+      "kind": "ColumnarReport",
+      "style": "Standard"
     },
     "report_options": {
       "convert_null_field_to_default": false,
@@ -2603,189 +2747,189 @@
           "Piccolo",
           "Davolio",
           "1012",
-          "1025910",
+          "10259.1",
           "2451881"
         ],
         [
           "Bikes for Tykes",
           "Davolio",
           "1646",
-          "1155300",
+          "11553",
           "2452052"
         ],
         [
           "Trail Blazer's Place",
           "Davolio",
           "1032",
-          "1232310",
+          "12323.1",
           "2451886"
         ],
         [
           "Tek Bikes",
           "Davolio",
           "2627",
-          "1038496",
+          "10384.96",
           "2452296"
         ],
         [
           "The Biker's Path",
           "Davolio",
           "2575",
-          "1146542",
+          "11465.42",
           "2452280"
         ],
         [
           "Cyclopath",
           "Davolio",
           "1010",
-          "1487230",
+          "14872.3",
           "2451881"
         ],
         [
           "Wheels and Stuff",
           "Davolio",
           "1541",
-          "1186720",
+          "11867.2",
           "2452017"
         ],
         [
           "Pedal Pusher Bikes Inc.",
           "Leverling",
           "1177",
-          "1088679",
+          "10886.79",
           "2451924"
         ],
         [
           "Crank Components",
           "Leverling",
           "1659",
-          "1060518",
+          "10605.18",
           "2452058"
         ],
         [
           "Rockshocks for Jocks",
           "Peacock",
           "1652",
-          "1403910",
+          "14039.1",
           "2452055"
         ],
         [
           "The Great Bike Shop",
           "Peacock",
           "1666",
-          "1066275",
+          "10662.75",
           "2452061"
         ],
         [
           "Feel Great Bikes Inc.",
           "Peacock",
           "2134",
-          "1131660",
+          "11316.6",
           "2452175"
         ],
         [
           "Crank Components",
           "Peacock",
           "1718",
-          "1549232",
+          "15492.32",
           "2452075"
         ],
         [
           "Backpedal Cycle Shop",
           "Peacock",
           "2358",
-          "1079895",
+          "10798.95",
           "2452229"
         ],
         [
           "Canal City Cycle",
           "Peacock",
           "2536",
-          "1062923",
+          "10629.23",
           "2452268"
         ],
         [
           "Rowdy Rims Company",
           "Peacock",
           "2726",
-          "1109925",
+          "11099.25",
           "2452320"
         ],
         [
           "Road Runners Paradise",
           "Suyama",
           "1341",
-          "1162152",
+          "11621.52",
           "2451963"
         ],
         [
           "The Great Bike Shop",
           "Suyama",
           "2638",
-          "1291380",
+          "12913.8",
           "2452300"
         ],
         [
           "Rocky Roadsters",
           "Suyama",
           "1892",
-          "1730593",
+          "17305.93",
           "2452114"
         ],
         [
           "Folk och fä HB",
           "King",
           "1391",
-          "1474115",
+          "14741.15",
           "2451970"
         ],
         [
           "C-Gate Cycle Shoppe",
           "King",
           "1878",
-          "1175940",
+          "11759.4",
           "2452111"
         ],
         [
           "Psycho-Cycle",
           "King",
           "2951",
-          "1108141",
+          "11081.41",
           "2452383"
         ],
         [
           "Hooked on Helmets",
           "King",
           "2665",
-          "1115600",
+          "11156",
           "2452306"
         ],
         [
           "Blazing Bikes",
           "King",
           "2802",
-          "1087746",
+          "10877.46",
           "2452341"
         ],
         [
           "Extreme Cycling",
           "Dodsworth",
           "1406",
-          "1047241",
+          "10472.41",
           "2451975"
         ],
         [
           "Crazy Wheels",
           "Dodsworth",
           "1912",
-          "1085917",
+          "10859.17",
           "2452119"
         ],
         [
           "Insane Cycle",
           "Dodsworth",
           "1833",
-          "1765881",
+          "17658.81",
           "2452097"
         ]
       ]
@@ -2794,7 +2938,10 @@
     "summary_info": {
       "author": "",
       "comments": "",
+      "created": 129931826556670000,
       "keywords": "",
+      "last_printed": null,
+      "last_saved": 129931841231350000,
       "last_saved_by": "",
       "revision_number": "2",
       "save_with_preview": true,

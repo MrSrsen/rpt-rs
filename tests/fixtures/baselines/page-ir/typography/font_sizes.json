@@ -1,3 +1,23 @@
+// document
+{
+  "sections": {
+    "DetailSection1": {
+      "band": "Detail"
+    },
+    "PageFooterSection1": {
+      "band": "PageFooter"
+    },
+    "PageHeaderSection1": {
+      "band": "PageHeader"
+    },
+    "ReportFooterSection1": {
+      "band": "ReportFooter"
+    },
+    "ReportHeaderSection1": {
+      "band": "ReportHeader"
+    }
+  }
+}
 // page 1
 {
   "number": 1,
@@ -10,31 +30,6 @@
     "y": 720
   },
   "ops": [
-    {
-      "op": "Rect",
-      "bounds": {
-        "left": 0,
-        "top": 0,
-        "width": 12240,
-        "height": 35640
-      },
-      "fill": {
-        "Solid": {
-          "a": 255,
-          "r": 255,
-          "g": 255,
-          "b": 255
-        }
-      },
-      "stroke": null,
-      "corner_radius": 0,
-      "source": {
-        "section": "ReportHeaderSection1",
-        "object_name": null,
-        "kind": "Section",
-        "instance": null
-      }
-    },
     {
       "op": "Rect",
       "bounds": {
@@ -1494,81 +1489,6 @@
         "object_name": "Txt17",
         "kind": "Text",
         "instance": 16
-      }
-    },
-    {
-      "op": "Rect",
-      "bounds": {
-        "left": 0,
-        "top": 35640,
-        "width": 12240,
-        "height": 600
-      },
-      "fill": {
-        "Solid": {
-          "a": 255,
-          "r": 255,
-          "g": 255,
-          "b": 255
-        }
-      },
-      "stroke": null,
-      "corner_radius": 0,
-      "source": {
-        "section": "PageHeaderSection1",
-        "object_name": null,
-        "kind": "Section",
-        "instance": null
-      }
-    },
-    {
-      "op": "Rect",
-      "bounds": {
-        "left": 0,
-        "top": 36240,
-        "width": 12240,
-        "height": 600
-      },
-      "fill": {
-        "Solid": {
-          "a": 255,
-          "r": 255,
-          "g": 255,
-          "b": 255
-        }
-      },
-      "stroke": null,
-      "corner_radius": 0,
-      "source": {
-        "section": "ReportFooterSection1",
-        "object_name": null,
-        "kind": "Section",
-        "instance": null
-      }
-    },
-    {
-      "op": "Rect",
-      "bounds": {
-        "left": 0,
-        "top": 37040,
-        "width": 12240,
-        "height": 600
-      },
-      "fill": {
-        "Solid": {
-          "a": 255,
-          "r": 255,
-          "g": 255,
-          "b": 255
-        }
-      },
-      "stroke": null,
-      "corner_radius": 0,
-      "source": {
-        "section": "PageFooterSection1",
-        "object_name": null,
-        "kind": "Section",
-        "instance": null
       }
     }
   ]

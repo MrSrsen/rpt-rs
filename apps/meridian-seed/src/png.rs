@@ -1,17 +1,17 @@
 //! Minimal deterministic PNG encoder for placeholder blob images.
 //!
-//! Emits a valid 8-bit RGB PNG of a solid colour using a single *stored*
+//! Emits a valid 8-bit RGB PNG of a solid color using a single *stored*
 //! (uncompressed) DEFLATE block, so no compression library is needed and the
 //! bytes are identical on every host. CRC-32 and Adler-32 are computed here.
 //! The output is a real, decodable PNG — just enough to exercise Picture/Blob
 //! rendering — not a compact one.
 
-/// A tiny solid-colour RGB PNG of side `n` px in the given colour.
+/// A tiny solid-color RGB PNG of side `n` px in the given color.
 pub(crate) fn solid_png(n: u32, rgb: [u8; 3]) -> Vec<u8> {
     let mut out = Vec::new();
     out.extend_from_slice(&[0x89, b'P', b'N', b'G', 0x0d, 0x0a, 0x1a, 0x0a]);
 
-    // IHDR: width, height, bit depth 8, colour type 2 (RGB), no interlace.
+    // IHDR: width, height, bit depth 8, color type 2 (RGB), no interlace.
     let mut ihdr = Vec::with_capacity(13);
     ihdr.extend_from_slice(&n.to_be_bytes());
     ihdr.extend_from_slice(&n.to_be_bytes());

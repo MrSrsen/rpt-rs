@@ -17,13 +17,13 @@ path = "src/main.rs"
 
 [dependencies]
 # `serde` enables the model's serde derives, used by the `json-dump` export.
-rpt = { workspace = true, features = ["serde"] }
+rpt-reader = { workspace = true, features = ["serde"] }
 rpt-query.workspace = true
 rpt-kdl.workspace = true
 rpt-json.workspace = true
 # The formula checker (`rpt formulas`) parses and validates formula bodies. The engine is standalone —
 # it carries no `.rpt`/container dependency — so this is a leaf addition.
-crystal-formula = { workspace = true }
+rpt-formula = { workspace = true }
 serde.workspace = true
 serde_json.workspace = true
 thiserror = { workspace = true }

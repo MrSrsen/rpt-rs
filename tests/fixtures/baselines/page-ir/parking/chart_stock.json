@@ -1,0 +1,1790 @@
+// document
+{
+  "sections": {
+    "Section1": {
+      "band": "ReportHeader"
+    },
+    "Section2": {
+      "band": "PageHeader"
+    },
+    "Section3": {
+      "band": "Detail"
+    },
+    "Section4": {
+      "band": "ReportFooter"
+    },
+    "Section5": {
+      "band": "PageFooter"
+    }
+  }
+}
+// page 1
+{
+  "number": 1,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": [
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 8279,
+        "top": 2205,
+        "width": 1341,
+        "height": 360
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 255,
+          "g": 255,
+          "b": 255
+        }
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 85,
+          "g": 85,
+          "b": 85
+        },
+        "width": 15,
+        "style": "Single"
+      },
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 8399,
+        "top": 2325,
+        "width": 135,
+        "height": 120
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8616,
+        "top": 2307,
+        "width": 804,
+        "height": 155
+      },
+      "text": "Min of total",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2535,
+        "top": 255,
+        "width": 5624,
+        "height": 360
+      },
+      "text": "Order total by month",
+      "font": {
+        "family": "Arial",
+        "size_pt": 13.5,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2535,
+        "top": 3777,
+        "width": 643,
+        "height": 220
+      },
+      "text": "0",
+      "font": {
+        "family": "Arial",
+        "size_pt": 7.5,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 3238,
+        "y": 3347
+      },
+      "to": {
+        "x": 8099,
+        "y": 3347
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2535,
+        "top": 3237,
+        "width": 643,
+        "height": 220
+      },
+      "text": "40",
+      "font": {
+        "family": "Arial",
+        "size_pt": 7.5,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 3238,
+        "y": 2807
+      },
+      "to": {
+        "x": 8099,
+        "y": 2807
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2535,
+        "top": 2697,
+        "width": 643,
+        "height": 220
+      },
+      "text": "80",
+      "font": {
+        "family": "Arial",
+        "size_pt": 7.5,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 3238,
+        "y": 2266
+      },
+      "to": {
+        "x": 8099,
+        "y": 2266
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2535,
+        "top": 2156,
+        "width": 643,
+        "height": 220
+      },
+      "text": "120",
+      "font": {
+        "family": "Arial",
+        "size_pt": 7.5,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 3238,
+        "y": 1726
+      },
+      "to": {
+        "x": 8099,
+        "y": 1726
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2535,
+        "top": 1616,
+        "width": 643,
+        "height": 220
+      },
+      "text": "160",
+      "font": {
+        "family": "Arial",
+        "size_pt": 7.5,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 3238,
+        "y": 1186
+      },
+      "to": {
+        "x": 8099,
+        "y": 1186
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2535,
+        "top": 1076,
+        "width": 643,
+        "height": 220
+      },
+      "text": "200",
+      "font": {
+        "family": "Arial",
+        "size_pt": 7.5,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 3238,
+        "y": 645
+      },
+      "to": {
+        "x": 8099,
+        "y": 645
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2535,
+        "top": 535,
+        "width": 643,
+        "height": 220
+      },
+      "text": "240",
+      "font": {
+        "family": "Arial",
+        "size_pt": 7.5,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 3238,
+        "y": 645
+      },
+      "to": {
+        "x": 3238,
+        "y": 3887
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 85,
+          "g": 85,
+          "b": 85
+        },
+        "width": 15,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 3238,
+        "y": 3887
+      },
+      "to": {
+        "x": 8099,
+        "y": 3887
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 85,
+          "g": 85,
+          "b": 85
+        },
+        "width": 15,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 3319,
+        "top": 2515,
+        "width": 32,
+        "height": 392
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2862,
+        "top": 4390,
+        "width": 670,
+        "height": 155
+      },
+      "text": "12/31/2023",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 45.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 3513,
+        "top": 2253,
+        "width": 32,
+        "height": 1
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 3707,
+        "top": 3397,
+        "width": 32,
+        "height": 1
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3250,
+        "top": 4390,
+        "width": 670,
+        "height": 155
+      },
+      "text": "1/14/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 45.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 3901,
+        "top": 1436,
+        "width": 32,
+        "height": 1405
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 4095,
+        "top": 3626,
+        "width": 32,
+        "height": 1
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3638,
+        "top": 4390,
+        "width": 670,
+        "height": 155
+      },
+      "text": "2/4/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 45.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 4289,
+        "top": 2711,
+        "width": 32,
+        "height": 1
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 4483,
+        "top": 3397,
+        "width": 32,
+        "height": 1
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 4026,
+        "top": 4390,
+        "width": 670,
+        "height": 155
+      },
+      "text": "2/18/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 45.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 4677,
+        "top": 945,
+        "width": 32,
+        "height": 2027
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 4871,
+        "top": 3495,
+        "width": 32,
+        "height": 1
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 4414,
+        "top": 4390,
+        "width": 670,
+        "height": 155
+      },
+      "text": "3/3/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 45.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 5065,
+        "top": 2253,
+        "width": 32,
+        "height": 1
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 5259,
+        "top": 2907,
+        "width": 32,
+        "height": 1
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 4802,
+        "top": 4390,
+        "width": 670,
+        "height": 155
+      },
+      "text": "3/17/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 45.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 5453,
+        "top": 2841,
+        "width": 32,
+        "height": 1
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 5647,
+        "top": 1436,
+        "width": 32,
+        "height": 1
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 5190,
+        "top": 4390,
+        "width": 670,
+        "height": 155
+      },
+      "text": "3/31/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 45.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 5841,
+        "top": 3626,
+        "width": 32,
+        "height": 1
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 6035,
+        "top": 2711,
+        "width": 32,
+        "height": 1
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 5578,
+        "top": 4390,
+        "width": 670,
+        "height": 155
+      },
+      "text": "4/14/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 45.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 6229,
+        "top": 2972,
+        "width": 32,
+        "height": 425
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 6423,
+        "top": 945,
+        "width": 32,
+        "height": 1
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 5966,
+        "top": 4390,
+        "width": 670,
+        "height": 155
+      },
+      "text": "4/28/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 45.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 6617,
+        "top": 3495,
+        "width": 32,
+        "height": 1
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 6811,
+        "top": 2253,
+        "width": 32,
+        "height": 1
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 6354,
+        "top": 4390,
+        "width": 670,
+        "height": 155
+      },
+      "text": "5/12/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 45.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 7005,
+        "top": 2907,
+        "width": 32,
+        "height": 1
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 7199,
+        "top": 2841,
+        "width": 32,
+        "height": 1
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 6742,
+        "top": 4390,
+        "width": 670,
+        "height": 155
+      },
+      "text": "5/26/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 45.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 7393,
+        "top": 1436,
+        "width": 32,
+        "height": 1
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 7587,
+        "top": 3626,
+        "width": 32,
+        "height": 1
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7130,
+        "top": 4390,
+        "width": 670,
+        "height": 155
+      },
+      "text": "6/9/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 45.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 7781,
+        "top": 2711,
+        "width": 32,
+        "height": 1
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 7975,
+        "top": 2972,
+        "width": 32,
+        "height": 425
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7518,
+        "top": 4390,
+        "width": 670,
+        "height": 155
+      },
+      "text": "6/23/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 45.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    }
+  ]
+}
+// page 2
+{
+  "number": 2,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 3
+{
+  "number": 3,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 4
+{
+  "number": 4,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 5
+{
+  "number": 5,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 6
+{
+  "number": 6,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 7
+{
+  "number": 7,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 8
+{
+  "number": 8,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 9
+{
+  "number": 9,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 10
+{
+  "number": 10,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 11
+{
+  "number": 11,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}

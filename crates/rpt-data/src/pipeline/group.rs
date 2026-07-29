@@ -6,7 +6,7 @@ use crate::diagnostics::{DiagnosticKind, DiagnosticSink, EvalDiagnostic};
 use crate::source::Row;
 use crate::value_order::{compare_values, value_key};
 use crate::GroupInstance;
-use crystal_formula::eval::{Date, Time, Value};
+use rpt_formula::eval::{Date, Time, Value};
 use rpt_model::{Group, GroupCondition, SortDirection};
 
 use super::aggregate::{summarize, SummaryDef};
@@ -30,8 +30,11 @@ pub(super) fn build_groups(
         // rows), not a value bucket, so it takes a dedicated sequential path rather than the
         // value-partition one below.
         if is_boolean_condition(cond) {
-            return build_boolean_groups(
-                rows, groups, level, group, cond, summaries, formulas, params, sink,
+            return arrange_hierarchy(
+                build_boolean_groups(
+                    rows, groups, level, group, cond, summaries, formulas, params, sink,
+                ),
+                group,
             );
         }
         // An unrecognized ordinal is neither a value-bucketing period nor a boolean condition, so
@@ -109,26 +112,122 @@ pub(super) fn build_groups(
                 level,
                 condition_field: group.condition_field.clone(),
                 key,
+                date_condition: group.date_condition,
                 summaries: group_summaries,
                 subgroups,
                 details,
+                hierarchy_children: Vec::new(),
             }
         })
         .collect();
-    apply_group_topn(instances, group, level, summaries, formulas, params, sink)
+    arrange_hierarchy(
+        apply_group_topn(instances, group, level, summaries, formulas, params, sink),
+        group,
+    )
+}
+
+/// Rearrange a hierarchically grouped level's flat instance list into the parent/child tree Crystal
+/// walks when *Hierarchical Group Sorting* is on, leaving any other group untouched.
+///
+/// Each instance's `InstanceIDField` value identifies it; its `ParentIDField` value names its parent.
+/// The result is the depth-first pre-order walk from the roots — the instances whose parent value is
+/// null or matches no instance — with siblings keeping the order the grouping stage already put them
+/// in (the group's own sort). Children become the parent's
+/// [`hierarchy_children`](crate::GroupInstance::hierarchy_children), so the engine's nesting of the
+/// group's header and footer bands around a whole subtree is reproduced.
+///
+/// Malformed hierarchies are laid out rather than rejected: a self-parenting row and a row whose
+/// parent is absent both become roots, and an instance reachable only from inside a parent cycle is
+/// emitted as a root after the well-formed trees. Every instance therefore appears exactly once and
+/// the walk always terminates — losing or duplicating one would silently change the record counts the
+/// report prints.
+fn arrange_hierarchy(instances: Vec<GroupInstance>, group: &Group) -> Vec<GroupInstance> {
+    let Some(opts) = group.hierarchical_options.as_ref().filter(|o| o.enabled) else {
+        return instances;
+    };
+    let n = instances.len();
+
+    // Index each instance by its instance-ID value, then hang each instance off the one its
+    // parent-ID names. First occurrence wins a duplicated instance ID.
+    let mut index: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+    for (i, g) in instances.iter().enumerate() {
+        index
+            .entry(value_key(&hierarchy_key(g, &opts.instance_id_field, true)))
+            .or_insert(i);
+    }
+    let mut children: Vec<Vec<usize>> = vec![Vec::new(); n];
+    let mut roots: Vec<usize> = Vec::new();
+    for (i, g) in instances.iter().enumerate() {
+        let parent = hierarchy_key(g, &opts.parent_id_field, false);
+        match index.get(&value_key(&parent)) {
+            Some(&p) if !matches!(parent, Value::Null) && p != i => children[p].push(i),
+            _ => roots.push(i),
+        }
+    }
+
+    let mut slots: Vec<Option<GroupInstance>> = instances.into_iter().map(Some).collect();
+    let mut visited = vec![false; n];
+    let mut out = Vec::with_capacity(roots.len());
+    for &r in &roots {
+        out.push(take_subtree(r, &mut slots, &children, &mut visited));
+    }
+    // Anything still unvisited sits in a parent cycle no root leads into; emit it as a root.
+    for i in 0..n {
+        if !visited[i] {
+            out.push(take_subtree(i, &mut slots, &children, &mut visited));
+        }
+    }
+    out
+}
+
+/// Move instance `i` and, recursively, its not-yet-emitted children out of `slots`. Marking visited
+/// on entry is what stops a parent cycle from recursing forever.
+fn take_subtree(
+    i: usize,
+    slots: &mut [Option<GroupInstance>],
+    children: &[Vec<usize>],
+    visited: &mut [bool],
+) -> GroupInstance {
+    visited[i] = true;
+    let mut inst = slots[i]
+        .take()
+        .expect("an instance is taken once: visited is set before recursing");
+    for &c in &children[i] {
+        if !visited[c] {
+            inst.hierarchy_children
+                .push(take_subtree(c, slots, children, visited));
+        }
+    }
+    inst
+}
+
+/// The value of a hierarchy ID field for a group instance, read from its first record. `fall_back`
+/// uses the group's own key when the field is absent from the row — the instance ID is normally the
+/// group's condition field, so the key already holds it.
+fn hierarchy_key(g: &GroupInstance, field: &str, fall_back: bool) -> Value {
+    match first_row(g).and_then(|r| r.get(field)) {
+        Some(v) => v.clone(),
+        None if fall_back => g.key.clone(),
+        None => Value::Null,
+    }
+}
+
+/// The first record of a group instance, looked up through its subgroups when it is not a leaf.
+fn first_row(g: &GroupInstance) -> Option<&crate::source::Row> {
+    g.details
+        .first()
+        .or_else(|| g.subgroups.iter().find_map(first_row))
 }
 
 /// Group `rows` for a **boolean** group condition — an order-sensitive transition / look-ahead break
 /// over the ordered rows (see [`boolean_starts_new_group`]), unlike the value-partition path. Rows
 /// keep their incoming order (the record sort has already run); runs are consecutive, so the group
 /// instances are emitted in sequence order and are NOT re-sorted by key. Each run's `key` is the
-/// boolean value of its first row (its `GroupName` operand — provisional, see the module note).
-/// A null / non-boolean condition value counts as `false`.
+/// boolean value of its first row (its `GroupName` operand). A null / non-boolean condition value
+/// counts as `false`.
 ///
-/// UNVERIFIED against the engine: a boolean group condition is unobserved — it is reachable only
-/// via the raw RAS `ISCRBooleanGroupOptions.BooleanCondition` — so
-/// the six conditions are implemented to their documented SDK semantics and unit-tested, but the exact
-/// engine partition and the GroupName/summary operand remain provisional.
+/// The six conditions follow the documented SDK semantics (`ISCRBooleanGroupOptions.BooleanCondition`);
+/// the exact engine partition and the GroupName/summary operand are conjectural.
 #[allow(clippy::too_many_arguments)]
 fn build_boolean_groups(
     rows: &[Row],
@@ -182,9 +281,11 @@ fn build_boolean_groups(
                 level,
                 condition_field: group.condition_field.clone(),
                 key,
+                date_condition: Some(cond),
                 summaries: group_summaries,
                 subgroups,
                 details,
+                hierarchy_children: Vec::new(),
             }
         })
         .collect()
@@ -214,10 +315,10 @@ fn bool_of(v: Value) -> bool {
 ///   group. This mirror of `NextIs*` is what keeps the two families distinct (they would otherwise be
 ///   the same partition for every input).
 ///
-/// UNVERIFIED against the engine (a boolean group condition is unobserved). The
-/// transition family is high-confidence (the "change to" wording is unambiguous); the open-vs-close
-/// mirror for `Every*`/`NextIs*` is the best-supported inference (they must differ, and this is the
-/// boundary-side that distinguishes them); the exact phrase→side mapping stays provisional.
+/// The transition family (`ToYes`/`ToNo`) is high-confidence: the "change to" wording is unambiguous.
+/// The open-vs-close mirror for `Every*`/`NextIs*` is the best-supported inference — they must differ,
+/// and this is the boundary-side that distinguishes them — but the exact phrase→side mapping is
+/// conjectural.
 fn boolean_starts_new_group(cond: GroupCondition, bits: &[bool], i: usize) -> bool {
     use GroupCondition::*;
     let prev = bits[i - 1];
@@ -384,7 +485,7 @@ fn group_key(
 }
 
 pub(super) fn ctx_formula(ctx: &DataContext, name: &str) -> Value {
-    use crystal_formula::eval::EvalContext;
-    ctx.resolve(crystal_formula::RefKind::Formula, name)
+    use rpt_formula::eval::EvalContext;
+    ctx.resolve(rpt_formula::RefKind::Formula, name)
         .unwrap_or(Value::Null)
 }

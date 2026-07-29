@@ -56,7 +56,7 @@ fn running_total_global_accumulates_across_printed_rows() {
         .collect();
     assert_eq!(
         totals,
-        vec!["10.00", "30.00", "35.00"],
+        vec![" 10.00", " 30.00", " 35.00"],
         "Global running total accumulates in print order"
     );
 }
@@ -72,20 +72,21 @@ fn formula_field_honours_stored_currency_format() {
         FieldRefKind, Formula, FormulaField, NumericFieldFormat,
     };
 
-    // Field object bound to `{@Amt}`; its own `value_type` stays `Unknown`, as `rpt` decodes it for
-    // formula objects — the effective type comes from the formula definition. The `data_source` is
-    // brace-wrapped exactly as `rpt` decodes it (the sigil resolution keys off the leading `{`).
+    // Field object bound to `{@Amt}`; its own `value_type` stays `Unknown`, as `rpt-reader` decodes it
+    // for formula objects — the effective type comes from the formula definition. The `data_source` is
+    // brace-wrapped exactly as `rpt-reader` decodes it (the sigil resolution keys off the leading `{`).
     let mut field = FieldObject::default();
     field.data_source = "{@Amt}".into();
     field.ref_kind = FieldRefKind::Formula;
     field.value_type = FieldValueType::Unknown;
-    // An explicit (non-system-default) currency leaf: a `$` symbol and 2 decimal places.
+    // An explicit (non-system-default) currency leaf: a `$` symbol and 2 decimal places. A field
+    // stores two numeric slots and a Currency-valued field is formatted by the currency one.
     field.format = Some(FieldFormat {
         common: CommonFieldFormat {
             use_system_defaults: false,
             ..Default::default()
         },
-        numeric: NumericFieldFormat {
+        currency_numeric: NumericFieldFormat {
             decimal_places: 2,
             currency_symbol: CurrencySymbolFormat::FixedSymbol,
             currency_symbol_text: "$".into(),
@@ -214,7 +215,7 @@ fn per_record_running_total_accumulates_and_resets_on_group() {
         .collect();
     // Groups ascending: East [5,15] then West [10,20]. The running sum resets on each group change:
     // East → 5, 20; West → 10, 30.
-    assert_eq!(totals, vec!["5.00", "20.00", "10.00", "30.00"]);
+    assert_eq!(totals, vec![" 5.00", " 20.00", " 10.00", " 30.00"]);
 }
 
 /// A `WhileReadingRecords` Global accumulator fires in **read order**, not print order:
@@ -282,7 +283,7 @@ fn while_reading_formula_accumulates_in_read_order_not_print_order() {
         .collect();
     // Read order 3,1,2 → running sums 3,4,6 recorded per record. Printed in sorted order 1,2,3, each
     // record shows its read-order value: n=1→4, n=2→6, n=3→3.
-    assert_eq!(vals, vec!["4.00", "6.00", "3.00"]);
+    assert_eq!(vals, vec![" 4.00", " 6.00", " 3.00"]);
 }
 
 #[test]
@@ -344,6 +345,90 @@ fn conditional_suppress_and_font_color() {
         },
         "conditional font Color applied"
     );
+}
+
+#[test]
+fn conditional_font_color_varies_per_record() {
+    use rpt_model::Color;
+
+    const RED: Color = Color {
+        a: 255,
+        r: 255,
+        g: 0,
+        b: 0,
+    };
+    const BLACK: Color = Color {
+        a: 255,
+        r: 0,
+        g: 0,
+        b: 0,
+    };
+    // The static color is a third color neither branch returns, so an implementation that ignored
+    // the condition and drew the stored color would fail as loudly as one that pinned a branch.
+    const BLUE: Color = Color {
+        a: 255,
+        r: 0,
+        g: 0,
+        b: 255,
+    };
+
+    // One field, one condition, three rows straddling the threshold: the condition is per-record,
+    // so the SAME object must draw red, black and red again down the band.
+    let mut amount = db_field_object("Amount", "{t.amt}", 0);
+    if let ReportObjectKind::Field(f) = &mut amount.kind {
+        f.value_type = FieldValueType::Number;
+        f.font_color.color = BLUE;
+        f.font_color.condition_formulas = vec![(
+            "Font_Color".into(),
+            "If {t.amt} < 1000 Then crRed Else crBlack".into(),
+        )];
+    }
+
+    let mut report = Report::default();
+    report.print_options.content_width = Twips(12240);
+    report.print_options.content_height = Twips(15840);
+    report.report_definition.areas = vec![area(
+        AreaSectionKind::Detail,
+        vec![section(
+            AreaSectionKind::Detail,
+            "Details",
+            300,
+            vec![amount],
+        )],
+    )];
+
+    let saved = saved_data(
+        &[("t.amt", FieldValueType::Number)],
+        &[&["500"], &["5000"], &["12"]],
+    );
+    let ds = build_dataset(&SavedDataSource::new(&saved), &report.data_definition);
+    let formulas = rpt_data::compile_formulas(&report.data_definition);
+    let doc = layout(&report, &ds, &formulas);
+
+    let drawn: Vec<(String, Color)> = doc
+        .pages
+        .iter()
+        .flat_map(|p| &p.ops)
+        .filter_map(|op| match op {
+            DrawOp::Text(t) => Some((t.text.trim().to_string(), t.color)),
+            _ => None,
+        })
+        .collect();
+
+    let colors: Vec<Color> = drawn.iter().map(|(_, c)| *c).collect();
+    assert_eq!(
+        colors,
+        vec![RED, BLACK, RED],
+        "per-record colors: {drawn:?}"
+    );
+    assert!(
+        !colors.contains(&BLUE),
+        "the condition replaces the stored color, it does not fall back to it: {drawn:?}"
+    );
+    // The row values themselves, so a color sequence that happened to line up with the wrong rows
+    // still fails.
+    let values: Vec<&str> = drawn.iter().map(|(t, _)| t.as_str()).collect();
+    assert_eq!(values, vec!["500.00", "5,000.00", "12.00"], "{drawn:?}");
 }
 
 #[test]
@@ -446,7 +531,7 @@ fn command_table_emits_bound_diagnostic() {
     );
 }
 
-/// A line object stores its stroke style and colour in the border record (the `0xec` leaf); only the
+/// A line object stores its stroke style and color in the border record (the `0xec` leaf); only the
 /// thickness lives on the shape. The renderer must read the border to emit a visible stroke.
 #[test]
 fn line_stroke_read_from_border() {
@@ -459,7 +544,7 @@ fn line_stroke_read_from_border() {
         height: Twips(0),
     };
     let mut ls = LineShape::default();
-    ls.shape.line_thickness = Twips(10); // thin hairline; style/colour come from the border
+    ls.shape.line_thickness = Twips(10); // thin hairline; style/color come from the border
     o.kind = ReportObjectKind::Line(ls);
     o.border.top = LineStyle::SingleLine;
     let color = Color {
@@ -485,30 +570,26 @@ fn line_stroke_read_from_border() {
         })
         .collect();
     assert_eq!(lines.len(), 1, "the line must emit one stroke: {lines:?}");
-    assert_eq!(lines[0].stroke.color, color, "colour comes from the border");
+    assert_eq!(lines[0].stroke.color, color, "color comes from the border");
     assert_eq!(lines[0].stroke.width, Twips(10), "thickness from the shape");
 }
 
-/// A picture's raster is drawn at its authored scaled size (`original × scaling`) placed at the box
-/// top-left, not stretched to fill the object box.
+/// A picture's raster is drawn into its object box, letterboxed to the image's own aspect ratio.
+/// The box *is* the authored scaled size: the engine derives a picture's scale factors at load from
+/// the placed box against the image's natural extent, so there is no second size to honour.
 #[test]
-fn picture_drawn_at_scaled_size() {
+fn picture_drawn_into_its_object_box() {
     let mut o = ReportObject::default();
     o.name = "Logo".into();
-    // A box deliberately larger than the authored scaled size (1000×500 × 2.0 = 2000×1000).
     o.bounds = Rect {
         left: Twips(120),
         top: Twips(60),
-        width: Twips(9999),
-        height: Twips(8888),
+        width: Twips(2000),
+        height: Twips(1000),
     };
     let mut p = rpt_model::PictureObject::default();
     // A PNG signature so the format sniffs as a browser-renderable raster.
     p.data = vec![0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
-    p.original_width = Twips(1000);
-    p.original_height = Twips(500);
-    p.x_scaling = 2.0;
-    p.y_scaling = 2.0;
     o.kind = ReportObjectKind::Picture(p);
 
     let mut report = tiny_report(15840);
@@ -522,16 +603,8 @@ fn picture_drawn_at_scaled_size() {
             _ => None,
         })
         .expect("the picture image op");
-    assert_eq!(
-        img.bounds.width,
-        Twips(2000),
-        "width = original × x_scaling"
-    );
-    assert_eq!(
-        img.bounds.height,
-        Twips(1000),
-        "height = original × y_scaling"
-    );
+    assert_eq!(img.bounds.width, Twips(2000), "width = the object box's");
+    assert_eq!(img.bounds.height, Twips(1000), "height = the object box's");
     // Placed at the box top-left (the printable-relative box left/top, below the page header).
     assert_eq!(img.bounds.left, Twips(120), "placed at the box left");
     assert_eq!(

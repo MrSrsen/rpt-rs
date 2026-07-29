@@ -7,12 +7,16 @@
 #
 # Targets x86_64 musl so the binaries are statically linked and depend on no
 # system libraries — letting the final image be `scratch` (just the binaries).
-FROM rust:1.89-slim-bookworm AS builder
+FROM rust:1.92-slim-bookworm AS builder
 WORKDIR /src
 
 RUN rustup target add x86_64-unknown-linux-musl
 
-# The whole workspace. Dependencies are pure-Rust, so no C toolchain is needed.
+# The SQLite driver bundles C, so a musl C toolchain is required despite the rest
+# of the tree being pure Rust. `cc` looks for the target-prefixed name first.
+RUN apt-get update && apt-get install -y --no-install-recommends musl-tools \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY . .
 
 # Build with cached cargo registry and target directories for fast rebuilds. The
@@ -30,6 +34,16 @@ FROM scratch AS runtime
 
 # Static binaries, so no libc, shell, or package manager is needed.
 COPY --from=builder /out/rpt /out/rpt-render /usr/local/bin/
+
+# The binaries link every dependency and embed the bundled fonts, so the image redistributes them
+# and owes their notices. `scratch` has no shell to read these with — they are here so that whoever
+# redistributes the image can extract them (`docker cp`) and satisfy the same conditions.
+COPY --from=builder /src/LICENSE /src/THIRD-PARTY-NOTICES.md /usr/local/share/licenses/rpt-rs/
+
+# MPL-2.0 §3.2(a) asks that a recipient of the executable form be told how to obtain the source. The
+# image carries no README to say so, so the label says it.
+LABEL org.opencontainers.image.source="https://github.com/MrSrsen/rpt-rs" \
+      org.opencontainers.image.licenses="MPL-2.0"
 
 ENV PATH=/usr/local/bin
 WORKDIR /data

@@ -29,7 +29,7 @@ pub(crate) fn gauge_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp
         return Vec::new();
     }
     let &ChartCtx {
-        def,
+        style,
         rect,
         title,
         show_labels,
@@ -46,7 +46,7 @@ pub(crate) fn gauge_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp
         (rh / 8).clamp(180, 360)
     };
     if !title.is_empty() {
-        ops.push(title_op(def, rl, rt + pad / 2, rw, title_h, title, &src));
+        ops.push(title_op(style, rl, rt + pad / 2, rw, title_h, title, &src));
     }
 
     let value: f64 = series.iter().map(|(_, v)| *v).sum();
@@ -105,13 +105,14 @@ pub(crate) fn gauge_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp
             text: fmt_val(t as f64 * step),
             font: FontSpec {
                 family: "Arial".into(),
-                size_pt: LABEL_PT,
+                size_pt: style.scaled_pt(LABEL_PT),
                 ..Default::default()
             },
             color: LABEL,
             align: TextAlign::Center,
             rotation: 0.0,
             metrics: None,
+            character_spacing: Twips(0),
             source: src(),
         }));
     }
@@ -158,7 +159,7 @@ pub(crate) fn gauge_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp
             text: fmt_val(value),
             font: FontSpec {
                 family: "Arial".into(),
-                size_pt: 12.0,
+                size_pt: style.scaled_pt(12.0),
                 bold: true,
                 ..Default::default()
             },
@@ -166,6 +167,7 @@ pub(crate) fn gauge_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp
             align: TextAlign::Center,
             rotation: 0.0,
             metrics: None,
+            character_spacing: Twips(0),
             source: src(),
         }));
     }

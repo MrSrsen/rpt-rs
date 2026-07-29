@@ -4,10 +4,10 @@
 //! the formatter calls them instead of owning the aggregation.
 
 use crate::crosstab;
-use crystal_formula::eval::Value;
-use crystal_formula::token::{last_segment, strip_braces};
 use rpt_data::{compare_values, value_key, Dataset, FormulaRegistry, GroupInstance, Row};
 use rpt_format_value::Locale;
+use rpt_formula::eval::Value;
+use rpt_formula::token::{last_segment, strip_braces};
 use rpt_model::SummaryOperation;
 
 use crate::resolve::{eval_field_ref, eval_field_ref_reported};
@@ -184,7 +184,7 @@ pub(crate) fn chart_series(
         .groups
         .iter()
         .filter_map(|g| {
-            let label = format_category_label(&g.key, locale);
+            let label = group_category_label(g, locale);
             Some((label, chart_group_value(g, field.as_deref(), op)?))
         })
         .collect();
@@ -223,7 +223,7 @@ pub(crate) fn chart_series_multi(
         let categories: Vec<String> = dataset
             .groups
             .iter()
-            .map(|g| format_category_label(&g.key, locale))
+            .map(|g| group_category_label(g, locale))
             .collect();
         let series: Vec<(String, Vec<f64>)> = chart
             .data_refs
@@ -346,7 +346,9 @@ fn chart_series_second_group(
     let series: Vec<(String, Vec<f64>)> = sec_order
         .iter()
         .map(|sk| {
-            let name = format_category_label(&sec_vals[sk], locale);
+            // The secondary dimension is not period-bucketed (only the primary axis is), so its
+            // series name is the raw value through the locale default.
+            let name = crate::format::render_value_default(&sec_vals[sk], locale);
             let vals = prim_order
                 .iter()
                 .map(|pk| {
@@ -418,7 +420,7 @@ pub(crate) fn chart_stock_series(
             .iter()
             .filter_map(|g| {
                 let rows = group_rows(g);
-                build(format_category_label(&g.key, locale), &rows)
+                build(group_category_label(g, locale), &rows)
             })
             .collect();
     }
@@ -462,7 +464,7 @@ pub(crate) fn chart_gantt_series(
             let label = match &cat_field {
                 Some(f) => r
                     .get(f)
-                    .map(|v| format_category_label(v, locale))
+                    .map(|v| crate::format::render_value_default(v, locale))
                     .unwrap_or_else(|| (i + 1).to_string()),
                 None => (i + 1).to_string(),
             };
@@ -631,8 +633,8 @@ fn chart_category_buckets<'a>(
         .collect()
 }
 
-/// The engine's compact (no-leading-zero) date style for a temporal category-axis label, keyed per
-/// period by [`LabelPeriod::date_style`]. Distinct from a field's system short-date default, which
+/// The engine's compact (no-leading-zero) date style for a temporal bucket label, keyed per period
+/// by [`LabelPeriod::date_style`]. Distinct from a field's system short-date default, which
 /// zero-pads.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum DateLabelStyle {
@@ -694,9 +696,10 @@ impl LabelPeriod {
         }
     }
 
-    /// The label period for a cross-tab dimension's grouping condition; a non-date (boolean/time)
-    /// condition or an ungrouped discrete dimension is [`NonDate`](Self::NonDate).
-    fn from_group(cond: Option<m::GroupCondition>) -> Self {
+    /// The label period for a grouping condition — a cross-tab dimension's, or a report group's as
+    /// carried on its [`GroupInstance`]. A non-date (boolean/time) condition or a discrete
+    /// (unbucketed) group is [`NonDate`](Self::NonDate).
+    pub(crate) fn from_group(cond: Option<m::GroupCondition>) -> Self {
         use m::GroupCondition as G;
         match cond {
             Some(G::Daily) => Self::Daily,
@@ -729,8 +732,10 @@ impl LabelPeriod {
     }
 
     /// The date label style for this period, or `None` for a non-date period (labelled through the
-    /// locale default). Monthly is `M/YYYY` and weekly `M/d/YYYY`; the quarterly/semi-annually/
-    /// semi-monthly/daily styles follow each period's natural grain and are provisional.
+    /// locale default). Each style is the engine's own, read off its PDF for every period: the four
+    /// day-granular periods print the full `M/d/YYYY` (including a bucket that lands on the 1st),
+    /// the three month-granular ones drop the day for `M/YYYY`, and an annual bucket prints the bare
+    /// year.
     fn date_style(self) -> Option<DateLabelStyle> {
         Some(match self {
             Self::Daily | Self::Weekly | Self::Biweekly | Self::Semimonthly => {
@@ -763,22 +768,27 @@ fn format_period_label(bucket: &Value, locale: &Locale, period: LabelPeriod) -> 
     }
 }
 
-/// Format a report-group category label. A date on the first of the month — the signature of a
-/// monthly report date group — reads as the engine's `M/YYYY` ([`DateLabelStyle::MonthYear`], no
-/// leading zeros, e.g. "1/2024") rather than a full localized date, so the category-axis and legend
-/// labels match Crystal's. A finer-grained date (not the 1st) and every non-temporal value format
-/// through the locale default.
-///
-/// This infers the month grain from a 1st-of-month key because a [`GroupInstance`] carries only the
-/// bucketed key, not the group's decoded period. The chart-owned period path uses
-/// [`format_period_label`], which keys off the decoded [`LabelPeriod`] instead of this heuristic.
-pub(crate) fn format_category_label(bucket: &Value, locale: &Locale) -> String {
-    match bucket {
-        Value::Date(d) if d.day == 1 => DateLabelStyle::MonthYear.render(d.year, d.month, d.day),
-        Value::DateTime(d, _) if d.day == 1 => {
-            DateLabelStyle::MonthYear.render(d.year, d.month, d.day)
-        }
-        other => crate::format::render_value_default(other, locale),
+/// Format a report group's category label: its bucketed key in the engine's compact date style for
+/// the group's **own** decoded period, so a monthly group reads "1/2024" and a daily or semi-monthly
+/// one "1/1/2024". A discrete (unbucketed) group and every non-temporal key format through the
+/// locale default.
+pub(crate) fn group_category_label(g: &GroupInstance, locale: &Locale) -> String {
+    format_period_label(&g.key, locale, LabelPeriod::from_group(g.date_condition))
+}
+
+/// The engine's `GroupName` rendering of a date group's key at `period`: `M/YYYY` for a
+/// month-granular period and `YYYY` for an annual one — dropping the day the period-start key still
+/// carries. `None` for a day-granular or non-date period, whose group name is the full date the
+/// field's own stored format and the locale already render.
+pub(crate) fn group_name_period_text(key: &Value, period: LabelPeriod) -> Option<String> {
+    let d = match key {
+        Value::Date(d) => d,
+        Value::DateTime(d, _) => d,
+        _ => return None,
+    };
+    match period.date_style()? {
+        DateLabelStyle::MonthDayYear => None,
+        style => Some(style.render(d.year, d.month, d.day)),
     }
 }
 
@@ -815,10 +825,9 @@ mod tests {
     use rpt_data::{Dataset, FormulaRegistry, Row};
     use rpt_format_value::{Date, Locale};
 
-    /// Every [`LabelPeriod`] maps to an explicit, intentional date-label style — the enum-driven
-    /// replacement for the old monthly-vs-everything string catch-all. Monthly (`M/YYYY`) and weekly
-    /// (`M/d/YYYY`) are established; annually reads year-only; biweekly folds to the weekly style
-    /// and weekly bucket condition; the quarterly/semi/daily styles are the documented placeholders.
+    /// Every [`LabelPeriod`] maps to an explicit date-label style, each read off the engine's own
+    /// output for that period: the four day-granular periods print `M/d/YYYY`, the three
+    /// month-granular ones `M/YYYY`, and an annual bucket the bare year.
     #[test]
     fn period_label_styles_are_exhaustive_and_intentional() {
         use rpt_model::GroupCondition as G;
@@ -827,17 +836,15 @@ mod tests {
         let d = Value::Date(Date::new(2024, 3, 7));
         let label = |p: LabelPeriod| format_period_label(&d, &locale, p);
 
-        // Day- and month-grain styles.
-        assert_eq!(label(LabelPeriod::Monthly), "3/2024");
+        assert_eq!(label(LabelPeriod::Daily), "3/7/2024");
         assert_eq!(label(LabelPeriod::Weekly), "3/7/2024");
-        // Intentional (documented placeholder) styles.
-        assert_eq!(label(LabelPeriod::Annually), "2024");
+        assert_eq!(label(LabelPeriod::Biweekly), "3/7/2024");
+        assert_eq!(label(LabelPeriod::Semimonthly), "3/7/2024");
+        assert_eq!(label(LabelPeriod::Monthly), "3/2024");
         assert_eq!(label(LabelPeriod::Quarterly), "3/2024");
         assert_eq!(label(LabelPeriod::SemiAnnually), "3/2024");
-        assert_eq!(label(LabelPeriod::Daily), "3/7/2024");
-        assert_eq!(label(LabelPeriod::Semimonthly), "3/7/2024");
-        // Biweekly is labelled by day and bucketed on fortnight-aligned two-week boundaries.
-        assert_eq!(label(LabelPeriod::Biweekly), "3/7/2024");
+        assert_eq!(label(LabelPeriod::Annually), "2024");
+        // Biweekly is bucketed on fortnight-aligned two-week boundaries, not weekly ones.
         assert_eq!(LabelPeriod::Biweekly.group_condition(), Some(G::BiWeekly));
 
         // A non-date period (e.g. a boolean cross-tab dimension) falls back to the locale default,
@@ -853,6 +860,52 @@ mod tests {
             LabelPeriod::from_chart(Some(rpt_model::ChartCategoryPeriod::Annually)),
             LabelPeriod::Annually
         );
+    }
+
+    /// A report group's category label is keyed off the group's **own** decoded period, never
+    /// inferred from the key. The case that decides it: a period-start key that lands on the 1st of
+    /// a month. A daily or semi-monthly group whose bucket is the 1st still prints the full
+    /// `M/d/YYYY` (the engine's own rendering), where reading month-granularity off `day == 1` would
+    /// mislabel it `M/YYYY`; an annual group's 1-January key prints the bare year, not `1/2024`.
+    #[test]
+    fn group_category_label_reads_the_period_not_the_key() {
+        use rpt_model::GroupCondition as G;
+        let locale = Locale::default();
+        let first_of_month = Value::Date(Date::new(2024, 1, 1));
+        let label = |cond: Option<G>, key: &Value| {
+            group_category_label(
+                &GroupInstance {
+                    level: 0,
+                    condition_field: "t.at".to_string(),
+                    key: key.clone(),
+                    date_condition: cond,
+                    summaries: Vec::new(),
+                    subgroups: Vec::new(),
+                    details: Vec::new(),
+                    hierarchy_children: Vec::new(),
+                },
+                &locale,
+            )
+        };
+
+        // Day-granular periods keep the day even when the bucket is the 1st.
+        assert_eq!(label(Some(G::Daily), &first_of_month), "1/1/2024");
+        assert_eq!(label(Some(G::SemiMonthly), &first_of_month), "1/1/2024");
+        assert_eq!(label(Some(G::Weekly), &first_of_month), "1/1/2024");
+        assert_eq!(label(Some(G::BiWeekly), &first_of_month), "1/1/2024");
+        // Month-granular periods drop it.
+        assert_eq!(label(Some(G::Monthly), &first_of_month), "1/2024");
+        assert_eq!(label(Some(G::Quarterly), &first_of_month), "1/2024");
+        assert_eq!(label(Some(G::SemiAnnually), &first_of_month), "1/2024");
+        // An annual bucket is the bare year.
+        assert_eq!(label(Some(G::Annually), &first_of_month), "2024");
+
+        // A weekly bucket that is not the 1st is unaffected either way.
+        let mid = Value::Date(Date::new(2024, 3, 7));
+        assert_eq!(label(Some(G::Weekly), &mid), "3/7/2024");
+        // A discrete (unbucketed) group and a non-date key format through the locale default.
+        assert_eq!(label(None, &first_of_month), "1/1/2024");
+        assert_eq!(label(Some(G::Monthly), &Value::Str("East".into())), "East");
     }
 
     /// Build a flat (ungrouped) dataset from `(cat, "YYYY-MM-DD", amount)` triples.
@@ -921,9 +974,9 @@ mod tests {
         assert_eq!(grid.grand_total, "170.00");
     }
 
-    /// Without a decoded period, a date column dimension keys on the raw value — the pre-fix
-    /// behaviour that exploded the grid to one column per distinct date. The guard: four distinct
-    /// dates yield four columns, versus two when bucketed monthly (the test above).
+    /// Without a decoded period, a date column dimension keys on the raw value, one column per
+    /// distinct date. The guard: four distinct dates yield four columns, versus two when bucketed
+    /// monthly (the test above).
     #[test]
     fn crosstab_pivot_no_period_keeps_raw_date_columns() {
         let ds = dataset(&[

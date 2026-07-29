@@ -1,5 +1,10 @@
 {
   "model": {
+    "authoring_version": {
+      "letter": 0,
+      "major": 12,
+      "minor": 0
+    },
     "data_definition": {
       "condition_formula_bodies": [],
       "custom_functions": [],
@@ -108,7 +113,6 @@
               "default_value_display_type": "DescriptionAndValue",
               "default_value_sort_order": "NoSort",
               "default_values": [],
-              "discrete_or_range_kind": "RangeValue",
               "dynamic_lov": null,
               "edit_mask": null,
               "editable_on_panel": true,
@@ -905,12 +909,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -930,12 +929,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1009,6 +1003,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": true,
@@ -1032,11 +1027,9 @@
                   "name": "Text6",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 }
               ],
-              "section_code": 6000,
               "width": 0
             }
           ]
@@ -1063,12 +1056,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -1088,12 +1076,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1160,17 +1143,11 @@
                   "name": "Text1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1237,17 +1214,11 @@
                   "name": "Text2",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1314,17 +1285,11 @@
                   "name": "Text3",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1391,17 +1356,11 @@
                   "name": "Text4",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1468,17 +1427,11 @@
                   "name": "Text5",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1545,11 +1498,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -1563,11 +1541,15 @@
                           "currency_symbol_text": "$",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1585,24 +1567,28 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Special",
                       "summary_code": null,
-                      "value_type": "Date"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "PrintDate1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 }
               ],
-              "section_code": 12000,
               "width": 0
             }
           ]
@@ -1629,12 +1615,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -1654,12 +1635,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1726,11 +1702,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -1744,11 +1745,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1766,30 +1771,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "DatabaseField",
                       "summary_code": null,
-                      "value_type": "String"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "CustomerName1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1856,11 +1861,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -1874,11 +1904,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1896,30 +1930,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "DatabaseField",
                       "summary_code": null,
-                      "value_type": "String"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "LastName1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1986,11 +2020,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "YearMonthDay",
                           "day": "LeadingZeroNumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
                           "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "ShortYear"
                         },
@@ -2004,11 +2063,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 0,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToUnit",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2026,30 +2089,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "DatabaseField",
                       "summary_code": null,
-                      "value_type": "Int32s"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "OrderID1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2116,11 +2179,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": false
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "YearMonthDay",
                           "day": "LeadingZeroNumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
                           "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "ShortYear"
                         },
@@ -2129,16 +2217,20 @@
                           "separator": "  "
                         },
                         "numeric": {
-                          "currency_position": "LeadingCurrencyOutsideNegative",
-                          "currency_symbol": "FloatingSymbol",
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
                           "currency_symbol_text": "$",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
-                          "negative": "Bracketed",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2156,30 +2248,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "DatabaseField",
                       "summary_code": null,
-                      "value_type": "Currency"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "OrderAmount1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2246,11 +2338,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -2264,11 +2381,15 @@
                           "currency_symbol_text": "$",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2286,24 +2407,28 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "DatabaseField",
                       "summary_code": null,
-                      "value_type": "DateTime"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "OrderDate1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 }
               ],
-              "section_code": 24000,
               "width": 0
             }
           ]
@@ -2330,12 +2455,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -2353,7 +2473,6 @@
               "kind": "ReportFooter",
               "name": "ReportFooterSection1",
               "objects": [],
-              "section_code": 48000,
               "width": 0
             }
           ]
@@ -2380,12 +2499,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -2405,12 +2519,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2477,11 +2586,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "YearMonthDay",
                           "day": "LeadingZeroNumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
                           "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "ShortYear"
                         },
@@ -2495,11 +2629,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 0,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToUnit",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2517,29 +2655,35 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Special",
                       "summary_code": null,
-                      "value_type": "Int32u"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "PageNumber1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 42000
+                  }
                 }
               ],
-              "section_code": 42000,
               "width": 0
             }
           ]
         }
-      ]
+      ],
+      "kind": "ColumnarReport",
+      "style": "Standard"
     },
     "report_options": {
       "convert_null_field_to_default": false,
@@ -2603,4249 +2747,4249 @@
           "City Cyclists",
           "Davolio",
           "1",
-          "4190",
+          "41.9",
           "2451880"
         ],
         [
           "SAB Mountain",
           "Leverling",
           "1005",
-          "2900",
+          "29",
           "2451881"
         ],
         [
           "Poser Cycles",
           "Peacock",
           "1006",
-          "6490",
+          "64.9",
           "2451881"
         ],
         [
           "Spokes",
           "Dodsworth",
           "1007",
-          "4950",
+          "49.5",
           "2451881"
         ],
         [
           "Extreme Cycling",
           "Peacock",
           "1009",
-          "2900",
+          "29",
           "2451881"
         ],
         [
           "BBS Pty",
           "Peacock",
           "1011",
-          "2900",
+          "29",
           "2451881"
         ],
         [
           "Spokes 'N Wheels Ltd.",
           "Davolio",
           "1014",
-          "2900",
+          "29",
           "2451882"
         ],
         [
           "Cycle City Rome",
           "Dodsworth",
           "1015",
-          "4350",
+          "43.5",
           "2451882"
         ],
         [
           "Tyred Out",
           "Peacock",
           "1017",
-          "7200",
+          "72",
           "2451883"
         ],
         [
           "Spokes for Folks",
           "Dodsworth",
           "1019",
-          "4350",
+          "43.5",
           "2451883"
         ],
         [
           "Extreme Cycling",
           "King",
           "1020",
-          "6780",
+          "67.8",
           "2451883"
         ],
         [
           "Tandem Cycle",
           "Dodsworth",
           "1024",
-          "3300",
+          "33",
           "2451885"
         ],
         [
           "Wheels Inc.",
           "Dodsworth",
           "1026",
-          "3300",
+          "33",
           "2451885"
         ],
         [
           "Poser Cycles",
           "Dodsworth",
           "1029",
-          "4950",
+          "49.5",
           "2451886"
         ],
         [
           "Spokes for Folks",
           "Dodsworth",
           "1031",
-          "3300",
+          "33",
           "2451886"
         ],
         [
           "Biking's It Industries",
           "King",
           "1034",
-          "3300",
+          "33",
           "2451887"
         ],
         [
           "Spokes",
           "Suyama",
           "1035",
-          "3300",
+          "33",
           "2451888"
         ],
         [
           "Tienda de Bicicletas El Pardo",
           "Davolio",
           "1037",
-          "4950",
+          "49.5",
           "2451888"
         ],
         [
           "The Biker's Path",
           "Davolio",
           "1047",
-          "6780",
+          "67.8",
           "2451890"
         ],
         [
           "The Biker's Path",
           "Dodsworth",
           "1053",
-          "2900",
+          "29",
           "2451890"
         ],
         [
           "Paris Mountain Sports",
           "Dodsworth",
           "1054",
-          "10630",
+          "106.3",
           "2451890"
         ],
         [
           "Cyclopath",
           "Davolio",
           "1061",
-          "8380",
+          "83.8",
           "2451890"
         ],
         [
           "Has Been Bikes (consignment)",
           "Davolio",
           "1062",
-          "6570",
+          "65.7",
           "2451890"
         ],
         [
           "Furia",
           "Suyama",
           "1064",
-          "4851",
+          "48.51",
           "2451891"
         ],
         [
           "Bikes and Trikes",
           "Dodsworth",
           "1068",
-          "8380",
+          "83.8",
           "2451893"
         ],
         [
           "Extreme Cycling",
           "Davolio",
           "1072",
-          "4700",
+          "47",
           "2451894"
         ],
         [
           "Spokes for Folks",
           "Suyama",
           "1077",
-          "8380",
+          "83.8",
           "2451895"
         ],
         [
           "Road Runners Paradise",
           "Leverling",
           "1078",
-          "2900",
+          "29",
           "2451896"
         ],
         [
           "Pedals Inc.",
           "Suyama",
           "1079",
-          "8380",
+          "83.8",
           "2451896"
         ],
         [
           "Feel Great Bikes Inc.",
           "Suyama",
           "1083",
-          "3600",
+          "36",
           "2451897"
         ],
         [
           "City Cyclists",
           "Dodsworth",
           "1092",
-          "4200",
+          "42",
           "2451902"
         ],
         [
           "Bike-A-Holics Anonymous",
           "Peacock",
           "1096",
-          "4763",
+          "47.63",
           "2451905"
         ],
         [
           "Our Wheels Follow Us Everywhere",
           "King",
           "1099",
-          "2610",
+          "26.1",
           "2451905"
         ],
         [
           "Piccolo",
           "Davolio",
           "1109",
-          "2598",
+          "25.98",
           "2451906"
         ],
         [
           "Sporting Wheels Inc.",
           "Dodsworth",
           "1115",
-          "900",
+          "9",
           "2451908"
         ],
         [
           "Wheels and Stuff",
           "Suyama",
           "1118",
-          "4950",
+          "49.5",
           "2451909"
         ],
         [
           "C-Gate Cycle Shoppe",
           "King",
           "1119",
-          "3500",
+          "35",
           "2451909"
         ],
         [
           "SAB Mountain",
           "Leverling",
           "1120",
-          "7490",
+          "74.9",
           "2451909"
         ],
         [
           "Off the Mountain Biking",
           "Peacock",
           "1124",
-          "5970",
+          "59.7",
           "2451911"
         ],
         [
           "Road Runners Paradise",
           "Dodsworth",
           "1125",
-          "7542",
+          "75.42",
           "2451911"
         ],
         [
           "Tandem Cycle",
           "Leverling",
           "1128",
-          "6570",
+          "65.7",
           "2451911"
         ],
         [
           "Rowdy Rims Company",
           "Davolio",
           "1130",
-          "2350",
+          "23.5",
           "2451912"
         ],
         [
           "Fulcrum Cycles",
           "King",
           "1132",
-          "3898",
+          "38.98",
           "2451913"
         ],
         [
           "Spokes for Folks",
           "Davolio",
           "1133",
-          "4350",
+          "43.5",
           "2451913"
         ],
         [
           "Paris Mountain Sports",
           "Dodsworth",
           "1134",
-          "4380",
+          "43.8",
           "2451914"
         ],
         [
           "Crazy Wheels",
           "Peacock",
           "1138",
-          "7962",
+          "79.62",
           "2451914"
         ],
         [
           "Bikes, Bikes, and More Bikes",
           "Davolio",
           "1140",
-          "2700",
+          "27",
           "2451915"
         ],
         [
           "Paris Mountain Sports",
           "Dodsworth",
           "1141",
-          "2160",
+          "21.6",
           "2451915"
         ],
         [
           "City Cyclists",
           "Davolio",
           "1143",
-          "6233",
+          "62.33",
           "2451915"
         ],
         [
           "Pathfinders",
           "Dodsworth",
           "1145",
-          "2700",
+          "27",
           "2451915"
         ],
         [
           "Biking's It Industries",
           "King",
           "1150",
-          "8380",
+          "83.8",
           "2451917"
         ],
         [
           "Insane Cycle",
           "Davolio",
           "1152",
-          "2700",
+          "27",
           "2451918"
         ],
         [
           "Changing Gears",
           "Peacock",
           "1153",
-          "7200",
+          "72",
           "2451918"
         ],
         [
           "Whistler Rentals",
           "Peacock",
           "1157",
-          "3100",
+          "31",
           "2451919"
         ],
         [
           "Wheels Inc.",
           "Davolio",
           "1158",
-          "900",
+          "9",
           "2451919"
         ],
         [
           "Crank Components",
           "Leverling",
           "1162",
-          "4650",
+          "46.5",
           "2451921"
         ],
         [
           "Wheels and Stuff",
           "Dodsworth",
           "1163",
-          "3100",
+          "31",
           "2451921"
         ],
         [
           "Road Runners Paradise",
           "Dodsworth",
           "1164",
-          "6699",
+          "66.99",
           "2451921"
         ],
         [
           "Rocky Roadsters",
           "Davolio",
           "1166",
-          "6780",
+          "67.8",
           "2451921"
         ],
         [
           "Tyred Out",
           "Dodsworth",
           "1172",
-          "10170",
+          "101.7",
           "2451923"
         ],
         [
           "Road Runners Paradise",
           "Davolio",
           "1173",
-          "6780",
+          "67.8",
           "2451924"
         ],
         [
           "Tek Bikes",
           "King",
           "1175",
-          "3300",
+          "33",
           "2451924"
         ],
         [
           "Cyclopath",
           "Dodsworth",
           "1176",
-          "10170",
+          "101.7",
           "2451924"
         ],
         [
           "Cycles and Sports",
           "Davolio",
           "1180",
-          "6780",
+          "67.8",
           "2451924"
         ],
         [
           "Hooked on Helmets",
           "Leverling",
           "1183",
-          "3600",
+          "36",
           "2451924"
         ],
         [
           "The Great Bike Shop",
           "Leverling",
           "1188",
-          "6780",
+          "67.8",
           "2451924"
         ],
         [
           "Fulcrum Cycles",
           "King",
           "1193",
-          "10170",
+          "101.7",
           "2451925"
         ],
         [
           "Cycle City Rome",
           "Peacock",
           "1194",
-          "1650",
+          "16.5",
           "2451925"
         ],
         [
           "To The Limit Biking Co.",
           "King",
           "1199",
-          "6780",
+          "67.8",
           "2451928"
         ],
         [
           "Pedal Pusher Bikes Inc.",
           "Davolio",
           "1200",
-          "3570",
+          "35.7",
           "2451928"
         ],
         [
           "Crazy Wheels",
           "Peacock",
           "1201",
-          "2994",
+          "29.94",
           "2451928"
         ],
         [
           "Blazing Saddles",
           "Dodsworth",
           "1203",
-          "1450",
+          "14.5",
           "2451928"
         ],
         [
           "Extreme Cycling",
           "Suyama",
           "1205",
-          "7580",
+          "75.8",
           "2451928"
         ],
         [
           "Hercules Mountain Bikes",
           "Leverling",
           "1207",
-          "1450",
+          "14.5",
           "2451928"
         ],
         [
           "Tyred Out",
           "King",
           "1209",
-          "4350",
+          "43.5",
           "2451928"
         ],
         [
           "Cyclist's Trail Co.",
           "Peacock",
           "1211",
-          "4350",
+          "43.5",
           "2451928"
         ],
         [
           "The Bike Cellar",
           "Dodsworth",
           "1212",
-          "7050",
+          "70.5",
           "2451928"
         ],
         [
           "Bike Shop from Mars",
           "Dodsworth",
           "1215",
-          "4350",
+          "43.5",
           "2451929"
         ],
         [
           "Tandem Cycle",
           "Leverling",
           "1219",
-          "7050",
+          "70.5",
           "2451931"
         ],
         [
           "Spokes 'N Wheels Ltd.",
           "Dodsworth",
           "1224",
-          "7050",
+          "70.5",
           "2451932"
         ],
         [
           "Cyclist's Trail Co.",
           "King",
           "1226",
-          "1071",
+          "10.71",
           "2451933"
         ],
         [
           "The Bike Cellar",
           "Peacock",
           "1227",
-          "10170",
+          "101.7",
           "2451933"
         ],
         [
           "SAB Mountain",
           "King",
           "1229",
-          "1750",
+          "17.5",
           "2451934"
         ],
         [
           "Alley Cat Cycles",
           "King",
           "1239",
-          "10170",
+          "101.7",
           "2451937"
         ],
         [
           "Paris Mountain Sports",
           "Leverling",
           "1244",
-          "2400",
+          "24",
           "2451939"
         ],
         [
           "Paris Mountain Sports",
           "Peacock",
           "1247",
-          "3600",
+          "36",
           "2451940"
         ],
         [
           "Extreme Cycling",
           "Suyama",
           "1249",
-          "1800",
+          "18",
           "2451942"
         ],
         [
           "Corporate Cycle",
           "Leverling",
           "1251",
-          "4500",
+          "45",
           "2451943"
         ],
         [
           "Cyclist's Trail Co.",
           "Dodsworth",
           "1252",
-          "7050",
+          "70.5",
           "2451943"
         ],
         [
           "Rad Bikes",
           "Davolio",
           "1255",
-          "3300",
+          "33",
           "2451943"
         ],
         [
           "Pathfinders",
           "Leverling",
           "1256",
-          "7050",
+          "70.5",
           "2451944"
         ],
         [
           "Uni-Cycle",
           "Peacock",
           "1257",
-          "1800",
+          "18",
           "2451944"
         ],
         [
           "Alley Cat Cycles",
           "King",
           "1260",
-          "3390",
+          "33.9",
           "2451944"
         ],
         [
           "Rad Bikes",
           "King",
           "1261",
-          "900",
+          "9",
           "2451944"
         ],
         [
           "Off the Mountain Biking",
           "Leverling",
           "1265",
-          "2900",
+          "29",
           "2451944"
         ],
         [
           "On The Edge Cyclery",
           "Suyama",
           "1268",
-          "7200",
+          "72",
           "2451946"
         ],
         [
           "Crank Components",
           "Leverling",
           "1272",
-          "4851",
+          "48.51",
           "2451947"
         ],
         [
           "Cyclopath",
           "Leverling",
           "1283",
-          "5390",
+          "53.9",
           "2451950"
         ],
         [
           "Psycho-Cycle",
           "Davolio",
           "1284",
-          "10040",
+          "100.4",
           "2451951"
         ],
         [
           "Cyclopath",
           "Davolio",
           "1290",
-          "7835",
+          "78.35",
           "2451954"
         ],
         [
           "Rockshocks for Jocks",
           "Leverling",
           "1298",
-          "2700",
+          "27",
           "2451956"
         ],
         [
           "Spokes for Folks",
           "Davolio",
           "1310",
-          "5800",
+          "58",
           "2451593"
         ],
         [
           "Benny - The Spokes Person",
           "King",
           "1315",
-          "2350",
+          "23.5",
           "2451959"
         ],
         [
           "Tek Bikes",
           "Dodsworth",
           "1326",
-          "2900",
+          "29",
           "2451596"
         ],
         [
           "Whistler Rentals",
           "King",
           "1330",
-          "1650",
+          "16.5",
           "2451596"
         ],
         [
           "Blazing Bikes",
           "Suyama",
           "1345",
-          "7600",
+          "76",
           "2451600"
         ],
         [
           "Deals on Wheels",
           "Dodsworth",
           "1349",
-          "7050",
+          "70.5",
           "2451600"
         ],
         [
           "Mountain Madmen Bicycles",
           "Davolio",
           "1354",
-          "6890",
+          "68.9",
           "2451600"
         ],
         [
           "Bike Shop from Mars",
           "Leverling",
           "1360",
-          "6135",
+          "61.35",
           "2451600"
         ],
         [
           "Canal City Cycle",
           "Leverling",
           "1364",
-          "10170",
+          "101.7",
           "2451601"
         ],
         [
           "Cyclopath",
           "Dodsworth",
           "1368",
-          "3100",
+          "31",
           "2451601"
         ],
         [
           "To The Limit Biking Co.",
           "Suyama",
           "1374",
-          "4350",
+          "43.5",
           "2451601"
         ],
         [
           "Deals on Wheels",
           "Davolio",
           "1380",
-          "4190",
+          "41.9",
           "2451969"
         ],
         [
           "Off the Mountain Biking",
           "Dodsworth",
           "1386",
-          "3411",
+          "34.11",
           "2451969"
         ],
         [
           "Tienda de Bicicletas El Pardo",
           "King",
           "1390",
-          "4950",
+          "49.5",
           "2451969"
         ],
         [
           "Tandem Cycle",
           "Leverling",
           "1392",
-          "4650",
+          "46.5",
           "2451970"
         ],
         [
           "Warsaw Sports, Inc.",
           "Davolio",
           "1393",
-          "8340",
+          "83.4",
           "2451970"
         ],
         [
           "Pathfinders",
           "Dodsworth",
           "1399",
-          "5390",
+          "53.9",
           "2451970"
         ],
         [
           "Rockshocks for Jocks",
           "Leverling",
           "1400",
-          "4725",
+          "47.25",
           "2451971"
         ],
         [
           "Corporate Cycle",
           "Dodsworth",
           "1401",
-          "1450",
+          "14.5",
           "2451972"
         ],
         [
           "Folk och fä HB",
           "Dodsworth",
           "1404",
-          "9540",
+          "95.4",
           "2451974"
         ],
         [
           "Hooked on Helmets",
           "Leverling",
           "1424",
-          "900",
+          "9",
           "2451984"
         ],
         [
           "Pedal Pusher Bikes Inc.",
           "Suyama",
           "1427",
-          "5390",
+          "53.9",
           "2451984"
         ],
         [
           "Backpedal Cycle Shop",
           "Davolio",
           "1428",
-          "3136",
+          "31.36",
           "2451984"
         ],
         [
           "Warsaw Sports, Inc.",
           "Davolio",
           "1433",
-          "9551",
+          "95.51",
           "2451987"
         ],
         [
           "Tandem Cycle",
           "Leverling",
           "2328",
-          "7850",
+          "78.5",
           "2452219"
         ],
         [
           "Rad Bikes",
           "Dodsworth",
           "2331",
-          "4466",
+          "44.66",
           "2452219"
         ],
         [
           "City Cyclists",
           "Suyama",
           "2337",
-          "6800",
+          "68",
           "2452220"
         ],
         [
           "Bike Shop from Mars",
           "Dodsworth",
           "2345",
-          "8380",
+          "83.8",
           "2452224"
         ],
         [
           "Rough Terrain",
           "King",
           "1454",
-          "1350",
+          "13.5",
           "2451996"
         ],
         [
           "Changing Gears",
           "Davolio",
           "1463",
-          "2900",
+          "29",
           "2451997"
         ],
         [
           "Bike-A-Holics Anonymous",
           "Davolio",
           "1466",
-          "3390",
+          "33.9",
           "2451997"
         ],
         [
           "Platou Sport",
           "Leverling",
           "1474",
-          "2900",
+          "29",
           "2452000"
         ],
         [
           "On The Edge Cyclery",
           "Peacock",
           "1477",
-          "2900",
+          "29",
           "2452001"
         ],
         [
           "Biking's It Industries",
           "Dodsworth",
           "1478",
-          "2900",
+          "29",
           "2452002"
         ],
         [
           "Trail Blazer's Place",
           "Suyama",
           "1480",
-          "1473",
+          "14.73",
           "2452003"
         ],
         [
           "Has Been Bikes (consignment)",
           "King",
           "1485",
-          "6570",
+          "65.7",
           "2452004"
         ],
         [
           "The Great Bike Shop",
           "King",
           "1487",
-          "4350",
+          "43.5",
           "2452004"
         ],
         [
           "The Biker's Path",
           "Dodsworth",
           "1488",
-          "4350",
+          "43.5",
           "2452004"
         ],
         [
           "Mountain Madmen Bicycles",
           "Leverling",
           "1489",
-          "4350",
+          "43.5",
           "2452004"
         ],
         [
           "Warsaw Sports, Inc.",
           "Suyama",
           "1494",
-          "405",
+          "4.05",
           "2452005"
         ],
         [
           "Karma Bikes",
           "Dodsworth",
           "1498",
-          "4950",
+          "49.5",
           "2452006"
         ],
         [
           "Tek Bikes",
           "Suyama",
           "1500",
-          "8380",
+          "83.8",
           "2452007"
         ],
         [
           "Wheels and Stuff",
           "Dodsworth",
           "1501",
-          "4350",
+          "43.5",
           "2452007"
         ],
         [
           "Corporate Cycle",
           "Dodsworth",
           "1507",
-          "4950",
+          "49.5",
           "2452008"
         ],
         [
           "Bike-A-Holics Anonymous",
           "Leverling",
           "1509",
-          "6780",
+          "67.8",
           "2452009"
         ],
         [
           "Rad Bikes",
           "Peacock",
           "1510",
-          "4950",
+          "49.5",
           "2452009"
         ],
         [
           "Our Wheels Follow Us Everywhere",
           "Leverling",
           "1511",
-          "4950",
+          "49.5",
           "2452009"
         ],
         [
           "Bikes and Trikes",
           "Suyama",
           "1525",
-          "4950",
+          "49.5",
           "2452013"
         ],
         [
           "Rockshocks for Jocks",
           "Suyama",
           "1528",
-          "7623",
+          "76.23",
           "2452014"
         ],
         [
           "Bikes, Bikes, and More Bikes",
           "Davolio",
           "1532",
-          "3300",
+          "33",
           "2452014"
         ],
         [
           "Blazing Bikes",
           "Davolio",
           "1533",
-          "9702",
+          "97.02",
           "2452015"
         ],
         [
           "To The Limit Biking Co.",
           "Leverling",
           "1534",
-          "8380",
+          "83.8",
           "2452015"
         ],
         [
           "Tyred Out",
           "Davolio",
           "1535",
-          "1450",
+          "14.5",
           "2452016"
         ],
         [
           "The Bike Cellar",
           "Peacock",
           "1540",
-          "1650",
+          "16.5",
           "2452017"
         ],
         [
           "Fahrkraft Räder",
           "Dodsworth",
           "1542",
-          "7050",
+          "70.5",
           "2452017"
         ],
         [
           "Bikes, Bikes, and More Bikes",
           "Leverling",
           "1545",
-          "8380",
+          "83.8",
           "2452018"
         ],
         [
           "Cyclopath",
           "Davolio",
           "1549",
-          "8380",
+          "83.8",
           "2452019"
         ],
         [
           "Rowdy Rims Company",
           "Dodsworth",
           "1554",
-          "450",
+          "4.5",
           "2452020"
         ],
         [
           "Spokes for Folks",
           "Suyama",
           "1557",
-          "5390",
+          "53.9",
           "2452021"
         ],
         [
           "Changing Gears",
           "King",
           "1558",
-          "8380",
+          "83.8",
           "2452021"
         ],
         [
           "Tyred Out",
           "Suyama",
           "1560",
-          "8380",
+          "83.8",
           "2452021"
         ],
         [
           "C-Gate Cycle Shoppe",
           "King",
           "1562",
-          "5390",
+          "53.9",
           "2452022"
         ],
         [
           "Cyclopath",
           "Leverling",
           "1584",
-          "1650",
+          "16.5",
           "2452028"
         ],
         [
           "SAB Mountain",
           "Dodsworth",
           "1601",
-          "6890",
+          "68.9",
           "2452036"
         ],
         [
           "Deals on Wheels",
           "Peacock",
           "1608",
-          "9140",
+          "91.4",
           "2452039"
         ],
         [
           "Rockshocks for Jocks",
           "King",
           "1610",
-          "4350",
+          "43.5",
           "2452040"
         ],
         [
           "Bike Shop from Mars",
           "Suyama",
           "1611",
-          "1350",
+          "13.5",
           "2452040"
         ],
         [
           "Bikes, Bikes, and More Bikes",
           "Peacock",
           "1612",
-          "5250",
+          "52.5",
           "2452041"
         ],
         [
           "Platou Sport",
           "Suyama",
           "1613",
-          "2950",
+          "29.5",
           "2452041"
         ],
         [
           "Poser Cycles",
           "Davolio",
           "1616",
-          "6690",
+          "66.9",
           "2452041"
         ],
         [
           "Wheels and Stuff",
           "Suyama",
           "1618",
-          "5970",
+          "59.7",
           "2452041"
         ],
         [
           "Whistler Rentals",
           "Peacock",
           "1625",
-          "6570",
+          "65.7",
           "2452045"
         ],
         [
           "Spokes for Folks",
           "Suyama",
           "1626",
-          "6850",
+          "68.5",
           "2452045"
         ],
         [
           "Tyred Out",
           "Peacock",
           "1630",
-          "5140",
+          "51.4",
           "2452049"
         ],
         [
           "BBS Pty",
           "Suyama",
           "1631",
-          "3390",
+          "33.9",
           "2452049"
         ],
         [
           "The Great Bike Shop",
           "King",
           "1632",
-          "9702",
+          "97.02",
           "2452050"
         ],
         [
           "Feel Great Bikes Inc.",
           "Peacock",
           "1634",
-          "6570",
+          "65.7",
           "2452050"
         ],
         [
           "Warsaw Sports, Inc.",
           "Davolio",
           "1637",
-          "2700",
+          "27",
           "2452050"
         ],
         [
           "Rough Terrain",
           "Leverling",
           "1638",
-          "4050",
+          "40.5",
           "2452050"
         ],
         [
           "Changing Gears",
           "Suyama",
           "1639",
-          "3390",
+          "33.9",
           "2452050"
         ],
         [
           "Spokes",
           "Suyama",
           "1643",
-          "2700",
+          "27",
           "2452052"
         ],
         [
           "Trail Blazer's Place",
           "Leverling",
           "1645",
-          "4650",
+          "46.5",
           "2452052"
         ],
         [
           "Rocky Roadsters",
           "Peacock",
           "1650",
-          "4650",
+          "46.5",
           "2452054"
         ],
         [
           "Bikes for Tykes",
           "Leverling",
           "1651",
-          "4650",
+          "46.5",
           "2452055"
         ],
         [
           "Alley Cat Cycles",
           "King",
           "1656",
-          "7290",
+          "72.9",
           "2452056"
         ],
         [
           "Off the Mountain Biking",
           "King",
           "1661",
-          "6780",
+          "67.8",
           "2452060"
         ],
         [
           "Hercules Mountain Bikes",
           "Peacock",
           "1662",
-          "6780",
+          "67.8",
           "2452060"
         ],
         [
           "Furia",
           "Leverling",
           "1663",
-          "10170",
+          "101.7",
           "2452060"
         ],
         [
           "Tek Bikes",
           "King",
           "1670",
-          "6780",
+          "67.8",
           "2452061"
         ],
         [
           "Extreme Cycling",
           "Suyama",
           "1672",
-          "10170",
+          "101.7",
           "2452062"
         ],
         [
           "Pedal Pusher Bikes Inc.",
           "Peacock",
           "1674",
-          "10170",
+          "101.7",
           "2452062"
         ],
         [
           "Has Been Bikes (consignment)",
           "Dodsworth",
           "1677",
-          "4350",
+          "43.5",
           "2452064"
         ],
         [
           "Bike Shop from Mars",
           "Leverling",
           "1681",
-          "4380",
+          "43.8",
           "2452065"
         ],
         [
           "To The Limit Biking Co.",
           "Suyama",
           "1685",
-          "4950",
+          "49.5",
           "2452066"
         ],
         [
           "Pathfinders",
           "Peacock",
           "1686",
-          "6340",
+          "63.4",
           "2452066"
         ],
         [
           "Feel Great Bikes Inc.",
           "King",
           "1691",
-          "10170",
+          "101.7",
           "2452066"
         ],
         [
           "Road Runners Paradise",
           "Suyama",
           "1692",
-          "6540",
+          "65.4",
           "2452067"
         ],
         [
           "Whistler Rentals",
           "King",
           "1693",
-          "5390",
+          "53.9",
           "2452067"
         ],
         [
           "Rockshocks for Jocks",
           "King",
           "1694",
-          "10170",
+          "101.7",
           "2452068"
         ],
         [
           "Rowdy Rims Company",
           "Dodsworth",
           "1696",
-          "2380",
+          "23.8",
           "2452068"
         ],
         [
           "The Biker's Path",
           "King",
           "1699",
-          "2994",
+          "29.94",
           "2452069"
         ],
         [
           "The Great Bike Shop",
           "Peacock",
           "1703",
-          "4350",
+          "43.5",
           "2452071"
         ],
         [
           "Folk och fä HB",
           "Suyama",
           "1708",
-          "5250",
+          "52.5",
           "2452073"
         ],
         [
           "Wheels and Stuff",
           "Leverling",
           "1712",
-          "4350",
+          "43.5",
           "2452073"
         ],
         [
           "Whistler Rentals",
           "Suyama",
           "1713",
-          "4350",
+          "43.5",
           "2452073"
         ],
         [
           "Changing Gears",
           "Leverling",
           "1714",
-          "3300",
+          "33",
           "2452073"
         ],
         [
           "Hercules Mountain Bikes",
           "Suyama",
           "1716",
-          "7050",
+          "70.5",
           "2452074"
         ],
         [
           "City Cyclists",
           "King",
           "1717",
-          "7050",
+          "70.5",
           "2452074"
         ],
         [
           "Rad Bikes",
           "King",
           "1719",
-          "3600",
+          "36",
           "2452076"
         ],
         [
           "Cyclopath",
           "Leverling",
           "1727",
-          "1800",
+          "18",
           "2452077"
         ],
         [
           "Extreme Cycling",
           "King",
           "1728",
-          "3000",
+          "30",
           "2452077"
         ],
         [
           "Canal City Cycle",
           "Dodsworth",
           "1729",
-          "4700",
+          "47",
           "2452078"
         ],
         [
           "Blazing Saddles",
           "Dodsworth",
           "1730",
-          "4419",
+          "44.19",
           "2452078"
         ],
         [
           "Road Runners Paradise",
           "Suyama",
           "1731",
-          "4700",
+          "47",
           "2452078"
         ],
         [
           "Backpedal Cycle Shop",
           "Dodsworth",
           "1732",
-          "3500",
+          "35",
           "2452078"
         ],
         [
           "Uni-Cycle",
           "Leverling",
           "1736",
-          "7200",
+          "72",
           "2452079"
         ],
         [
           "Bikes for Tykes",
           "Dodsworth",
           "1760",
-          "1650",
+          "16.5",
           "2452083"
         ],
         [
           "Canal City Cycle",
           "Suyama",
           "1771",
-          "6780",
+          "67.8",
           "2452085"
         ],
         [
           "Spokes for Folks",
           "King",
           "1780",
-          "8380",
+          "83.8",
           "2452086"
         ],
         [
           "Pathfinders",
           "Davolio",
           "1796",
-          "8380",
+          "83.8",
           "2452089"
         ],
         [
           "Platou Sport",
           "King",
           "1837",
-          "2900",
+          "29",
           "2452097"
         ],
         [
           "Crazy Wheels",
           "Dodsworth",
           "1843",
-          "8931",
+          "89.31",
           "2452099"
         ],
         [
           "Our Wheels Follow Us Everywhere",
           "Suyama",
           "1845",
-          "5190",
+          "51.9",
           "2452099"
         ],
         [
           "Fahrkraft Räder",
           "Peacock",
           "1850",
-          "6150",
+          "61.5",
           "2452100"
         ],
         [
           "To The Limit Biking Co.",
           "Dodsworth",
           "1851",
-          "3500",
+          "35",
           "2452100"
         ],
         [
           "Karma Bikes",
           "Peacock",
           "1866",
-          "3300",
+          "33",
           "2452108"
         ],
         [
           "Cycles and Sports",
           "King",
           "1871",
-          "4050",
+          "40.5",
           "2452110"
         ],
         [
           "Deals on Wheels",
           "Davolio",
           "1880",
-          "3300",
+          "33",
           "2452111"
         ],
         [
           "BBS Pty",
           "Leverling",
           "1882",
-          "8365",
+          "83.65",
           "2452111"
         ],
         [
           "Magazzini",
           "Suyama",
           "1898",
-          "4950",
+          "49.5",
           "2452114"
         ],
         [
           "Hercules Mountain Bikes",
           "Dodsworth",
           "1913",
-          "1485",
+          "14.85",
           "2452119"
         ],
         [
           "Benny - The Spokes Person",
           "Suyama",
           "1933",
-          "4700",
+          "47",
           "2452126"
         ],
         [
           "Hooked on Helmets",
           "Davolio",
           "1938",
-          "8380",
+          "83.8",
           "2452126"
         ],
         [
           "Biking's It Industries",
           "King",
           "1940",
-          "8380",
+          "83.8",
           "2452127"
         ],
         [
           "Crazy Wheels",
           "Dodsworth",
           "1943",
-          "5531",
+          "55.31",
           "2452128"
         ],
         [
           "Tandem Cycle",
           "Peacock",
           "1949",
-          "1450",
+          "14.5",
           "2452129"
         ],
         [
           "Wheels and Stuff",
           "Leverling",
           "1953",
-          "2900",
+          "29",
           "2452130"
         ],
         [
           "Karma Bikes",
           "Peacock",
           "1979",
-          "8380",
+          "83.8",
           "2452138"
         ],
         [
           "Hooked on Helmets",
           "Davolio",
           "1981",
-          "4950",
+          "49.5",
           "2452138"
         ],
         [
           "Paris Mountain Sports",
           "Davolio",
           "1983",
-          "2350",
+          "23.5",
           "2452138"
         ],
         [
           "Psycho-Cycle",
           "Leverling",
           "1997",
-          "9160",
+          "91.6",
           "2452141"
         ],
         [
           "Rough Terrain",
           "King",
           "2001",
-          "1450",
+          "14.5",
           "2452142"
         ],
         [
           "Extreme Cycling",
           "Leverling",
           "2002",
-          "4350",
+          "43.5",
           "2452142"
         ],
         [
           "Spokes for Folks",
           "Leverling",
           "2003",
-          "4851",
+          "48.51",
           "2452142"
         ],
         [
           "Rough Terrain",
           "King",
           "2010",
-          "2900",
+          "29",
           "2452143"
         ],
         [
           "To The Limit Biking Co.",
           "Dodsworth",
           "2013",
-          "4350",
+          "43.5",
           "2452143"
         ],
         [
           "Piccolo",
           "Peacock",
           "2015",
-          "1650",
+          "16.5",
           "2452144"
         ],
         [
           "Bikes, Bikes, and More Bikes",
           "Peacock",
           "2017",
-          "2900",
+          "29",
           "2452145"
         ],
         [
           "Rockshocks for Jocks",
           "Davolio",
           "2022",
-          "3300",
+          "33",
           "2452147"
         ],
         [
           "Psycho-Cycle",
           "Peacock",
           "2023",
-          "9360",
+          "93.6",
           "2452147"
         ],
         [
           "Deals on Wheels",
           "Davolio",
           "2026",
-          "4350",
+          "43.5",
           "2452147"
         ],
         [
           "Tyred Out",
           "Peacock",
           "2027",
-          "7386",
+          "73.86",
           "2452147"
         ],
         [
           "Fulcrum Cycles",
           "Davolio",
           "2029",
-          "4950",
+          "49.5",
           "2452147"
         ],
         [
           "Belgium Bike Co.",
           "Dodsworth",
           "2031",
-          "3300",
+          "33",
           "2452147"
         ],
         [
           "Pedals Inc.",
           "Davolio",
           "2033",
-          "4950",
+          "49.5",
           "2452147"
         ],
         [
           "Blazing Bikes",
           "King",
           "2036",
-          "4950",
+          "49.5",
           "2452149"
         ],
         [
           "Rowdy Rims Company",
           "Dodsworth",
           "2039",
-          "4950",
+          "49.5",
           "2452149"
         ],
         [
           "Cycle City Rome",
           "Dodsworth",
           "2041",
-          "4950",
+          "49.5",
           "2452150"
         ],
         [
           "Bikes, Bikes, and More Bikes",
           "Peacock",
           "2049",
-          "8380",
+          "83.8",
           "2452152"
         ],
         [
           "Bike Shop from Mars",
           "Davolio",
           "2050",
-          "8380",
+          "83.8",
           "2452152"
         ],
         [
           "Magazzini",
           "Dodsworth",
           "2056",
-          "8380",
+          "83.8",
           "2452153"
         ],
         [
           "Bike-A-Holics Anonymous",
           "Davolio",
           "2060",
-          "8780",
+          "87.8",
           "2452153"
         ],
         [
           "C-Gate Cycle Shoppe",
           "Suyama",
           "2061",
-          "2380",
+          "23.8",
           "2452153"
         ],
         [
           "BBS Pty",
           "Suyama",
           "2067",
-          "5160",
+          "51.6",
           "2452155"
         ],
         [
           "Feel Great Bikes Inc.",
           "Dodsworth",
           "2069",
-          "3300",
+          "33",
           "2452157"
         ],
         [
           "Rough Terrain",
           "Peacock",
           "2074",
-          "5121",
+          "51.21",
           "2452159"
         ],
         [
           "Clean Air Transportation Co.",
           "Leverling",
           "2078",
-          "7050",
+          "70.5",
           "2452159"
         ],
         [
           "Alley Cat Cycles",
           "Davolio",
           "2081",
-          "1650",
+          "16.5",
           "2452159"
         ],
         [
           "Piccolo",
           "Suyama",
           "2084",
-          "856",
+          "8.56",
           "2452161"
         ],
         [
           "Cyclist's Trail Co.",
           "Davolio",
           "2087",
-          "5310",
+          "53.1",
           "2452163"
         ],
         [
           "Off the Mountain Biking",
           "Suyama",
           "2088",
-          "2900",
+          "29",
           "2452163"
         ],
         [
           "Crank Components",
           "Peacock",
           "2093",
-          "1350",
+          "13.5",
           "2452164"
         ],
         [
           "Insane Cycle",
           "Dodsworth",
           "2094",
-          "2350",
+          "23.5",
           "2452164"
         ],
         [
           "Warsaw Sports, Inc.",
           "Davolio",
           "2097",
-          "5250",
+          "52.5",
           "2452165"
         ],
         [
           "Deals on Wheels",
           "Dodsworth",
           "2099",
-          "5970",
+          "59.7",
           "2452166"
         ],
         [
           "Cyclopath",
           "Davolio",
           "2101",
-          "6570",
+          "65.7",
           "2452166"
         ],
         [
           "Warsaw Sports, Inc.",
           "Leverling",
           "2103",
-          "900",
+          "9",
           "2452166"
         ],
         [
           "Wheels Inc.",
           "King",
           "2106",
-          "1284",
+          "12.84",
           "2452167"
         ],
         [
           "Pedal Pusher Bikes Inc.",
           "Peacock",
           "2109",
-          "4380",
+          "43.8",
           "2452168"
         ],
         [
           "Bikes, Bikes, and More Bikes",
           "Suyama",
           "2113",
-          "2700",
+          "27",
           "2452168"
         ],
         [
           "Karma Bikes",
           "Suyama",
           "2115",
-          "2700",
+          "27",
           "2452168"
         ],
         [
           "Road Runners Paradise",
           "Leverling",
           "2118",
-          "4050",
+          "40.5",
           "2452169"
         ],
         [
           "Rough Terrain",
           "Peacock",
           "2119",
-          "3100",
+          "31",
           "2452170"
         ],
         [
           "Spokes",
           "Davolio",
           "2121",
-          "4650",
+          "46.5",
           "2452171"
         ],
         [
           "Corporate Cycle",
           "Suyama",
           "2124",
-          "4650",
+          "46.5",
           "2452171"
         ],
         [
           "Canal City Cycle",
           "Leverling",
           "2127",
-          "10170",
+          "101.7",
           "2452173"
         ],
         [
           "Canal City Cycle",
           "Peacock",
           "2131",
-          "4230",
+          "42.3",
           "2452174"
         ],
         [
           "Has Been Bikes (consignment)",
           "Davolio",
           "2135",
-          "6780",
+          "67.8",
           "2452175"
         ],
         [
           "Karma Bikes",
           "Davolio",
           "2136",
-          "10170",
+          "101.7",
           "2452175"
         ],
         [
           "Warsaw Sports, Inc.",
           "Dodsworth",
           "2137",
-          "6780",
+          "67.8",
           "2452176"
         ],
         [
           "Spokes",
           "Suyama",
           "2138",
-          "10170",
+          "101.7",
           "2452177"
         ],
         [
           "City Cyclists",
           "King",
           "2142",
-          "4650",
+          "46.5",
           "2452177"
         ],
         [
           "Psycho-Cycle",
           "Suyama",
           "2143",
-          "10170",
+          "101.7",
           "2452177"
         ],
         [
           "Bike Shop from Mars",
           "Leverling",
           "2144",
-          "10170",
+          "101.7",
           "2452177"
         ],
         [
           "Pedals Inc.",
           "Davolio",
           "2147",
-          "4950",
+          "49.5",
           "2452177"
         ],
         [
           "Trail Blazer's Place",
           "Peacock",
           "2149",
-          "1550",
+          "15.5",
           "2452178"
         ],
         [
           "Insane Cycle",
           "King",
           "2150",
-          "10170",
+          "101.7",
           "2452178"
         ],
         [
           "Alley Cat Cycles",
           "Peacock",
           "2153",
-          "4350",
+          "43.5",
           "2452179"
         ],
         [
           "Piccolo",
           "Dodsworth",
           "2154",
-          "3300",
+          "33",
           "2452180"
         ],
         [
           "Rocky Roadsters",
           "Leverling",
           "2160",
-          "1350",
+          "13.5",
           "2452180"
         ],
         [
           "Crank Components",
           "Dodsworth",
           "2163",
-          "10170",
+          "101.7",
           "2452181"
         ],
         [
           "Paris Mountain Sports",
           "Suyama",
           "2164",
-          "3570",
+          "35.7",
           "2452181"
         ],
         [
           "Biking's It Industries",
           "Leverling",
           "2165",
-          "3500",
+          "35",
           "2452181"
         ],
         [
           "Corporate Cycle",
           "Davolio",
           "2166",
-          "1996",
+          "19.96",
           "2452181"
         ],
         [
           "City Cyclists",
           "Leverling",
           "2167",
-          "7580",
+          "75.8",
           "2452182"
         ],
         [
           "Rocky Roadsters",
           "Davolio",
           "2168",
-          "4350",
+          "43.5",
           "2452182"
         ],
         [
           "Backpedal Cycle Shop",
           "Davolio",
           "2171",
-          "3390",
+          "33.9",
           "2452182"
         ],
         [
           "Cycle City Rome",
           "Dodsworth",
           "2172",
-          "2900",
+          "29",
           "2452183"
         ],
         [
           "Blazing Bikes",
           "King",
           "2173",
-          "4350",
+          "43.5",
           "2452183"
         ],
         [
           "Cyclist's Trail Co.",
           "Suyama",
           "2174",
-          "7050",
+          "70.5",
           "2452184"
         ],
         [
           "Pathfinders",
           "Peacock",
           "2175",
-          "6695",
+          "66.95",
           "2452184"
         ],
         [
           "Pedals Inc.",
           "King",
           "2180",
-          "7050",
+          "70.5",
           "2452184"
         ],
         [
           "Cyclist's Trail Co.",
           "Dodsworth",
           "2181",
-          "3600",
+          "36",
           "2452184"
         ],
         [
           "Off the Mountain Biking",
           "Davolio",
           "2184",
-          "10170",
+          "101.7",
           "2452184"
         ],
         [
           "Wheels and Stuff",
           "Davolio",
           "2185",
-          "1800",
+          "18",
           "2452185"
         ],
         [
           "Magazzini",
           "Leverling",
           "2186",
-          "3570",
+          "35.7",
           "2452186"
         ],
         [
           "Bike-A-Holics Anonymous",
           "Dodsworth",
           "2187",
-          "4500",
+          "45",
           "2452187"
         ],
         [
           "Paris Mountain Sports",
           "Peacock",
           "2188",
-          "4700",
+          "47",
           "2452187"
         ],
         [
           "Belgium Bike Co.",
           "Peacock",
           "2190",
-          "10412",
+          "104.12",
           "2452187"
         ],
         [
           "Karma Bikes",
           "Davolio",
           "2191",
-          "7282",
+          "72.82",
           "2452187"
         ],
         [
           "Whistler Rentals",
           "Peacock",
           "2192",
-          "4700",
+          "47",
           "2452187"
         ],
         [
           "Backpedal Cycle Shop",
           "Leverling",
           "2198",
-          "9350",
+          "93.5",
           "2452190"
         ],
         [
           "Warsaw Sports, Inc.",
           "King",
           "2205",
-          "7200",
+          "72",
           "2452192"
         ],
         [
           "Alley Cat Cycles",
           "Leverling",
           "2207",
-          "7200",
+          "72",
           "2452193"
         ],
         [
           "Belgium Bike Co.",
           "Leverling",
           "2211",
-          "1131",
+          "11.31",
           "2452196"
         ],
         [
           "Rough Terrain",
           "King",
           "2214",
-          "4190",
+          "41.9",
           "2452196"
         ],
         [
           "Sporting Wheels Inc.",
           "Suyama",
           "2237",
-          "1450",
+          "14.5",
           "2452201"
         ],
         [
           "Crazy Wheels",
           "King",
           "2241",
-          "2994",
+          "29.94",
           "2452201"
         ],
         [
           "Our Wheels Follow Us Everywhere",
           "Davolio",
           "2245",
-          "5390",
+          "53.9",
           "2452201"
         ],
         [
           "Road Runners Paradise",
           "Suyama",
           "2249",
-          "1350",
+          "13.5",
           "2452202"
         ],
         [
           "Pedal Pusher Bikes Inc.",
           "King",
           "2259",
-          "2700",
+          "27",
           "2452205"
         ],
         [
           "Making Tracks",
           "Leverling",
           "2264",
-          "4350",
+          "43.5",
           "2452205"
         ],
         [
           "Tyred Out",
           "Davolio",
           "2266",
-          "2700",
+          "27",
           "2452206"
         ],
         [
           "Bikes for Tykes",
           "Leverling",
           "2267",
-          "7200",
+          "72",
           "2452206"
         ],
         [
           "Spokes 'N Wheels Ltd.",
           "King",
           "2269",
-          "1990",
+          "19.9",
           "2452207"
         ],
         [
           "To The Limit Biking Co.",
           "Suyama",
           "2274",
-          "8920",
+          "89.2",
           "2452209"
         ],
         [
           "Magazzini",
           "King",
           "2278",
-          "2900",
+          "29",
           "2452209"
         ],
         [
           "Blazing Bikes",
           "King",
           "2281",
-          "4350",
+          "43.5",
           "2452210"
         ],
         [
           "Biking's It Industries",
           "Peacock",
           "2283",
-          "7050",
+          "70.5",
           "2452210"
         ],
         [
           "Bikes and Trikes",
           "Leverling",
           "2293",
-          "4650",
+          "46.5",
           "2452212"
         ],
         [
           "Psycho-Cycle",
           "Leverling",
           "2295",
-          "3915",
+          "39.15",
           "2452212"
         ],
         [
           "Clean Air Transportation Co.",
           "Dodsworth",
           "2297",
-          "7050",
+          "70.5",
           "2452212"
         ],
         [
           "The Biker's Path",
           "Peacock",
           "2303",
-          "4190",
+          "41.9",
           "2452214"
         ],
         [
           "Bikes for Tykes",
           "Leverling",
           "2353",
-          "900",
+          "9",
           "2452227"
         ],
         [
           "Bikes for Tykes",
           "Davolio",
           "2356",
-          "2400",
+          "24",
           "2452228"
         ],
         [
           "Furia",
           "Peacock",
           "2363",
-          "1971",
+          "19.71",
           "2452230"
         ],
         [
           "Wheels Inc.",
           "Suyama",
           "2364",
-          "3500",
+          "35",
           "2452230"
         ],
         [
           "Furia",
           "Dodsworth",
           "2365",
-          "7790",
+          "77.9",
           "2452230"
         ],
         [
           "Piccolo",
           "Suyama",
           "2368",
-          "2900",
+          "29",
           "2452231"
         ],
         [
           "The Biker's Path",
           "Peacock",
           "2372",
-          "1215",
+          "12.15",
           "2452231"
         ],
         [
           "Fahrkraft Räder",
           "King",
           "2374",
-          "8244",
+          "82.44",
           "2452231"
         ],
         [
           "Deals on Wheels",
           "Leverling",
           "2387",
-          "1650",
+          "16.5",
           "2452232"
         ],
         [
           "Trail Blazer's Place",
           "King",
           "2388",
-          "6780",
+          "67.8",
           "2452232"
         ],
         [
           "Whistler Rentals",
           "Peacock",
           "2397",
-          "10140",
+          "101.4",
           "2452235"
         ],
         [
           "Cycle City Rome",
           "Davolio",
           "2400",
-          "2900",
+          "29",
           "2452235"
         ],
         [
           "On The Edge Cyclery",
           "Peacock",
           "2401",
-          "4190",
+          "41.9",
           "2452235"
         ],
         [
           "Bikes and Trikes",
           "Suyama",
           "2418",
-          "4950",
+          "49.5",
           "2452237"
         ],
         [
           "The Great Bike Shop",
           "Peacock",
           "2419",
-          "8330",
+          "83.3",
           "2452237"
         ],
         [
           "Bikes, Bikes, and More Bikes",
           "Suyama",
           "2422",
-          "6870",
+          "68.7",
           "2452237"
         ],
         [
           "C-Gate Cycle Shoppe",
           "Dodsworth",
           "2423",
-          "7962",
+          "79.62",
           "2452237"
         ],
         [
           "Poser Cycles",
           "Leverling",
           "2427",
-          "6780",
+          "67.8",
           "2452238"
         ],
         [
           "Warsaw Sports, Inc.",
           "Dodsworth",
           "2430",
-          "3100",
+          "31",
           "2452239"
         ],
         [
           "To The Limit Biking Co.",
           "Leverling",
           "2431",
-          "1395",
+          "13.95",
           "2452240"
         ],
         [
           "Poser Cycles",
           "King",
           "2435",
-          "4316",
+          "43.16",
           "2452241"
         ],
         [
           "Changing Gears",
           "Davolio",
           "2438",
-          "3221",
+          "32.21",
           "2452242"
         ],
         [
           "C-Gate Cycle Shoppe",
           "Davolio",
           "2443",
-          "8465",
+          "84.65",
           "2452245"
         ],
         [
           "Spokes for Folks",
           "Leverling",
           "2454",
-          "4350",
+          "43.5",
           "2452248"
         ],
         [
           "Alley Cat Cycles",
           "Peacock",
           "2455",
-          "4350",
+          "43.5",
           "2452249"
         ],
         [
           "Cyclist's Trail Co.",
           "King",
           "2457",
-          "8421",
+          "84.21",
           "2452250"
         ],
         [
           "Deals on Wheels",
           "Leverling",
           "2459",
-          "4350",
+          "43.5",
           "2452250"
         ],
         [
           "Spokes 'N Wheels Ltd.",
           "Davolio",
           "2461",
-          "5990",
+          "59.9",
           "2452251"
         ],
         [
           "Wheels Inc.",
           "Davolio",
           "2462",
-          "4350",
+          "43.5",
           "2452251"
         ],
         [
           "Rowdy Rims Company",
           "Davolio",
           "2463",
-          "4350",
+          "43.5",
           "2452251"
         ],
         [
           "BBS Pty",
           "Peacock",
           "2464",
-          "3915",
+          "39.15",
           "2452252"
         ],
         [
           "Psycho-Cycle",
           "Suyama",
           "2466",
-          "3300",
+          "33",
           "2452252"
         ],
         [
           "Tienda de Bicicletas El Pardo",
           "Peacock",
           "2467",
-          "4650",
+          "46.5",
           "2452252"
         ],
         [
           "Bikes and Trikes",
           "Leverling",
           "2469",
-          "8700",
+          "87",
           "2452252"
         ],
         [
           "Fahrkraft Räder",
           "Peacock",
           "2470",
-          "3300",
+          "33",
           "2452252"
         ],
         [
           "Bike Shop from Mars",
           "Peacock",
           "2473",
-          "7130",
+          "71.3",
           "2452253"
         ],
         [
           "Crank Components",
           "Leverling",
           "2475",
-          "4871",
+          "48.71",
           "2452254"
         ],
         [
           "C-Gate Cycle Shoppe",
           "Suyama",
           "2478",
-          "4950",
+          "49.5",
           "2452254"
         ],
         [
           "Cyclist's Trail Co.",
           "Davolio",
           "2482",
-          "3300",
+          "33",
           "2452254"
         ],
         [
           "Spokes",
           "King",
           "2483",
-          "4950",
+          "49.5",
           "2452254"
         ],
         [
           "To The Limit Biking Co.",
           "Peacock",
           "2485",
-          "3300",
+          "33",
           "2452254"
         ],
         [
           "Bike Shop from Mars",
           "Peacock",
           "2486",
-          "8380",
+          "83.8",
           "2452255"
         ],
         [
           "Cycle City Rome",
           "Davolio",
           "2487",
-          "4050",
+          "40.5",
           "2452255"
         ],
         [
           "Mountain Madmen Bicycles",
           "Dodsworth",
           "2496",
-          "8380",
+          "83.8",
           "2452259"
         ],
         [
           "To The Limit Biking Co.",
           "Leverling",
           "2498",
-          "4350",
+          "43.5",
           "2452259"
         ],
         [
           "Trail Blazer's Place",
           "Leverling",
           "2499",
-          "3390",
+          "33.9",
           "2452259"
         ],
         [
           "Warsaw Sports, Inc.",
           "Dodsworth",
           "2502",
-          "2900",
+          "29",
           "2452261"
         ],
         [
           "Benny - The Spokes Person",
           "Peacock",
           "2511",
-          "2000",
+          "20",
           "2452263"
         ],
         [
           "Benny - The Spokes Person",
           "Leverling",
           "2515",
-          "1350",
+          "13.5",
           "2452264"
         ],
         [
           "Rockshocks for Jocks",
           "Peacock",
           "2522",
-          "1550",
+          "15.5",
           "2452264"
         ],
         [
           "Deals on Wheels",
           "King",
           "2524",
-          "1485",
+          "14.85",
           "2452265"
         ],
         [
           "The Great Bike Shop",
           "Dodsworth",
           "2527",
-          "6780",
+          "67.8",
           "2452266"
         ],
         [
           "Karma Bikes",
           "Suyama",
           "2529",
-          "7450",
+          "74.5",
           "2452267"
         ],
         [
           "Extreme Cycling",
           "Leverling",
           "2530",
-          "8330",
+          "83.3",
           "2452267"
         ],
         [
           "Bikes for Tykes",
           "King",
           "2548",
-          "900",
+          "9",
           "2452273"
         ],
         [
           "Clean Air Transportation Co.",
           "Dodsworth",
           "2549",
-          "3500",
+          "35",
           "2452273"
         ],
         [
           "Benny - The Spokes Person",
           "King",
           "2555",
-          "3980",
+          "39.8",
           "2452276"
         ],
         [
           "Trail Blazer's Place",
           "Leverling",
           "2556",
-          "4380",
+          "43.8",
           "2452276"
         ],
         [
           "Piccolo",
           "Leverling",
           "2557",
-          "6570",
+          "65.7",
           "2452277"
         ],
         [
           "Paris Mountain Sports",
           "Peacock",
           "2558",
-          "2700",
+          "27",
           "2452277"
         ],
         [
           "Cyclist's Trail Co.",
           "Leverling",
           "2561",
-          "4050",
+          "40.5",
           "2452278"
         ],
         [
           "Deals on Wheels",
           "Davolio",
           "2566",
-          "4050",
+          "40.5",
           "2452278"
         ],
         [
           "Pedals Inc.",
           "Peacock",
           "2569",
-          "3100",
+          "31",
           "2452278"
         ],
         [
           "Psycho-Cycle",
           "Suyama",
           "2570",
-          "4650",
+          "46.5",
           "2452278"
         ],
         [
           "Folk och fä HB",
           "Leverling",
           "2574",
-          "4650",
+          "46.5",
           "2452279"
         ],
         [
           "Blazing Bikes",
           "King",
           "2576",
-          "10170",
+          "101.7",
           "2452280"
         ],
         [
           "Pathfinders",
           "Dodsworth",
           "2577",
-          "4380",
+          "43.8",
           "2452281"
         ],
         [
           "Mad Mountain Bikes",
           "King",
           "2579",
-          "6780",
+          "67.8",
           "2452283"
         ],
         [
           "Crazy Wheels",
           "Dodsworth",
           "2580",
-          "10170",
+          "101.7",
           "2452284"
         ],
         [
           "Fahrkraft Räder",
           "Dodsworth",
           "2582",
-          "6780",
+          "67.8",
           "2452285"
         ],
         [
           "Rowdy Rims Company",
           "Leverling",
           "2583",
-          "5700",
+          "57",
           "2452285"
         ],
         [
           "Spokes 'N Wheels Ltd.",
           "Davolio",
           "2584",
-          "10170",
+          "101.7",
           "2452285"
         ],
         [
           "Fahrkraft Räder",
           "Dodsworth",
           "2586",
-          "10170",
+          "101.7",
           "2452285"
         ],
         [
           "Bikes, Bikes, and More Bikes",
           "Leverling",
           "2587",
-          "6780",
+          "67.8",
           "2452285"
         ],
         [
           "Platou Sport",
           "Davolio",
           "2590",
-          "10170",
+          "101.7",
           "2452286"
         ],
         [
           "Psycho-Cycle",
           "Suyama",
           "2594",
-          "2380",
+          "23.8",
           "2452287"
         ],
         [
           "Rowdy Rims Company",
           "Davolio",
           "2596",
-          "7230",
+          "72.3",
           "2452287"
         ],
         [
           "BBS Pty",
           "Dodsworth",
           "2599",
-          "1996",
+          "19.96",
           "2452288"
         ],
         [
           "Spokes for Folks",
           "King",
           "2605",
-          "8340",
+          "83.4",
           "2452289"
         ],
         [
           "Blazing Bikes",
           "Peacock",
           "2613",
-          "5390",
+          "53.9",
           "2452291"
         ],
         [
           "Rowdy Rims Company",
           "Davolio",
           "2616",
-          "2900",
+          "29",
           "2452292"
         ],
         [
           "Bikes, Bikes, and More Bikes",
           "King",
           "2617",
-          "6570",
+          "65.7",
           "2452293"
         ],
         [
           "Tienda de Bicicletas El Pardo",
           "King",
           "2618",
-          "1650",
+          "16.5",
           "2452293"
         ],
         [
           "Pedal Pusher Bikes Inc.",
           "Leverling",
           "2619",
-          "8330",
+          "83.3",
           "2452294"
         ],
         [
           "Feel Great Bikes Inc.",
           "Suyama",
           "2621",
-          "2900",
+          "29",
           "2452295"
         ],
         [
           "The Biker's Path",
           "Dodsworth",
           "2624",
-          "2756",
+          "27.56",
           "2452295"
         ],
         [
           "Crazy Wheels",
           "Dodsworth",
           "2625",
-          "7580",
+          "75.8",
           "2452296"
         ],
         [
           "Trail Blazer's Place",
           "Leverling",
           "2626",
-          "4350",
+          "43.5",
           "2452296"
         ],
         [
           "Has Been Bikes (consignment)",
           "Leverling",
           "2629",
-          "2700",
+          "27",
           "2452297"
         ],
         [
           "Road Runners Paradise",
           "Dodsworth",
           "2631",
-          "7050",
+          "70.5",
           "2452298"
         ],
         [
           "Insane Cycle",
           "Peacock",
           "2632",
-          "4700",
+          "47",
           "2452298"
         ],
         [
           "Pedals Inc.",
           "Leverling",
           "2637",
-          "4791",
+          "47.91",
           "2452300"
         ],
         [
           "Road Runners Paradise",
           "Leverling",
           "2639",
-          "2400",
+          "24",
           "2452300"
         ],
         [
           "Road Runners Paradise",
           "Suyama",
           "2641",
-          "2700",
+          "27",
           "2452300"
         ],
         [
           "Alley Cat Cycles",
           "Peacock",
           "2644",
-          "4500",
+          "45",
           "2452301"
         ],
         [
           "Crank Components",
           "Davolio",
           "2645",
-          "8380",
+          "83.8",
           "2452301"
         ],
         [
           "Whistler Rentals",
           "Davolio",
           "2649",
-          "7050",
+          "70.5",
           "2452303"
         ],
         [
           "Platou Sport",
           "Suyama",
           "2651",
-          "7050",
+          "70.5",
           "2452303"
         ],
         [
           "Crank Components",
           "King",
           "2658",
-          "7200",
+          "72",
           "2452304"
         ],
         [
           "Whistler Rentals",
           "Leverling",
           "2660",
-          "5390",
+          "53.9",
           "2452304"
         ],
         [
           "Sporting Wheels Inc.",
           "Suyama",
           "2663",
-          "4380",
+          "43.8",
           "2452305"
         ],
         [
           "Biking's It Industries",
           "King",
           "2672",
-          "1650",
+          "16.5",
           "2452306"
         ],
         [
           "Rockshocks for Jocks",
           "Peacock",
           "2673",
-          "6442",
+          "64.42",
           "2452306"
         ],
         [
           "Fulcrum Cycles",
           "Dodsworth",
           "2681",
-          "7050",
+          "70.5",
           "2452307"
         ],
         [
           "Warsaw Sports, Inc.",
           "Peacock",
           "2683",
-          "4350",
+          "43.5",
           "2452307"
         ],
         [
           "City Cyclists",
           "Davolio",
           "2687",
-          "2700",
+          "27",
           "2452309"
         ],
         [
           "Tandem Cycle",
           "Leverling",
           "2699",
-          "8090",
+          "80.9",
           "2452314"
         ],
         [
           "Whistler Rentals",
           "Suyama",
           "2705",
-          "3221",
+          "32.21",
           "2452316"
         ],
         [
           "Whistler Rentals",
           "Suyama",
           "2710",
-          "4500",
+          "45",
           "2452317"
         ],
         [
           "Fahrkraft Räder",
           "Leverling",
           "2713",
-          "3000",
+          "30",
           "2452318"
         ],
         [
           "C-Gate Cycle Shoppe",
           "Davolio",
           "2716",
-          "3390",
+          "33.9",
           "2452318"
         ],
         [
           "Deals on Wheels",
           "Davolio",
           "2721",
-          "5540",
+          "55.4",
           "2452319"
         ],
         [
           "Poser Cycles",
           "King",
           "2736",
-          "6243",
+          "62.43",
           "2452324"
         ],
         [
           "Pathfinders",
           "Davolio",
           "2739",
-          "4851",
+          "48.51",
           "2452324"
         ],
         [
           "Bikes, Bikes, and More Bikes",
           "Dodsworth",
           "2745",
-          "3570",
+          "35.7",
           "2452326"
         ],
         [
           "Folk och fä HB",
           "Leverling",
           "2749",
-          "7215",
+          "72.15",
           "2452326"
         ],
         [
           "Pedal Pusher Bikes Inc.",
           "King",
           "2765",
-          "8611",
+          "86.11",
           "2452333"
         ],
         [
           "Furia",
           "Suyama",
           "2775",
-          "8690",
+          "86.9",
           "2452334"
         ],
         [
           "The Great Bike Shop",
           "King",
           "2784",
-          "5390",
+          "53.9",
           "2452335"
         ],
         [
           "Fahrkraft Räder",
           "Peacock",
           "2790",
-          "4455",
+          "44.55",
           "2452338"
         ],
         [
           "Platou Sport",
           "King",
           "2796",
-          "2350",
+          "23.5",
           "2452340"
         ],
         [
           "Tek Bikes",
           "Leverling",
           "2804",
-          "6294",
+          "62.94",
           "2452341"
         ],
         [
           "Wheels and Stuff",
           "King",
           "2812",
-          "8380",
+          "83.8",
           "2452345"
         ],
         [
           "Cyclopath",
           "Leverling",
           "2819",
-          "6484",
+          "64.84",
           "2452347"
         ],
         [
           "Tek Bikes",
           "Dodsworth",
           "2820",
-          "4950",
+          "49.5",
           "2452347"
         ],
         [
           "Piccolo",
           "King",
           "2823",
-          "6780",
+          "67.8",
           "2452350"
         ],
         [
           "Crank Components",
           "King",
           "2825",
-          "4350",
+          "43.5",
           "2452351"
         ],
         [
           "Spokes 'N Wheels Ltd.",
           "Suyama",
           "2827",
-          "9580",
+          "95.8",
           "2452351"
         ],
         [
           "Rocky Roadsters",
           "Leverling",
           "2843",
-          "1650",
+          "16.5",
           "2452355"
         ],
         [
           "Spokes 'N Wheels Ltd.",
           "Leverling",
           "2845",
-          "8890",
+          "88.9",
           "2452355"
         ],
         [
           "Benny - The Spokes Person",
           "Leverling",
           "2863",
-          "4950",
+          "49.5",
           "2452359"
         ],
         [
           "Rough Terrain",
           "Davolio",
           "2868",
-          "1350",
+          "13.5",
           "2452362"
         ],
         [
           "Whistler Rentals",
           "Suyama",
           "2875",
-          "4350",
+          "43.5",
           "2452363"
         ],
         [
           "Cyclist's Trail Co.",
           "Dodsworth",
           "2877",
-          "3840",
+          "38.4",
           "2452364"
         ],
         [
           "Trail Blazer's Place",
           "Dodsworth",
           "2880",
-          "1350",
+          "13.5",
           "2452365"
         ],
         [
           "Rad Bikes",
           "Davolio",
           "2881",
-          "4350",
+          "43.5",
           "2452365"
         ],
         [
           "Warsaw Sports, Inc.",
           "Peacock",
           "2882",
-          "2900",
+          "29",
           "2452366"
         ],
         [
           "Uni-Cycle",
           "Suyama",
           "2883",
-          "5580",
+          "55.8",
           "2452367"
         ],
         [
           "Feel Great Bikes Inc.",
           "Dodsworth",
           "2884",
-          "4350",
+          "43.5",
           "2452367"
         ],
         [
           "Crazy Wheels",
           "Suyama",
           "2886",
-          "4350",
+          "43.5",
           "2452367"
         ],
         [
           "Psycho-Cycle",
           "Dodsworth",
           "2887",
-          "4950",
+          "49.5",
           "2452367"
         ],
         [
           "Mountain Madmen Bicycles",
           "King",
           "2889",
-          "4950",
+          "49.5",
           "2452369"
         ],
         [
           "Mad Mountain Bikes",
           "King",
           "2891",
-          "1550",
+          "15.5",
           "2452370"
         ],
         [
           "Tek Bikes",
           "Peacock",
           "2892",
-          "4568",
+          "45.68",
           "2452370"
         ],
         [
           "Blazing Saddles",
           "Dodsworth",
           "2893",
-          "3300",
+          "33",
           "2452370"
         ],
         [
           "Cycles and Sports",
           "Suyama",
           "2894",
-          "3273",
+          "32.73",
           "2452370"
         ],
         [
           "To The Limit Biking Co.",
           "Davolio",
           "2895",
-          "4950",
+          "49.5",
           "2452371"
         ],
         [
           "Sporting Wheels Inc.",
           "Davolio",
           "2897",
-          "4950",
+          "49.5",
           "2452372"
         ],
         [
           "Rad Bikes",
           "King",
           "2899",
-          "3300",
+          "33",
           "2452373"
         ],
         [
           "Uni-Cycle",
           "Peacock",
           "2901",
-          "10170",
+          "101.7",
           "2452373"
         ],
         [
           "Cyclist's Trail Co.",
           "Davolio",
           "2903",
-          "1650",
+          "16.5",
           "2452373"
         ],
         [
           "Psycho-Cycle",
           "Peacock",
           "2907",
-          "4050",
+          "40.5",
           "2452375"
         ],
         [
           "Bike Shop from Mars",
           "Dodsworth",
           "2908",
-          "4700",
+          "47",
           "2452376"
         ],
         [
           "Canal City Cycle",
           "Leverling",
           "2911",
-          "6526",
+          "65.26",
           "2452378"
         ],
         [
           "Poser Cycles",
           "Davolio",
           "2916",
-          "8380",
+          "83.8",
           "2452378"
         ],
         [
           "Cyclist's Trail Co.",
           "Peacock",
           "2917",
-          "3390",
+          "33.9",
           "2452378"
         ],
         [
           "Mad Mountain Bikes",
           "Peacock",
           "2919",
-          "4950",
+          "49.5",
           "2452379"
         ],
         [
           "The Great Bike Shop",
           "Davolio",
           "2922",
-          "6780",
+          "67.8",
           "2452379"
         ],
         [
           "Road Runners Paradise",
           "Suyama",
           "2924",
-          "8380",
+          "83.8",
           "2452379"
         ],
         [
           "SAB Mountain",
           "Davolio",
           "2957",
-          "900",
+          "9",
           "2452385"
         ],
         [
           "Piccolo",
           "Suyama",
           "2958",
-          "5250",
+          "52.5",
           "2452385"
         ],
         [
           "Trail Blazer's Place",
           "Davolio",
           "2964",
-          "3980",
+          "39.8",
           "2452389"
         ],
         [
           "Hooked on Helmets",
           "Peacock",
           "2966",
-          "4950",
+          "49.5",
           "2452389"
         ],
         [
           "Hercules Mountain Bikes",
           "Leverling",
           "2968",
-          "4344",
+          "43.44",
           "2452389"
         ],
         [
           "Crank Components",
           "Dodsworth",
           "2971",
-          "4380",
+          "43.8",
           "2452391"
         ],
         [
           "Mad Mountain Bikes",
           "Leverling",
           "2972",
-          "6699",
+          "66.99",
           "2452392"
         ],
         [
           "Our Wheels Follow Us Everywhere",
           "Suyama",
           "2975",
-          "6570",
+          "65.7",
           "2452393"
         ],
         [
           "Rocky Roadsters",
           "King",
           "2976",
-          "4050",
+          "40.5",
           "2452393"
         ],
         [
           "Bikes, Bikes, and More Bikes",
           "Dodsworth",
           "2979",
-          "4050",
+          "40.5",
           "2452393"
         ],
         [
           "City Cyclists",
           "Davolio",
           "2982",
-          "6390",
+          "63.9",
           "2452393"
         ],
         [
           "Pedal Pusher Bikes Inc.",
           "Suyama",
           "2986",
-          "4050",
+          "40.5",
           "2452393"
         ],
         [
           "Rockshocks for Jocks",
           "Peacock",
           "2987",
-          "3100",
+          "31",
           "2452394"
         ],
         [
           "Tandem Cycle",
           "Suyama",
           "2992",
-          "8090",
+          "80.9",
           "2452395"
         ],
         [
           "Tandem Cycle",
           "Dodsworth",
           "2994",
-          "2994",
+          "29.94",
           "2452395"
         ],
         [
           "Spokes",
           "Suyama",
           "2995",
-          "6780",
+          "67.8",
           "2452395"
         ],
         [
           "Spokes",
           "Leverling",
           "2996",
-          "900",
+          "9",
           "2452395"
         ],
         [
           "Piccolo",
           "King",
           "2997",
-          "4350",
+          "43.5",
           "2452396"
         ],
         [
           "France Sports",
           "Leverling",
           "3002",
-          "3570",
+          "35.7",
           "2452036"
         ],
         [
           "Calais Cyclisme",
           "Dodsworth",
           "3005",
-          "2700",
+          "27",
           "2452039"
         ],
         [
           "Vélos Emile",
           "King",
           "3010",
-          "10170",
+          "101.7",
           "2452040"
         ],
         [
           "Centre Sportif Delormier",
           "Suyama",
           "3011",
-          "3390",
+          "33.9",
           "2452040"
         ],
         [
           "Dijon Sud Vélos",
           "Peacock",
           "3017",
-          "1650",
+          "16.5",
           "2452041"
         ],
         [
           "VTT La Rochelle",
           "Leverling",
           "3020",
-          "4700",
+          "47",
           "2452042"
         ],
         [
           "Auvergne Bicross",
           "King",
           "3023",
-          "4190",
+          "41.9",
           "2452045"
         ],
         [
           "Centre Poirot",
           "Davolio",
           "3024",
-          "2700",
+          "27",
           "2452045"
         ],
         [
           "Biking and Hiking",
           "Peacock",
           "3034",
-          "4950",
+          "49.5",
           "2452050"
         ],
         [
           "Bicycle Races",
           "King",
           "3035",
-          "4190",
+          "41.9",
           "2452050"
         ],
         [
           "Phil's Bikes",
           "Davolio",
           "3037",
-          "4350",
+          "43.5",
           "2452050"
         ],
         [
           "Colin's Bikes",
           "Leverling",
           "3038",
-          "1350",
+          "13.5",
           "2452050"
         ],
         [
           "Barry's Bikes",
           "Suyama",
           "3039",
-          "5250",
+          "52.5",
           "2452050"
         ],
         [
           "Tony's Better Bikes",
           "Davolio",
           "3040",
-          "1750",
+          "17.5",
           "2452051"
         ],
         [
           "Ride Down A Mountain",
           "Suyama",
           "3041",
-          "1200",
+          "12",
           "2452052"
         ],
         [
           "First Gear",
           "Davolio",
           "3044",
-          "3300",
+          "33",
           "2452052"
         ],
         [
           "One Track Mind",
           "Leverling",
           "3045",
-          "3390",
+          "33.9",
           "2452052"
         ],
         [
           "Family Biking Center",
           "Peacock",
           "3047",
-          "3390",
+          "33.9",
           "2452052"
         ],
         [
           "Oympic Bikes",
           "Suyama",
           "3049",
-          "5970",
+          "59.7",
           "2452054"
         ],
         [
           "7 Bikes For 7 Brothers",
           "Leverling",
           "3054",
-          "5390",
+          "53.9",
           "2452055"
         ],
         [
           "Off Road Bikes",
           "Suyama",
           "3058",
-          "5970",
+          "59.7",
           "2452057"
         ],
         [
           "Discount Bikes",
           "Davolio",
           "3060",
-          "4950",
+          "49.5",
           "2452059"
         ],
         [
           "Canadian Bikes, Eh",
           "King",
           "3061",
-          "3980",
+          "39.8",
           "2452060"
         ],
         [
           "Mike's Bikes",
           "Leverling",
           "3063",
-          "6570",
+          "65.7",
           "2452060"
         ],
         [
           "Two Wheelin'",
           "King",
           "3064",
-          "2350",
+          "23.5",
           "2452060"
         ],
         [
           "Down Under Bikes",
           "Dodsworth",
           "3065",
-          "4500",
+          "45",
           "2452061"
         ],
         [
           "Bruce's Bikes",
           "Leverling",
           "3068",
-          "1750",
+          "17.5",
           "2452061"
         ],
         [
           "Koala Road Bikes",
           "King",
           "3070",
-          "6442",
+          "64.42",
           "2452061"
         ],
         [
           "Bicicletas San Santiago",
           "Suyama",
           "3072",
-          "1750",
+          "17.5",
           "2452062"
         ],
         [
           "Paradise Sports",
           "King",
           "3073",
-          "3390",
+          "33.9",
           "2452062"
         ],
         [
           "Brasilia Bikes Inc.",
           "Peacock",
           "3074",
-          "3390",
+          "33.9",
           "2452062"
         ],
         [
           "Bicicletas de Montaña La Paz",
           "Dodsworth",
           "3075",
-          "9702",
+          "97.02",
           "2452063"
         ],
         [
           "Dhaka Bike Store",
           "Dodsworth",
           "3077",
-          "6570",
+          "65.7",
           "2452064"
         ],
         [
           "Pedales de Bogota",
           "Suyama",
           "3082",
-          "2700",
+          "27",
           "2452065"
         ],
         [
           "Galaxy Outdoors",
           "Dodsworth",
           "3083",
-          "4050",
+          "40.5",
           "2452065"
         ],
         [
           "East Budapest Sports",
           "Leverling",
           "3084",
-          "3390",
+          "33.9",
           "2452066"
         ],
         [
           "India Cycle and Co.",
           "Suyama",
           "3085",
-          "3570",
+          "35.7",
           "2452066"
         ],
         [
           "Hillcrest Cycle",
           "Peacock",
           "3087",
-          "1450",
+          "14.5",
           "2452066"
         ],
         [
           "Ruedas de Santo Domingo",
           "Suyama",
           "3092",
-          "2700",
+          "27",
           "2452067"
         ],
         [
           "Copenhagen Sports and Cycle",
           "Suyama",
           "3095",
-          "4650",
+          "46.5",
           "2452068"
         ],
         [
           "Superbicicletas Ecuador Ltd.",
           "Dodsworth",
           "3096",
-          "3390",
+          "33.9",
           "2452068"
         ],
         [
           "En ruedas Panama",
           "King",
           "3099",
-          "4190",
+          "41.9",
           "2452069"
         ],
         [
           "Manila Bicycle Store",
           "Davolio",
           "3101",
-          "4350",
+          "43.5",
           "2452069"
         ],
         [
           "Deportes Perez",
           "Peacock",
           "3102",
-          "4050",
+          "40.5",
           "2452070"
         ],
         [
           "Kathmandu Sports",
           "Suyama",
           "3104",
-          "3300",
+          "33",
           "2452071"
         ],
         [
           "Lima Norte Deportes",
           "Suyama",
           "3105",
-          "4350",
+          "43.5",
           "2452071"
         ],
         [
           "Kuala Lumpur Central Cycle",
           "Dodsworth",
           "3107",
-          "4650",
+          "46.5",
           "2452072"
         ],
         [
           "Ulaanbaatar Cycle",
           "Suyama",
           "3108",
-          "4650",
+          "46.5",
           "2452073"
         ],
         [
           "Budapest Sports",
           "King",
           "3115",
-          "1450",
+          "14.5",
           "2452073"
         ],
         [
           "Hanoi Bike Company",
           "Peacock",
           "3118",
-          "1450",
+          "14.5",
           "2452075"
         ],
         [
           "Tienda de Repuestos Caracas",
           "King",
           "3119",
-          "1650",
+          "16.5",
           "2452076"
         ],
         [
           "UAE Cycle",
           "Leverling",
           "3120",
-          "4190",
+          "41.9",
           "2452076"
         ],
         [
           "Harare Cycle",
           "King",
           "3121",
-          "10170",
+          "101.7",
           "2452076"
         ],
         [
           "Sunrise Cycle",
           "Suyama",
           "3124",
-          "4350",
+          "43.5",
           "2452077"
         ],
         [
           "Source One Cycle",
           "Leverling",
           "3125",
-          "5390",
+          "53.9",
           "2452077"
         ],
         [
           "Wheel to Wheel",
           "Peacock",
           "3126",
-          "4350",
+          "43.5",
           "2452077"
         ],
         [
           "LifeCycle",
           "Dodsworth",
           "3130",
-          "2350",
+          "23.5",
           "2452078"
         ],
         [
           "Donview Bike Co.",
           "Dodsworth",
           "3132",
-          "6780",
+          "67.8",
           "2452078"
         ],
         [
           "Platinum Sports",
           "King",
           "3133",
-          "6780",
+          "67.8",
           "2452078"
         ],
         [
           "Dublin Cycle Centre",
           "Dodsworth",
           "3134",
-          "10170",
+          "101.7",
           "2452079"
         ],
         [
           "Top 'o' the World Cycle",
           "King",
           "3135",
-          "1650",
+          "16.5",
           "2452079"
         ],
         [
           "Great Outdoors",
           "Peacock",
           "3137",
-          "1450",
+          "14.5",
           "2452079"
         ],
         [
           "Exeter Cycle Source",
           "Suyama",
           "3138",
-          "3300",
+          "33",
           "2452079"
         ],
         [
           "Life Cycle Centre",
           "Dodsworth",
           "3140",
-          "4350",
+          "43.5",
           "2452079"
         ],
         [
           "Hao Nannu Outdoors",
           "Suyama",
           "3149",
-          "6780",
+          "67.8",
           "2452080"
         ],
         [
           "Newpeople Biking Ltd.",
           "Suyama",
           "3151",
-          "10170",
+          "101.7",
           "2452080"
         ],
         [
           "AIC Childrens",
           "King",
           "3153",
-          "10170",
+          "101.7",
           "2452081"
         ],
         [
           "Heuristic Beach Pte Ltd",
           "Davolio",
           "3157",
-          "1395",
+          "13.95",
           "2452082"
         ],
         [
           "Salvado Bike Store",
           "Leverling",
           "3159",
-          "4350",
+          "43.5",
           "2452083"
         ],
         [
           "Brasilia Outdoors",
           "Dodsworth",
           "3160",
-          "2380",
+          "23.8",
           "2452083"
         ],
         [
           "Outdoors Ltda",
           "Davolio",
           "3163",
-          "1450",
+          "14.5",
           "2452084"
         ],
         [
           "Leipzig Freiheit",
           "Davolio",
           "3165",
-          "4380",
+          "43.8",
           "2452084"
         ],
         [
           "Berg auf Trails GmBH.",
           "Peacock",
           "3170",
-          "2900",
+          "29",
           "2452085"
         ],
         [
           "Brescia Mountainers",
           "Davolio",
           "3172",
-          "4950",
+          "49.5",
           "2452085"
         ],
         [
           "Nogoya Paths",
           "King",
           "3173",
-          "1450",
+          "14.5",
           "2452085"
         ],
         [
           "Yokohama Biking Fans",
           "Davolio",
           "3174",
-          "3390",
+          "33.9",
           "2452085"
         ],
         [
           "Bendai Mountain Bikers",
           "Dodsworth",
           "3175",
-          "1500",
+          "15",
           "2452085"
         ],
         [
           "Totory Ken Cyclists",
           "Peacock",
           "3176",
-          "3390",
+          "33.9",
           "2452085"
         ],
         [
           "Beach Trails and Wheels",
           "Dodsworth",
           "3184",
-          "3300",
+          "33",
           "2451890"
         ],
         [
           "Bill's Bikes",
           "Davolio",
           "3186",
-          "10170",
+          "101.7",
           "2451890"
         ],
         [
           "Lisbon Cyclists",
           "Dodsworth",
           "3187",
-          "1450",
+          "14.5",
           "2451890"
         ],
         [
           "Evora Family Sports",
           "Leverling",
           "3188",
-          "1990",
+          "19.9",
           "2451890"
         ],
         [
           "Souzel Bike Rentals",
           "King",
           "3189",
-          "3100",
+          "31",
           "2451890"
         ],
         [
           "Tom's Place for Bikes",
           "King",
           "3190",
-          "5390",
+          "53.9",
           "2451890"
         ],
         [
           "Coastal Line Bikes",
           "Dodsworth",
           "3191",
-          "10170",
+          "101.7",
           "2451890"
         ],
         [
           "Mountain View Sport",
           "Davolio",
           "3193",
-          "2380",
+          "23.8",
           "2451890"
         ]
       ]
@@ -6854,7 +6998,10 @@
     "summary_info": {
       "author": "",
       "comments": "",
+      "created": 129931826556670000,
       "keywords": "",
+      "last_printed": null,
+      "last_saved": 129931839816690000,
       "last_saved_by": "",
       "revision_number": "1",
       "save_with_preview": true,

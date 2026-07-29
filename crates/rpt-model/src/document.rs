@@ -3,6 +3,31 @@
 use super::enums::{PaperOrientation, PaperSize, PaperSource, PrinterDuplex};
 use super::primitives::Twips;
 
+/// The Crystal Reports version that wrote a report, as the report itself records it.
+///
+/// Stored in the first field of the report's root record, ahead of everything else. `letter` is a
+/// third component the engine renders as a character; every report seen stores `0`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct AuthoringVersion {
+    /// The release's major number — `12` for Crystal Reports 2008, `14` for 2011 and later.
+    pub major: u16,
+    /// The release's minor number.
+    pub minor: u16,
+    /// A third component the engine renders as a character; `0` on every report seen.
+    pub letter: u8,
+}
+
+impl std::fmt::Display for AuthoringVersion {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}.{}", self.major, self.minor)?;
+        if self.letter != 0 {
+            write!(f, ".{}", self.letter as char)?;
+        }
+        Ok(())
+    }
+}
+
 /// SDK: `ISummaryInfo`.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -27,6 +52,15 @@ pub struct SummaryInfo {
     pub last_saved_by: String,
     /// Whether the report is saved with a preview thumbnail (SDK `SavePreviewPicture`).
     pub save_with_preview: bool,
+    /// When the report was created — OLE `\x05SummaryInformation` `PIDSI_CREATE_DTM` (0x0C), as a
+    /// raw Windows `FILETIME`: 100-nanosecond intervals since 1601-01-01 UTC.
+    pub created: Option<u64>,
+    /// When the report was last saved — `PIDSI_LASTSAVE_DTM` (0x0D), as a raw Windows `FILETIME`.
+    ///
+    /// This is the fact behind the engine's `ModificationDate` / `ModificationTime` special fields.
+    pub last_saved: Option<u64>,
+    /// When the report was last printed — `PIDSI_LASTPRINTED` (0x0B), as a raw Windows `FILETIME`.
+    pub last_printed: Option<u64>,
 }
 
 /// SDK: `IPrintOptions`.
@@ -188,30 +222,32 @@ pub struct DesignerState {
 pub struct Guideline {
     /// The guideline's position on the canvas, in twips (leaf `[0..4]`, big-endian).
     pub position: Twips,
-    /// The guideline's flag word (leaf `[4..6]`, big-endian; raw). A small integer (`0x00..0x1a` in
-    /// observed, high byte always zero) that varies per guide — a snap/lock/attachment state, *not*
-    /// the orientation (that is the parent list, above). Individual bit meanings are unknown (no
-    /// reader surface exposes it), so it is preserved raw.
+    /// How many objects are attached to this guide: the number of object-connection records the
+    /// guideline's own collection carries after it. Zero for a guide nothing is snapped to. It is
+    /// a count and not a bit field, and it is not the orientation — that is the parent list, above.
     pub flags: u16,
 }
 
-/// One designer object-connection edge (record `0x0111`, a 22-byte leaf). `source`/`destination`
-/// are small layout-object node indices (`[0..2]`/`[2..4]`, big-endian); `[4..12]` is a constant
-/// eight-zero span and `[14..22]` a constant eight-`0xFF` span (both invariant,
-/// consumed but not modelled). Designer-only.
+/// One designer object-connection edge (record `0x0111`): the layout object a guideline is attached
+/// to, and the state of the attachment. Designer-only.
+///
+/// The record names one object, not two. Its two leading words are a single identifier — a kind and
+/// an index — followed by a pair of longs, the attachment state, and four qualifier words that name
+/// a sub-object within it. The two member names here predate that reading and are kept for the
+/// export surface's sake, not because the record has two endpoints.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct ObjectConnection {
-    /// The source layout-object node index (leaf `[0..2]`, big-endian; a small index).
+    /// The connected object's kind — the first word of its identifier. A kind and an index of `-1`
+    /// together are the identifier for no object at all.
     pub source: u16,
-    /// The destination layout-object node index (leaf `[2..4]`, big-endian; a small index).
+    /// The connected object's index within its kind — the second word of its identifier.
     pub destination: u16,
-    /// The connection kind word (leaf `[12..14]`, big-endian; raw). Its two bytes vary
-    /// independently — high ∈ `{0, 1, 2}`, low ∈ `{0, 2, 3}` — which fits a pair of per-endpoint
-    /// attachment codes better than the single version stamp the value clustering first suggested.
-    /// Unresolvable here either way: no reader surface exposes it, and these records are pure
-    /// interactive-designer state that programmatic authoring never emits, so no fixture can pin
-    /// them. Preserved raw, no enum.
+    /// The attachment state, as one word: two codes stored side by side, the high byte first. Each
+    /// is a narrowing value of its own, so a code past a byte's range would widen and this word
+    /// would not hold the pair. Their meaning is unresolved — no reader surface exposes them, and
+    /// these records are interactive-designer state that programmatic authoring never emits — so
+    /// they are preserved raw, with no enum.
     pub kind: u16,
 }
 

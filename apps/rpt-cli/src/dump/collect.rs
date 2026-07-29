@@ -1,26 +1,18 @@
 //! Record-tree walking: select the streams the `--stream` selector picks and collect every record
 //! of a given type (with its path and both byte views) into `DumpMatch`.
 
-use rpt::raw::{RecordNode, RecordStream};
-use rpt::{Rpt, StreamId};
+use rpt_reader::raw::{Dialect, RecordNode, RecordStream};
+use rpt_reader::{Rpt, StreamId};
 
 use super::{DumpMatch, DumpOpts};
 
-/// True if a stream carries the QE record dialect — the main `QESession` stream and every
-/// subreport's `Subdocument N/QESession`, plus the `DataSourceManager` saved-data catalog. All
-/// must be parsed via `qe_record_tree`.
-fn is_qe_stream(id: &StreamId) -> bool {
-    matches!(id, StreamId::QESession | StreamId::DataSourceManager(_))
-        || format!("{id:?}").contains("QESession")
-}
-
-/// The streams the `--stream` selector picks, each paired with whether it uses the QE dialect.
-/// `contents` (default) is the main `Contents` stream; `qe` is `QESession`; `all` is every stream
-/// with a decoded payload; anything else is a case-insensitive substring of the stream id.
+/// The streams the `--stream` selector picks, each paired with the record vocabulary it is written
+/// in. `contents` (default) is the main `Contents` stream; `qe` is `QESession`; `all` is every
+/// stream with a decoded payload; anything else is a case-insensitive substring of the stream id.
 pub(super) fn select_streams<'a>(
     rpt: &'a Rpt,
     sel: Option<&str>,
-) -> Vec<(String, &'a RecordStream, bool)> {
+) -> Vec<(String, &'a RecordStream, Dialect)> {
     let sel = sel.unwrap_or("contents");
     rpt.streams()
         .filter(|(id, s)| {
@@ -32,28 +24,47 @@ pub(super) fn select_streams<'a>(
                 other => name.to_lowercase().contains(&other.to_lowercase()),
             }
         })
-        .map(|(id, s)| (format!("{id:?}"), s, is_qe_stream(id)))
+        .map(|(id, s)| (format!("{id:?}"), s, s.dialect()))
         .collect()
+}
+
+/// The vocabulary the `--stream` selector reads records in, for the labels printed before any
+/// record has been selected. `all` and a substring selector can pick streams of more than one, so
+/// this answers for the selector; every record carries the dialect of the stream it came from.
+pub(super) fn selector_dialect(sel: Option<&str>) -> Dialect {
+    let sel = sel.unwrap_or("contents").to_lowercase();
+    if sel == "qe" || sel.contains("qesession") {
+        Dialect::QeSession
+    } else if sel.contains("datasourcemanager") {
+        Dialect::Catalog
+    } else if sel.contains("reportparameters") {
+        Dialect::ReportParameters
+    } else {
+        Dialect::Contents
+    }
 }
 
 /// Collect every record of type `want` (pre-order) under `node`, recording its path and both byte
 /// views. `path` is the ancestor-type chain of `node`.
 fn collect_matches(
     node: &RecordNode,
-    logical: &[u8],
+    source: &RecordStream,
     stream: &str,
     path: &[u16],
     depth: usize,
     want: u16,
     out: &mut Vec<DumpMatch>,
 ) {
+    let logical = source.logical_bytes();
+    let dialect = source.dialect();
     if node.rtype == want {
         let end = node.content_end.min(logical.len());
         let whole = logical.get(node.offset..end).unwrap_or(&[]).to_vec();
         out.push(DumpMatch {
             stream: stream.to_string(),
+            dialect,
             rtype: node.rtype,
-            subtype: node.subtype,
+            schema: node.schema,
             offset: node.offset,
             content_start: node.content_start,
             content_end: node.content_end,
@@ -61,29 +72,25 @@ fn collect_matches(
             depth,
             path: path.to_vec(),
             children: node.children.iter().map(|c| c.rtype).collect(),
-            leaf: node.leaf_bytes(logical),
+            joined_runs: node.joined_runs(logical),
+            run_lengths: node.runs(logical).map(|r| r.len()).collect(),
             whole,
+            table: source.fields(node),
         });
     }
     let mut child_path = path.to_vec();
     child_path.push(node.rtype);
     for c in &node.children {
-        collect_matches(c, logical, stream, &child_path, depth + 1, want, out);
+        collect_matches(c, source, stream, &child_path, depth + 1, want, out);
     }
 }
 
 /// Gather the matches for one file, applying the type and `--nth` selectors.
 pub(super) fn gather(rpt: &Rpt, opts: &DumpOpts, want: u16) -> Vec<DumpMatch> {
     let mut matches = Vec::new();
-    for (name, stream, is_qe) in select_streams(rpt, opts.stream.as_deref()) {
-        let logical = stream.logical_bytes();
-        let tree = if is_qe {
-            stream.qe_record_tree()
-        } else {
-            stream.record_tree()
-        };
-        for root in &tree {
-            collect_matches(root, logical, &name, &[], 0, want, &mut matches);
+    for (name, stream, _) in select_streams(rpt, opts.stream.as_deref()) {
+        for root in &stream.record_tree() {
+            collect_matches(root, stream, &name, &[], 0, want, &mut matches);
         }
     }
     if let Some(n) = opts.nth {

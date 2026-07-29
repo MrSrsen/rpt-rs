@@ -245,11 +245,12 @@ fn chart_series_ungrouped_honours_weekly_period() {
     assert_eq!(values, vec![5.0, 10.0, 15.0], "one row per weekly bucket");
 }
 
-/// A per-category-coloured bar chart draws a per-category legend (each category label appears twice:
-/// once on the X axis, once in the legend); a single-colour area/line chart draws no legend, so each
-/// category appears once.
+/// A per-category-colored bar chart draws a per-category legend (each category label appears twice:
+/// once on the X axis, once in the legend). A single-color area/line chart never lists categories:
+/// with a derivable series name it draws one entry naming the series, and without one it draws no
+/// legend at all — so either way each category appears exactly once.
 #[test]
-fn area_and_line_suppress_per_category_legend_bar_keeps_it() {
+fn area_and_line_legend_their_series_never_their_categories() {
     use rpt_model::ChartGraphType as Gt;
     let count = |texts: &[String], want: &str| texts.iter().filter(|t| *t == want).count();
 
@@ -753,14 +754,18 @@ fn riser_3d_chart_dispatches_to_the_perspective_path() {
     );
     let doc = rendered(&report, &saved);
 
-    // The 3-D path draws filled polygon faces (3 scenery planes + 3 per riser), no bar rects.
+    // The 3-D path draws filled polygon faces (the room's nine + 3 per riser), no bar rects.
     let polys = doc.pages[0]
         .ops
         .iter()
         .filter(|op| matches!(op, DrawOp::Polygon(p) if p.closed && p.fill.is_some()))
         .count();
-    // 2 categories (single series) → 3 scenery planes + 3 faces × 2 risers = 9.
-    assert_eq!(polys, 9, "expected 3 planes + 3 faces/riser, got {polys}");
+    // 2 categories (single series) → the room's nine faces + 3 faces × 2 risers = 15.
+    assert_eq!(
+        polys,
+        9 + 6,
+        "expected the room + 3 faces/riser, got {polys}"
+    );
     // The default (Standard) view angle is decoded and rendered at its native angle, so no
     // approximation diagnostic fires; nor does the generic bar-fallback one.
     assert!(
@@ -779,7 +784,7 @@ fn riser_3d_chart_dispatches_to_the_perspective_path() {
     );
 
     // A non-default preset is rendered at an approximated angle (its disk byte→preset mapping is not
-    // currently decoded), so it DOES record the approximation diagnostic.
+    // decoded), so it DOES record the approximation diagnostic.
     let mut report2 = report.clone();
     if let Some(obj) = report2.report_definition.areas[0].sections[0]
         .objects
@@ -879,7 +884,7 @@ fn gantt_chart_draws_one_horizontal_bar_per_record() {
 
 #[test]
 fn legend_reserves_a_band_on_each_side() {
-    use crate::chart::{legend, LegendPosition as LP};
+    use crate::chart::{legend, ChartStyle, LegendPosition as LP};
     let rect = Rect {
         left: Twips(0),
         top: Twips(0),
@@ -893,28 +898,60 @@ fn legend_reserves_a_band_on_each_side() {
     ];
 
     // Each position shrinks the body rect on the correct side and draws swatch + label ops.
-    let (ops_r, body_r) = legend(rect, LP::Right, &series, false, "S", "G");
+    let (ops_r, body_r) = legend(
+        ChartStyle::test(rect.height),
+        rect,
+        LP::Right,
+        &series,
+        false,
+        "S",
+        "G",
+    );
     assert!(
         body_r.width.0 < rect.width.0 && body_r.left.0 == rect.left.0,
         "Right shrinks width, keeps left"
     );
-    let (_ops_l, body_l) = legend(rect, LP::Left, &series, false, "S", "G");
+    let (_ops_l, body_l) = legend(
+        ChartStyle::test(rect.height),
+        rect,
+        LP::Left,
+        &series,
+        false,
+        "S",
+        "G",
+    );
     assert!(
         body_l.width.0 < rect.width.0 && body_l.left.0 > rect.left.0,
         "Left shrinks width, pushes left in"
     );
-    let (_ops_t, body_t) = legend(rect, LP::Top, &series, false, "S", "G");
+    let (_ops_t, body_t) = legend(
+        ChartStyle::test(rect.height),
+        rect,
+        LP::Top,
+        &series,
+        false,
+        "S",
+        "G",
+    );
     assert!(
         body_t.height.0 < rect.height.0 && body_t.top.0 > rect.top.0,
         "Top shrinks height, pushes top down"
     );
-    let (_ops_b, body_b) = legend(rect, LP::Bottom, &series, false, "S", "G");
+    let (_ops_b, body_b) = legend(
+        ChartStyle::test(rect.height),
+        rect,
+        LP::Bottom,
+        &series,
+        false,
+        "S",
+        "G",
+    );
     assert!(
         body_b.height.0 < rect.height.0 && body_b.top.0 == rect.top.0,
         "Bottom shrinks height, keeps top"
     );
 
-    // One colour swatch (Rect) + one label (Text) per series entry.
+    // One color swatch (Rect) + one label (Text) per series entry.
     let swatches = ops_r
         .iter()
         .filter(|op| matches!(op, DrawOp::Rect(_)))
@@ -925,4 +962,26 @@ fn legend_reserves_a_band_on_each_side() {
         .count();
     assert_eq!(swatches, 3, "one swatch per entry");
     assert_eq!(labels, 3, "one label per entry");
+}
+
+/// The single-color families legend the summary they plot, the way the engine does: one entry
+/// reading `Sum of amt`, and never the category list the per-category families draw.
+#[test]
+fn a_single_color_family_legends_its_series_by_name() {
+    use rpt_model::ChartGraphType as Gt;
+    let count = |texts: &[String], want: &str| texts.iter().filter(|t| *t == want).count();
+
+    for gt in [Gt::Area, Gt::Line] {
+        let texts = chart_render_texts_bound(gt, "Sum ({t.amt}, {t.cat}, \"daily\")");
+        assert_eq!(
+            count(&texts, "Sum of amt"),
+            1,
+            "{gt:?} legends the series it plots: {texts:?}"
+        );
+        assert_eq!(
+            count(&texts, "Alpha"),
+            1,
+            "{gt:?} still draws no category legend: {texts:?}"
+        );
+    }
 }

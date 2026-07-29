@@ -52,7 +52,7 @@ pub enum CurrencyPosition {
     TrailingSpace,
 }
 
-/// The order a locale lays out a date's day/month/year components (native `RDDateOrder`).
+/// The order a locale lays out a date's day/month/year components.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum DateOrder {
@@ -108,6 +108,10 @@ pub struct Locale {
     pub currency_symbol: &'static str,
     /// Where the currency symbol sits by default.
     pub currency_position: CurrencyPosition,
+    /// How a system-default **currency** amount shows a negative. Windows keeps this separate from the
+    /// negative *number* form, which is always a leading minus: en-US brackets an amount (`($1.10)`)
+    /// where every other built-in locale leads it with a minus.
+    pub currency_negative: NegativeStyle,
     /// Decimal places a value type formats with by default (Crystal's en-US default is `2`).
     pub default_decimals: u32,
 }
@@ -148,6 +152,9 @@ impl Locale {
             negative: NegativeStyle::LeadingMinus,
             leading_zero: true,
             suppress_if_zero: false,
+            reserve_sign: false,
+            reverse_sign: false,
+            zero_value: None,
         }
     }
 }
@@ -308,6 +315,7 @@ pub const EN_US: Locale = Locale {
     pm: "PM",
     currency_symbol: "$",
     currency_position: CurrencyPosition::LeadingNoSpace,
+    currency_negative: NegativeStyle::Parens,
     default_decimals: 2,
 };
 
@@ -327,6 +335,7 @@ const EN_GB: Locale = Locale {
     pm: "PM",
     currency_symbol: "£",
     currency_position: CurrencyPosition::LeadingNoSpace,
+    currency_negative: NegativeStyle::LeadingMinus,
     default_decimals: 2,
 };
 
@@ -346,6 +355,7 @@ const DE_DE: Locale = Locale {
     pm: "",
     currency_symbol: "€",
     currency_position: CurrencyPosition::TrailingSpace,
+    currency_negative: NegativeStyle::LeadingMinus,
     default_decimals: 2,
 };
 
@@ -365,6 +375,7 @@ const FR_FR: Locale = Locale {
     pm: "",
     currency_symbol: "€",
     currency_position: CurrencyPosition::TrailingSpace,
+    currency_negative: NegativeStyle::LeadingMinus,
     default_decimals: 2,
 };
 
@@ -384,6 +395,7 @@ const ES_ES: Locale = Locale {
     pm: "",
     currency_symbol: "€",
     currency_position: CurrencyPosition::TrailingSpace,
+    currency_negative: NegativeStyle::LeadingMinus,
     default_decimals: 2,
 };
 
@@ -403,6 +415,7 @@ const IT_IT: Locale = Locale {
     pm: "",
     currency_symbol: "€",
     currency_position: CurrencyPosition::TrailingNoSpace,
+    currency_negative: NegativeStyle::LeadingMinus,
     default_decimals: 2,
 };
 
@@ -427,6 +440,19 @@ pub struct NumberFormat {
     pub leading_zero: bool,
     /// Render an empty string when the value rounds to zero (SDK `EnableSuppressIfZero`).
     pub suppress_if_zero: bool,
+    /// Pad a positive value with a space in each character cell its negative form would occupy, so
+    /// the two line up in one column: `1,234` beside `(1,234)` prints as ` 1,234 `. A cell already
+    /// filled by a leading/trailing currency symbol is not padded. Off by default — it is a report
+    /// field's display rule, not a property of number-to-text conversion.
+    pub reserve_sign: bool,
+    /// Negate the value for display only (SDK `DisplayReverseSign`, the debit/credit column). The
+    /// flip happens before everything else, so [`negative`](Self::negative) applies to the *shown*
+    /// sign: a stored `1` under a bracketed negative prints `(1)`.
+    pub reverse_sign: bool,
+    /// Literal shown in place of a value that rounds to zero (SDK `ZeroValueString`). `None` formats
+    /// the zero normally. It replaces the whole rendering, currency symbol included, but yields to
+    /// [`suppress_if_zero`](Self::suppress_if_zero), which blanks the field outright.
+    pub zero_value: Option<String>,
 }
 
 impl Default for NumberFormat {
@@ -439,6 +465,9 @@ impl Default for NumberFormat {
             negative: NegativeStyle::LeadingMinus,
             leading_zero: true,
             suppress_if_zero: false,
+            reserve_sign: false,
+            reverse_sign: false,
+            zero_value: None,
         }
     }
 }
@@ -499,12 +528,17 @@ impl Default for DateFormat {
 pub struct TimeFormat {
     /// The time pattern (`h`/`m`/`s`/`tt` fields; see [`format_time`]).
     pub pattern: String,
+    /// The AM/PM designator pair (`(am, pm)`) the `tt` token renders, overriding the locale's.
+    /// A field that stores its own designators keeps any spacing inside the strings (`" am"`);
+    /// `None` takes the pair from the locale.
+    pub am_pm: Option<(String, String)>,
 }
 
 impl Default for TimeFormat {
     fn default() -> TimeFormat {
         TimeFormat {
             pattern: "h:mm:sstt".to_string(),
+            am_pm: None,
         }
     }
 }
@@ -540,9 +574,17 @@ pub enum FormatSpec {
     Date(DateFormat),
     /// Time formatting.
     Time(TimeFormat),
-    /// Combined date-and-time formatting; the third element is the stored `DateTimeSeparator`
-    /// placed between the date and time parts.
-    DateTime(DateFormat, TimeFormat, String),
+    /// Combined date-and-time formatting.
+    DateTime {
+        /// Formatting of the date part.
+        date: DateFormat,
+        /// Formatting of the time part.
+        time: TimeFormat,
+        /// Text placed between the two parts (the stored `DateTimeSeparator`).
+        separator: String,
+        /// Render the time part first (`TimeThenDate`) rather than the date part.
+        time_first: bool,
+    },
     /// Boolean formatting.
     Bool(BoolFormat),
     /// String values pass through unchanged.
@@ -551,11 +593,12 @@ pub enum FormatSpec {
 
 /// Format a number per `spec`. Rounds half away from zero (the engine's rule).
 pub fn format_number(value: f64, spec: &NumberFormat) -> String {
+    let value = apply_reverse_sign(value, spec);
     let neg = value < 0.0;
     let scale = 10f64.powi(spec.decimals as i32);
     let scaled = (value.abs() * scale).round();
-    if spec.suppress_if_zero && scaled == 0.0 {
-        return String::new();
+    if let Some(text) = zero_override(scaled, spec) {
+        return text;
     }
     let int_part = (scaled / scale).trunc() as u128;
     let frac_part = (scaled % scale) as u128;
@@ -575,17 +618,32 @@ pub fn format_number(value: f64, spec: &NumberFormat) -> String {
             width = spec.decimals as usize
         ));
     }
-    apply_negative(&body, neg, spec.negative)
+    let signed = apply_negative(&body, neg, spec.negative);
+    if spec.reserve_sign && !neg {
+        reserve_sign_cells(signed, spec.negative, false, false)
+    } else {
+        signed
+    }
 }
 
 /// Format a currency value per `spec`.
 pub fn format_currency(value: f64, spec: &CurrencyFormat) -> String {
     // The sign wraps the whole thing; format the magnitude with the symbol, then apply the sign.
+    let value = apply_reverse_sign(value, &spec.number);
     let neg = value < 0.0;
+    let scale = 10f64.powi(spec.number.decimals as i32);
+    // A zero override replaces the whole rendering, symbol included, so it is resolved before the
+    // amount is built rather than substituted into it.
+    if let Some(text) = zero_override((value.abs() * scale).round(), &spec.number) {
+        return text;
+    }
     let magnitude = format_number(
         value.abs(),
         &NumberFormat {
             negative: NegativeStyle::LeadingMinus, // unused (abs is non-negative)
+            reserve_sign: false, // the sign cells wrap the symbol too, so they are added below
+            reverse_sign: false, // already applied to `value`
+            zero_value: None,    // already resolved above
             ..spec.number.clone()
         },
     );
@@ -599,7 +657,18 @@ pub fn format_currency(value: f64, spec: &CurrencyFormat) -> String {
         CurrencyPosition::TrailingNoSpace => format!("{}{}", magnitude, spec.symbol),
         CurrencyPosition::TrailingSpace => format!("{} {}", magnitude, spec.symbol),
     };
-    apply_negative(&with_symbol, neg, spec.number.negative)
+    let signed = apply_negative(&with_symbol, neg, spec.number.negative);
+    if spec.number.reserve_sign && !neg {
+        let leading = !spec.symbol.is_empty()
+            && matches!(
+                spec.position,
+                CurrencyPosition::LeadingNoSpace | CurrencyPosition::LeadingSpace
+            );
+        let trailing = !spec.symbol.is_empty() && !leading;
+        reserve_sign_cells(signed, spec.number.negative, leading, trailing)
+    } else {
+        signed
+    }
 }
 
 /// Format a boolean per `spec`.
@@ -628,10 +697,23 @@ pub fn format_time(time: Time, spec: &TimeFormat) -> String {
     format_time_in(time, spec, &EN_US)
 }
 
-/// Format a time per `spec.pattern`, taking AM/PM designators from `loc`. Supported tokens: `HH`
-/// `H` (24h) `hh` `h` (12h) `mm` `m` `ss` `s` `tt` (AM/PM) `t` (A/P).
+/// Format a time per `spec.pattern`, taking AM/PM designators from `spec.am_pm` when it sets them
+/// and from `loc` otherwise. Supported tokens: `HHH` `HH` `H` (24h) `hhh` `hh` `h` (12h) `mm` `m`
+/// `ss` `s` `tt` (AM/PM) `t` (A/P). The three-letter hour forms render into a fixed two-character
+/// cell, space-padded rather than zero-padded (`" 9"`).
 pub fn format_time_in(time: Time, spec: &TimeFormat, loc: &Locale) -> String {
-    render_pattern(&spec.pattern, |tok| time_token(time, tok, loc))
+    render_pattern(&spec.pattern, |tok| {
+        time_token(time, tok, loc).map(|s| match (tok, &spec.am_pm) {
+            ("tt", Some((am, pm))) => {
+                if time.hour >= 12 {
+                    pm.clone()
+                } else {
+                    am.clone()
+                }
+            }
+            _ => s,
+        })
+    })
 }
 
 /// Format a datetime as `<date> <time>` (en-US names).
@@ -690,6 +772,30 @@ fn group_thousands(digits: &str, sep: char) -> String {
     out
 }
 
+/// Flip the value for a reverse-sign field, before any other formatting decision is taken. `-0.0`
+/// is normalized away so a reversed zero does not acquire a sign.
+fn apply_reverse_sign(value: f64, spec: &NumberFormat) -> f64 {
+    if spec.reverse_sign && value != 0.0 {
+        -value
+    } else {
+        value
+    }
+}
+
+/// The replacement text for a value that rounds to zero: nothing at all when the field suppresses
+/// zeros, else the field's `ZeroValueString` when it sets one. Suppression wins — a suppressed zero
+/// prints blank even where a zero literal is also set. `scaled` is the already-rounded magnitude, so
+/// what counts as zero is what the field's decimal places would *show* as zero.
+fn zero_override(scaled: f64, spec: &NumberFormat) -> Option<String> {
+    if scaled != 0.0 {
+        return None;
+    }
+    if spec.suppress_if_zero {
+        return Some(String::new());
+    }
+    spec.zero_value.clone()
+}
+
 fn apply_negative(body: &str, neg: bool, style: NegativeStyle) -> String {
     if !neg {
         return body.to_string();
@@ -698,6 +804,32 @@ fn apply_negative(body: &str, neg: bool, style: NegativeStyle) -> String {
         NegativeStyle::LeadingMinus => format!("-{body}"),
         NegativeStyle::TrailingMinus => format!("{body}-"),
         NegativeStyle::Parens => format!("({body})"),
+    }
+}
+
+/// Pad a positive value into the character cells its negative form would occupy, one space per cell:
+/// a leading cell for `-`/`(`, a trailing cell for `)`/a trailing `-`. A cell the currency symbol
+/// already fills is left alone, so a leading-symbol amount pads only on the right (`$53.90 `) while a
+/// symbol-less one under the same parenthesised negative pads on both (` 3080 `). A blank (suppressed)
+/// value stays blank.
+fn reserve_sign_cells(
+    body: String,
+    style: NegativeStyle,
+    symbol_leading: bool,
+    symbol_trailing: bool,
+) -> String {
+    if body.is_empty() {
+        return body;
+    }
+    let lead =
+        matches!(style, NegativeStyle::LeadingMinus | NegativeStyle::Parens) && !symbol_leading;
+    let trail =
+        matches!(style, NegativeStyle::TrailingMinus | NegativeStyle::Parens) && !symbol_trailing;
+    match (lead, trail) {
+        (false, false) => body,
+        (true, false) => format!(" {body}"),
+        (false, true) => format!("{body} "),
+        (true, true) => format!(" {body} "),
     }
 }
 
@@ -759,8 +891,12 @@ fn date_token(d: Date, tok: &str, loc: &Locale) -> Option<String> {
 fn time_token(t: Time, tok: &str, loc: &Locale) -> Option<String> {
     let (h12, pm) = to_12h(t.hour);
     Some(match tok {
+        // The three-letter forms are the fixed two-cell hour Crystal's "no leading zero" hour
+        // element renders into: right-aligned in two characters rather than zero-padded.
+        "HHH" => format!("{:>2}", t.hour),
         "HH" => format!("{:02}", t.hour),
         "H" => t.hour.to_string(),
+        "hhh" => format!("{h12:>2}"),
         "hh" => format!("{:02}", h12),
         "h" => h12.to_string(),
         "mm" => format!("{:02}", t.minute),
@@ -820,6 +956,100 @@ mod tests {
         };
         assert_eq!(format_number(0.5, &spec), ".50");
         assert_eq!(format_number(-0.5, &spec), "-.50");
+    }
+
+    /// `DisplayReverseSign` negates the value for display: a stored positive prints negative and
+    /// vice versa.
+    #[test]
+    fn reverse_sign_flips_the_displayed_sign() {
+        let spec = NumberFormat {
+            reverse_sign: true,
+            ..NumberFormat::default()
+        };
+        assert_eq!(format_number(1.0, &spec), "-1.00");
+        assert_eq!(format_number(-1.0, &spec), "1.00");
+    }
+
+    /// The flip happens before the negative style is chosen, so a reversed positive is bracketed
+    /// where the unreversed one would not be.
+    #[test]
+    fn reverse_sign_applies_before_the_negative_style() {
+        let spec = NumberFormat {
+            reverse_sign: true,
+            negative: NegativeStyle::Parens,
+            ..NumberFormat::default()
+        };
+        assert_eq!(format_number(12.0, &spec), "(12.00)");
+        assert_eq!(format_number(-12.0, &spec), "12.00");
+    }
+
+    /// A reversed zero has no sign to flip and stays plain.
+    #[test]
+    fn reverse_sign_leaves_zero_unsigned() {
+        let spec = NumberFormat {
+            reverse_sign: true,
+            ..NumberFormat::default()
+        };
+        assert_eq!(format_number(0.0, &spec), "0.00");
+    }
+
+    /// `ZeroValueString` replaces the whole rendering of a zero, and leaves every other value alone.
+    #[test]
+    fn zero_value_string_replaces_the_zero() {
+        let spec = NumberFormat {
+            zero_value: Some("n/a".to_string()),
+            ..NumberFormat::default()
+        };
+        assert_eq!(format_number(0.0, &spec), "n/a");
+        assert_eq!(format_number(1.0, &spec), "1.00");
+    }
+
+    /// What counts as zero is what the field's decimal places would *show* as zero: `0.001` at two
+    /// decimals rounds to `0.00` and takes the literal.
+    #[test]
+    fn zero_value_string_fires_on_a_value_that_rounds_to_zero() {
+        let spec = NumberFormat {
+            zero_value: Some("n/a".to_string()),
+            ..NumberFormat::default()
+        };
+        assert_eq!(format_number(0.001, &spec), "n/a");
+        assert_eq!(format_number(0.006, &spec), "0.01");
+    }
+
+    /// A field that both suppresses zeros and sets a zero literal prints neither: suppression wins.
+    #[test]
+    fn suppress_if_zero_beats_the_zero_value_string() {
+        let spec = NumberFormat {
+            zero_value: Some("n/a".to_string()),
+            suppress_if_zero: true,
+            ..NumberFormat::default()
+        };
+        assert_eq!(format_number(0.0, &spec), "");
+    }
+
+    /// A field with no leading zero drops it from the zero value too (`.00`, not `0.00`).
+    #[test]
+    fn no_leading_zero_applies_to_the_zero_value() {
+        let spec = NumberFormat {
+            leading_zero: false,
+            ..NumberFormat::default()
+        };
+        assert_eq!(format_number(0.0, &spec), ".00");
+    }
+
+    /// On a currency field the literal replaces the symbol too — it is the whole rendering, not a
+    /// substitution into the amount.
+    #[test]
+    fn zero_value_string_replaces_the_currency_symbol_too() {
+        let spec = CurrencyFormat {
+            number: NumberFormat {
+                zero_value: Some("n/a".to_string()),
+                ..NumberFormat::default()
+            },
+            ..CurrencyFormat::default()
+        };
+        assert_eq!(format_currency(0.0, &spec), "n/a");
+        assert_eq!(format_currency(1.0, &spec), "$1.00");
     }
 
     #[test]
@@ -896,7 +1126,8 @@ mod tests {
             format_time(
                 t,
                 &TimeFormat {
-                    pattern: "HH:mm".into()
+                    pattern: "HH:mm".into(),
+                    ..Default::default()
                 }
             ),
             "14:05"
@@ -905,7 +1136,8 @@ mod tests {
             format_time(
                 Time::new(0, 0, 0),
                 &TimeFormat {
-                    pattern: "h:mm tt".into()
+                    pattern: "h:mm tt".into(),
+                    ..Default::default()
                 }
             ),
             "12:00 AM"
@@ -979,7 +1211,8 @@ mod tests {
             format_time_in(
                 t,
                 &TimeFormat {
-                    pattern: "h:mmtt".into()
+                    pattern: "h:mmtt".into(),
+                    ..Default::default()
                 },
                 &EN_US
             ),
@@ -989,12 +1222,42 @@ mod tests {
             format_time_in(
                 t,
                 &TimeFormat {
-                    pattern: "h:mmtt".into()
+                    pattern: "h:mmtt".into(),
+                    ..Default::default()
                 },
                 &Locale::from_tag("de-DE")
             ),
             "2:05"
         );
+    }
+
+    #[test]
+    fn stored_designators_override_the_locale() {
+        let spec = TimeFormat {
+            pattern: "h:mmtt".into(),
+            am_pm: Some((" am".into(), " pm".into())),
+        };
+        assert_eq!(
+            format_time_in(Time::new(0, 0, 0), &spec, &EN_US),
+            "12:00 am"
+        );
+        assert_eq!(
+            format_time_in(Time::new(14, 5, 0), &spec, &EN_US),
+            "2:05 pm"
+        );
+    }
+
+    #[test]
+    fn three_letter_hour_fills_two_cells() {
+        let spec = |p: &str| TimeFormat {
+            pattern: p.into(),
+            ..Default::default()
+        };
+        assert_eq!(format_time(Time::new(0, 0, 0), &spec("HHH:mm")), " 0:00");
+        assert_eq!(format_time(Time::new(9, 0, 0), &spec("HHH:mm")), " 9:00");
+        assert_eq!(format_time(Time::new(14, 0, 0), &spec("HHH:mm")), "14:00");
+        assert_eq!(format_time(Time::new(9, 0, 0), &spec("hhh:mm")), " 9:00");
+        assert_eq!(format_time(Time::new(23, 0, 0), &spec("hhh:mm")), "11:00");
     }
 
     #[test]

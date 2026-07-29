@@ -5,7 +5,7 @@ use crate::context::{DataContext, FormulaRegistry, Parameters};
 use crate::source::Row;
 use crate::value_order::{compare_values, value_key};
 use crate::{GroupInstance, Summary, SummaryAccumulator};
-use crystal_formula::eval::Value;
+use rpt_formula::eval::Value;
 use rpt_model::{DataDefinition, FieldKindData, ResetConditionType, SummaryOperation};
 use std::cmp::Ordering;
 
@@ -288,11 +288,10 @@ pub(super) fn aggregate(
 /// `Null` when there is no usable data (no paired rows; a zero total weight; `Covariance` with fewer
 /// than two pairs; `Correlation` with a zero-variance field).
 ///
-/// COVARIANCE DIVISOR (n−1 vs n) is PROVISIONAL: `SummaryOperation` has no Pop/Sample split for
-/// covariance, so the engine's divisor is unknown. It defaults to the **sample** form (n−1) by
-/// analogy to the unqualified `SampleVariance`/`SampleStandardDeviation` in the same enum.
-/// `Correlation` is invariant to the choice (the divisor cancels), so only a standalone `Covariance`
-/// magnitude depends on this.
+/// `Covariance`'s divisor (n−1 vs n, unconfirmed) defaults to the sample form, by analogy with
+/// `SampleVariance`/`SampleStandardDeviation` — `SummaryOperation` has no Pop/Sample split for
+/// covariance to pin it exactly. `Correlation` is invariant to the choice (the divisor cancels), so
+/// only a standalone `Covariance` magnitude depends on it.
 fn two_field_aggregate(
     rows: &[Row],
     op: SummaryOperation,
@@ -326,7 +325,7 @@ fn two_field_aggregate(
             }
             let (mx, my) = pair_means(&pairs, n);
             let cross: f64 = pairs.iter().map(|(x, y)| (x - mx) * (y - my)).sum();
-            // Sample divisor (n−1); see the doc comment on the provisional Pop/Sample choice.
+            // Sample divisor (n−1); see the doc comment on the Pop/Sample choice above.
             Value::Number(cross / (n as f64 - 1.0))
         }
         SummaryOperation::Correlation => {

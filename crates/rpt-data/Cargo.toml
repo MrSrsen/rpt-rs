@@ -13,12 +13,12 @@ rust-version.workspace = true
 
 [dependencies]
 rpt-model = { workspace = true }
-crystal-formula = { workspace = true }
+rpt-formula = { workspace = true }
 thiserror = { workspace = true }
 
 [dev-dependencies]
 # Tests use the tree-walking `Evaluator` as a differential reference against the VM.
-crystal-formula = { workspace = true, features = ["differential"] }
+rpt-formula = { workspace = true, features = ["differential"] }
 rpt-test-support = { workspace = true }
 
 [lints]

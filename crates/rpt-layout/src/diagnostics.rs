@@ -1,13 +1,13 @@
 //! The bridge from the data pipeline's diagnostic vocabulary to the Page IR's.
 //!
-//! Two independent vocabularies existed: [`rpt_data::EvalDiagnostic`] for the record pipeline's
-//! fail-open sites, and [`rpt_pages::Diagnostic`] for layout/render fidelity gaps. Only the second
-//! ever reached the caller, and it had no way to *say* "your record selection failed" — so even with a
-//! sink attached, the data pipeline's most user-relevant failures could not be expressed.
+//! The record pipeline's fail-open sites use [`rpt_data::EvalDiagnostic`]; layout/render fidelity gaps
+//! use [`rpt_pages::Diagnostic`]. Only the second reaches the caller, and on its own it has no way to
+//! *say* "your record selection failed" — so a sink attached to it alone cannot express the data
+//! pipeline's most user-relevant failures.
 //!
 //! This module is the one conversion point. It lives here because `rpt-layout` is the only crate that
 //! depends on both, which keeps `rpt-data` free of a `rpt-pages` dependency (it must stay WASM-safe
-//! with minimal deps) and leaves the dependency graph as it was.
+//! with minimal deps).
 //!
 //! Nothing is dropped in the hand-off: kind maps to kind, `detail` to `message`, `source` to `source`,
 //! and the record index to the structured location. **Severity is added**, not derived from the data

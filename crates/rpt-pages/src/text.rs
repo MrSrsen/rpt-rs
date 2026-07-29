@@ -5,7 +5,7 @@
 //! (beside [`FontSpec`](crate::FontSpec)) so both the layout engine and the heavy real font stack
 //! (`rpt-text`) can share one definition without depending on each other.
 //!
-//! The default [`ApproxLayout`] is dependency-free and only *approximate*: a fixed average advance
+//! [`ApproxLayout`] is the dependency-free fallback, and only *approximate*: a fixed average advance
 //! per em, greedy space-based wrapping. Enough to trigger wrapping and stack lines, but NOT
 //! metric-accurate and NOT script-aware (it cannot wrap CJK, which has no spaces). The
 //! metric-accurate, international impl is `rpt-text`'s `CosmicLayout` (cosmic-text: real `hmtx`
@@ -29,8 +29,8 @@ pub trait TextLayout: std::fmt::Debug {
     }
 
     /// The baseline offset below a line's top edge in twips (the font's ascent). Default: ~0.8× the em
-    /// (the point-size heuristic the backends used to inline); a real impl overrides with the resolved
-    /// face's ascent so text sits on the same baseline across every backend.
+    /// (the point-size heuristic a backend would otherwise inline); a real impl overrides with the
+    /// resolved face's ascent so text sits on the same baseline across every backend.
     fn ascent_twips(&self, font: &FontSpec) -> f64 {
         font.size_pt as f64 * TWIPS_PER_PT * 0.8
     }

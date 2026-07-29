@@ -1,0 +1,6897 @@
+// document
+{
+  "sections": {
+    "DetailSection1": {
+      "band": "Detail"
+    },
+    "PageFooterSection1": {
+      "band": "PageFooter"
+    },
+    "PageHeaderSection1": {
+      "band": "PageHeader"
+    },
+    "ReportFooterSection1": {
+      "band": "ReportFooter"
+    },
+    "ReportFooterSection2": {
+      "band": "ReportFooter"
+    },
+    "ReportHeaderSection1": {
+      "band": "ReportHeader"
+    },
+    "ReportHeaderSection2": {
+      "band": "ReportHeader"
+    },
+    "SubreportsRow": {
+      "band": "ReportHeader"
+    },
+    "nameFooterSection1": {
+      "band": "GroupFooter",
+      "group_level": 0
+    },
+    "nameHeaderSection1": {
+      "band": "GroupHeader",
+      "group_level": 0
+    },
+    "orderdateFooterSection1": {
+      "band": "GroupFooter",
+      "group_level": 1
+    },
+    "orderdateHeaderSection1": {
+      "band": "GroupHeader",
+      "group_level": 1
+    }
+  }
+}
+// page 1
+{
+  "number": 1,
+  "size": {
+    "width": 11899,
+    "height": 16838
+  },
+  "origin": {
+    "x": 720,
+    "y": 720
+  },
+  "ops": [
+    {
+      "op": "Image",
+      "bounds": {
+        "left": 0,
+        "top": 0,
+        "width": 790,
+        "height": 790
+      },
+      "image_id": "Picture1",
+      "fit": "Contain",
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "Picture1",
+        "kind": "Image",
+        "instance": 0
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 900,
+        "top": 60,
+        "width": 4200,
+        "height": 240
+      },
+      "text": "MERIDIAN GLOBAL LOGISTICS",
+      "font": {
+        "family": "Arial",
+        "size_pt": 11.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 3080,
+        "ascent": 176,
+        "line_height": 264
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "MastCompany",
+        "kind": "Field",
+        "instance": 1
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 10598,
+        "top": 60,
+        "width": 4800,
+        "height": 400
+      },
+      "text": "EXECUTIVE DASHBOARD",
+      "font": {
+        "family": "Arial",
+        "size_pt": 16.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 3404,
+        "ascent": 256,
+        "line_height": 384
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "MastTitle",
+        "kind": "Field",
+        "instance": 2
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 0,
+        "y": 900
+      },
+      "to": {
+        "x": 15398,
+        "y": 900
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 140,
+          "b": 44
+        },
+        "width": 30,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "MastRule",
+        "kind": "Line",
+        "instance": 3
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 1030,
+        "width": 12198,
+        "height": 360
+      },
+      "text": "Revenue by region",
+      "font": {
+        "family": "MS Shell Dlg",
+        "size_pt": 9.75,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 3770,
+        "width": 840,
+        "height": 220
+      },
+      "text": "0",
+      "font": {
+        "family": "Arial",
+        "size_pt": 5.25,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 900,
+        "y": 3470
+      },
+      "to": {
+        "x": 12138,
+        "y": 3470
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 3360,
+        "width": 840,
+        "height": 220
+      },
+      "text": "400000",
+      "font": {
+        "family": "Arial",
+        "size_pt": 5.25,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 900,
+        "y": 3060
+      },
+      "to": {
+        "x": 12138,
+        "y": 3060
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 2950,
+        "width": 840,
+        "height": 220
+      },
+      "text": "800000",
+      "font": {
+        "family": "Arial",
+        "size_pt": 5.25,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 900,
+        "y": 2650
+      },
+      "to": {
+        "x": 12138,
+        "y": 2650
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 2540,
+        "width": 840,
+        "height": 220
+      },
+      "text": "1200000",
+      "font": {
+        "family": "Arial",
+        "size_pt": 5.25,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 900,
+        "y": 2240
+      },
+      "to": {
+        "x": 12138,
+        "y": 2240
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 2130,
+        "width": 840,
+        "height": 220
+      },
+      "text": "1600000",
+      "font": {
+        "family": "Arial",
+        "size_pt": 5.25,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 900,
+        "y": 1830
+      },
+      "to": {
+        "x": 12138,
+        "y": 1830
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 1720,
+        "width": 840,
+        "height": 220
+      },
+      "text": "2000000",
+      "font": {
+        "family": "Arial",
+        "size_pt": 5.25,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 900,
+        "y": 1420
+      },
+      "to": {
+        "x": 12138,
+        "y": 1420
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 1310,
+        "width": 840,
+        "height": 220
+      },
+      "text": "2400000",
+      "font": {
+        "family": "Arial",
+        "size_pt": 5.25,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 900,
+        "y": 1420
+      },
+      "to": {
+        "x": 900,
+        "y": 3880
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 85,
+          "g": 85,
+          "b": 85
+        },
+        "width": 15,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 900,
+        "y": 3880
+      },
+      "to": {
+        "x": 12138,
+        "y": 3880
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 85,
+          "g": 85,
+          "b": 85
+        },
+        "width": 15,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 1349,
+        "top": 1539,
+        "width": 1348,
+        "height": 2341
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 900,
+        "top": 3910,
+        "width": 2247,
+        "height": 320
+      },
+      "text": "Americas (North)",
+      "font": {
+        "family": "MS Shell Dlg",
+        "size_pt": 4.5,
+        "bold": true,
+        "italic": true,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 3596,
+        "top": 2863,
+        "width": 1348,
+        "height": 1017
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 239,
+          "g": 162,
+          "b": 82
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3147,
+        "top": 3910,
+        "width": 2247,
+        "height": 320
+      },
+      "text": "Asia Pacific",
+      "font": {
+        "family": "MS Shell Dlg",
+        "size_pt": 4.5,
+        "bold": true,
+        "italic": true,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 5843,
+        "top": 2488,
+        "width": 1348,
+        "height": 1392
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 0,
+          "g": 148,
+          "b": 112
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 5394,
+        "top": 3910,
+        "width": 2247,
+        "height": 320
+      },
+      "text": "Europe",
+      "font": {
+        "family": "MS Shell Dlg",
+        "size_pt": 4.5,
+        "bold": true,
+        "italic": true,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 8090,
+        "top": 3076,
+        "width": 1348,
+        "height": 804
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 221,
+          "g": 88,
+          "b": 31
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7641,
+        "top": 3910,
+        "width": 2247,
+        "height": 320
+      },
+      "text": "Latin America",
+      "font": {
+        "family": "MS Shell Dlg",
+        "size_pt": 4.5,
+        "bold": true,
+        "italic": true,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 10337,
+        "top": 3565,
+        "width": 1348,
+        "height": 315
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 162,
+          "g": 45,
+          "b": 98
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 9888,
+        "top": 3910,
+        "width": 2247,
+        "height": 320
+      },
+      "text": "Middle East & Africa",
+      "font": {
+        "family": "MS Shell Dlg",
+        "size_pt": 4.5,
+        "bold": true,
+        "italic": true,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 12288,
+        "top": 2105,
+        "width": 150,
+        "height": 150
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 12498,
+        "top": 2105,
+        "width": 2810,
+        "height": 140
+      },
+      "text": "Americas (North)",
+      "font": {
+        "family": "Arial",
+        "size_pt": 4.5,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 12288,
+        "top": 2315,
+        "width": 150,
+        "height": 150
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 239,
+          "g": 162,
+          "b": 82
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 12498,
+        "top": 2315,
+        "width": 2810,
+        "height": 140
+      },
+      "text": "Asia Pacific",
+      "font": {
+        "family": "Arial",
+        "size_pt": 4.5,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 12288,
+        "top": 2525,
+        "width": 150,
+        "height": 150
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 0,
+          "g": 148,
+          "b": 112
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 12498,
+        "top": 2525,
+        "width": 2810,
+        "height": 140
+      },
+      "text": "Europe",
+      "font": {
+        "family": "Arial",
+        "size_pt": 4.5,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 12288,
+        "top": 2735,
+        "width": 150,
+        "height": 150
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 221,
+          "g": 88,
+          "b": 31
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 12498,
+        "top": 2735,
+        "width": 2810,
+        "height": 140
+      },
+      "text": "Latin America",
+      "font": {
+        "family": "Arial",
+        "size_pt": 4.5,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 12288,
+        "top": 2945,
+        "width": 150,
+        "height": 150
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 162,
+          "g": 45,
+          "b": 98
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 12498,
+        "top": 2945,
+        "width": 2810,
+        "height": 140
+      },
+      "text": "Middle East & Africa",
+      "font": {
+        "family": "Arial",
+        "size_pt": 4.5,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "RegionRevenueBar",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": -360,
+        "top": 7362,
+        "width": 5000,
+        "height": 260
+      },
+      "text": "SHIPMENT OPS (mode split + KPIs)",
+      "font": {
+        "family": "Arial",
+        "size_pt": 10.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 3584,
+        "ascent": 160,
+        "line_height": 240
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "SubTitleLbl",
+        "kind": "Field",
+        "instance": 6
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": -360,
+        "top": 7692,
+        "width": 3600,
+        "height": 360
+      },
+      "text": "Shipments by mode",
+      "font": {
+        "family": "MS Shell Dlg",
+        "size_pt": 9.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "ModeSplitPie",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Polygon",
+      "points": [
+        {
+          "x": 1440,
+          "y": 9342
+        },
+        {
+          "x": 1440,
+          "y": 8334
+        },
+        {
+          "x": 1468,
+          "y": 8335
+        },
+        {
+          "x": 1496,
+          "y": 8336
+        },
+        {
+          "x": 1525,
+          "y": 8338
+        },
+        {
+          "x": 1553,
+          "y": 8341
+        },
+        {
+          "x": 1582,
+          "y": 8345
+        },
+        {
+          "x": 1610,
+          "y": 8349
+        },
+        {
+          "x": 1638,
+          "y": 8354
+        },
+        {
+          "x": 1666,
+          "y": 8360
+        },
+        {
+          "x": 1693,
+          "y": 8367
+        },
+        {
+          "x": 1721,
+          "y": 8375
+        },
+        {
+          "x": 1748,
+          "y": 8383
+        },
+        {
+          "x": 1775,
+          "y": 8392
+        },
+        {
+          "x": 1802,
+          "y": 8402
+        },
+        {
+          "x": 1828,
+          "y": 8412
+        },
+        {
+          "x": 1854,
+          "y": 8424
+        },
+        {
+          "x": 1880,
+          "y": 8436
+        },
+        {
+          "x": 1906,
+          "y": 8449
+        },
+        {
+          "x": 1931,
+          "y": 8462
+        },
+        {
+          "x": 1955,
+          "y": 8476
+        },
+        {
+          "x": 1980,
+          "y": 8491
+        }
+      ],
+      "closed": true,
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 255,
+          "g": 255,
+          "b": 255
+        },
+        "width": 20,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "ModeSplitPie",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1026,
+        "top": 8255,
+        "width": 1400,
+        "height": 200
+      },
+      "text": "Air",
+      "font": {
+        "family": "MS Shell Dlg",
+        "size_pt": 4.5,
+        "bold": true,
+        "italic": true,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "ModeSplitPie",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Polygon",
+      "points": [
+        {
+          "x": 1440,
+          "y": 9342
+        },
+        {
+          "x": 1980,
+          "y": 8491
+        },
+        {
+          "x": 2005,
+          "y": 8508
+        },
+        {
+          "x": 2029,
+          "y": 8525
+        },
+        {
+          "x": 2053,
+          "y": 8543
+        },
+        {
+          "x": 2076,
+          "y": 8561
+        },
+        {
+          "x": 2099,
+          "y": 8580
+        },
+        {
+          "x": 2121,
+          "y": 8600
+        },
+        {
+          "x": 2143,
+          "y": 8620
+        },
+        {
+          "x": 2164,
+          "y": 8641
+        },
+        {
+          "x": 2184,
+          "y": 8663
+        },
+        {
+          "x": 2204,
+          "y": 8685
+        },
+        {
+          "x": 2223,
+          "y": 8708
+        },
+        {
+          "x": 2241,
+          "y": 8732
+        },
+        {
+          "x": 2259,
+          "y": 8756
+        },
+        {
+          "x": 2276,
+          "y": 8780
+        },
+        {
+          "x": 2292,
+          "y": 8805
+        },
+        {
+          "x": 2308,
+          "y": 8830
+        },
+        {
+          "x": 2323,
+          "y": 8856
+        },
+        {
+          "x": 2336,
+          "y": 8883
+        },
+        {
+          "x": 2350,
+          "y": 8909
+        },
+        {
+          "x": 2362,
+          "y": 8936
+        },
+        {
+          "x": 2374,
+          "y": 8964
+        },
+        {
+          "x": 2384,
+          "y": 8992
+        },
+        {
+          "x": 2394,
+          "y": 9020
+        },
+        {
+          "x": 2403,
+          "y": 9048
+        },
+        {
+          "x": 2412,
+          "y": 9077
+        },
+        {
+          "x": 2419,
+          "y": 9105
+        },
+        {
+          "x": 2426,
+          "y": 9134
+        },
+        {
+          "x": 2431,
+          "y": 9164
+        },
+        {
+          "x": 2436,
+          "y": 9193
+        },
+        {
+          "x": 2440,
+          "y": 9222
+        },
+        {
+          "x": 2443,
+          "y": 9252
+        },
+        {
+          "x": 2446,
+          "y": 9282
+        },
+        {
+          "x": 2447,
+          "y": 9311
+        },
+        {
+          "x": 2447,
+          "y": 9341
+        },
+        {
+          "x": 2447,
+          "y": 9370
+        },
+        {
+          "x": 2446,
+          "y": 9400
+        },
+        {
+          "x": 2444,
+          "y": 9429
+        },
+        {
+          "x": 2441,
+          "y": 9459
+        },
+        {
+          "x": 2437,
+          "y": 9489
+        },
+        {
+          "x": 2432,
+          "y": 9518
+        },
+        {
+          "x": 2426,
+          "y": 9547
+        },
+        {
+          "x": 2420,
+          "y": 9576
+        },
+        {
+          "x": 2412,
+          "y": 9605
+        },
+        {
+          "x": 2404,
+          "y": 9634
+        },
+        {
+          "x": 2395,
+          "y": 9662
+        },
+        {
+          "x": 2385,
+          "y": 9690
+        },
+        {
+          "x": 2375,
+          "y": 9718
+        },
+        {
+          "x": 2363,
+          "y": 9745
+        },
+        {
+          "x": 2351,
+          "y": 9772
+        },
+        {
+          "x": 2338,
+          "y": 9799
+        },
+        {
+          "x": 2324,
+          "y": 9825
+        },
+        {
+          "x": 2309,
+          "y": 9851
+        },
+        {
+          "x": 2294,
+          "y": 9877
+        },
+        {
+          "x": 2277,
+          "y": 9902
+        },
+        {
+          "x": 2261,
+          "y": 9926
+        },
+        {
+          "x": 2243,
+          "y": 9950
+        },
+        {
+          "x": 2225,
+          "y": 9974
+        },
+        {
+          "x": 2206,
+          "y": 9997
+        },
+        {
+          "x": 2186,
+          "y": 10019
+        },
+        {
+          "x": 2166,
+          "y": 10041
+        },
+        {
+          "x": 2145,
+          "y": 10062
+        },
+        {
+          "x": 2123,
+          "y": 10082
+        },
+        {
+          "x": 2101,
+          "y": 10102
+        },
+        {
+          "x": 2078,
+          "y": 10121
+        },
+        {
+          "x": 2055,
+          "y": 10140
+        },
+        {
+          "x": 2031,
+          "y": 10158
+        },
+        {
+          "x": 2007,
+          "y": 10175
+        },
+        {
+          "x": 1982,
+          "y": 10191
+        },
+        {
+          "x": 1956,
+          "y": 10207
+        },
+        {
+          "x": 1931,
+          "y": 10222
+        }
+      ],
+      "closed": true,
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 239,
+          "g": 162,
+          "b": 82
+        }
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 255,
+          "g": 255,
+          "b": 255
+        },
+        "width": 20,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "ModeSplitPie",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1767,
+        "top": 9271,
+        "width": 1400,
+        "height": 200
+      },
+      "text": "Ocean",
+      "font": {
+        "family": "MS Shell Dlg",
+        "size_pt": 4.5,
+        "bold": true,
+        "italic": true,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "ModeSplitPie",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Polygon",
+      "points": [
+        {
+          "x": 1440,
+          "y": 9342
+        },
+        {
+          "x": 1931,
+          "y": 10222
+        },
+        {
+          "x": 1905,
+          "y": 10236
+        },
+        {
+          "x": 1879,
+          "y": 10249
+        },
+        {
+          "x": 1852,
+          "y": 10261
+        },
+        {
+          "x": 1825,
+          "y": 10273
+        },
+        {
+          "x": 1798,
+          "y": 10284
+        },
+        {
+          "x": 1770,
+          "y": 10294
+        },
+        {
+          "x": 1743,
+          "y": 10303
+        },
+        {
+          "x": 1715,
+          "y": 10311
+        },
+        {
+          "x": 1686,
+          "y": 10319
+        },
+        {
+          "x": 1658,
+          "y": 10326
+        },
+        {
+          "x": 1629,
+          "y": 10331
+        },
+        {
+          "x": 1600,
+          "y": 10337
+        },
+        {
+          "x": 1571,
+          "y": 10341
+        },
+        {
+          "x": 1542,
+          "y": 10344
+        },
+        {
+          "x": 1513,
+          "y": 10347
+        },
+        {
+          "x": 1484,
+          "y": 10349
+        },
+        {
+          "x": 1455,
+          "y": 10349
+        },
+        {
+          "x": 1426,
+          "y": 10349
+        },
+        {
+          "x": 1397,
+          "y": 10349
+        },
+        {
+          "x": 1368,
+          "y": 10347
+        },
+        {
+          "x": 1339,
+          "y": 10344
+        },
+        {
+          "x": 1309,
+          "y": 10341
+        },
+        {
+          "x": 1280,
+          "y": 10337
+        },
+        {
+          "x": 1252,
+          "y": 10332
+        },
+        {
+          "x": 1223,
+          "y": 10326
+        },
+        {
+          "x": 1194,
+          "y": 10319
+        },
+        {
+          "x": 1166,
+          "y": 10311
+        },
+        {
+          "x": 1138,
+          "y": 10303
+        },
+        {
+          "x": 1110,
+          "y": 10294
+        },
+        {
+          "x": 1083,
+          "y": 10284
+        },
+        {
+          "x": 1055,
+          "y": 10273
+        },
+        {
+          "x": 1029,
+          "y": 10261
+        }
+      ],
+      "closed": true,
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 0,
+          "g": 148,
+          "b": 112
+        }
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 255,
+          "g": 255,
+          "b": 255
+        },
+        "width": 20,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "ModeSplitPie",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 785,
+        "top": 10269,
+        "width": 1400,
+        "height": 200
+      },
+      "text": "Rail",
+      "font": {
+        "family": "MS Shell Dlg",
+        "size_pt": 4.5,
+        "bold": true,
+        "italic": true,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "ModeSplitPie",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Polygon",
+      "points": [
+        {
+          "x": 1440,
+          "y": 9342
+        },
+        {
+          "x": 1029,
+          "y": 10261
+        },
+        {
+          "x": 1002,
+          "y": 10249
+        },
+        {
+          "x": 975,
+          "y": 10236
+        },
+        {
+          "x": 949,
+          "y": 10221
+        },
+        {
+          "x": 923,
+          "y": 10206
+        },
+        {
+          "x": 898,
+          "y": 10191
+        },
+        {
+          "x": 873,
+          "y": 10174
+        },
+        {
+          "x": 848,
+          "y": 10157
+        },
+        {
+          "x": 824,
+          "y": 10139
+        },
+        {
+          "x": 801,
+          "y": 10121
+        },
+        {
+          "x": 778,
+          "y": 10102
+        },
+        {
+          "x": 756,
+          "y": 10082
+        },
+        {
+          "x": 735,
+          "y": 10061
+        },
+        {
+          "x": 714,
+          "y": 10040
+        },
+        {
+          "x": 693,
+          "y": 10018
+        },
+        {
+          "x": 674,
+          "y": 9996
+        },
+        {
+          "x": 655,
+          "y": 9973
+        },
+        {
+          "x": 636,
+          "y": 9949
+        },
+        {
+          "x": 619,
+          "y": 9925
+        },
+        {
+          "x": 602,
+          "y": 9901
+        },
+        {
+          "x": 586,
+          "y": 9876
+        },
+        {
+          "x": 570,
+          "y": 9850
+        },
+        {
+          "x": 556,
+          "y": 9824
+        },
+        {
+          "x": 542,
+          "y": 9798
+        },
+        {
+          "x": 529,
+          "y": 9771
+        },
+        {
+          "x": 516,
+          "y": 9744
+        },
+        {
+          "x": 505,
+          "y": 9716
+        },
+        {
+          "x": 494,
+          "y": 9688
+        },
+        {
+          "x": 484,
+          "y": 9660
+        },
+        {
+          "x": 475,
+          "y": 9632
+        },
+        {
+          "x": 467,
+          "y": 9603
+        },
+        {
+          "x": 460,
+          "y": 9574
+        },
+        {
+          "x": 453,
+          "y": 9545
+        },
+        {
+          "x": 448,
+          "y": 9516
+        },
+        {
+          "x": 443,
+          "y": 9487
+        },
+        {
+          "x": 439,
+          "y": 9457
+        },
+        {
+          "x": 436,
+          "y": 9427
+        },
+        {
+          "x": 434,
+          "y": 9398
+        },
+        {
+          "x": 433,
+          "y": 9368
+        },
+        {
+          "x": 433,
+          "y": 9339
+        },
+        {
+          "x": 433,
+          "y": 9309
+        },
+        {
+          "x": 434,
+          "y": 9279
+        },
+        {
+          "x": 437,
+          "y": 9250
+        },
+        {
+          "x": 440,
+          "y": 9220
+        },
+        {
+          "x": 444,
+          "y": 9191
+        },
+        {
+          "x": 449,
+          "y": 9161
+        },
+        {
+          "x": 455,
+          "y": 9132
+        },
+        {
+          "x": 461,
+          "y": 9103
+        },
+        {
+          "x": 469,
+          "y": 9074
+        },
+        {
+          "x": 477,
+          "y": 9045
+        },
+        {
+          "x": 486,
+          "y": 9017
+        },
+        {
+          "x": 497,
+          "y": 8989
+        },
+        {
+          "x": 507,
+          "y": 8961
+        },
+        {
+          "x": 519,
+          "y": 8934
+        },
+        {
+          "x": 532,
+          "y": 8907
+        },
+        {
+          "x": 545,
+          "y": 8880
+        },
+        {
+          "x": 559,
+          "y": 8854
+        },
+        {
+          "x": 574,
+          "y": 8828
+        },
+        {
+          "x": 589,
+          "y": 8803
+        },
+        {
+          "x": 606,
+          "y": 8778
+        },
+        {
+          "x": 623,
+          "y": 8753
+        },
+        {
+          "x": 641,
+          "y": 8729
+        },
+        {
+          "x": 659,
+          "y": 8706
+        },
+        {
+          "x": 678,
+          "y": 8683
+        },
+        {
+          "x": 698,
+          "y": 8661
+        },
+        {
+          "x": 718,
+          "y": 8639
+        },
+        {
+          "x": 740,
+          "y": 8618
+        },
+        {
+          "x": 761,
+          "y": 8598
+        },
+        {
+          "x": 784,
+          "y": 8578
+        },
+        {
+          "x": 807,
+          "y": 8559
+        },
+        {
+          "x": 830,
+          "y": 8540
+        },
+        {
+          "x": 854,
+          "y": 8523
+        },
+        {
+          "x": 878,
+          "y": 8506
+        },
+        {
+          "x": 903,
+          "y": 8489
+        },
+        {
+          "x": 929,
+          "y": 8474
+        },
+        {
+          "x": 955,
+          "y": 8459
+        },
+        {
+          "x": 981,
+          "y": 8445
+        },
+        {
+          "x": 1008,
+          "y": 8432
+        },
+        {
+          "x": 1035,
+          "y": 8420
+        },
+        {
+          "x": 1062,
+          "y": 8408
+        },
+        {
+          "x": 1090,
+          "y": 8397
+        },
+        {
+          "x": 1118,
+          "y": 8387
+        },
+        {
+          "x": 1147,
+          "y": 8378
+        },
+        {
+          "x": 1175,
+          "y": 8370
+        },
+        {
+          "x": 1204,
+          "y": 8363
+        },
+        {
+          "x": 1233,
+          "y": 8356
+        },
+        {
+          "x": 1263,
+          "y": 8350
+        },
+        {
+          "x": 1292,
+          "y": 8345
+        },
+        {
+          "x": 1322,
+          "y": 8342
+        },
+        {
+          "x": 1351,
+          "y": 8338
+        },
+        {
+          "x": 1381,
+          "y": 8336
+        },
+        {
+          "x": 1411,
+          "y": 8335
+        },
+        {
+          "x": 1440,
+          "y": 8334
+        }
+      ],
+      "closed": true,
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 221,
+          "g": 88,
+          "b": 31
+        }
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 255,
+          "g": 255,
+          "b": 255
+        },
+        "width": 20,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "ModeSplitPie",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": -265,
+        "top": 9028,
+        "width": 1400,
+        "height": 200
+      },
+      "text": "Road",
+      "font": {
+        "family": "MS Shell Dlg",
+        "size_pt": 4.5,
+        "bold": true,
+        "italic": true,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "ModeSplitPie",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 3330,
+        "top": 8772,
+        "width": 150,
+        "height": 150
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "ModeSplitPie",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3540,
+        "top": 8772,
+        "width": 1010,
+        "height": 140
+      },
+      "text": "Air",
+      "font": {
+        "family": "Arial",
+        "size_pt": 4.5,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "ModeSplitPie",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 3330,
+        "top": 8982,
+        "width": 150,
+        "height": 150
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 239,
+          "g": 162,
+          "b": 82
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "ModeSplitPie",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3540,
+        "top": 8982,
+        "width": 1010,
+        "height": 140
+      },
+      "text": "Ocean",
+      "font": {
+        "family": "Arial",
+        "size_pt": 4.5,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "ModeSplitPie",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 3330,
+        "top": 9192,
+        "width": 150,
+        "height": 150
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 0,
+          "g": 148,
+          "b": 112
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "ModeSplitPie",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3540,
+        "top": 9192,
+        "width": 1010,
+        "height": 140
+      },
+      "text": "Rail",
+      "font": {
+        "family": "Arial",
+        "size_pt": 4.5,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "ModeSplitPie",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 3330,
+        "top": 9402,
+        "width": 150,
+        "height": 150
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 221,
+          "g": 88,
+          "b": 31
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "ModeSplitPie",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3540,
+        "top": 9402,
+        "width": 1010,
+        "height": 140
+      },
+      "text": "Road",
+      "font": {
+        "family": "Arial",
+        "size_pt": 4.5,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "ModeSplitPie",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": -360,
+        "top": 11362,
+        "width": 2600,
+        "height": 260
+      },
+      "text": "Active shipments:",
+      "font": {
+        "family": "Arial",
+        "size_pt": 9.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 153,
+        "g": 140,
+        "b": 44
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 1713,
+        "ascent": 144,
+        "line_height": 216
+      },
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "ActiveLbl",
+        "kind": "Field",
+        "instance": 8
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2240,
+        "top": 11342,
+        "width": 1400,
+        "height": 320
+      },
+      "text": " 329.00",
+      "font": {
+        "family": "Arial",
+        "size_pt": 14.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 1097,
+        "ascent": 224,
+        "line_height": 336
+      },
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "ActiveVal",
+        "kind": "Field",
+        "instance": 9
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": -360,
+        "top": 11702,
+        "width": 2600,
+        "height": 260
+      },
+      "text": "On-time %:",
+      "font": {
+        "family": "Arial",
+        "size_pt": 9.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 153,
+        "g": 140,
+        "b": 44
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 1008,
+        "ascent": 144,
+        "line_height": 216
+      },
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "OnTimeLbl",
+        "kind": "Field",
+        "instance": 10
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2240,
+        "top": 11682,
+        "width": 1400,
+        "height": 320
+      },
+      "text": "55.7%",
+      "font": {
+        "family": "Arial",
+        "size_pt": 14.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 784,
+        "ascent": 224,
+        "line_height": 336
+      },
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "OnTimeVal",
+        "kind": "Field",
+        "instance": 11
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7439,
+        "top": 7362,
+        "width": 5000,
+        "height": 260
+      },
+      "text": "FX REFERENCE RATES (vs USD, 2023 H1)",
+      "font": {
+        "family": "Arial",
+        "size_pt": 10.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 4032,
+        "ascent": 160,
+        "line_height": 240
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "SubTitleLbl",
+        "kind": "Field",
+        "instance": 13
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 7439,
+        "top": 7882,
+        "width": 5000,
+        "height": 260
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 95,
+          "g": 58,
+          "b": 31
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection2",
+        "object_name": "FxHeadBar",
+        "kind": "Box",
+        "instance": 14
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 10739,
+        "top": 7912,
+        "width": 1600,
+        "height": 200
+      },
+      "text": "Rate/USD",
+      "font": {
+        "family": "Tahoma",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 255,
+        "g": 255,
+        "b": 255
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 716,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "ReportHeaderSection2",
+        "object_name": "FxHeadRate",
+        "kind": "Field",
+        "instance": 15
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8939,
+        "top": 7912,
+        "width": 1700,
+        "height": 200
+      },
+      "text": "Rate date",
+      "font": {
+        "family": "Tahoma",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 255,
+        "g": 255,
+        "b": 255
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 806,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "ReportHeaderSection2",
+        "object_name": "FxHeadDate",
+        "kind": "Field",
+        "instance": 16
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7499,
+        "top": 7912,
+        "width": 1400,
+        "height": 200
+      },
+      "text": "Currency",
+      "font": {
+        "family": "Tahoma",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 255,
+        "g": 255,
+        "b": 255
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 716,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "ReportHeaderSection2",
+        "object_name": "FxHeadCur",
+        "kind": "Field",
+        "instance": 17
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7499,
+        "top": 8152,
+        "width": 1400,
+        "height": 180
+      },
+      "text": "EUR",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 240,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetCur",
+        "kind": "Field",
+        "instance": 18
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8939,
+        "top": 8152,
+        "width": 1700,
+        "height": 180
+      },
+      "text": "1/1/2023",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 640,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetDate",
+        "kind": "Field",
+        "instance": 19
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 10739,
+        "top": 8152,
+        "width": 1600,
+        "height": 180
+      },
+      "text": " 0.84",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 400,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetRate",
+        "kind": "Field",
+        "instance": 20
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7499,
+        "top": 8352,
+        "width": 1400,
+        "height": 180
+      },
+      "text": "EUR",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 240,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetCur",
+        "kind": "Field",
+        "instance": 21
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8939,
+        "top": 8352,
+        "width": 1700,
+        "height": 180
+      },
+      "text": "2/1/2023",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 640,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetDate",
+        "kind": "Field",
+        "instance": 22
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 10739,
+        "top": 8352,
+        "width": 1600,
+        "height": 180
+      },
+      "text": " 0.85",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 400,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetRate",
+        "kind": "Field",
+        "instance": 23
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7499,
+        "top": 8552,
+        "width": 1400,
+        "height": 180
+      },
+      "text": "EUR",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 240,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetCur",
+        "kind": "Field",
+        "instance": 24
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8939,
+        "top": 8552,
+        "width": 1700,
+        "height": 180
+      },
+      "text": "3/1/2023",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 640,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetDate",
+        "kind": "Field",
+        "instance": 25
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 10739,
+        "top": 8552,
+        "width": 1600,
+        "height": 180
+      },
+      "text": " 0.86",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 400,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetRate",
+        "kind": "Field",
+        "instance": 26
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7499,
+        "top": 8752,
+        "width": 1400,
+        "height": 180
+      },
+      "text": "EUR",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 240,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetCur",
+        "kind": "Field",
+        "instance": 27
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8939,
+        "top": 8752,
+        "width": 1700,
+        "height": 180
+      },
+      "text": "4/1/2023",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 640,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetDate",
+        "kind": "Field",
+        "instance": 28
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 10739,
+        "top": 8752,
+        "width": 1600,
+        "height": 180
+      },
+      "text": " 0.83",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 400,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetRate",
+        "kind": "Field",
+        "instance": 29
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7499,
+        "top": 8952,
+        "width": 1400,
+        "height": 180
+      },
+      "text": "EUR",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 240,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetCur",
+        "kind": "Field",
+        "instance": 30
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8939,
+        "top": 8952,
+        "width": 1700,
+        "height": 180
+      },
+      "text": "5/1/2023",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 640,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetDate",
+        "kind": "Field",
+        "instance": 31
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 10739,
+        "top": 8952,
+        "width": 1600,
+        "height": 180
+      },
+      "text": " 0.86",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 400,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetRate",
+        "kind": "Field",
+        "instance": 32
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7499,
+        "top": 9152,
+        "width": 1400,
+        "height": 180
+      },
+      "text": "EUR",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 240,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetCur",
+        "kind": "Field",
+        "instance": 33
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8939,
+        "top": 9152,
+        "width": 1700,
+        "height": 180
+      },
+      "text": "6/1/2023",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 640,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetDate",
+        "kind": "Field",
+        "instance": 34
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 10739,
+        "top": 9152,
+        "width": 1600,
+        "height": 180
+      },
+      "text": " 0.88",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 400,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetRate",
+        "kind": "Field",
+        "instance": 35
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7499,
+        "top": 9352,
+        "width": 1400,
+        "height": 180
+      },
+      "text": "GBP",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 240,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetCur",
+        "kind": "Field",
+        "instance": 36
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8939,
+        "top": 9352,
+        "width": 1700,
+        "height": 180
+      },
+      "text": "1/1/2023",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 640,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetDate",
+        "kind": "Field",
+        "instance": 37
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 10739,
+        "top": 9352,
+        "width": 1600,
+        "height": 180
+      },
+      "text": " 0.80",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 400,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetRate",
+        "kind": "Field",
+        "instance": 38
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7499,
+        "top": 9552,
+        "width": 1400,
+        "height": 180
+      },
+      "text": "GBP",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 240,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetCur",
+        "kind": "Field",
+        "instance": 39
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8939,
+        "top": 9552,
+        "width": 1700,
+        "height": 180
+      },
+      "text": "2/1/2023",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 640,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetDate",
+        "kind": "Field",
+        "instance": 40
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 10739,
+        "top": 9552,
+        "width": 1600,
+        "height": 180
+      },
+      "text": " 0.80",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 400,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetRate",
+        "kind": "Field",
+        "instance": 41
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7499,
+        "top": 9752,
+        "width": 1400,
+        "height": 180
+      },
+      "text": "GBP",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 240,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetCur",
+        "kind": "Field",
+        "instance": 42
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8939,
+        "top": 9752,
+        "width": 1700,
+        "height": 180
+      },
+      "text": "3/1/2023",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 640,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetDate",
+        "kind": "Field",
+        "instance": 43
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 10739,
+        "top": 9752,
+        "width": 1600,
+        "height": 180
+      },
+      "text": " 0.80",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 400,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetRate",
+        "kind": "Field",
+        "instance": 44
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7499,
+        "top": 9952,
+        "width": 1400,
+        "height": 180
+      },
+      "text": "GBP",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 240,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetCur",
+        "kind": "Field",
+        "instance": 45
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8939,
+        "top": 9952,
+        "width": 1700,
+        "height": 180
+      },
+      "text": "4/1/2023",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 640,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetDate",
+        "kind": "Field",
+        "instance": 46
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 10739,
+        "top": 9952,
+        "width": 1600,
+        "height": 180
+      },
+      "text": " 0.78",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 400,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetRate",
+        "kind": "Field",
+        "instance": 47
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7499,
+        "top": 10152,
+        "width": 1400,
+        "height": 180
+      },
+      "text": "GBP",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 240,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetCur",
+        "kind": "Field",
+        "instance": 48
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8939,
+        "top": 10152,
+        "width": 1700,
+        "height": 180
+      },
+      "text": "5/1/2023",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 640,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetDate",
+        "kind": "Field",
+        "instance": 49
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 10739,
+        "top": 10152,
+        "width": 1600,
+        "height": 180
+      },
+      "text": " 0.81",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 400,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetRate",
+        "kind": "Field",
+        "instance": 50
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7499,
+        "top": 10352,
+        "width": 1400,
+        "height": 180
+      },
+      "text": "GBP",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 240,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetCur",
+        "kind": "Field",
+        "instance": 51
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8939,
+        "top": 10352,
+        "width": 1700,
+        "height": 180
+      },
+      "text": "6/1/2023",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 640,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetDate",
+        "kind": "Field",
+        "instance": 52
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 10739,
+        "top": 10352,
+        "width": 1600,
+        "height": 180
+      },
+      "text": " 0.79",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 400,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetRate",
+        "kind": "Field",
+        "instance": 53
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7499,
+        "top": 10552,
+        "width": 1400,
+        "height": 180
+      },
+      "text": "JPY",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 240,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetCur",
+        "kind": "Field",
+        "instance": 54
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8939,
+        "top": 10552,
+        "width": 1700,
+        "height": 180
+      },
+      "text": "1/1/2023",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 640,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetDate",
+        "kind": "Field",
+        "instance": 55
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 10739,
+        "top": 10552,
+        "width": 1600,
+        "height": 180
+      },
+      "text": " 141.34",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 560,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetRate",
+        "kind": "Field",
+        "instance": 56
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7499,
+        "top": 10752,
+        "width": 1400,
+        "height": 180
+      },
+      "text": "JPY",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 240,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetCur",
+        "kind": "Field",
+        "instance": 57
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8939,
+        "top": 10752,
+        "width": 1700,
+        "height": 180
+      },
+      "text": "2/1/2023",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 640,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetDate",
+        "kind": "Field",
+        "instance": 58
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 10739,
+        "top": 10752,
+        "width": 1600,
+        "height": 180
+      },
+      "text": " 141.06",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 560,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetRate",
+        "kind": "Field",
+        "instance": 59
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7499,
+        "top": 10952,
+        "width": 1400,
+        "height": 180
+      },
+      "text": "JPY",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 240,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetCur",
+        "kind": "Field",
+        "instance": 60
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8939,
+        "top": 10952,
+        "width": 1700,
+        "height": 180
+      },
+      "text": "3/1/2023",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 640,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetDate",
+        "kind": "Field",
+        "instance": 61
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 10739,
+        "top": 10952,
+        "width": 1600,
+        "height": 180
+      },
+      "text": " 140.22",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 560,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetRate",
+        "kind": "Field",
+        "instance": 62
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7499,
+        "top": 11152,
+        "width": 1400,
+        "height": 180
+      },
+      "text": "JPY",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 240,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetCur",
+        "kind": "Field",
+        "instance": 63
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8939,
+        "top": 11152,
+        "width": 1700,
+        "height": 180
+      },
+      "text": "4/1/2023",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 640,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetDate",
+        "kind": "Field",
+        "instance": 64
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 10739,
+        "top": 11152,
+        "width": 1600,
+        "height": 180
+      },
+      "text": " 140.30",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 560,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetRate",
+        "kind": "Field",
+        "instance": 65
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7499,
+        "top": 11352,
+        "width": 1400,
+        "height": 180
+      },
+      "text": "JPY",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 240,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetCur",
+        "kind": "Field",
+        "instance": 66
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8939,
+        "top": 11352,
+        "width": 1700,
+        "height": 180
+      },
+      "text": "5/1/2023",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 640,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetDate",
+        "kind": "Field",
+        "instance": 67
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 10739,
+        "top": 11352,
+        "width": 1600,
+        "height": 180
+      },
+      "text": " 139.33",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 560,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetRate",
+        "kind": "Field",
+        "instance": 68
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7499,
+        "top": 11552,
+        "width": 1400,
+        "height": 180
+      },
+      "text": "JPY",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 240,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetCur",
+        "kind": "Field",
+        "instance": 69
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8939,
+        "top": 11552,
+        "width": 1700,
+        "height": 180
+      },
+      "text": "6/1/2023",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 640,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetDate",
+        "kind": "Field",
+        "instance": 70
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 10739,
+        "top": 11552,
+        "width": 1600,
+        "height": 180
+      },
+      "text": " 143.01",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 560,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "DetailSection1",
+        "object_name": "FxDetRate",
+        "kind": "Field",
+        "instance": 71
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 0,
+        "top": 12002,
+        "width": 15398,
+        "height": 300
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 95,
+          "g": 58,
+          "b": 31
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "PageHeaderSection1",
+        "object_name": "ColHeadBar",
+        "kind": "Box",
+        "instance": 72
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 12042,
+        "width": 6000,
+        "height": 220
+      },
+      "text": "Region revenue breakdown",
+      "font": {
+        "family": "Arial",
+        "size_pt": 9.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 255,
+        "g": 255,
+        "b": 255
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 2419,
+        "ascent": 144,
+        "line_height": 216
+      },
+      "source": {
+        "section": "PageHeaderSection1",
+        "object_name": "ColHeadRegion",
+        "kind": "Field",
+        "instance": 73
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 0,
+        "y": 12602
+      },
+      "to": {
+        "x": 15398,
+        "y": 12602
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 95,
+          "g": 58,
+          "b": 31
+        },
+        "width": 30,
+        "style": "Single"
+      },
+      "source": {
+        "section": "nameHeaderSection1",
+        "object_name": "GhRegionRule",
+        "kind": "Line",
+        "instance": 74
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 12382,
+        "width": 5000,
+        "height": 240
+      },
+      "text": "Americas (North)",
+      "font": {
+        "family": "Arial",
+        "size_pt": 11.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 1971,
+        "ascent": 176,
+        "line_height": 264
+      },
+      "source": {
+        "section": "nameHeaderSection1",
+        "object_name": "GhRegionName",
+        "kind": "Field",
+        "instance": 75
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 12198,
+        "top": 12682,
+        "width": 3200,
+        "height": 260
+      },
+      "text": " 2,284,252.96",
+      "font": {
+        "family": "Arial",
+        "size_pt": 12.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 1747,
+        "ascent": 192,
+        "line_height": 288
+      },
+      "source": {
+        "section": "nameFooterSection1",
+        "object_name": "Sumoflineamountname1",
+        "kind": "Field",
+        "instance": 76
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8998,
+        "top": 12702,
+        "width": 3000,
+        "height": 240
+      },
+      "text": "Region total:",
+      "font": {
+        "family": "Arial",
+        "size_pt": 9.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 153,
+        "g": 140,
+        "b": 44
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 1310,
+        "ascent": 144,
+        "line_height": 216
+      },
+      "source": {
+        "section": "nameFooterSection1",
+        "object_name": "GfRegionLbl",
+        "kind": "Field",
+        "instance": 77
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 0,
+        "y": 13242
+      },
+      "to": {
+        "x": 15398,
+        "y": 13242
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 95,
+          "g": 58,
+          "b": 31
+        },
+        "width": 30,
+        "style": "Single"
+      },
+      "source": {
+        "section": "nameHeaderSection1",
+        "object_name": "GhRegionRule",
+        "kind": "Line",
+        "instance": 78
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 13022,
+        "width": 5000,
+        "height": 240
+      },
+      "text": "Asia Pacific",
+      "font": {
+        "family": "Arial",
+        "size_pt": 11.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 1478,
+        "ascent": 176,
+        "line_height": 264
+      },
+      "source": {
+        "section": "nameHeaderSection1",
+        "object_name": "GhRegionName",
+        "kind": "Field",
+        "instance": 79
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 12198,
+        "top": 13322,
+        "width": 3200,
+        "height": 260
+      },
+      "text": " 993,082.98",
+      "font": {
+        "family": "Arial",
+        "size_pt": 12.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 1478,
+        "ascent": 192,
+        "line_height": 288
+      },
+      "source": {
+        "section": "nameFooterSection1",
+        "object_name": "Sumoflineamountname1",
+        "kind": "Field",
+        "instance": 80
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8998,
+        "top": 13342,
+        "width": 3000,
+        "height": 240
+      },
+      "text": "Region total:",
+      "font": {
+        "family": "Arial",
+        "size_pt": 9.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 153,
+        "g": 140,
+        "b": 44
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 1310,
+        "ascent": 144,
+        "line_height": 216
+      },
+      "source": {
+        "section": "nameFooterSection1",
+        "object_name": "GfRegionLbl",
+        "kind": "Field",
+        "instance": 81
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 0,
+        "y": 13882
+      },
+      "to": {
+        "x": 15398,
+        "y": 13882
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 95,
+          "g": 58,
+          "b": 31
+        },
+        "width": 30,
+        "style": "Single"
+      },
+      "source": {
+        "section": "nameHeaderSection1",
+        "object_name": "GhRegionRule",
+        "kind": "Line",
+        "instance": 82
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 13662,
+        "width": 5000,
+        "height": 240
+      },
+      "text": "Europe",
+      "font": {
+        "family": "Arial",
+        "size_pt": 11.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 739,
+        "ascent": 176,
+        "line_height": 264
+      },
+      "source": {
+        "section": "nameHeaderSection1",
+        "object_name": "GhRegionName",
+        "kind": "Field",
+        "instance": 83
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 12198,
+        "top": 13962,
+        "width": 3200,
+        "height": 260
+      },
+      "text": " 1,358,311.08",
+      "font": {
+        "family": "Arial",
+        "size_pt": 12.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 1747,
+        "ascent": 192,
+        "line_height": 288
+      },
+      "source": {
+        "section": "nameFooterSection1",
+        "object_name": "Sumoflineamountname1",
+        "kind": "Field",
+        "instance": 84
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8998,
+        "top": 13982,
+        "width": 3000,
+        "height": 240
+      },
+      "text": "Region total:",
+      "font": {
+        "family": "Arial",
+        "size_pt": 9.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 153,
+        "g": 140,
+        "b": 44
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 1310,
+        "ascent": 144,
+        "line_height": 216
+      },
+      "source": {
+        "section": "nameFooterSection1",
+        "object_name": "GfRegionLbl",
+        "kind": "Field",
+        "instance": 85
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 0,
+        "y": 14522
+      },
+      "to": {
+        "x": 15398,
+        "y": 14522
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 95,
+          "g": 58,
+          "b": 31
+        },
+        "width": 30,
+        "style": "Single"
+      },
+      "source": {
+        "section": "nameHeaderSection1",
+        "object_name": "GhRegionRule",
+        "kind": "Line",
+        "instance": 86
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 14302,
+        "width": 5000,
+        "height": 240
+      },
+      "text": "Latin America",
+      "font": {
+        "family": "Arial",
+        "size_pt": 11.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 1601,
+        "ascent": 176,
+        "line_height": 264
+      },
+      "source": {
+        "section": "nameHeaderSection1",
+        "object_name": "GhRegionName",
+        "kind": "Field",
+        "instance": 87
+      }
+    }
+  ]
+}
+// page 2
+{
+  "number": 2,
+  "size": {
+    "width": 11899,
+    "height": 16838
+  },
+  "origin": {
+    "x": 720,
+    "y": 720
+  },
+  "ops": [
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 0,
+        "top": 0,
+        "width": 15398,
+        "height": 300
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 95,
+          "g": 58,
+          "b": 31
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "PageHeaderSection1",
+        "object_name": "ColHeadBar",
+        "kind": "Box",
+        "instance": 88
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 40,
+        "width": 6000,
+        "height": 220
+      },
+      "text": "Region revenue breakdown",
+      "font": {
+        "family": "Arial",
+        "size_pt": 9.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 255,
+        "g": 255,
+        "b": 255
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 2419,
+        "ascent": 144,
+        "line_height": 216
+      },
+      "source": {
+        "section": "PageHeaderSection1",
+        "object_name": "ColHeadRegion",
+        "kind": "Field",
+        "instance": 89
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 12198,
+        "top": 380,
+        "width": 3200,
+        "height": 260
+      },
+      "text": " 784,599.38",
+      "font": {
+        "family": "Arial",
+        "size_pt": 12.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 1478,
+        "ascent": 192,
+        "line_height": 288
+      },
+      "source": {
+        "section": "nameFooterSection1",
+        "object_name": "Sumoflineamountname1",
+        "kind": "Field",
+        "instance": 90
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8998,
+        "top": 400,
+        "width": 3000,
+        "height": 240
+      },
+      "text": "Region total:",
+      "font": {
+        "family": "Arial",
+        "size_pt": 9.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 153,
+        "g": 140,
+        "b": 44
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 1310,
+        "ascent": 144,
+        "line_height": 216
+      },
+      "source": {
+        "section": "nameFooterSection1",
+        "object_name": "GfRegionLbl",
+        "kind": "Field",
+        "instance": 91
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 0,
+        "y": 940
+      },
+      "to": {
+        "x": 15398,
+        "y": 940
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 95,
+          "g": 58,
+          "b": 31
+        },
+        "width": 30,
+        "style": "Single"
+      },
+      "source": {
+        "section": "nameHeaderSection1",
+        "object_name": "GhRegionRule",
+        "kind": "Line",
+        "instance": 92
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 720,
+        "width": 5000,
+        "height": 240
+      },
+      "text": "Middle East & Africa",
+      "font": {
+        "family": "Arial",
+        "size_pt": 11.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 2464,
+        "ascent": 176,
+        "line_height": 264
+      },
+      "source": {
+        "section": "nameHeaderSection1",
+        "object_name": "GhRegionName",
+        "kind": "Field",
+        "instance": 93
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 12198,
+        "top": 1020,
+        "width": 3200,
+        "height": 260
+      },
+      "text": " 307,513.14",
+      "font": {
+        "family": "Arial",
+        "size_pt": 12.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 1478,
+        "ascent": 192,
+        "line_height": 288
+      },
+      "source": {
+        "section": "nameFooterSection1",
+        "object_name": "Sumoflineamountname1",
+        "kind": "Field",
+        "instance": 94
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8998,
+        "top": 1040,
+        "width": 3000,
+        "height": 240
+      },
+      "text": "Region total:",
+      "font": {
+        "family": "Arial",
+        "size_pt": 9.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 153,
+        "g": 140,
+        "b": 44
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 1310,
+        "ascent": 144,
+        "line_height": 216
+      },
+      "source": {
+        "section": "nameFooterSection1",
+        "object_name": "GfRegionLbl",
+        "kind": "Field",
+        "instance": 95
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 11798,
+        "top": 1380,
+        "width": 3600,
+        "height": 360
+      },
+      "text": " 5,727,759.54",
+      "font": {
+        "family": "Arial",
+        "size_pt": 12.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 1747,
+        "ascent": 192,
+        "line_height": 288
+      },
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "Sumoflineamount1",
+        "kind": "Field",
+        "instance": 96
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 0,
+        "y": 1360
+      },
+      "to": {
+        "x": 15398,
+        "y": 1360
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 140,
+          "b": 44
+        },
+        "width": 30,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "RfRule",
+        "kind": "Line",
+        "instance": 97
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 1380,
+        "width": 5000,
+        "height": 360
+      },
+      "text": "TOTAL REVENUE (ALL REGIONS):",
+      "font": {
+        "family": "Arial",
+        "size_pt": 12.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 3763,
+        "ascent": 192,
+        "line_height": 288
+      },
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "GrandLbl",
+        "kind": "Field",
+        "instance": 98
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 1810,
+        "width": 13816,
+        "height": 360
+      },
+      "text": "Revenue trend by month",
+      "font": {
+        "family": "MS Shell Dlg",
+        "size_pt": 9.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 4350,
+        "width": 840,
+        "height": 220
+      },
+      "text": "0",
+      "font": {
+        "family": "Arial",
+        "size_pt": 5.25,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 900,
+        "y": 4084
+      },
+      "to": {
+        "x": 13756,
+        "y": 4084
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 3974,
+        "width": 840,
+        "height": 220
+      },
+      "text": "400000",
+      "font": {
+        "family": "Arial",
+        "size_pt": 5.25,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 900,
+        "y": 3707
+      },
+      "to": {
+        "x": 13756,
+        "y": 3707
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 3597,
+        "width": 840,
+        "height": 220
+      },
+      "text": "800000",
+      "font": {
+        "family": "Arial",
+        "size_pt": 5.25,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 900,
+        "y": 3330
+      },
+      "to": {
+        "x": 13756,
+        "y": 3330
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 3220,
+        "width": 840,
+        "height": 220
+      },
+      "text": "1200000",
+      "font": {
+        "family": "Arial",
+        "size_pt": 5.25,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 900,
+        "y": 2954
+      },
+      "to": {
+        "x": 13756,
+        "y": 2954
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 2844,
+        "width": 840,
+        "height": 220
+      },
+      "text": "1600000",
+      "font": {
+        "family": "Arial",
+        "size_pt": 5.25,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 900,
+        "y": 2577
+      },
+      "to": {
+        "x": 13756,
+        "y": 2577
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 2467,
+        "width": 840,
+        "height": 220
+      },
+      "text": "2000000",
+      "font": {
+        "family": "Arial",
+        "size_pt": 5.25,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 900,
+        "y": 2200
+      },
+      "to": {
+        "x": 13756,
+        "y": 2200
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 2090,
+        "width": 840,
+        "height": 220
+      },
+      "text": "2400000",
+      "font": {
+        "family": "Arial",
+        "size_pt": 5.25,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 900,
+        "y": 2200
+      },
+      "to": {
+        "x": 900,
+        "y": 4460
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 85,
+          "g": 85,
+          "b": 85
+        },
+        "width": 15,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 900,
+        "y": 4460
+      },
+      "to": {
+        "x": 13756,
+        "y": 4460
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 85,
+          "g": 85,
+          "b": 85
+        },
+        "width": 15,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 2185,
+        "y": 2309
+      },
+      "to": {
+        "x": 4756,
+        "y": 3525
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        },
+        "width": 30,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 4756,
+        "y": 3525
+      },
+      "to": {
+        "x": 7327,
+        "y": 3181
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        },
+        "width": 30,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 7327,
+        "y": 3181
+      },
+      "to": {
+        "x": 9898,
+        "y": 3722
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        },
+        "width": 30,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 9898,
+        "y": 3722
+      },
+      "to": {
+        "x": 12469,
+        "y": 4171
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        },
+        "width": 30,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 2095,
+        "top": 2219,
+        "width": 180,
+        "height": 180
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 900,
+        "top": 4490,
+        "width": 2571,
+        "height": 320
+      },
+      "text": "Americas (North)",
+      "font": {
+        "family": "MS Shell Dlg",
+        "size_pt": 4.5,
+        "bold": true,
+        "italic": true,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 4666,
+        "top": 3435,
+        "width": 180,
+        "height": 180
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3471,
+        "top": 4490,
+        "width": 2571,
+        "height": 320
+      },
+      "text": "Asia Pacific",
+      "font": {
+        "family": "MS Shell Dlg",
+        "size_pt": 4.5,
+        "bold": true,
+        "italic": true,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 7237,
+        "top": 3091,
+        "width": 180,
+        "height": 180
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 6042,
+        "top": 4490,
+        "width": 2571,
+        "height": 320
+      },
+      "text": "Europe",
+      "font": {
+        "family": "MS Shell Dlg",
+        "size_pt": 4.5,
+        "bold": true,
+        "italic": true,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 9808,
+        "top": 3632,
+        "width": 180,
+        "height": 180
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8613,
+        "top": 4490,
+        "width": 2571,
+        "height": 320
+      },
+      "text": "Latin America",
+      "font": {
+        "family": "MS Shell Dlg",
+        "size_pt": 4.5,
+        "bold": true,
+        "italic": true,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 12379,
+        "top": 4081,
+        "width": 180,
+        "height": 180
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 11184,
+        "top": 4490,
+        "width": 2571,
+        "height": 320
+      },
+      "text": "Middle East & Africa",
+      "font": {
+        "family": "MS Shell Dlg",
+        "size_pt": 4.5,
+        "bold": true,
+        "italic": true,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 13936,
+        "top": 3100,
+        "width": 1347,
+        "height": 360
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 255,
+          "g": 255,
+          "b": 255
+        }
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 85,
+          "g": 85,
+          "b": 85
+        },
+        "width": 15,
+        "style": "Single"
+      },
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 14056,
+        "top": 3220,
+        "width": 135,
+        "height": 120
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 14273,
+        "top": 3228,
+        "width": 810,
+        "height": 103
+      },
+      "text": "Sum of line_amount",
+      "font": {
+        "family": "MS Shell Dlg",
+        "size_pt": 4.5,
+        "bold": true,
+        "italic": true,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "MonthRevenueLine",
+        "kind": "Chart",
+        "instance": null
+      }
+    }
+  ]
+}

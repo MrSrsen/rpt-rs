@@ -27,7 +27,7 @@ pub struct SavedColumn {
     pub value_type: FieldValueType,
 }
 
-/// A view of a report's saved-data batch substrate: the decoded catalog schema,
+/// A view of a report's saved-data batches: the decoded catalog schema,
 /// the batch directory, and, per batch, the derived decrypt IV and whether it decrypts to a zlib
 /// header. This is the data behind `rpt dump --saved` — it surfaces the encrypted-batch layer the
 /// plain `dump` cannot reach, including batch classes the decoder does not model.
@@ -82,7 +82,7 @@ pub struct SavedBatchInfo {
     pub dir_item_size: u32,
     /// 0-based sequence index of this batch within its kind (the IV's 4th word).
     pub seq: u32,
-    /// The IV batch-size word (the row-capacity cap decode currently derives).
+    /// The IV batch-size word (the row-capacity cap the decoder derives).
     pub iv_batch_size: u32,
     /// The IV item-count word.
     pub iv_item_count: u32,
@@ -105,9 +105,10 @@ pub struct SavedBatchInfo {
     pub first_record: Vec<u8>,
     /// The raw ciphertext head at `cursor` (for byte-level inspection when the IV fails).
     pub ct_head: Vec<u8>,
-    /// The full `0x6d` directory-entry leaf for this batch. Beyond `[count][item_size][stream_off]
-    /// [stream_len]` it carries, for a packed index batch, a `[u16 n_entries][n_entries × u32]`
-    /// column table (`3 × string_columns` entries; every third value is the on-disk offset of the
-    /// field after a compacted string). Surfaced so per-column packing is visible, not hidden.
-    pub dir_leaf: Vec<u8>,
+    /// The full `0x6d` directory entry for this batch — its field bytes, runs joined. Beyond
+    /// `[count][item_size][stream_off][stream_len]` it carries, for a packed index batch, a
+    /// `[u16 n_entries][n_entries × u32]` column table (`3 × string_columns` entries; every third
+    /// value is the on-disk offset of the field after a compacted string). Surfaced so per-column
+    /// packing is visible, not hidden.
+    pub dir_entry: Vec<u8>,
 }

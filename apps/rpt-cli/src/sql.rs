@@ -14,9 +14,9 @@
 //! connections (server / database / driver) and the table list for a quick "what does this touch"
 //! view. Read-only; no database connection is made — this is the SQL the report *would* run.
 
-use rpt::model::{ConnectionInfo, Report, Table};
-use rpt::Rpt;
 use rpt_query::{build_query_for_report, Dialect};
+use rpt_reader::model::{ConnectionInfo, Report, Table};
+use rpt_reader::Rpt;
 use serde::Serialize;
 
 use crate::util::{paint, print_json, CliError, BOLD, BOLD_GREEN, CYAN, DIM, YELLOW};
@@ -441,7 +441,7 @@ fn print_text(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rpt::model::{
+    use rpt_reader::model::{
         ConnectionInfo, Database, DbFieldDef, FieldDef, FieldKindData, FieldValueType, Report,
         SqlExpressionField, Subreport, Table, TableJoinKind, TableLink, TableLinkOperator,
     };

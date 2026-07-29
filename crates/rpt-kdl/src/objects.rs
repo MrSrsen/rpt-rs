@@ -8,10 +8,10 @@
 use kdl::KdlValue;
 use rpt_model::{
     Alignment, Border, BoxShape, ChartDefinition, ChartGraphType, ChartLegendPosition, ChartObject,
-    Color, CommonFieldFormat, CrossTabDimension, CrossTabGridOptions, CrossTabMeasure,
-    CrossTabObject, DrawingShape, FieldHeadingObject, FieldObject, FieldRefKind, FieldValueType,
-    Hyperlink, LineShape, ObjectFormat, Paragraph, PictureObject, ReadingOrder, Rect, ReportObject,
-    ReportObjectKind, SubreportObject, TextObject, TextRotationAngle, VerticalAlignment,
+    CommonFieldFormat, CrossTabDimension, CrossTabGridOptions, CrossTabObject, DrawingShape,
+    FieldHeadingObject, FieldObject, FieldRefKind, FieldValueType, Hyperlink, LineShape,
+    ObjectFormat, Paragraph, PictureObject, ReadingOrder, Rect, ReportObject, ReportObjectKind,
+    SubreportObject, TextObject, TextRotationAngle, Twips, VerticalAlignment,
 };
 
 use crate::build::{color, int, twips, Node};
@@ -25,10 +25,8 @@ pub(crate) fn object_node(obj: &ReportObject) -> Node {
         bounds,
         border,
         format,
-        // Implied by the object's section nesting (it equals the parent section's code).
-        section_code: _,
         kind,
-        // A back-reference to the raw substrate record this object was raised from.
+        // A back-reference to the record this object was decoded from.
         origin: _,
     } = obj;
     let base = match kind {
@@ -144,9 +142,11 @@ fn run_font_override<'a>(
 }
 
 fn paragraph_has_detail(p: &Paragraph, base: &rpt_model::Font) -> bool {
-    p.runs
-        .iter()
-        .any(|r| r.field_ref.is_some() || run_font_override(r, base).is_some())
+    p.runs.iter().any(|r| {
+        r.field_ref.is_some()
+            || run_font_override(r, base).is_some()
+            || r.character_spacing != Twips(0)
+    })
 }
 
 fn paragraph_node(p: &Paragraph, base: &rpt_model::Font) -> Node {
@@ -155,6 +155,11 @@ fn paragraph_node(p: &Paragraph, base: &rpt_model::Font) -> Node {
         if let Some(reference) = &r.field_ref {
             run = run.prop("ref", reference.as_str());
         }
+        run = run.prop_if(
+            r.character_spacing != Twips(0),
+            "char-spacing",
+            twips(r.character_spacing),
+        );
         if let Some(font) = run_font_override(r, base) {
             run = run.child_opt(format::font_node(&rpt_model::FontColor {
                 font: font.clone(),
@@ -190,48 +195,41 @@ fn apply_drawing_shape(n: Node, s: &DrawingShape) -> Node {
     let DrawingShape {
         right,
         bottom,
-        line_style,
         line_thickness,
-        line_color,
         extend_to_bottom_of_section,
+        end_section_index,
     } = s;
     n.prop("x2", twips(*right))
         .prop("y2", twips(*bottom))
         .prop_if(
-            *line_style != rpt_model::LineStyle::default(),
-            "style",
-            enums::line_style(*line_style),
+            *end_section_index != 0,
+            "end-section-index",
+            int(i64::from(*end_section_index)),
         )
         .prop_if(line_thickness.0 != 0, "thickness", twips(*line_thickness))
-        .prop_if(*line_color != Color::default(), "color", color(*line_color))
         .flag("extend-to-bottom", *extend_to_bottom_of_section)
 }
 
 fn line_node(name: &str, bounds: &Rect, l: &LineShape) -> Node {
-    let LineShape {
-        shape,
-        end_section_name,
-    } = l;
+    let LineShape { shape } = l;
     let n = Node::new("line")
         .arg(name)
         .prop("x", twips(bounds.left))
         .prop("y", twips(bounds.top));
-    apply_drawing_shape(n, shape).str_if("end-section", end_section_name)
+    apply_drawing_shape(n, shape)
 }
 
 fn box_node(name: &str, bounds: &Rect, b: &BoxShape) -> Node {
     let BoxShape {
         shape,
-        end_section_name,
         corner_ellipse_width,
         corner_ellipse_height,
-        fill_color,
     } = b;
     let n = Node::new("box")
         .arg(name)
         .prop("x", twips(bounds.left))
         .prop("y", twips(bounds.top));
-    let mut n = apply_drawing_shape(n, shape)
+    apply_drawing_shape(n, shape)
         .prop_if(
             corner_ellipse_width.0 != 0,
             "corner-width",
@@ -242,11 +240,6 @@ fn box_node(name: &str, bounds: &Rect, b: &BoxShape) -> Node {
             "corner-height",
             twips(*corner_ellipse_height),
         )
-        .str_if("end-section", end_section_name);
-    if let Some(fill) = fill_color {
-        n = n.prop("fill", color(*fill));
-    }
-    n
 }
 
 fn picture_node(name: &str, bounds: &Rect, p: &PictureObject) -> Node {
@@ -256,10 +249,6 @@ fn picture_node(name: &str, bounds: &Rect, p: &PictureObject) -> Node {
         data,
         ole_ordinal,
         location_formula,
-        original_width,
-        original_height,
-        x_scaling,
-        y_scaling,
         crop_top,
         crop_bottom,
         crop_left,
@@ -271,27 +260,10 @@ fn picture_node(name: &str, bounds: &Rect, p: &PictureObject) -> Node {
             "picture-type",
             enums::picture_type(*picture_type),
         )
-        .prop_if(
-            original_width.0 != 0,
-            "original-width",
-            twips(*original_width),
-        )
-        .prop_if(
-            original_height.0 != 0,
-            "original-height",
-            twips(*original_height),
-        )
         .prop_if(crop_top.0 != 0, "crop-top", twips(*crop_top))
         .prop_if(crop_bottom.0 != 0, "crop-bottom", twips(*crop_bottom))
         .prop_if(crop_left.0 != 0, "crop-left", twips(*crop_left))
         .prop_if(crop_right.0 != 0, "crop-right", twips(*crop_right));
-    // Scale factors: emit when the picture is drawn at other than natural size (non-1.0).
-    if (*x_scaling - 1.0).abs() > f64::EPSILON && *x_scaling != 0.0 {
-        n = n.prop("x-scaling", *x_scaling);
-    }
-    if (*y_scaling - 1.0).abs() > f64::EPSILON && *y_scaling != 0.0 {
-        n = n.prop("y-scaling", *y_scaling);
-    }
     if let Some(reference) = crate::assets::picture_reference(p, name) {
         n = n
             .prop("source", reference)
@@ -421,11 +393,10 @@ fn crosstab_node(name: &str, bounds: &Rect, ct: &CrossTabObject) -> Node {
         dimensions: _,
         columns,
         rows,
-        measures,
         // Engine-internal grid-region format template; not a render/authoring fact.
         grid_format: _,
-        column_axis_options,
-        row_axis_options,
+        column_level_count,
+        row_level_count,
         options,
     } = ct;
     let CrossTabGridOptions {
@@ -453,14 +424,14 @@ fn crosstab_node(name: &str, bounds: &Rect, ct: &CrossTabObject) -> Node {
             *suppress_column_grand_totals,
         )
         .prop_if(
-            *column_axis_options != 0,
-            "column-axis-options",
-            int(*column_axis_options),
+            *column_level_count != 0,
+            "column-level-count",
+            int(*column_level_count),
         )
         .prop_if(
-            *row_axis_options != 0,
-            "row-axis-options",
-            int(*row_axis_options),
+            *row_level_count != 0,
+            "row-level-count",
+            int(*row_level_count),
         );
     if let Some(c) = row_grand_total_color {
         n = n.prop("row-grand-total-color", color(*c));
@@ -476,6 +447,9 @@ fn crosstab_node(name: &str, bounds: &Rect, ct: &CrossTabObject) -> Node {
                 .flag("suppress-label", d.suppress_label)
         }
     };
+    // No measure children: a cross-tab's measures are the report's own summary definitions, which
+    // this document already states as `summary` field definitions. Repeating them here would assert
+    // an attribution the file does not record.
     n.children(
         rows.iter()
             .filter(|d| !d.field_ref.is_empty())
@@ -487,12 +461,6 @@ fn crosstab_node(name: &str, bounds: &Rect, ct: &CrossTabObject) -> Node {
             .filter(|d| !d.field_ref.is_empty())
             .map(dim("column")),
     )
-    .children(measures.iter().map(|m| {
-        let CrossTabMeasure { operation, field } = m;
-        Node::new("measure")
-            .prop("op", enums::summary_operation(*operation))
-            .prop("of", field.as_str())
-    }))
 }
 
 /// Append the shared [`ObjectFormat`] / border surface every object carries.

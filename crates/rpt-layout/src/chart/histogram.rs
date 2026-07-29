@@ -5,9 +5,7 @@
 
 #[cfg(test)]
 use super::common::AxisTitles;
-use super::common::{
-    category_stride, chart_frame, fmt_val, value_frac, value_label, ChartCtx, LABEL, PALETTE,
-};
+use super::common::{chart_frame, fmt_val, value_frac, value_label, ChartCtx, LABEL, PALETTE};
 use rpt_model::{Rect, Twips};
 use rpt_pages::{DrawOp, FontSpec, RectOp, TextAlign, TextRun};
 
@@ -20,7 +18,7 @@ pub(crate) fn histogram_chart(cx: &ChartCtx, values: &[f64], bins: usize) -> Vec
         return Vec::new();
     }
     let &ChartCtx {
-        def,
+        style,
         rect,
         title,
         axis_titles,
@@ -55,11 +53,11 @@ pub(crate) fn histogram_chart(cx: &ChartCtx, values: &[f64], bins: usize) -> Vec
         .map(|(i, c)| (fmt_val(min + i as f64 * width), *c as f64))
         .collect();
     let mut ops: Vec<DrawOp> = Vec::new();
-    let f = chart_frame(def, &mut ops, rect, title, axis_titles, &series, &src);
+    let f = chart_frame(style, &mut ops, rect, title, axis_titles, &series, &src);
 
     // Contiguous bars (histogram bars touch), one per bin, cycling the base palette.
     let bar_w = (f.slot * 9 / 10).max(15);
-    let stride = category_stride(&f, bins + 1);
+    let stride = f.cats.stride;
     for (i, count) in counts.iter().enumerate() {
         let h = (value_frac(*count as f64, f.max_val) * f.plot_h as f64) as i32;
         let bx = f.plot_left + i as i32 * f.slot + (f.slot - bar_w) / 2;
@@ -78,6 +76,7 @@ pub(crate) fn histogram_chart(cx: &ChartCtx, values: &[f64], bins: usize) -> Vec
         }));
         if show_labels && *count > 0 {
             ops.push(value_label(
+                style,
                 bx + bar_w / 2,
                 (by - 230).max(f.plot_top()),
                 &fmt_val(*count as f64),
@@ -100,13 +99,14 @@ pub(crate) fn histogram_chart(cx: &ChartCtx, values: &[f64], bins: usize) -> Vec
             text: fmt_val(min + i as f64 * width),
             font: FontSpec {
                 family: "Arial".into(),
-                size_pt: 7.0,
+                size_pt: style.scaled_pt(7.0),
                 ..Default::default()
             },
             color: LABEL,
             align: TextAlign::Center,
             rotation: 0.0,
             metrics: None,
+            character_spacing: Twips(0),
             source: src(),
         })
     };

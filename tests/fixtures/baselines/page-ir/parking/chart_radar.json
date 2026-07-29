@@ -1,0 +1,1003 @@
+// document
+{
+  "sections": {
+    "Section1": {
+      "band": "ReportHeader"
+    },
+    "Section2": {
+      "band": "PageHeader"
+    },
+    "Section3": {
+      "band": "Detail"
+    },
+    "Section4": {
+      "band": "ReportFooter"
+    },
+    "Section5": {
+      "band": "PageFooter"
+    }
+  }
+}
+// page 1
+{
+  "number": 1,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": [
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2535,
+        "top": 255,
+        "width": 5624,
+        "height": 360
+      },
+      "text": "Sum of total / created_at",
+      "font": {
+        "family": "Arial",
+        "size_pt": 13.5,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Ellipse",
+      "bounds": {
+        "left": 5091,
+        "top": 2309,
+        "width": 512,
+        "height": 512
+      },
+      "fill": null,
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Ellipse",
+      "bounds": {
+        "left": 4835,
+        "top": 2053,
+        "width": 1024,
+        "height": 1024
+      },
+      "fill": null,
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Ellipse",
+      "bounds": {
+        "left": 4579,
+        "top": 1797,
+        "width": 1536,
+        "height": 1536
+      },
+      "fill": null,
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Ellipse",
+      "bounds": {
+        "left": 4323,
+        "top": 1541,
+        "width": 2048,
+        "height": 2048
+      },
+      "fill": null,
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Ellipse",
+      "bounds": {
+        "left": 4067,
+        "top": 1285,
+        "width": 2560,
+        "height": 2560
+      },
+      "fill": null,
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Ellipse",
+      "bounds": {
+        "left": 3811,
+        "top": 1029,
+        "width": 3072,
+        "height": 3072
+      },
+      "fill": null,
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 5347,
+        "y": 2565
+      },
+      "to": {
+        "x": 5347,
+        "y": 1029
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 85,
+          "g": 85,
+          "b": 85
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 4647,
+        "top": 745,
+        "width": 1400,
+        "height": 200
+      },
+      "text": "1/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 5347,
+        "y": 2565
+      },
+      "to": {
+        "x": 6677,
+        "y": 1797
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 85,
+          "g": 85,
+          "b": 85
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 6136,
+        "top": 1605,
+        "width": 1400,
+        "height": 200
+      },
+      "text": "2/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 5347,
+        "y": 2565
+      },
+      "to": {
+        "x": 6677,
+        "y": 3332
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 85,
+          "g": 85,
+          "b": 85
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 6136,
+        "top": 3325,
+        "width": 1400,
+        "height": 200
+      },
+      "text": "3/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 5347,
+        "y": 2565
+      },
+      "to": {
+        "x": 5347,
+        "y": 4101
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 85,
+          "g": 85,
+          "b": 85
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 4647,
+        "top": 4185,
+        "width": 1400,
+        "height": 200
+      },
+      "text": "4/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 5347,
+        "y": 2565
+      },
+      "to": {
+        "x": 4017,
+        "y": 3333
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 85,
+          "g": 85,
+          "b": 85
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3158,
+        "top": 3325,
+        "width": 1400,
+        "height": 200
+      },
+      "text": "5/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 5347,
+        "y": 2565
+      },
+      "to": {
+        "x": 4017,
+        "y": 1797
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 85,
+          "g": 85,
+          "b": 85
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3158,
+        "top": 1605,
+        "width": 1400,
+        "height": 200
+      },
+      "text": "6/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Polygon",
+      "points": [
+        {
+          "x": 5347,
+          "y": 1519
+        },
+        {
+          "x": 6216,
+          "y": 2064
+        },
+        {
+          "x": 6495,
+          "y": 3227
+        },
+        {
+          "x": 5347,
+          "y": 3568
+        },
+        {
+          "x": 4199,
+          "y": 3227
+        },
+        {
+          "x": 4478,
+          "y": 2064
+        }
+      ],
+      "closed": true,
+      "fill": {
+        "Solid": {
+          "a": 70,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        },
+        "width": 30,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Ellipse",
+      "bounds": {
+        "left": 5277,
+        "top": 1449,
+        "width": 140,
+        "height": 140
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Ellipse",
+      "bounds": {
+        "left": 6146,
+        "top": 1994,
+        "width": 140,
+        "height": 140
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Ellipse",
+      "bounds": {
+        "left": 6425,
+        "top": 3157,
+        "width": 140,
+        "height": 140
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Ellipse",
+      "bounds": {
+        "left": 5277,
+        "top": 3498,
+        "width": 140,
+        "height": 140
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Ellipse",
+      "bounds": {
+        "left": 4129,
+        "top": 3157,
+        "width": 140,
+        "height": 140
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Ellipse",
+      "bounds": {
+        "left": 4408,
+        "top": 1994,
+        "width": 140,
+        "height": 140
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 8279,
+        "top": 2205,
+        "width": 1341,
+        "height": 360
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 255,
+          "g": 255,
+          "b": 255
+        }
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 85,
+          "g": 85,
+          "b": 85
+        },
+        "width": 15,
+        "style": "Single"
+      },
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 8399,
+        "top": 2325,
+        "width": 135,
+        "height": 120
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8616,
+        "top": 2307,
+        "width": 804,
+        "height": 155
+      },
+      "text": "Sum of total",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    }
+  ]
+}
+// page 2
+{
+  "number": 2,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 3
+{
+  "number": 3,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 4
+{
+  "number": 4,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 5
+{
+  "number": 5,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 6
+{
+  "number": 6,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 7
+{
+  "number": 7,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 8
+{
+  "number": 8,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 9
+{
+  "number": 9,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 10
+{
+  "number": 10,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 11
+{
+  "number": 11,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}

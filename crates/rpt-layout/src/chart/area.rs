@@ -7,8 +7,7 @@
 #[cfg(test)]
 use super::common::AxisTitles;
 use super::common::{
-    category_label, category_stride, chart_frame, fmt_val, value_frac, value_label, ChartCtx,
-    LABEL, PALETTE,
+    category_label, chart_frame, fmt_val, value_frac, value_label, ChartCtx, LABEL, PALETTE,
 };
 #[cfg(test)]
 use rpt_model::Rect;
@@ -24,7 +23,7 @@ pub(crate) fn area_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp>
         return Vec::new();
     }
     let &ChartCtx {
-        def,
+        style,
         rect,
         title,
         axis_titles,
@@ -33,7 +32,7 @@ pub(crate) fn area_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp>
     } = cx;
     let src = || cx.src();
     let mut ops: Vec<DrawOp> = Vec::new();
-    let f = chart_frame(def, &mut ops, rect, title, axis_titles, series, &src);
+    let f = chart_frame(style, &mut ops, rect, title, axis_titles, series, &src);
 
     // Point per category, centered in its slot; y scales from the baseline like a bar's top.
     let point = |i: i32, val: f64| Point {
@@ -54,9 +53,9 @@ pub(crate) fn area_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp>
         x: point(series.len() as i32 - 1, series[series.len() - 1].1).x,
         y: Twips(f.plot_bottom),
     });
-    // A light tint of the series colour for the fill. Pre-blended toward white (opaque) rather than
-    // alpha-based: the Page-IR backends carry no fill-opacity, so a real translucent colour would
-    // render opaque and inconsistently across SVG/PDF/raster — this looks translucent everywhere.
+    // A light tint of the series color for the fill: the series color blended toward white and
+    // painted opaque, so the fill reads as a wash under the opaque polyline without depending on a
+    // backend's alpha compositing.
     let base = PALETTE[0];
     let blend = |c: u8| (c as f64 * 0.25 + 255.0 * 0.75) as u8;
     let tint = Color {
@@ -90,13 +89,14 @@ pub(crate) fn area_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp>
 
     // Value label + (thinned) category label at each point — no per-point markers, unlike the line
     // chart: the engine's area is a clean ribbon.
-    let stride = category_stride(&f, series.len());
+    let stride = f.cats.stride;
     for (i, (label, val)) in series.iter().enumerate() {
         let i = i as i32;
         let p = point(i, *val);
         // Value label above each point, gated on "show value".
         if show_labels {
             ops.push(value_label(
+                style,
                 p.x.0,
                 (p.y.0 - 90 - 230).max(f.plot_top()),
                 &fmt_val(*val),
@@ -105,7 +105,7 @@ pub(crate) fn area_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp>
             ));
         }
         if (i as usize).is_multiple_of(stride) {
-            ops.push(category_label(&f, i, label, &src));
+            ops.push(category_label(style, &f, i, label, &src));
         }
     }
 
@@ -172,9 +172,9 @@ mod tests {
     }
 
     /// The area ribbon draws no per-point marker rects (the engine's area is a clean fill), and a
-    /// dense category axis is thinned so only a subset of the labels is emitted.
+    /// dense category axis rotates its labels 45° and thins them so only a subset is emitted.
     #[test]
-    fn no_markers_and_thins_dense_category_labels() {
+    fn no_markers_and_rotates_dense_category_labels() {
         let r = Rect {
             left: Twips(0),
             top: Twips(0),
@@ -191,18 +191,23 @@ mod tests {
         // No marker rects at all (the area is fill + line only).
         let rects = ops.iter().filter(|o| matches!(o, DrawOp::Rect(_))).count();
         assert_eq!(rects, 0, "area draws no per-point marker rects");
-        // Category labels are thinned: far fewer than the 40 categories.
-        let cat_labels = ops
+        // Category labels are rotated (they no longer fit their slots upright) and thinned.
+        let cat_labels: Vec<&rpt_pages::TextRun> = ops
             .iter()
             .filter_map(|o| match o {
-                DrawOp::Text(t) if t.text.starts_with('p') => Some(()),
+                DrawOp::Text(t) if t.text.starts_with('p') => Some(t),
                 _ => None,
             })
-            .count();
+            .collect();
         assert!(
-            cat_labels > 0 && cat_labels < series.len() / 2,
-            "dense category axis thinned: {cat_labels} of {} labels",
+            !cat_labels.is_empty() && cat_labels.len() < series.len(),
+            "dense category axis thinned: {} of {} labels",
+            cat_labels.len(),
             series.len()
+        );
+        assert!(
+            cat_labels.iter().all(|t| t.rotation == 45.0),
+            "an overflowing label is rotated rather than shrunk"
         );
     }
 }

@@ -1,22 +1,47 @@
 //! Pipeline tests over hand-built rows and data definitions.
 //!
-//! The `rpt` model structs `DataDefinition`/`FieldDef`/`Group`/`Sort` are `#[non_exhaustive]`, so
-//! they are built here via `Default` + field assignment (struct literals are disallowed
-//! cross-crate); the small builders below keep the tests readable.
+//! `DataDefinition`/`FieldDef`/`Group`/`Sort` carry far more fields than any one test sets, so the
+//! builders below start from `Default` and assign the two or three that matter. A struct literal
+//! would spell out every field and bury what the test is actually about.
 //!
-//! `Default` + field assignment is exactly what `clippy::field_reassign_with_default` flags, but the
-//! struct-literal form it wants is impossible for these cross-crate `#[non_exhaustive]` types — so
-//! the lint is allowed for this test module.
+//! That is what `clippy::field_reassign_with_default` flags, so the lint is allowed for this module.
 #![allow(clippy::field_reassign_with_default)]
 
+use crate::source::ColumnCoercion;
 use crate::*;
-use crystal_formula::eval::Value;
+use rpt_formula::eval::Value;
 use rpt_model::{
     DataDefinition, FieldDef, FieldKindData, FieldValueType, FormulaField, Group,
-    ResetConditionType, RunningTotalField, SavedData, Sort, SortDirection, SummaryField,
-    SummaryOperation,
+    HierarchicalGroupOptions, ResetConditionType, RunningTotalField, SavedData, Sort,
+    SortDirection, SummaryField, SummaryOperation,
 };
 use rpt_test_support::saved_data as saved;
+
+/// A source whose rows have **not** been through record selection — what a live database fetch
+/// looks like to the pipeline.
+///
+/// [`SavedDataSource`] reports itself already selected, so it is the wrong source for exercising
+/// [`DataDefinition::record_selection`]: the pipeline deliberately skips that formula for a stored
+/// batch. This wrapper reuses the same convenient row-building while leaving
+/// [`RowSource::already_selected`] at its live-fetch default.
+struct LiveSource(SavedDataSource);
+
+impl RowSource for LiveSource {
+    fn columns(&self) -> &[Column] {
+        self.0.columns()
+    }
+    fn rows(&self) -> Vec<Row> {
+        self.0.rows()
+    }
+    fn coercions(&self) -> Vec<ColumnCoercion> {
+        self.0.coercions()
+    }
+}
+
+/// Build a live-fetch source from the same column/row literals [`saved`] takes.
+fn live(columns: &[(&str, FieldValueType)], rows: &[&[&str]]) -> LiveSource {
+    LiveSource(SavedDataSource::new(&saved(columns, rows)))
+}
 
 fn group(field: &str, dir: SortDirection) -> Group {
     let mut g = Group::default();
@@ -76,11 +101,10 @@ fn flat_source_no_grouping() {
 
 #[test]
 fn record_selection_filters() {
-    let sd = saved(
+    let src = live(
         &[("t.amt", FieldValueType::Number)],
         &[&["10"], &["20"], &["30"]],
     );
-    let src = SavedDataSource::new(&sd);
     let mut dd = DataDefinition::default();
     dd.record_selection = Some(rpt_model::Formula("{t.amt} > 15".to_string()));
     let ds = build_dataset(&src, &dd);
@@ -92,14 +116,13 @@ fn record_selection_resolves_parameters() {
     // A parameter-filtered selection: without the parameter values every row's selection formula
     // errors on the unresolved `{?Customer}`/`{?MinAmt}` and is dropped fail-open (empty dataset);
     // with them, the parameters select the matching rows.
-    let sd = saved(
+    let src = live(
         &[
             ("t.cust", FieldValueType::Int32s),
             ("t.amt", FieldValueType::Number),
         ],
         &[&["374", "50"], &["374", "5"], &["999", "50"]],
     );
-    let src = SavedDataSource::new(&sd);
     let mut dd = DataDefinition::default();
     dd.record_selection = Some(rpt_model::Formula(
         "({t.cust} IN {?Customer}) AND ({t.amt} >= {?MinAmt})".to_string(),
@@ -124,14 +147,13 @@ fn record_selection_resolves_parameters() {
 fn build_dataset_with_link_filter_and_param() {
     // The per-instance subreport path: a parent link value reaches the subreport either as a merged
     // parameter (its selection formula filters on `{?param}`) or as a structural `FieldFilter`.
-    let sd = saved(
+    let src = live(
         &[
             ("invoice.customer_id", FieldValueType::Int32s),
             ("invoice.total", FieldValueType::Number),
         ],
         &[&["1", "10"], &["1", "40"], &["2", "99"]],
     );
-    let src = SavedDataSource::new(&sd);
 
     // Parameter-routed link: selection `{invoice.customer_id} = {?p}` keeps only customer 1's rows.
     let mut dd = DataDefinition::default();
@@ -170,13 +192,90 @@ fn build_dataset_with_link_filter_and_param() {
 }
 
 #[test]
+fn a_saved_batch_is_not_re_filtered_by_the_record_selection() {
+    // A stored batch is the rowset as it stood after selection ran, so the pipeline must not run the
+    // record-selection formula over it again. The formula here references a parameter that is not
+    // supplied — the case that decides the rule, because re-running it would resolve `{?Range}` to
+    // Null, exclude every row, and render an empty report over data the engine displays in full.
+    let sd = saved(
+        &[("t.amt", FieldValueType::Currency)],
+        &[&["10259.1"], &["11553"], &["12323.1"]],
+    );
+    let src = SavedDataSource::new(&sd);
+    let mut dd = DataDefinition::default();
+    dd.record_selection = Some(rpt_model::Formula("{t.amt} = {?Range}".to_string()));
+
+    let sink = CollectingSink::new();
+    let ds = build_dataset_with_diagnostics(&src, &dd, &sink);
+    assert_eq!(ds.row_count, 3);
+    // And silently: an untouched formula has nothing to report.
+    assert!(sink.is_empty(), "{:?}", sink.diagnostics());
+
+    // The same formula over a live fetch still filters — the record selection is skipped because of
+    // the source, not because the formula is unresolvable.
+    let live_src = live(
+        &[("t.amt", FieldValueType::Currency)],
+        &[&["10259.1"], &["11553"], &["12323.1"]],
+    );
+    assert_eq!(build_dataset(&live_src, &dd).row_count, 0);
+}
+
+#[test]
+fn a_saved_batch_is_filtered_by_the_saved_data_selection() {
+    // The formula that *does* apply to a stored batch: the engine's local filter over an
+    // already-fetched rowset. Both formulas are set, to pin down which one the pipeline picks.
+    let sd = saved(
+        &[("t.amt", FieldValueType::Number)],
+        &[&["10"], &["20"], &["30"]],
+    );
+    let src = SavedDataSource::new(&sd);
+    let mut dd = DataDefinition::default();
+    dd.record_selection = Some(rpt_model::Formula("{t.amt} > 999".to_string()));
+    dd.saved_data_filter = Some(rpt_model::Formula("{t.amt} > 15".to_string()));
+
+    let ds = build_dataset(&src, &dd);
+    assert_eq!(ds.row_count, 2);
+
+    // A live fetch reads the other formula, so it keeps nothing.
+    let live_src = live(
+        &[("t.amt", FieldValueType::Number)],
+        &[&["10"], &["20"], &["30"]],
+    );
+    assert_eq!(build_dataset(&live_src, &dd).row_count, 0);
+}
+
+#[test]
+fn a_link_filter_still_applies_to_a_saved_batch() {
+    // The subreport link filter identifies the parent instance rather than restating the report's
+    // criteria, so skipping the record selection must not skip it too.
+    let sd = saved(
+        &[
+            ("invoice.customer_id", FieldValueType::Int32s),
+            ("invoice.total", FieldValueType::Number),
+        ],
+        &[&["1", "10"], &["1", "40"], &["2", "99"]],
+    );
+    let src = SavedDataSource::new(&sd);
+    let filters = [FieldFilter {
+        field: "invoice.customer_id".to_string(),
+        value: Value::Number(1.0),
+    }];
+    let ds = build_dataset_with(
+        &src,
+        &DataDefinition::default(),
+        &Parameters::new(),
+        &filters,
+    );
+    assert_eq!(ds.row_count, 2);
+}
+
+#[test]
 fn null_selection_formula_excludes_record() {
     // A selection formula that evaluates to Null (rather than a clean boolean `true`) excludes the
     // record — the engine keeps a record only when its selection is true. An empty Number cell reads
     // as Null; `IIf(IsNull({t.x}), {t.x}, True)` then returns Null for that row (and `True` for a
     // valued row), so only the valued row survives.
-    let sd = saved(&[("t.x", FieldValueType::Number)], &[&[""], &["7"]]);
-    let src = SavedDataSource::new(&sd);
+    let src = live(&[("t.x", FieldValueType::Number)], &[&[""], &["7"]]);
     let mut dd = DataDefinition::default();
     dd.record_selection = Some(rpt_model::Formula(
         "IIf(IsNull({t.x}), {t.x}, True)".to_string(),
@@ -275,8 +374,7 @@ fn summary_over_a_formula_field_aggregates_the_evaluated_value() {
 
 #[test]
 fn formula_field_resolves_in_context() {
-    let sd = saved(&[("t.amt", FieldValueType::Number)], &[&["10"], &["100"]]);
-    let src = SavedDataSource::new(&sd);
+    let src = live(&[("t.amt", FieldValueType::Number)], &[&["10"], &["100"]]);
     let mut dd = DataDefinition::default();
     dd.record_selection = Some(rpt_model::Formula("{@Big}".to_string()));
     dd.field_definitions = vec![formula_field("Big", "{t.amt} >= 50")];
@@ -391,8 +489,8 @@ fn multi_key_sort_is_stable_and_matches_field_order() {
 
 #[test]
 fn global_variable_accumulates_across_records_with_shared_state() {
-    use crystal_formula::eval::EvalContext;
-    use crystal_formula::RefKind;
+    use rpt_formula::eval::EvalContext;
+    use rpt_formula::RefKind;
 
     // A Global running total: `Global NumberVar t; t := t + {t.amt}; t`.
     let mut dd = DataDefinition::default();
@@ -417,8 +515,8 @@ fn global_variable_accumulates_across_records_with_shared_state() {
 
 #[test]
 fn without_shared_state_global_resets_each_record() {
-    use crystal_formula::eval::EvalContext;
-    use crystal_formula::RefKind;
+    use rpt_formula::eval::EvalContext;
+    use rpt_formula::RefKind;
 
     // Same formula, but no SharedState attached: the VM keeps the variable per-evaluation, so it
     // cannot accumulate — the state-less (test/default) path's behavior.
@@ -441,8 +539,8 @@ fn without_shared_state_global_resets_each_record() {
 
 #[test]
 fn per_record_cache_evaluates_formula_once() {
-    use crystal_formula::eval::EvalContext;
-    use crystal_formula::RefKind;
+    use rpt_formula::eval::EvalContext;
+    use rpt_formula::RefKind;
 
     // A Global counter that increments on every evaluation.
     let mut dd = DataDefinition::default();
@@ -471,8 +569,8 @@ fn per_record_cache_evaluates_formula_once() {
 
 #[test]
 fn shared_scope_persists_and_is_distinct_from_global() {
-    use crystal_formula::eval::EvalContext;
-    use crystal_formula::RefKind;
+    use rpt_formula::eval::EvalContext;
+    use rpt_formula::RefKind;
 
     // `Shared` and `Global` variables of the same name are distinct stores; both persist.
     let mut dd = DataDefinition::default();
@@ -497,8 +595,8 @@ fn shared_scope_persists_and_is_distinct_from_global() {
 
 #[test]
 fn parameters_resolve_in_data_context() {
-    use crystal_formula::eval::Evaluator;
-    use crystal_formula::{parse, Syntax};
+    use rpt_formula::eval::Evaluator;
+    use rpt_formula::{parse, Syntax};
 
     let row = Row::default();
     let formulas = FormulaRegistry::new();
@@ -664,7 +762,7 @@ fn group_selection_by_group_scoped_summary_filters_at_named_level() {
 /// a child state shares the parent's `Shared` map but gets a fresh `Global` map.
 #[test]
 fn child_state_shares_shared_scope_isolates_global() {
-    use crystal_formula::VarScope;
+    use rpt_formula::VarScope;
 
     let parent = SharedState::new();
     parent.set(VarScope::Shared, "s", Value::Number(1.0));
@@ -708,8 +806,7 @@ fn running_total_no_reset_accumulates_across_groups() {
 
 #[test]
 fn record_selection_error_is_reported_yet_still_fail_open() {
-    let sd = saved(&[("t.amt", FieldValueType::Number)], &[&["10"], &["20"]]);
-    let src = SavedDataSource::new(&sd);
+    let src = live(&[("t.amt", FieldValueType::Number)], &[&["10"], &["20"]]);
     let mut dd = DataDefinition::default();
     // References a field the rows do not carry → the selection errors on every row.
     dd.record_selection = Some(rpt_model::Formula("{t.missing} > 0".to_string()));
@@ -755,8 +852,7 @@ fn record_selection_error_is_reported_yet_still_fail_open() {
 /// is my report empty?", so it is reported, distinguishably.
 #[test]
 fn a_selection_that_cleanly_excludes_every_row_is_reported_as_such() {
-    let sd = saved(&[("t.amt", FieldValueType::Number)], &[&["10"], &["20"]]);
-    let src = SavedDataSource::new(&sd);
+    let src = live(&[("t.amt", FieldValueType::Number)], &[&["10"], &["20"]]);
     let mut dd = DataDefinition::default();
     dd.record_selection = Some(rpt_model::Formula("{t.amt} > 999".to_string()));
 
@@ -777,8 +873,7 @@ fn a_selection_that_cleanly_excludes_every_row_is_reported_as_such() {
 #[test]
 fn valid_selection_reports_nothing() {
     // A clean `false` is ordinary filtering, not a failure — it must never produce a diagnostic.
-    let sd = saved(&[("t.amt", FieldValueType::Number)], &[&["10"], &["20"]]);
-    let src = SavedDataSource::new(&sd);
+    let src = live(&[("t.amt", FieldValueType::Number)], &[&["10"], &["20"]]);
     let mut dd = DataDefinition::default();
     dd.record_selection = Some(rpt_model::Formula("{t.amt} > 15".to_string()));
 
@@ -840,8 +935,8 @@ fn group_selection_non_boolean_is_reported_yet_group_kept() {
 
 #[test]
 fn formula_null_treatment_controls_null_field_default() {
-    use crystal_formula::eval::EvalContext;
-    use crystal_formula::RefKind;
+    use rpt_formula::eval::EvalContext;
+    use rpt_formula::RefKind;
 
     // A null number field read by two identical formulas that differ only in null-treatment.
     let mut amt = FieldDef::default();
@@ -933,12 +1028,52 @@ fn topn_group_sort_collapses_others_when_not_discarded() {
     assert_eq!(others.details.len(), 1);
 }
 
+/// Every instance carries its level's decoded group condition, including the collapsed *Others*
+/// instance a Top N sort appends. A consumer cannot recover the grain from the key alone — a
+/// 1st-of-month key is equally a monthly, semi-monthly or daily bucket — so it has to travel with
+/// the instance.
+#[test]
+fn group_instances_carry_their_level_condition() {
+    // Discrete Top-2 outer group (so an "Others" instance is appended), annual inner date group.
+    let sd = saved(
+        &[
+            ("t.region", FieldValueType::String),
+            ("t.at", FieldValueType::Date),
+            ("t.amt", FieldValueType::Number),
+        ],
+        &[
+            &["East", "2024-03-07", "30"],
+            &["West", "2024-05-01", "20"],
+            &["North", "2023-01-01", "9"],
+        ],
+    );
+    let mut inner = group("t.at", SortDirection::AscendingOrder);
+    inner.date_condition = Some(rpt_model::GroupCondition::Annually);
+    let mut dd = DataDefinition::default();
+    dd.groups = vec![topn_group("t.region", "t.amt", 2, false), inner];
+    dd.field_definitions = vec![summary_field("Sum_amt", SummaryOperation::Sum, "t.amt")];
+    let ds = build_dataset(&SavedDataSource::new(&sd), &dd);
+
+    // Outer level (including "Others") is discrete: no condition.
+    assert_eq!(ds.groups.len(), 3);
+    assert_eq!(ds.groups[2].key, Value::Str("Others".to_string()));
+    assert!(ds.groups.iter().all(|g| g.date_condition.is_none()));
+
+    // Every inner instance carries the annual condition its 1-January key cannot express. ("Others"
+    // flattens its members' rows, so only the two kept groups have subgroups.)
+    let inner: Vec<_> = ds.groups.iter().flat_map(|g| &g.subgroups).collect();
+    assert_eq!(inner.len(), 2);
+    assert!(inner
+        .iter()
+        .all(|g| g.date_condition == Some(rpt_model::GroupCondition::Annually)));
+}
+
 /// The date/time specials (`CurrentDate`/`Today`/`CurrentDateTime`/`CurrentTime`) resolve from the
 /// registry's injected as-of instant — so a formula reading them evaluates against one fixed value.
 #[test]
 fn datetime_specials_resolve_from_injected_as_of() {
-    use crystal_formula::eval::{Date, EvalContext, Time};
-    use crystal_formula::RefKind;
+    use rpt_formula::eval::{Date, EvalContext, Time};
+    use rpt_formula::RefKind;
 
     let dt = DateTimeSpecials::new(Date::new(2021, 6, 15), Time::new(12, 30, 45));
     let mut dd = DataDefinition::default();
@@ -974,12 +1109,12 @@ fn datetime_specials_resolve_from_injected_as_of() {
     );
 }
 
-/// The aging-bucket shape from the corpus: `DateDiff("d", {due}, CurrentDate)` buckets a row by its
-/// age relative to the injected as-of date — previously null because `CurrentDate` was never supplied.
+/// An aging bucket (`DateDiff("d", {t.due}, CurrentDate)`) buckets a row by its age relative to the
+/// injected as-of date.
 #[test]
 fn aging_bucket_uses_injected_current_date() {
-    use crystal_formula::eval::{Date, EvalContext, Time};
-    use crystal_formula::RefKind;
+    use rpt_formula::eval::{Date, EvalContext, Time};
+    use rpt_formula::RefKind;
 
     let as_of = Date::new(2021, 6, 15);
     let dt = DateTimeSpecials::new(as_of, Time::new(0, 0, 0));
@@ -1015,7 +1150,7 @@ fn aging_bucket_uses_injected_current_date() {
 /// the offline/inspection paths that never supply a render instant.
 #[test]
 fn datetime_specials_absent_without_as_of() {
-    use crystal_formula::eval::EvalContext;
+    use rpt_formula::eval::EvalContext;
 
     let formulas = compile_formulas(&DataDefinition::default());
     let row = Row::default();
@@ -1026,7 +1161,7 @@ fn datetime_specials_absent_without_as_of() {
 /// `from_unix_seconds` splits an epoch instant into its UTC calendar date and time-of-day.
 #[test]
 fn datetime_specials_from_unix_epoch() {
-    use crystal_formula::eval::{Date, Time};
+    use rpt_formula::eval::{Date, Time};
 
     let dt = DateTimeSpecials::from_unix_seconds(0);
     assert_eq!(
@@ -1048,4 +1183,186 @@ fn datetime_specials_from_unix_epoch() {
         dt.resolve("currenttime"),
         Some(Value::Time(Time::new(12, 30, 45)))
     );
+}
+
+/// The pipeline carries the parameters it was given onto the dataset it returns — otherwise every
+/// `{?Param}` would resolve to null at layout time, silently and indistinguishably from a genuinely
+/// unresolved parameter.
+#[test]
+fn a_dataset_carries_the_parameters_it_was_built_with() {
+    let mut params = Parameters::new();
+    params.insert("region".to_string(), Value::Str("West".to_string()));
+
+    let source = EmptySource;
+    let dataset = build_dataset_with_params(&source, &DataDefinition::default(), &params);
+
+    assert_eq!(
+        dataset.params.get("region"),
+        Some(&Value::Str("West".to_string())),
+        "the dataset must carry the parameters the pipeline was given"
+    );
+}
+
+// ---------------------------------------------------------------------------
+// Hierarchical grouping (Crystal's "Hierarchical Group Sorting")
+// ---------------------------------------------------------------------------
+
+/// A group on `t.id`, hierarchically sorted with `t.parent` naming each instance's parent.
+fn hierarchical_group() -> Group {
+    let mut g = group("t.id", SortDirection::AscendingOrder);
+    g.hierarchical_options = Some(HierarchicalGroupOptions {
+        enabled: true,
+        parent_id_field: "t.parent".to_string(),
+        instance_id_field: "t.id".to_string(),
+        group_indent: rpt_model::Twips(300),
+    });
+    g
+}
+
+/// The `(key, depth)` pairs of a hierarchy in print order — the depth-first pre-order walk the
+/// engine emits, which is what the layout engine then indents by.
+fn hierarchy_walk(groups: &[GroupInstance]) -> Vec<(String, usize)> {
+    fn walk(g: &GroupInstance, depth: usize, out: &mut Vec<(String, usize)>) {
+        out.push((crate::value_order::value_key(&g.key), depth));
+        for child in &g.hierarchy_children {
+            walk(child, depth + 1, out);
+        }
+    }
+    let mut out = Vec::new();
+    for g in groups {
+        walk(g, 0, &mut out);
+    }
+    out
+}
+
+/// Rows `(id, parent)` grouped by `t.id` with hierarchical sorting on.
+fn hierarchy_of(rows: &[(&str, &str)]) -> Dataset {
+    let cells: Vec<Vec<&str>> = rows.iter().map(|(id, p)| vec![*id, *p]).collect();
+    let refs: Vec<&[&str]> = cells.iter().map(|r| r.as_slice()).collect();
+    let src = live(
+        &[
+            ("t.id", FieldValueType::Int32s),
+            ("t.parent", FieldValueType::Int32s),
+        ],
+        &refs,
+    );
+    let mut dd = DataDefinition::default();
+    dd.groups = vec![hierarchical_group()];
+    build_dataset(&src, &dd)
+}
+
+/// The engine walks a hierarchical group depth-first from the rows with no parent, in the group's
+/// own sort order at every level.
+#[test]
+fn hierarchical_grouping_nests_children_under_their_parent() {
+    // 1 ─ 2 ─ 4
+    //   └ 3
+    // 5 (a second root, after the first root's whole subtree)
+    let ds = hierarchy_of(&[("4", "2"), ("1", ""), ("5", ""), ("3", "1"), ("2", "1")]);
+    assert_eq!(
+        hierarchy_walk(&ds.groups),
+        vec![
+            ("n:1".to_string(), 0),
+            ("n:2".to_string(), 1),
+            ("n:4".to_string(), 2),
+            ("n:3".to_string(), 1),
+            ("n:5".to_string(), 0),
+        ]
+    );
+    // Only the roots stay in the top-level list; the rest hang off their parents.
+    assert_eq!(ds.groups.len(), 2);
+}
+
+/// A group without hierarchical options keeps the flat, key-sorted instance list.
+#[test]
+fn a_plain_group_is_not_rearranged() {
+    let src = live(
+        &[
+            ("t.id", FieldValueType::Int32s),
+            ("t.parent", FieldValueType::Int32s),
+        ],
+        &[&["2", "1"], &["1", ""], &["3", "1"]],
+    );
+    let mut dd = DataDefinition::default();
+    dd.groups = vec![group("t.id", SortDirection::AscendingOrder)];
+    let ds = build_dataset(&src, &dd);
+    assert_eq!(ds.groups.len(), 3);
+    assert!(ds.groups.iter().all(|g| g.hierarchy_children.is_empty()));
+}
+
+/// An orphan — a parent ID naming no instance — is a root, not a dropped row. The engine prints
+/// every record, so a hierarchy that silently swallowed the unmatched ones would change the counts
+/// the report shows.
+#[test]
+fn an_orphan_becomes_a_root() {
+    // 7 names a parent that does not exist; 2 is a well-formed child of 1.
+    let ds = hierarchy_of(&[("1", ""), ("2", "1"), ("7", "99")]);
+    assert_eq!(
+        hierarchy_walk(&ds.groups),
+        vec![
+            ("n:1".to_string(), 0),
+            ("n:2".to_string(), 1),
+            ("n:7".to_string(), 0),
+        ]
+    );
+}
+
+/// A row that is its own parent is a root — it must not become its own child, which would be an
+/// instance nested under itself.
+#[test]
+fn a_self_parenting_row_becomes_a_root() {
+    let ds = hierarchy_of(&[("1", "1"), ("2", "1")]);
+    assert_eq!(
+        hierarchy_walk(&ds.groups),
+        vec![("n:1".to_string(), 0), ("n:2".to_string(), 1)]
+    );
+}
+
+/// A parent cycle terminates and prints every instance exactly once. Nothing outside the cycle
+/// points into it, so it has no root: the walk falls back to emitting the first member as one.
+#[test]
+fn a_parent_cycle_terminates_and_keeps_every_instance() {
+    // 1 → 2 → 3 → 1, plus an unrelated well-formed root.
+    let ds = hierarchy_of(&[("1", "3"), ("2", "1"), ("3", "2"), ("9", "")]);
+    let walk = hierarchy_walk(&ds.groups);
+    assert_eq!(
+        walk.len(),
+        4,
+        "every instance prints exactly once: {walk:?}"
+    );
+    let mut keys: Vec<&str> = walk.iter().map(|(k, _)| k.as_str()).collect();
+    keys.sort_unstable();
+    assert_eq!(keys, vec!["n:1", "n:2", "n:3", "n:9"]);
+    // The cycle's entry point is emitted at depth 0 and the rest hang under it in order.
+    assert!(
+        walk.contains(&("n:1".to_string(), 0)),
+        "the cycle needs an entry point: {walk:?}"
+    );
+}
+
+/// Two instances cannot share an instance ID (the group key partitions on it), but the parent ID is
+/// an ordinary field and can name a value no instance holds *twice*; children attach to a single
+/// parent and every instance still prints once.
+#[test]
+fn every_instance_prints_exactly_once_over_a_wide_tree() {
+    let ds = hierarchy_of(&[
+        ("1", ""),
+        ("2", "1"),
+        ("3", "1"),
+        ("4", "2"),
+        ("5", "2"),
+        ("6", "3"),
+    ]);
+    assert_eq!(
+        hierarchy_walk(&ds.groups),
+        vec![
+            ("n:1".to_string(), 0),
+            ("n:2".to_string(), 1),
+            ("n:4".to_string(), 2),
+            ("n:5".to_string(), 2),
+            ("n:3".to_string(), 1),
+            ("n:6".to_string(), 2),
+        ]
+    );
+    assert_eq!(ds.iter_detail_rows().len(), 6);
 }

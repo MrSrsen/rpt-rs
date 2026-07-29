@@ -12,8 +12,8 @@
 //! is the read-vs-print-order signal running `Global`/`Shared` variables depend on; the persistent
 //! store lives in [`SharedState`](crate::SharedState).
 
-use crystal_formula::refs::references;
-use crystal_formula::RefKind;
+use rpt_formula::refs::references;
+use rpt_formula::RefKind;
 
 /// When a formula is (re)evaluated relative to the record pass.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -50,18 +50,18 @@ pub fn classify_eval_time(body: &str) -> EvalTime {
         }
     }
     // A read of print/record state (page/record/group position, `Previous`/`Next`) forces the print
-    // pass. `crystal-formula` owns the name classification (print-state specials ∪ record-nav); scan
+    // pass. `rpt-formula` owns the name classification (print-state specials ∪ record-nav); scan
     // the brace-stripped body's identifier words so a field name that merely contains such a word
     // cannot be mistaken for it.
     if outside
         .split(|c: char| !(c.is_ascii_alphanumeric() || c == '_'))
-        .any(|w| crystal_formula::is_print_state_special(w) || crystal_formula::is_record_nav(w))
+        .any(|w| rpt_formula::is_print_state_special(w) || rpt_formula::is_record_nav(w))
     {
         return EvalTime::WhilePrintingRecords;
     }
     // A summary/subtotal function (`Sum({f})`, `Count({f}, {g})`) reads a report summary, which is
     // only computed once every record has been read and grouped — so it evaluates in the print pass.
-    if crystal_formula::refs::has_summary_function(body) {
+    if rpt_formula::refs::has_summary_function(body) {
         return EvalTime::WhilePrintingRecords;
     }
     let refs = references(body);

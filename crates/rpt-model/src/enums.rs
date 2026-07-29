@@ -142,7 +142,7 @@ sdk_enum!(
     }, Other);
 
 sdk_enum!(
-    /// Crystal formula-language variable scope (`FLScope`): the declared reach of a `Global`/`Shared`
+    /// A persisted formula-language variable's declared scope: the reach of a `Global`/`Shared`
     /// variable declared in a formula and persisted with the report. `Local` variables are not
     /// persisted (the engine asserts against writing them), so only `Shared`/`Global` appear in files.
     FormulaVariableScope {
@@ -410,7 +410,7 @@ sdk_enum!(
     }, Other);
 
 sdk_enum!(
-    /// SDK: `DayFormat` (`<DateFieldFormat DayFormat>`). Native `RDDayType`.
+    /// SDK: `DayFormat` (`<DateFieldFormat DayFormat>`).
     DayFormat {
         /// Numeric day without a leading zero (`5`).
         NumericDay,
@@ -421,7 +421,7 @@ sdk_enum!(
     }, Other);
 
 sdk_enum!(
-    /// SDK: `MonthFormat` (`<DateFieldFormat MonthFormat>`). Native `RDMonthType`.
+    /// SDK: `MonthFormat` (`<DateFieldFormat MonthFormat>`).
     MonthFormat {
         /// Numeric month without a leading zero (`3`).
         NumericMonth,
@@ -436,7 +436,7 @@ sdk_enum!(
     }, Other);
 
 sdk_enum!(
-    /// SDK: `YearFormat` (`<DateFieldFormat YearFormat>`). Native `RDYearType`.
+    /// SDK: `YearFormat` (`<DateFieldFormat YearFormat>`).
     YearFormat {
         /// Two-digit year (`24`).
         ShortYear,
@@ -447,9 +447,9 @@ sdk_enum!(
     }, Other);
 
 sdk_enum!(
-    /// SDK: `DateSystemDefaultType` (`DateFieldFormat.SystemDefaultType`). Native
-    /// `RDDateWindowsDefaultType`. When not `NotUsingWindowsDefaults`, the engine renders the date with
-    /// the host's Windows long/short date pattern instead of the field's stored day/month/year enums.
+    /// SDK: `DateSystemDefaultType` (`DateFieldFormat.SystemDefaultType`). When not
+    /// `NotUsingWindowsDefaults`, the engine renders the date with the host's Windows long/short date
+    /// pattern instead of the field's stored day/month/year enums.
     DateSystemDefaultType {
         /// Render with the host's Windows long-date pattern.
         UseWindowsLongDate,
@@ -460,9 +460,9 @@ sdk_enum!(
     }, Other);
 
 sdk_enum!(
-    /// SDK: `DayOfWeekType` (`DateFieldFormat.DayOfWeekType`). Native `RDDayOfWeekType`:
-    /// 0 = `ShortDayOfWeek`, 1 = `LongDayOfWeek`, 2 = `NoDayOfWeek` (the usual value — no weekday
-    /// shown). Not exported, so decoded for record completeness only.
+    /// SDK: `DayOfWeekType` (`DateFieldFormat.DayOfWeekType`). Disk codes: `0` = `ShortDayOfWeek`,
+    /// `1` = `LongDayOfWeek`, `2` = `NoDayOfWeek` (the usual value — no weekday shown). Not exported,
+    /// so decoded for record completeness only.
     DayOfWeekFormat {
         /// Abbreviated weekday name (`Wed`).
         ShortDayOfWeek,
@@ -473,8 +473,8 @@ sdk_enum!(
     }, Other);
 
 sdk_enum!(
-    /// SDK: `DateOrder` (`DateFieldFormat.DateOrder`). Native `RDDateOrderType`. The relative order of
-    /// the day/month/year elements. Decoded from the `0x00f2` date leaf **byte 0**.
+    /// SDK: `DateOrder` (`DateFieldFormat.DateOrder`). The relative order of the day/month/year
+    /// elements. Decoded from the `0x00f2` date leaf **byte 0**.
     /// Disk codes: `1` = `DayMonthYear` (European reports), `2` = `MonthDayYear`
     /// (US reports); `0` = `YearMonthDay` (never surfaced on a real date field — the stored default of
     /// non-date fields). Like the rest of `DateFieldFormat`, only reported verbatim for an explicit
@@ -489,9 +489,34 @@ sdk_enum!(
     }, Other);
 
 sdk_enum!(
-    /// SDK: `HourFormat` (`TimeFieldFormat.HourFormat`). Native `RDHourType`. Decoded from the
-    /// `0x00f6` time leaf **byte 2**. Disk codes (on explicit-format
-    /// fields): `0` = `NumericHour` (leading-zero), `1` = `NoLeadingZeroNumericHour`, `2` = `NoHour`.
+    /// SDK: `TimeBase` (`TimeFieldFormat.TimeBase`). Whether the hour runs 1-12 with an AM/PM
+    /// designator or 0-23 without one. Decoded from the `0x00f6` time leaf **byte 0**. Disk codes:
+    /// `0` = `TwelveHour`, `1` = `TwentyFourHour`. A stored fact only for an explicit
+    /// (non-system-default) time/datetime field; system-default fields resolve it at runtime from
+    /// the host locale.
+    TimeBase {
+        /// Hours 1-12, with the AM/PM designator appended or prepended.
+        TwelveHour,
+        /// Hours 0-23, with no AM/PM designator.
+        TwentyFourHour,
+    }, Other);
+
+sdk_enum!(
+    /// SDK: `AMPMFormat` (`TimeFieldFormat.AMPMFormat`). Where the AM/PM designator sits relative to
+    /// the time. Decoded from the `0x00f6` time leaf **byte 1**. Disk codes: `0` = `AMPMBefore`,
+    /// `1` = `AMPMAfter`. Only observable under [`TimeBase::TwelveHour`], which is the only base
+    /// that emits a designator at all.
+    AMPMFormat {
+        /// The designator precedes the time (`am12:00`).
+        AMPMBefore,
+        /// The designator follows the time (`12:00 am`).
+        AMPMAfter,
+    }, Other);
+
+sdk_enum!(
+    /// SDK: `HourFormat` (`TimeFieldFormat.HourFormat`). Decoded from the `0x00f6` time leaf
+    /// **byte 2**. Disk codes (on explicit-format fields): `0` = `NumericHour` (leading-zero),
+    /// `1` = `NoLeadingZeroNumericHour`, `2` = `NoHour`.
     /// A stored fact only for an explicit (non-system-default) time/datetime field; system-default
     /// fields resolve it at runtime from the host locale.
     HourFormat {
@@ -504,10 +529,10 @@ sdk_enum!(
     }, Other);
 
 sdk_enum!(
-    /// SDK: `MinuteFormat` (`TimeFieldFormat.MinuteFormat`). Native `RDMinuteType`. Decoded from the
-    /// `0x00f6` time leaf **byte 3**. Disk codes: `0` = `NumericMinute`,
-    /// `2` = `NoMinute` (`1` = `LeadingZeroNumericMinute`, unobserved). Explicit-field stored
-    /// fact; system-default resolves from the host locale.
+    /// SDK: `MinuteFormat` (`TimeFieldFormat.MinuteFormat`). Decoded from the `0x00f6` time leaf
+    /// **byte 3**. Disk codes: `0` = `NumericMinute`, `2` = `NoMinute`
+    /// (`1` = `LeadingZeroNumericMinute`, unobserved). Explicit-field stored fact; system-default
+    /// resolves from the host locale.
     MinuteFormat {
         /// Numeric minute (`05`).
         NumericMinute,
@@ -518,10 +543,10 @@ sdk_enum!(
     }, Other);
 
 sdk_enum!(
-    /// SDK: `SecondFormat` (`TimeFieldFormat.SecondFormat`). Native `RDSecondType`. Decoded from the
-    /// `0x00f6` time leaf **byte 4**. Disk codes: `0` = `NumericSecond`,
-    /// `2` = `NoSecond` (`1` = `LeadingZeroNumericSecond`, unobserved). Explicit-field stored
-    /// fact; system-default resolves from the host locale.
+    /// SDK: `SecondFormat` (`TimeFieldFormat.SecondFormat`). Decoded from the `0x00f6` time leaf
+    /// **byte 4**. Disk codes: `0` = `NumericSecond`, `2` = `NoSecond`
+    /// (`1` = `LeadingZeroNumericSecond`, unobserved). Explicit-field stored fact; system-default
+    /// resolves from the host locale.
     SecondFormat {
         /// Numeric second (`05`).
         NumericSecond,
@@ -532,11 +557,11 @@ sdk_enum!(
     }, Other);
 
 sdk_enum!(
-    /// SDK: `DateTimeOrder` (`DateTimeFieldFormat.DateTimeOrder`). Native `RDDateTimeOrderType`. Which
-    /// of the date/time parts is shown and in what order. Decoded from the `0x00f4` datetime leaf
-    /// **byte 0**. Disk codes: `0` = `DateThenTime`, `2` = `DateOnly`
-    /// (`1` = `TimeThenDate`, `3` = `TimeOnly`, both unobserved). A genuine
-    /// stored layout choice (independent of the date/time system-default sub-formats).
+    /// SDK: `DateTimeOrder` (`DateTimeFieldFormat.DateTimeOrder`). Which of the date/time parts is
+    /// shown and in what order. Decoded from the `0x00f4` datetime leaf **byte 0**. Disk codes:
+    /// `0` = `DateThenTime`, `2` = `DateOnly` (`1` = `TimeThenDate`, `3` = `TimeOnly`, both
+    /// unobserved). A genuine stored layout choice (independent of the date/time system-default
+    /// sub-formats).
     DateTimeOrder {
         /// The date part, then the time part.
         DateThenTime,
@@ -549,11 +574,10 @@ sdk_enum!(
     }, Other);
 
 sdk_enum!(
-    /// SDK: `TextFormat` (`StringFieldFormat.TextFormat`). Native `RDTextFormatType`. How a string
-    /// field's text is interpreted when rendered. Decoded from the `0x00fa` string leaf **byte 15**.
-    /// Disk codes: `0` = `StandardText`,
-    /// `2` = `HTMLText` (`1` = `RTFText`, unobserved). A genuine stored layout fact on every
-    /// string field, not runtime-resolved — render-relevant (HTML/RTF interpretation).
+    /// SDK: `TextFormat` (`StringFieldFormat.TextFormat`). How a string field's text is interpreted
+    /// when rendered. Decoded from the `0x00fa` string leaf **byte 15**. Disk codes:
+    /// `0` = `StandardText`, `2` = `HTMLText` (`1` = `RTFText`, unobserved). A genuine stored layout
+    /// fact on every string field, not runtime-resolved — render-relevant (HTML/RTF interpretation).
     TextFormat {
         /// Plain text.
         StandardText,
@@ -671,6 +695,154 @@ impl DayOfWeekFormat {
     }
 }
 
+sdk_enum!(
+    /// SDK: `EraType` (`DateFieldFormat.EraType`). Whether the date carries an era/period
+    /// designator, and in which form. Decoded from the `0x00f2` date leaf **byte 6**.
+    EraFormat {
+        /// Abbreviated era designator.
+        ShortEra,
+        /// Full era designator.
+        LongEra,
+        /// No era designator (the stored default).
+        NoEra,
+    }, Other);
+
+impl EraFormat {
+    /// Decode the `eraType` byte. The engine bounds it at `0..=2`.
+    pub fn from_code(code: i32) -> Self {
+        match code {
+            0 => Self::ShortEra,
+            1 => Self::LongEra,
+            2 => Self::NoEra,
+            other => Self::Other(other),
+        }
+    }
+}
+
+sdk_enum!(
+    /// SDK: `CalendarType` (`DateFieldFormat.CalendarType`). The calendar a date field is rendered
+    /// in. Decoded from the `0x00f2` date leaf **byte 7**.
+    ///
+    /// The stored codes are the Win32 `CAL_*` calendar identifiers, which start at `1`: the engine
+    /// bounds the byte at `1..=12`, the same span as `CAL_GREGORIAN..=CAL_GREGORIAN_XLIT_FRENCH`. Only
+    /// [`GregorianCalendar`](Self::GregorianCalendar) and [`HijriCalendar`](Self::HijriCalendar)
+    /// have been observed in a report; the intervening variants take their identity from that Win32
+    /// sequence rather than from a report that stores them.
+    CalendarType {
+        /// Gregorian calendar, localized (`CAL_GREGORIAN`, code 1 — the stored default).
+        GregorianCalendar,
+        /// Gregorian calendar, US English (`CAL_GREGORIAN_US`).
+        GregorianUSCalendar,
+        /// Japanese Emperor Era (`CAL_JAPAN`).
+        JapaneseCalendar,
+        /// Taiwan calendar (`CAL_TAIWAN`).
+        TaiwaneseCalendar,
+        /// Korean Tangun Era (`CAL_KOREA`).
+        KoreanCalendar,
+        /// Hijri (Arabic lunar) calendar (`CAL_HIJRI`).
+        HijriCalendar,
+        /// Thai calendar (`CAL_THAI`).
+        ThaiCalendar,
+        /// Hebrew (lunar) calendar (`CAL_HEBREW`).
+        HebrewCalendar,
+        /// Gregorian calendar, Middle East French (`CAL_GREGORIAN_ME_FRENCH`).
+        GregorianMEFrenchCalendar,
+        /// Gregorian calendar, Arabic (`CAL_GREGORIAN_ARABIC`).
+        GregorianArabicCalendar,
+        /// Gregorian calendar, transliterated English (`CAL_GREGORIAN_XLIT_ENGLISH`).
+        GregorianXlitEnglishCalendar,
+        /// Gregorian calendar, transliterated French (`CAL_GREGORIAN_XLIT_FRENCH`).
+        GregorianXlitFrenchCalendar,
+    }, Other);
+
+impl CalendarType {
+    /// Decode the `calendarType` byte. The codes are 1-based, so `0` is not a calendar.
+    pub fn from_code(code: i32) -> Self {
+        match code {
+            1 => Self::GregorianCalendar,
+            2 => Self::GregorianUSCalendar,
+            3 => Self::JapaneseCalendar,
+            4 => Self::TaiwaneseCalendar,
+            5 => Self::KoreanCalendar,
+            6 => Self::HijriCalendar,
+            7 => Self::ThaiCalendar,
+            8 => Self::HebrewCalendar,
+            9 => Self::GregorianMEFrenchCalendar,
+            10 => Self::GregorianArabicCalendar,
+            11 => Self::GregorianXlitEnglishCalendar,
+            12 => Self::GregorianXlitFrenchCalendar,
+            other => Self::Other(other),
+        }
+    }
+}
+
+sdk_enum!(
+    /// SDK: `DayOfWeekPosition` (`DateFieldFormat.DayOfWeekPosition`). Which side of the date the
+    /// weekday element sits on. Decoded from the byte that follows the `0x00f2` leaf's five
+    /// separator strings.
+    DayOfWeekPosition {
+        /// The weekday precedes the date (the stored default).
+        LeadingPosition,
+        /// The weekday follows the date.
+        TrailingPosition,
+    }, Other);
+
+impl DayOfWeekPosition {
+    /// Decode the `dayOfWeekPosition` byte. The engine bounds it at `0..=1`.
+    pub fn from_code(code: i32) -> Self {
+        match code {
+            0 => Self::LeadingPosition,
+            1 => Self::TrailingPosition,
+            other => Self::Other(other),
+        }
+    }
+}
+
+sdk_enum!(
+    /// SDK: `DayOfWeekEnclosure` (`DateFieldFormat.DayOfWeekEnclosure`). The bracket pair the
+    /// weekday element is wrapped in. The SDK exposes it as the bracket *string*; the file stores
+    /// the ordinal into the engine's own five-entry table of open/close pairs, so
+    /// [`DayOfWeekEnclosure::brackets`] recovers the SDK's view.
+    DayOfWeekEnclosure {
+        /// No brackets — the weekday is printed bare.
+        NotEnclosed,
+        /// ASCII parentheses, `(Mon)`.
+        InParentheses,
+        /// Full-width parentheses (`U+FF08`/`U+FF09`), the CJK forms.
+        InFWParentheses,
+        /// ASCII square brackets, `[Mon]`.
+        InSquareBrackets,
+        /// Full-width square brackets (`U+FF3B`/`U+FF3D`), the CJK forms.
+        InFWSquareBrackets,
+    }, Other);
+
+impl DayOfWeekEnclosure {
+    /// Decode the `dayOfWeekEnclosure` byte, the last byte of the `0x00f2` date leaf. The engine
+    /// bounds it at `0..=4` and indexes its bracket table with it directly.
+    pub fn from_code(code: i32) -> Self {
+        match code {
+            0 => Self::NotEnclosed,
+            1 => Self::InParentheses,
+            2 => Self::InFWParentheses,
+            3 => Self::InSquareBrackets,
+            4 => Self::InFWSquareBrackets,
+            other => Self::Other(other),
+        }
+    }
+
+    /// The `(open, close)` characters the engine wraps the weekday in — the pair its own table
+    /// holds at this ordinal. `NotEnclosed` (and any unmapped code) yields empty strings.
+    pub fn brackets(self) -> (&'static str, &'static str) {
+        match self {
+            Self::InParentheses => ("(", ")"),
+            Self::InFWParentheses => ("\u{ff08}", "\u{ff09}"),
+            Self::InSquareBrackets => ("[", "]"),
+            Self::InFWSquareBrackets => ("\u{ff3b}", "\u{ff3d}"),
+            Self::NotEnclosed | Self::Other(_) => ("", ""),
+        }
+    }
+}
+
 impl DateOrder {
     /// Decode the `0x00f2` date leaf byte 0 (`dateOrder`).
     pub fn from_code(code: i32) -> Self {
@@ -678,6 +850,28 @@ impl DateOrder {
             0 => Self::YearMonthDay,
             1 => Self::DayMonthYear,
             2 => Self::MonthDayYear,
+            other => Self::Other(other),
+        }
+    }
+}
+
+impl TimeBase {
+    /// Decode the `0x00f6` time leaf byte 0 (`timeBase`).
+    pub fn from_code(code: i32) -> Self {
+        match code {
+            0 => Self::TwelveHour,
+            1 => Self::TwentyFourHour,
+            other => Self::Other(other),
+        }
+    }
+}
+
+impl AMPMFormat {
+    /// Decode the `0x00f6` time leaf byte 1 (`amPmType`).
+    pub fn from_code(code: i32) -> Self {
+        match code {
+            0 => Self::AMPMBefore,
+            1 => Self::AMPMAfter,
             other => Self::Other(other),
         }
     }
@@ -860,6 +1054,79 @@ impl BooleanOutputType {
             2 => Self::YesOrNo,
             3 => Self::YOrN,
             4 => Self::OneOrZero,
+            other => Self::Other(other),
+        }
+    }
+}
+
+sdk_enum!(
+    /// SDK: `CRReportKind` — which layout family the report belongs to. Stored as the first of the
+    /// three enum bytes in the page-setup record (`0x66` byte 0).
+    ReportKind {
+        /// A conventional top-to-bottom report (the default).
+        ColumnarReport,
+        /// A mailing-label report.
+        LabelReport,
+        /// A multi-column report; its column geometry is in the multi-column format record.
+        MultiColumnReport,
+    }, Other);
+
+impl ReportKind {
+    /// Decode the page-setup report-kind byte (`0x66` byte 0). The engine asserts the value is in
+    /// `0..=2`, so anything else is a stored code with no named variant.
+    pub fn from_code(code: i32) -> Self {
+        match code {
+            0 => Self::ColumnarReport,
+            1 => Self::LabelReport,
+            2 => Self::MultiColumnReport,
+            other => Self::Other(other),
+        }
+    }
+}
+
+sdk_enum!(
+    /// SDK: `CrReportStyleEnum` — the canned formatting style the designer's Style Expert applies to
+    /// the whole report. Stored as the third of the three enum values that open the page-setup
+    /// record (`0x66`).
+    ReportStyle {
+        /// Plain columns with a header for each — the default.
+        Standard,
+        /// Group values printed above the group's records.
+        LeadingBreak,
+        /// Group values printed below the group's records.
+        TrailingBreak,
+        /// A ruled table.
+        Table,
+        /// A ruled table with the group value dropped into its own row.
+        DropTable,
+        /// [`LeadingBreak`](Self::LeadingBreak) in the executive typography.
+        ExecutiveLeadingBreak,
+        /// [`TrailingBreak`](Self::TrailingBreak) in the executive typography.
+        ExecutiveTrailingBreak,
+        /// Alternating shaded rows.
+        Shade,
+        /// A red and blue ruled border.
+        RedBlueBorder,
+        /// A maroon and teal boxed layout.
+        MaroonTealBox,
+    }, Other);
+
+impl ReportStyle {
+    /// Decode the page-setup report-style enum. The engine's layout switch names `0..=9`; anything
+    /// else is a stored code with no named variant, including the `255` the vendor model spells
+    /// `None`.
+    pub fn from_code(code: i32) -> Self {
+        match code {
+            0 => Self::Standard,
+            1 => Self::LeadingBreak,
+            2 => Self::TrailingBreak,
+            3 => Self::Table,
+            4 => Self::DropTable,
+            5 => Self::ExecutiveLeadingBreak,
+            6 => Self::ExecutiveTrailingBreak,
+            7 => Self::Shade,
+            8 => Self::RedBlueBorder,
+            9 => Self::MaroonTealBox,
             other => Self::Other(other),
         }
     }

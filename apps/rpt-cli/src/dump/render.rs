@@ -4,11 +4,12 @@
 
 use std::fmt::Write as _;
 
-use rpt::Rpt;
+use rpt_reader::Rpt;
 
 use crate::util::{paint, CliError, BOLD};
 
 use super::collect::select_streams;
+use super::fields::render_fields;
 use super::parse::{anchor_string_index, hexdump_lines, lp_strings, probe_cap, type_label};
 use super::{DumpMatch, DumpOpts};
 
@@ -21,17 +22,17 @@ pub(super) fn render_match(
     total: usize,
     opts: &DumpOpts,
 ) {
-    let bytes = if opts.whole { &m.whole } else { &m.leaf };
+    let bytes = if opts.whole { &m.whole } else { &m.joined_runs };
     let view = if opts.whole {
         "whole span (header+children, masked)"
     } else {
-        "own leaf (demasked)"
+        "own field bytes (demasked, runs joined)"
     };
     let heading = format!(
-        "── {} · {} · subtype=0x{:02x} · #{idx}/{total} ──",
+        "── {} · {} · schema=0x{:04x} · #{idx}/{total} ──",
         m.stream,
-        type_label(m.rtype),
-        m.subtype
+        type_label(m.rtype, m.dialect),
+        m.schema
     );
     let _ = writeln!(out, "{}", paint(opts.color, BOLD, &heading));
     let _ = writeln!(
@@ -40,14 +41,37 @@ pub(super) fn render_match(
         m.offset, m.content_start, m.content_end, m.mask, m.depth
     );
     if !m.path.is_empty() {
-        let path: Vec<String> = m.path.iter().map(|&t| type_label(t)).collect();
+        let path: Vec<String> = m.path.iter().map(|&t| type_label(t, m.dialect)).collect();
         let _ = writeln!(out, "   path: {}", path.join(" › "));
     }
     if !m.children.is_empty() {
-        let kids: Vec<String> = m.children.iter().map(|&t| type_label(t)).collect();
+        let kids: Vec<String> = m
+            .children
+            .iter()
+            .map(|&t| type_label(t, m.dialect))
+            .collect();
         let _ = writeln!(out, "   children: {}", kids.join(", "));
     }
     let _ = writeln!(out, "   {view}: {} bytes", bytes.len());
+    // Where the joined buffer stops being a region of the file: each seam is a nested record cut
+    // out, so the bytes either side of it are not adjacent on disk and an offset past one is not a
+    // file position.
+    if !opts.whole && m.run_lengths.len() > 1 {
+        let mut at = 0usize;
+        let seams: Vec<String> = m.run_lengths[..m.run_lengths.len() - 1]
+            .iter()
+            .map(|len| {
+                at += len;
+                format!("0x{at:04x}")
+            })
+            .collect();
+        let _ = writeln!(
+            out,
+            "   {} runs joined, seams at {} — bytes either side of a seam are not adjacent in the file",
+            m.run_lengths.len(),
+            seams.join(", ")
+        );
+    }
     if bytes.is_empty() {
         let _ = writeln!(out, "   (empty)");
         return;
@@ -58,22 +82,34 @@ pub(super) fn render_match(
     }
     let strings = lp_strings(bytes);
     if !strings.is_empty() {
-        let _ = writeln!(out, "   length-prefixed strings (read_lp_string):");
-        for (off, text, consumed) in &strings {
+        let _ = writeln!(
+            out,
+            "   length-prefixed strings (as the reader reads them):"
+        );
+        for s in &strings {
             let _ = writeln!(
                 out,
-                "     @0x{off:04x}  {:?}  (len prefix 0x{:08x}, {consumed}B)",
-                text,
-                consumed - 4
+                "     @0x{:04x}  {:?}  (len prefix 0x{:08x}, {}B)",
+                s.offset,
+                s.text,
+                s.len - 4,
+                s.len
             );
         }
+    }
+    // A record type with a field table gets that table's reading; the probe grid is the instrument
+    // for a type whose fields are not named yet, and `--grid` asks for it anyway.
+    if let (Some(table), false) = (&m.table, opts.grid) {
+        render_fields(out, table, m.dialect, opts.whole);
+        let _ = writeln!(out);
+        return;
     }
     // The `used` anchor: the end of the anchoring LP-string (the `--anchor-string` marker match, or
     // the last string). The probe grid then annotates each offset as `used±N`, so a trailing tail
     // can be read relative to a field-ref end — its distance from that end is stable even when the
     // field name's length shifts the absolute offsets.
-    let anchor = anchor_string_index(&strings, opts.anchor_string.as_deref())
-        .map(|k| strings[k].0 + strings[k].2);
+    let anchor =
+        anchor_string_index(&strings, opts.anchor_string.as_deref()).map(|k| strings[k].end());
     if let Some(a) = anchor {
         let _ = writeln!(
             out,
@@ -82,10 +118,7 @@ pub(super) fn render_match(
     }
     let cap = probe_cap(opts.probe.as_deref(), bytes.len());
     if cap > 0 {
-        let _ = writeln!(
-            out,
-            "   scalar probe (off: u16be u16le · u32be u32le)  [Cursor / u16_be / u32_be]:"
-        );
+        let _ = writeln!(out, "   scalar probe (off: u16be u16le · u32be u32le):");
         for off in 0..cap {
             let u16be = bytes
                 .get(off..off + 2)
@@ -118,14 +151,9 @@ pub(super) fn render_match(
 /// The record-type index of the selected streams: each type, its count, and its name — the table
 /// of contents an agent reads to decide what to dump.
 pub(super) fn dump_type_index(out: &mut String, rpt: &Rpt, opts: &DumpOpts) {
-    for (name, stream, is_qe) in select_streams(rpt, opts.stream.as_deref()) {
-        let tree = if is_qe {
-            stream.qe_record_tree()
-        } else {
-            stream.record_tree()
-        };
+    for (name, stream, dialect) in select_streams(rpt, opts.stream.as_deref()) {
         let mut counts: std::collections::BTreeMap<u16, usize> = Default::default();
-        for root in &tree {
+        for root in &stream.record_tree() {
             root.walk(&mut |n| *counts.entry(n.rtype).or_default() += 1);
         }
         if counts.is_empty() {
@@ -135,7 +163,7 @@ pub(super) fn dump_type_index(out: &mut String, rpt: &Rpt, opts: &DumpOpts) {
         rows.sort_by_key(|&(_, c)| std::cmp::Reverse(c));
         let _ = writeln!(out, "{name}: {} record type(s)", rows.len());
         for (rtype, count) in rows {
-            let _ = writeln!(out, "   {:<28} ×{count}", type_label(rtype));
+            let _ = writeln!(out, "   {:<28} ×{count}", type_label(rtype, dialect));
         }
         let _ = writeln!(out);
     }

@@ -13,6 +13,8 @@ use cosmic_text::{Attrs, Buffer, Family, FontSystem, Metrics, Shaping, Style, We
 use rpt_pages::FontSpec;
 use rpt_pages::{TextLayout, TWIPS_PER_PT};
 
+use crate::FontSource;
+
 /// Default leading as a multiple of the em, until we read the font's real ascent+descent+line-gap.
 const DEFAULT_LEADING: f32 = 1.2;
 
@@ -48,6 +50,16 @@ impl FontProvider {
         FontProvider {
             local_dirs: Vec::new(),
             use_system_fonts: false,
+        }
+    }
+
+    /// The provider a [`FontSource`] names — the metrics-side counterpart of [`FontSource::load`], so
+    /// one value configures both halves of the font stack (the faces layout measures with and the
+    /// faces a backend embeds) and they cannot drift apart.
+    pub fn from_source(source: FontSource) -> FontProvider {
+        match source {
+            FontSource::System => FontProvider::system(),
+            FontSource::Bundled => FontProvider::bundled(),
         }
     }
 
@@ -162,13 +174,19 @@ impl CosmicLayout {
         let mut buffer = Buffer::new(&mut fs, Metrics::new(size, size * DEFAULT_LEADING));
         // set_size/set_text just store config in 0.19; shape_until_scroll does the shaping with fonts.
         buffer.set_size(max_width_pt, None);
-        // A known family shapes by name; an absent one goes through the sans-serif generic (the DB's
-        // metric-compatible Liberation), NOT cosmic-text's built-in per-script list — see
-        // `known_families`. Per-glyph fallback still covers glyphs the chosen face lacks.
+        // A known family shapes by name; an absent one goes through the generic its name implies, so
+        // it lands on the DB's metric-compatible Liberation face for that class — NOT cosmic-text's
+        // built-in per-script list, which would pick an arbitrary loaded sans (the bundled DejaVu
+        // symbol face, say) and lose metric compatibility entirely. Per-glyph fallback still covers
+        // glyphs the chosen face lacks.
         let family = if self.known_families.contains(&font.family.to_lowercase()) {
             Family::Name(&font.family)
         } else {
-            Family::SansSerif
+            match crate::font_db::generic_for(&font.family) {
+                crate::font_db::GenericFamily::Serif => Family::Serif,
+                crate::font_db::GenericFamily::Monospace => Family::Monospace,
+                crate::font_db::GenericFamily::SansSerif => Family::SansSerif,
+            }
         };
         let mut attrs = Attrs::new().family(family);
         if font.bold {
@@ -304,7 +322,8 @@ impl TextLayout for CosmicLayout {
         let max_width_pt = (max_width / TWIPS_PER_PT) as f32;
         let buffer = self.shaped(text, font, Some(max_width_pt));
         // Each layout run is one visual (wrapped) line; reconstruct its text from the glyph byte
-        // ranges into the logical line. (LTR/CJK correct; RTL visual order is a later refinement.)
+        // ranges into the logical line. Correct for LTR/CJK; RTL visual order is not reconstructed
+        // correctly.
         let mut lines: Vec<String> = buffer
             .layout_runs()
             .map(|run| match (run.glyphs.first(), run.glyphs.last()) {

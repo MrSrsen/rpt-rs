@@ -6,8 +6,8 @@
 #[cfg(test)]
 use super::common::AxisTitles;
 use super::common::{
-    centered_disc, fmt_val, nice_scale, title_op, truncate, value_label, ChartCtx, AXIS, GRID,
-    LABEL, LABEL_PT, PALETTE,
+    centered_disc, fmt_val, nice_scale, title_op, value_label, ChartCtx, AXIS, GRID, LABEL,
+    LABEL_PT, PALETTE,
 };
 use rpt_model::{Color, Rect, Twips};
 use rpt_pages::{
@@ -26,7 +26,7 @@ pub(crate) fn radar_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp
         return Vec::new();
     }
     let &ChartCtx {
-        def,
+        style,
         rect,
         title,
         show_labels,
@@ -43,7 +43,7 @@ pub(crate) fn radar_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp
         (rh / 8).clamp(180, 360)
     };
     if !title.is_empty() {
-        ops.push(title_op(def, rl, rt + pad / 2, rw, title_h, title, &src));
+        ops.push(title_op(style, rl, rt + pad / 2, rw, title_h, title, &src));
     }
 
     // Centre the polar plot in the area below the title, leaving room for the rim category labels.
@@ -110,16 +110,17 @@ pub(crate) fn radar_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp
                 width: Twips(1400),
                 height: Twips(200),
             },
-            text: truncate(&series[i as usize].0, 14),
+            text: series[i as usize].0.clone(),
             font: FontSpec {
                 family: "Arial".into(),
-                size_pt: LABEL_PT,
+                size_pt: style.scaled_pt(LABEL_PT),
                 ..Default::default()
             },
             color: LABEL,
             align: TextAlign::Center,
             rotation: 0.0,
             metrics: None,
+            character_spacing: Twips(0),
             source: src(),
         }));
     }
@@ -140,7 +141,7 @@ pub(crate) fn radar_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp
     ops.push(DrawOp::Polygon(PolygonOp {
         points: points.clone(),
         closed: true,
-        // A translucent fill of the series colour so overlapping grid stays visible through it.
+        // A translucent fill of the series color so overlapping grid stays visible through it.
         fill: Some(
             Color {
                 a: 70,
@@ -172,6 +173,7 @@ pub(crate) fn radar_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp
         }));
         if show_labels {
             ops.push(value_label(
+                style,
                 p.x.0,
                 p.y.0 - 220,
                 &fmt_val(series[i].1),

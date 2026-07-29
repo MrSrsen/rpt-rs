@@ -6,7 +6,7 @@
 
 use std::path::Path;
 
-use rpt::Rpt;
+use rpt_reader::Rpt;
 
 use crate::util::CliError;
 
@@ -15,7 +15,7 @@ rpt kdl — export a Crystal Reports (.rpt) file to KDL
 
 Decodes the .rpt binary directly and serialises its semantic model to a KDL document: construct
 kinds as nodes, names as arguments, scalars as key=value properties, nested structs and lists as
-child nodes, and only non-default values emitted. Geometry stays in raw twips, colours render as
+child nodes, and only non-default values emitted. Geometry stays in raw twips, colors render as
 #rrggbb, enums as kebab-case tokens, and formula bodies as multi-line strings.
 
 Embedded picture bytes never enter the KDL: each picture references a sidecar file (embed-N.<ext>,

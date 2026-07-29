@@ -1,20 +1,20 @@
-//! `tree` — a structural tree of the decoded record DOM, grouped by source stream.
+//! `tree` — a structural tree of the decoded records, grouped by source stream.
 
 use std::fmt::Write as _;
 
-use rpt::annotate::{summarize, RecordSummary};
-use rpt::raw::{Node, Value};
-use rpt::Rpt;
+use rpt_reader::annotate::{summarize, RecordSummary};
+use rpt_reader::raw::{Dialect, Node, Value};
+use rpt_reader::Rpt;
 use serde::Serialize;
 
 use crate::util::{paint, truncate, CliError, BOLD, BOLD_GREEN, BRIGHT_MAGENTA, CYAN, DIM, YELLOW};
 
 pub(crate) const HELP: &str = "\
-rpt tree — a structural tree of the decoded record DOM
+rpt tree — a structural tree of the decoded records
 
 Grouped by source stream. Each node is tagged by kind: CfbStream(<name>) is the first tier (the
 main report's Contents, then every subreport's Subdocument N/Contents); Branch(<type>) is a node
-with nested children; Leaf(<type>) is a node with none (field data only). <type> is the record's
+with nested children; Leaf(<type>) is a node with none (its own field bytes only). <type> is the record's
 registry name (or its raw 0xNNNN word). For record types the decoder understands (format records,
 group-area options, summary definitions) the node line shows a concise decoded summary of the
 record's values (e.g. `DecimalPlaces=2 Negative=…`); every other record shows a truncated preview
@@ -37,28 +37,39 @@ OPTIONS:
     --no-color     force coloring off
 ";
 
-/// Max characters of a leaf-value preview shown per node.
+/// Max characters of the preview of a node's own field bytes.
 const PREVIEW_MAX: usize = 60;
-/// Max characters of a single text leaf value within a preview.
+/// Max characters of a single text value within a preview.
 const TEXT_MAX: usize = 40;
 /// A raw byte run at least this large is treated as an embedded data blob (image / picture /
 /// saved-data / property bag) and highlighted rather than dimmed, so attachments stand out.
 const BLOB_BYTES: usize = 512;
 
+/// How one record forest is rendered: the vocabulary its records are written in, the depth cap and
+/// whether to color. The dialect travels with the tree because a record carries a type number and
+/// not the stream it came from — the same number is an unrelated record in each vocabulary, so
+/// every lookup on it needs both.
+#[derive(Clone, Copy)]
+struct Render {
+    dialect: Dialect,
+    max_depth: usize,
+    color: bool,
+}
+
 /// A node's type name (registry name, or `Type_0xNNNN` for unmodelled types) and raw type word.
-fn node_type(node: &Node) -> (String, u16) {
+fn node_type(node: &Node, dialect: Dialect) -> (String, u16) {
     match node {
-        // The only modelled DOM node; every other record surfaces as `Unknown`.
+        // The only modelled node; every other record surfaces as `Unknown`.
         Node::FieldDef(_) => ("FieldDef".to_string(), 0x0073),
-        Node::Unknown(u) => (u.type_name(), u.rtype),
+        Node::Unknown(u) => (u.type_name(dialect), u.rtype),
     }
 }
 
-/// This node's child records (a modelled leaf has none).
-fn node_children(node: &Node) -> &[Node] {
+/// This node's child records, in wire order (a modelled node has none).
+fn node_children(node: &Node) -> Vec<&Node> {
     match node {
-        Node::Unknown(u) => &u.children,
-        Node::FieldDef(_) => &[],
+        Node::Unknown(u) => u.children().collect(),
+        Node::FieldDef(_) => Vec::new(),
     }
 }
 
@@ -73,28 +84,28 @@ fn node_kind(node: &Node) -> &'static str {
     }
 }
 
-/// True if this record type is identified in the registry (has a symbolic name).
-fn node_is_known(node: &Node) -> bool {
+/// True if this record type is identified in the registry (has a symbolic name in `dialect`).
+fn node_is_known(node: &Node, dialect: Dialect) -> bool {
     match node {
         Node::FieldDef(_) => true,
-        Node::Unknown(u) => u.tag().name().is_some(),
+        Node::Unknown(u) => u.tag().name(dialect).is_some(),
     }
 }
 
 /// The type identity shown inside a node's kind tag: the registry name (e.g. `ReportProperty`)
 /// when known, else the bare hex type word (e.g. `0x0066`) — so an unknown type isn't printed as
 /// the redundant `Type_0x0066`.
-fn node_identity(node: &Node) -> String {
-    let (name, tag) = node_type(node);
-    if node_is_known(node) {
+fn node_identity(node: &Node, dialect: Dialect) -> String {
+    let (name, tag) = node_type(node, dialect);
+    if node_is_known(node, dialect) {
         name
     } else {
         format!("{tag:#06x}")
     }
 }
 
-/// A compact, human-readable preview of a node's own leaf content — the field name/type for a
-/// modelled field, else the decoded leaf values (strings quoted, ints inline, raw runs sized).
+/// A compact, human-readable preview of a node's own field bytes — the field name/type for a
+/// modelled field, else the values decoded from its runs (strings quoted, raw runs sized).
 /// `None` when the node carries no previewable content of its own. With `color`, text content is
 /// highlighted, large embedded data blobs are called out in magenta, and small raw byte runs are
 /// dimmed; the overall visible width is still capped.
@@ -106,16 +117,16 @@ fn node_preview(node: &Node, color: bool) -> Option<String> {
             Some(format!("{name} {ty}"))
         }
         Node::Unknown(u) => {
-            if u.values.is_empty() {
+            let values = u.values();
+            if values.is_empty() {
                 return None;
             }
             // Accumulate by *visible* width so embedded ANSI codes never count toward the cap.
             let mut visible = 0usize;
             let mut parts: Vec<String> = Vec::new();
-            for v in &u.values {
+            for v in &values {
                 let (plain, code) = match v {
                     Value::Text(s) => (format!("{:?}", truncate(s, TEXT_MAX)), YELLOW),
-                    Value::Int(i) => (i.to_string(), ""),
                     // Large byte runs are embedded data blobs (images / saved data / property
                     // bags) — call them out in magenta and label them, rather than dimming.
                     Value::Bytes(b) if b.len() >= BLOB_BYTES => {
@@ -128,11 +139,7 @@ fn node_preview(node: &Node, color: bool) -> Option<String> {
                     break;
                 }
                 visible += plain.chars().count() + 1; // +1 for the joining space
-                parts.push(if code.is_empty() {
-                    plain
-                } else {
-                    paint(color, code, &plain)
-                });
+                parts.push(paint(color, code, &plain));
             }
             Some(parts.join(" "))
         }
@@ -161,11 +168,11 @@ fn is_image_record(tag: u16) -> bool {
 /// Paint a node's type label by prominence: a field definition is brightest, a picture/OLE object
 /// record is called out in pink/purple, any other recognized (named) record type is highlighted,
 /// and an unmodelled `Type_0xNNNN` is dimmed.
-fn paint_label(color: bool, node: &Node, name: &str) -> String {
+fn paint_label(color: bool, node: &Node, name: &str, dialect: Dialect) -> String {
     match node {
         Node::FieldDef(_) => paint(color, BOLD_GREEN, name),
         Node::Unknown(u) if is_image_record(u.tag().0) => paint(color, BRIGHT_MAGENTA, name),
-        Node::Unknown(u) if u.tag().name().is_some() => paint(color, CYAN, name),
+        Node::Unknown(u) if u.tag().name(dialect).is_some() => paint(color, CYAN, name),
         _ => paint(color, DIM, name),
     }
 }
@@ -173,7 +180,8 @@ fn paint_label(color: bool, node: &Node, name: &str) -> String {
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 struct TreeNodeJson {
-    /// `record` (has nested children) or `leaf` (terminal, field data only).
+    /// `branch` (has nested children) or `leaf` (its content is its own field bytes and nothing
+    /// else) — the same two kinds the text view tags a node with, lowercased.
     kind: &'static str,
     #[serde(rename = "type")]
     type_name: String,
@@ -207,30 +215,26 @@ struct TreeReport<'a> {
     subreports: Vec<TreeSubreportJson>,
 }
 
-/// Build the JSON node tree for one record, capping recursion at `max_depth` levels.
-fn tree_node_json(node: &Node, depth: usize, max_depth: usize) -> TreeNodeJson {
-    let (type_name, tag) = node_type(node);
+/// Build the JSON node tree for one record, capping recursion at the render's depth limit.
+fn tree_node_json(node: &Node, depth: usize, render: Render) -> TreeNodeJson {
+    let (type_name, tag) = node_type(node, render.dialect);
     let kids = node_children(node);
-    let (children, truncated) = if depth + 1 >= max_depth && !kids.is_empty() {
+    let (children, truncated) = if depth + 1 >= render.max_depth && !kids.is_empty() {
         (Vec::new(), true)
     } else {
         (
             kids.iter()
-                .map(|c| tree_node_json(c, depth + 1, max_depth))
+                .map(|c| tree_node_json(c, depth + 1, render))
                 .collect(),
             false,
         )
     };
     TreeNodeJson {
-        kind: if node_kind(node) == "Leaf" {
-            "leaf"
-        } else {
-            "branch"
-        },
+        kind: if kids.is_empty() { "leaf" } else { "branch" },
         type_name,
         tag: format!("{tag:#06x}"),
         preview: node_preview(node, false),
-        decoded: summarize(node).map(|s| {
+        decoded: summarize(node, render.dialect).map(|s| {
             s.fields
                 .into_iter()
                 .map(|(k, v)| (k.to_string(), serde_json::Value::String(v)))
@@ -241,37 +245,38 @@ fn tree_node_json(node: &Node, depth: usize, max_depth: usize) -> TreeNodeJson {
     }
 }
 
-/// Render one record and its subtree as indented box-drawing lines, capping at `max_depth`.
-/// The `prefix` passed down stays uncolored so widths line up; color is applied per printed line.
+/// Render one record and its subtree as indented box-drawing lines, capping at the render's depth
+/// limit. The `prefix` passed down stays uncolored so widths line up; color is applied per printed
+/// line.
 fn render_node(
     out: &mut String,
     node: &Node,
     prefix: &str,
     is_last: bool,
     depth: usize,
-    max_depth: usize,
-    color: bool,
+    render: Render,
 ) {
-    let (_, tag) = node_type(node);
+    let Render { dialect, color, .. } = render;
+    let (_, tag) = node_type(node, dialect);
     let branch = if is_last { "└─ " } else { "├─ " };
     let scaffold = paint(color, DIM, &format!("{prefix}{branch}"));
-    // `Kind(Identity)` tag — e.g. `Record(Area)` or `Leaf(0x0066)`. The identity keeps its
+    // `Kind(Identity)` tag — e.g. `Branch(Area)` or `Leaf(0x0066)`. The identity keeps its
     // prominence color; the kind word and parens are dim scaffolding.
     let label = format!(
         "{}{}{}",
         paint(color, DIM, &format!("{}(", node_kind(node))),
-        paint_label(color, node, &node_identity(node)),
+        paint_label(color, node, &node_identity(node, dialect), dialect),
         paint(color, DIM, ")"),
     );
     // Append the raw hex type word for known types (for unknowns the identity already is the hex).
-    let hex = if node_is_known(node) {
+    let hex = if node_is_known(node, dialect) {
         format!(" {}", paint(color, DIM, &format!("{tag:#06x}")))
     } else {
         String::new()
     };
     // A recognized record shows its decoded value summary; every other record shows its raw
     // content preview.
-    let detail = match summarize(node) {
+    let detail = match summarize(node, dialect) {
         Some(s) => Some(paint_summary(color, &s)),
         None => node_preview(node, color),
     };
@@ -280,7 +285,7 @@ fn render_node(
 
     let child_prefix = format!("{prefix}{}", if is_last { "   " } else { "│  " });
     let kids = node_children(node);
-    if depth + 1 >= max_depth && !kids.is_empty() {
+    if depth + 1 >= render.max_depth && !kids.is_empty() {
         let more = paint(color, DIM, &format!("└─ … {} more", kids.len()));
         let bars = paint(color, DIM, &child_prefix);
         let _ = writeln!(out, "{bars}{more}");
@@ -288,31 +293,16 @@ fn render_node(
     }
     let last = kids.len().saturating_sub(1);
     for (i, child) in kids.iter().enumerate() {
-        render_node(
-            out,
-            child,
-            &child_prefix,
-            i == last,
-            depth + 1,
-            max_depth,
-            color,
-        );
+        render_node(out, child, &child_prefix, i == last, depth + 1, render);
     }
 }
 
 /// Render a record forest under `prefix`, starting at `depth`. `prefix` is the (uncolored)
 /// scaffolding inherited from any enclosing tier (e.g. a stream group above these roots).
-fn render_roots(
-    out: &mut String,
-    roots: &[Node],
-    prefix: &str,
-    depth: usize,
-    max_depth: usize,
-    color: bool,
-) {
+fn render_roots(out: &mut String, roots: &[Node], prefix: &str, depth: usize, render: Render) {
     let last = roots.len().saturating_sub(1);
     for (i, node) in roots.iter().enumerate() {
-        render_node(out, node, prefix, i == last, depth, max_depth, color);
+        render_node(out, node, prefix, i == last, depth, render);
     }
 }
 
@@ -329,10 +319,17 @@ pub(crate) fn tree(
 ) -> Result<(), CliError> {
     let rpt = Rpt::open(file)?;
     let report = rpt.report();
-    let max_depth = depth.unwrap_or(usize::MAX);
-    // The raw record DOM is projected on demand from the substrate (not stored on the model).
-    let main_dom = rpt.record_dom();
-    let sub_doms = rpt.subreport_record_doms();
+    // The typed record tree is built on demand from the decoded records (not stored on the model).
+    // Both trees come from the report definition — the `Contents` stream and each subreport's own —
+    // so that is the vocabulary every record below is named and decoded in. It is stated once here,
+    // where the trees are obtained, because a node itself does not say which stream it came from.
+    let render = Render {
+        dialect: Dialect::Contents,
+        max_depth: depth.unwrap_or(usize::MAX),
+        color,
+    };
+    let main_dom = rpt.typed_record_tree();
+    let sub_doms = rpt.subreport_typed_record_trees();
 
     if json {
         let subreports = report
@@ -341,10 +338,7 @@ pub(crate) fn tree(
             .zip(sub_doms.iter())
             .map(|(s, dom)| TreeSubreportJson {
                 name: s.name.clone(),
-                roots: dom
-                    .iter()
-                    .map(|n| tree_node_json(n, 0, max_depth))
-                    .collect(),
+                roots: dom.iter().map(|n| tree_node_json(n, 0, render)).collect(),
             })
             .collect();
         crate::util::print_json(&TreeReport {
@@ -352,7 +346,7 @@ pub(crate) fn tree(
             node_count: node_count(&main_dom),
             roots: main_dom
                 .iter()
-                .map(|n| tree_node_json(n, 0, max_depth))
+                .map(|n| tree_node_json(n, 0, render))
                 .collect(),
             subreports,
         });
@@ -394,7 +388,7 @@ pub(crate) fn tree(
         // The record forest hangs under the stream tier. `--depth` still counts record levels
         // (the stream tier is free), so record roots start at depth 0.
         let child_prefix = if is_last { "   " } else { "│  " };
-        render_roots(&mut out, roots, child_prefix, 0, max_depth, color);
+        render_roots(&mut out, roots, child_prefix, 0, render);
     }
     print!("{out}");
     Ok(())
@@ -403,6 +397,7 @@ pub(crate) fn tree(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use rpt_reader::raw::Part;
 
     #[test]
     fn image_record_tags_are_flagged() {
@@ -430,7 +425,14 @@ mod tests {
         );
     }
 
-    use rpt::raw::Unknown;
+    use rpt_reader::raw::Unknown;
+
+    /// The report definition's vocabulary, which every fixture below is a record of.
+    const CONTENTS: Render = Render {
+        dialect: Dialect::Contents,
+        max_depth: usize::MAX,
+        color: false,
+    };
 
     /// Strip ANSI SGR escape sequences (`\x1b[…m`) so a colored preview can be compared by its
     /// visible content.
@@ -451,12 +453,31 @@ mod tests {
         out
     }
 
-    fn unknown(rtype: u16, values: Vec<Value>) -> Node {
+    /// A record whose content is one run of its own field bytes and no nested record.
+    fn unknown(rtype: u16, run: Vec<u8>) -> Node {
         Node::Unknown(Unknown {
             rtype,
-            values,
-            ..Default::default()
+            schema: 0x0700,
+            parts: vec![Part::Run(run)],
         })
+    }
+
+    /// A length-prefixed, NUL-terminated string, as the record layer stores one.
+    fn lp(text: &str) -> Vec<u8> {
+        let mut out = (text.len() as u32 + 1).to_be_bytes().to_vec();
+        out.extend_from_slice(text.as_bytes());
+        out.push(0);
+        out
+    }
+
+    /// A node is labelled in the vocabulary the stream it came from is written in: `0x0008` is the
+    /// report definition's font record and the query engine's index record, and neither tree may be
+    /// labelled out of the other's table.
+    #[test]
+    fn a_nodes_identity_follows_the_vocabulary_it_is_read_in() {
+        let node = unknown(0x0008, vec![]);
+        assert_eq!(node_identity(&node, Dialect::Contents), "Font");
+        assert_eq!(node_identity(&node, Dialect::QeSession), "QeIndex");
     }
 
     #[test]
@@ -467,16 +488,12 @@ mod tests {
 
     #[test]
     fn preview_color_does_not_change_visible_content() {
-        // A mix of the previewable value kinds (quoted text, inline int, large blob, small byte run).
-        let node = unknown(
-            0x0064,
-            vec![
-                Value::Text("hello".into()),
-                Value::Int(42),
-                Value::Bytes(vec![0u8; 600]),
-                Value::Bytes(vec![0u8; 10]),
-            ],
-        );
+        // A mix of the previewable value kinds: quoted text, a large blob, a small byte run.
+        let mut run = lp("hello");
+        run.extend_from_slice(&[0u8; 600]);
+        run.extend_from_slice(&lp("x"));
+        run.extend_from_slice(&[0u8; 10]);
+        let node = unknown(0x0064, run);
         let plain = node_preview(&node, false).unwrap();
         let colored = node_preview(&node, true).unwrap();
         // Coloring wraps parts in SGR codes but must not alter the visible characters — so the width
@@ -492,15 +509,15 @@ mod tests {
     fn preview_caps_visible_width_and_marks_overflow() {
         // Far more content than PREVIEW_MAX: the preview is clipped with a trailing ellipsis and the
         // ANSI codes never inflate the width (stripped colored == plain).
-        let values: Vec<Value> = (0..40).map(|i| Value::Int(1_000_000 + i)).collect();
-        let node = unknown(0x0064, values);
+        let run: Vec<u8> = (0..40).flat_map(|i| lp(&format!("val{i:02}"))).collect();
+        let node = unknown(0x0064, run);
         let plain = node_preview(&node, false).unwrap();
         assert!(
             plain.contains('…'),
             "expected an overflow ellipsis: {plain}"
         );
         // The last value is well past the cap, so it must not appear.
-        assert!(!plain.contains("1000039"), "{plain}");
+        assert!(!plain.contains("val39"), "{plain}");
         // Visible width stays near the cap (a couple of chars of slack for the join space + ellipsis).
         assert!(
             plain.chars().count() <= PREVIEW_MAX + 2,
@@ -514,8 +531,8 @@ mod tests {
     fn json_leaf_shape_omits_empty_fields() {
         // A leaf with its own content: `kind`/`type`/`tag`/`preview` present; `truncated` and
         // `children` are omitted (default false / empty).
-        let node = unknown(0x0064, vec![Value::Int(7)]);
-        let v = serde_json::to_value(tree_node_json(&node, 0, usize::MAX)).unwrap();
+        let node = unknown(0x0064, vec![0, 0, 0, 7]);
+        let v = serde_json::to_value(tree_node_json(&node, 0, CONTENTS)).unwrap();
         assert_eq!(v["kind"], "leaf");
         assert_eq!(v["tag"], "0x0064");
         assert!(v["type"].is_string());
@@ -527,22 +544,36 @@ mod tests {
     #[test]
     fn json_preview_omitted_when_absent() {
         let node = unknown(0x0064, vec![]);
-        let v = serde_json::to_value(tree_node_json(&node, 0, usize::MAX)).unwrap();
+        let v = serde_json::to_value(tree_node_json(&node, 0, CONTENTS)).unwrap();
         assert!(v.get("preview").is_none());
     }
 
-    /// The demasked-leaf layout of a `0x0088` GroupAreaFormat: RepeatGroupHeader (u16-BE @0) = 1,
-    /// KeepGroupTogether (@2) = 0, VisibleGroupNumberPerPage (u16-BE @4) = 3.
+    /// A real `0x0088` GroupAreaFormat, from a report authored with the group limit set to 2: four
+    /// scalars, a nested `0x0151`, then six more. RepeatGroupHeader = 1 and KeepGroupTogether = 0
+    /// are in the first run; VisibleGroupNumberPerPage = 2 is in the second, past the child.
     fn group_area_node() -> Node {
-        unknown(0x0088, vec![Value::Bytes(vec![0, 1, 0, 0, 0, 3, 0, 0])])
+        Node::Unknown(Unknown {
+            rtype: 0x0088,
+            schema: 0x0700,
+            parts: vec![
+                Part::Run(vec![0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
+                Part::Child {
+                    framed_len: 6,
+                    node: unknown(0x0151, Vec::new()),
+                },
+                Part::Run(vec![
+                    0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0xff, 0xff,
+                ]),
+            ],
+        })
     }
 
     #[test]
     fn recognized_record_line_shows_decoded_summary_not_raw_preview() {
         let mut out = String::new();
-        render_node(&mut out, &group_area_node(), "", true, 0, usize::MAX, false);
+        render_node(&mut out, &group_area_node(), "", true, 0, CONTENTS);
         // The decoded summary replaces the raw byte preview.
-        assert!(out.contains("VisibleGroupNumberPerPage=3"), "{out}");
+        assert!(out.contains("VisibleGroupNumberPerPage=2"), "{out}");
         assert!(out.contains("RepeatGroupHeader=true"), "{out}");
         assert!(
             !out.contains("[8B]"),
@@ -552,48 +583,54 @@ mod tests {
 
     #[test]
     fn paint_summary_color_does_not_change_visible_content() {
-        let s = summarize(&group_area_node()).unwrap();
+        let s = summarize(&group_area_node(), Dialect::Contents).unwrap();
         let plain = paint_summary(false, &s);
         let colored = paint_summary(true, &s);
         assert_ne!(plain, colored, "colored output should carry SGR codes");
         assert_eq!(strip_ansi(&colored), plain);
         assert_eq!(
             plain,
-            "RepeatGroupHeader=true KeepGroupTogether=false VisibleGroupNumberPerPage=3"
+            "RepeatGroupHeader=true KeepGroupTogether=false VisibleGroupNumberPerPage=2"
         );
     }
 
     #[test]
     fn json_recognized_record_carries_decoded_object_and_keeps_preview() {
-        let v = serde_json::to_value(tree_node_json(&group_area_node(), 0, usize::MAX)).unwrap();
+        let v = serde_json::to_value(tree_node_json(&group_area_node(), 0, CONTENTS)).unwrap();
         // Backward-compatible fields are still present.
         assert!(v["preview"].is_string());
         // The decoded values are an object keyed by field name.
-        assert_eq!(v["decoded"]["VisibleGroupNumberPerPage"], "3");
+        assert_eq!(v["decoded"]["VisibleGroupNumberPerPage"], "2");
         assert_eq!(v["decoded"]["RepeatGroupHeader"], "true");
     }
 
     #[test]
     fn json_decoded_omitted_for_unrecognized_record() {
-        let v = serde_json::to_value(tree_node_json(
-            &unknown(0x0064, vec![Value::Int(1)]),
-            0,
-            usize::MAX,
-        ))
-        .unwrap();
+        let v =
+            serde_json::to_value(tree_node_json(&unknown(0x0064, vec![1]), 0, CONTENTS)).unwrap();
         assert!(v.get("decoded").is_none());
     }
 
     #[test]
     fn json_branch_truncates_children_at_max_depth() {
-        let child = unknown(0x0001, vec![]);
         let parent = Node::Unknown(Unknown {
             rtype: 0x0002,
-            children: vec![child],
-            ..Default::default()
+            schema: 0x0700,
+            parts: vec![Part::Child {
+                framed_len: 6,
+                node: unknown(0x0001, Vec::new()),
+            }],
         });
         // max_depth 1 collapses the children below the root.
-        let v = serde_json::to_value(tree_node_json(&parent, 0, 1)).unwrap();
+        let v = serde_json::to_value(tree_node_json(
+            &parent,
+            0,
+            Render {
+                max_depth: 1,
+                ..CONTENTS
+            },
+        ))
+        .unwrap();
         assert_eq!(v["kind"], "branch");
         assert_eq!(v["truncated"], true);
         assert!(v.get("children").is_none(), "collapsed children are empty");

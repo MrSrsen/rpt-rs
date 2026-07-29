@@ -1,7 +1,7 @@
 # Architecture & VM
 
-The engine ships as the standalone **`crystal-formula`** crate (`crates/crystal-formula/`), depended on directly by its
-consumers; it has no dependency on the `rpt` decoder (see the [README](README.md#why-a-standalone-crate) for the
+The engine ships as the standalone **`rpt-formula`** crate (`crates/rpt-formula/`), depended on directly by its
+consumers; it has no dependency on the `rpt-reader` decoder (see the [README](README.md#why-a-standalone-crate) for the
 rationale). Module names below (`lexer`, `parser`, `eval::vm`, …) are relative to that crate root.
 
 ## The pipeline
@@ -29,7 +29,7 @@ to deduce a node's `ResultKind` but is not required to evaluate.
   it records a `Diagnostic` and recovers, always returning a total `Node` tree, so it is safe to run on any input (the
   foundation for evaluation, type deduction, and a future LSP).
 - **Type system** (`types::deduce_type` / `types::string_max_bytes`) — a separate static pass over the AST that deduces
-  a node's `ResultKind` (and, for string results, a maximum byte width), keyed by the engine's funcID tables in
+  a node's `ResultKind` (and, for string results, a maximum byte width), driven by the per-builtin type table in
   `types_table.rs`. Used by validation; not required to evaluate.
 - **Compiler + VM** (`eval::vm`) — the **sole** production runtime. `compile` lowers the AST to a flat `Chunk` of
   bytecode; `run` executes it on a stack machine. The tree-walking `Evaluator` (`eval::tree`) is kept only as the
@@ -46,8 +46,8 @@ The crate is standalone (it depends only on `rpt-format-value`), so parsing and 
 Parse with `parse`, supply the values the formula references through an `EvalContext`, and evaluate with `eval::eval`:
 
 ```rust
-use crystal_formula::eval::{eval, MapContext};
-use crystal_formula::{parse, RefKind, Syntax, Value};
+use rpt_formula::eval::{eval, MapContext};
+use rpt_formula::{parse, RefKind, Syntax, Value};
 
 // Crystal syntax: the return value is the last expression.
 let (ast, diags) = parse("{Orders.Quantity} * {Orders.Price}", Syntax::Crystal);
@@ -65,8 +65,8 @@ The same context evaluates a **Basic-syntax** formula, whose return value is wha
 `formula` variable:
 
 ```rust
-use crystal_formula::eval::{eval, MapContext};
-use crystal_formula::{parse, RefKind, Syntax, Value};
+use rpt_formula::eval::{eval, MapContext};
+use rpt_formula::{parse, RefKind, Syntax, Value};
 
 let ctx = MapContext::default().with_field(RefKind::Field, "Orders.Quantity", Value::Number(3.0));
 let (ast, diags) = parse("formula = {Orders.Quantity} * 2", Syntax::Basic);
@@ -77,8 +77,8 @@ assert_eq!(eval(&ast, &ctx).unwrap(), Value::Number(6.0));
 A formula over literals alone needs no bound fields — `MapContext::default()` (or `EmptyContext`) resolves nothing:
 
 ```rust
-use crystal_formula::eval::{eval, MapContext};
-use crystal_formula::{parse, Syntax, Value};
+use rpt_formula::eval::{eval, MapContext};
+use rpt_formula::{parse, Syntax, Value};
 
 let (ast, _) = parse(r#"UpperCase("abc") & Space(1) & ToText(1 + 2)"#, Syntax::Crystal);
 assert_eq!(eval(&ast, &MapContext::default()).unwrap(), Value::Str("ABC 3.00".to_string()));
@@ -98,6 +98,7 @@ A runtime value is `eval::value::Value`:
 | `Str(String)`                                        | Case-sensitive; string comparison is byte-lexicographic.                                  |
 | `Bool(bool)`                                         |                                                                                           |
 | `Date(Date)` / `Time(Time)` / `DateTime(Date, Time)` | Calendar types from `rpt_format_value::civil` — one calendar across the workspace.        |
+| `Bytes(Vec<u8>)`                                     | A database blob / image field. Opaque to the operators and to text coercion; carried so a blob-bound picture object can decode the real image bytes. |
 | `Array(Vec<Value>)`                                  | 1-based subscripting (`a[1]` is the first element).                                       |
 | `Range { lo, hi, lo_incl, hi_incl }`                 | A `To` range; the `_To`/`To_` operators mark an excluded bound.                           |
 | `Null`                                               | A null database/parameter value.                                                          |
@@ -113,8 +114,9 @@ default date/time patterns).
 
 ## Bytecode & the stack VM
 
-`compile` produces a `Chunk { ops, scopes }`. `ops` is a flat `Vec<Op>`; jump targets are op indices back-patched after
-compilation. `scopes` records the declared scope of each non-`Local` variable (see below). The VM (`vm::run`) is a stack
+`compile` produces a `Chunk { ops, spans, scopes }`. `ops` is a flat `Vec<Op>`; jump targets are op indices back-patched
+after compilation. `spans` records the source span each op was compiled from, so a runtime error can carry one.
+`scopes` records the declared scope of each non-`Local` variable (see below). The VM (`vm::run`) is a stack
 machine: it maintains a value stack, a null-guard stack (for `If`), and a per-run local-variable map. Every node
 compiles to code that leaves exactly one value on the stack; a statement sequence pops between statements.
 
@@ -127,6 +129,7 @@ The instruction set:
 | `LoadIdent(name)`                         | Resolve a bare identifier: a variable, else a 0-ary builtin/constant.                                                                              |
 | `LoadVar(name)` / `StoreVar(name)`        | Read / write a variable (assignment is an expression: `StoreVar` leaves the value on the stack).                                                   |
 | `DeclareDefault(name, v)`                 | Bring a declared variable into scope with a default if unset (no stack effect).                                                                    |
+| `Summary { … }` / `GroupName(name)`       | The reference-operand calls: resolve a summary or a group name through the context, without evaluating arguments.                                   |
 | `Call(name, argc)`                        | Pop `argc` args and dispatch a builtin.                                                                                                            |
 | `Bin(code)` / `Un(code)`                  | Apply a binary / unary operator.                                                                                                                   |
 | `Index`                                   | Apply a 1-based subscript.                                                                                                                         |
@@ -135,7 +138,8 @@ The instruction set:
 | `CondJump(t, nullmode)`                   | Pop a condition: true → jump; false → fall through; null → per the null mode (used by `If`/`IIf`/`Switch`, and the back-edge of a post-test loop). |
 | `CondJumpFalse(t)`                        | Pop a loop condition: false or null → jump (exit); true → continue (the loop entry test).                                                          |
 | `PushGuard` / `GuardJump(t)` / `PopGuard` | The null-guard protocol for `If` (a later true branch wins; if no branch fires but a condition was null, the result is null).                      |
-| `ChooseJump(targets)`                     | Pop a 1-based index and jump to the matching branch (`Choose`).                                                                                    |
+| `ChooseJump { branches, end }`            | Pop a 1-based index and jump to the matching branch (`Choose`).                                                                                    |
+| `LoopEnter(n)` / `LoopExit` / `Break`     | Bracket a loop body for the iteration counter, and leave it early (`Exit For` / `Exit While`).                                                       |
 | `Pop`                                     | Discard the top of stack.                                                                                                                          |
 | `Fail(msg)`                               | Raise a fixed `Unsupported` error (an `Unparsed`/parse-error node).                                                                                |
 
@@ -145,9 +149,8 @@ dedicated bytecode. Loops lower to jumps: a pre-test `While`/`For` guards the bo
 `Do … Loop While/Until` puts the test on the back-edge. A `For` loop evaluates its limit and step once into hidden
 locals and picks the comparison direction from the step's sign, so a negative step counts down.
 
-**Loop safety.** A `For`/`While`/`Do` can express a non-terminating loop. The VM aborts after `STEP_LIMIT` executed
-instructions and the tree-walker after `LOOP_LIMIT` iterations, each returning `EvalError::Unsupported("loop iteration
-limit exceeded")` rather than hanging.
+**Loop safety.** A `For`/`While`/`Do` can express a non-terminating loop. Both evaluators abort at the same per-loop
+`LOOP_LIMIT` iterations, returning `EvalError::Unsupported("loop iteration limit exceeded")` rather than hanging.
 
 ## Variables and scopes
 
@@ -172,6 +175,9 @@ trait EvalContext {
     fn special(&self, name: &str) -> Option<Value> { None }          // PageNumber, CurrentDate, …
     fn var_get(&self, scope: VarScope, name: &str) -> Option<Value> { None }
     fn var_set(&self, scope: VarScope, name: &str, value: Value) -> bool { false }
+    fn resolve_summary(&self, op: &str, field: &str, group: Option<&str>) -> Option<Value> { None }
+    fn group_name(&self, field: &str) -> Option<Value> { None }      // GroupName({cond})
+    fn null_default(&self, kind: RefKind, name: &str) -> Option<Value> { None }
 }
 ```
 
@@ -181,6 +187,11 @@ trait EvalContext {
 - **Print-state specials** (`PageNumber`, `TotalPageCount`, `CurrentDate`, `RecordNumber`, `GroupNumber`, …) route
   through `special`; without a context that supplies them they fail with a clear `Unsupported` "needs print/record
   context" error.
+- **Reference-operand calls** — a summary function (`Sum({f})`, `Count({f}, {g})`) and `GroupName({cond})` — name what
+  they read rather than computing it from the current row, so their arguments are never evaluated. They route through
+  `resolve_summary` / `group_name` to the report's computed summaries and group stack. `GroupName` yields the group's
+  key in the group field's own type, not a pre-formatted label, so a formula can format it itself. A context with no
+  such facility returns `None` and the call reports that it needs a data context.
 - **Record-navigation** (`Previous`, `Next`, `PreviousValue`, …) and the **`WhilePrintingRecords`/
   `WhileReadingRecords`**
   markers are recognised: the markers are no-ops here (the data pipeline interprets them as cache-refresh boundaries),
@@ -207,12 +218,13 @@ Evaluation returns `Result<Value, EvalError>`:
 | `UnknownName(String)`        | An unresolved identifier or `{reference}`.                                                                                                                                                                          |
 | `TypeMismatch { what, got }` | An operator/builtin applied to the wrong value type.                                                                                                                                                                |
 | `DivideByZero`               | `/`, `\`, `Mod`, `%`, or `Remainder` by zero.                                                                                                                                                                       |
-| `BadArg(String)`             | A bad argument: wrong count, out-of-range value, or an unparseable literal.                                                                                                                                         |
+| `Arity { name, expected, got }` | A builtin called with the wrong number of arguments — distinct from a value-level `BadArg`.                                                                                                                       |
+| `BadArg(String)`             | A bad argument: an out-of-range value, or an unparseable literal.                                                                                                                                         |
 | `Internal(&'static str)`     | An invariant of the evaluator itself was violated — a bug in this crate, not in the formula.                                                                                                                        |
 
 The design principle is *fail loudly, never silently wrong*: an unimplemented function is `Unsupported`, not a guessed
 value. The distinction between `Unsupported` (a known Crystal function we haven't built) and `UnknownName` (not a
-Crystal function at all) comes from the funcID table in `types_table.rs`.
+Crystal function at all) comes from the type table in `types_table.rs`.
 
 `Internal` exists because **this crate must never abort its host**. Formula text comes from an arbitrary `.rpt`, and the
 engine is meant to be embeddable in an LSP, a validator, or a WASM sandbox — places where a panic takes the host down
@@ -221,8 +233,8 @@ reported `Internal` in release, rather than `panic!`/`unreachable!`. Parsing and
 arbitrary input on that contract (`tests/fuzz_parse_eval.rs`).
 
 An evaluation error is not a render error: `rpt-layout` catches it, draws what it can, and records a
-[diagnostic](../12-rendering.md#diagnostics) on the paged document.
+[diagnostic](../rendering/03-page-ir.md#diagnostics) on the paged document.
 
 ---
 
-← [Overview](README.md) · [Index](../README.md) · **Next:** [Language reference](02-language.md) →
+[Index](README.md) · **Next:** [Language reference](02-language.md) →

@@ -1,0 +1,29 @@
+# L2 dataset snapshot: benbrahim777/China Orders, with running totals
+row_count: 9
+
+columns (5):
+    0 Orders.Order Amount : Currency
+    1 Orders.Order Date : DateTime
+    2 Customer.Customer Name : String
+    3 Customer.Country : String
+    4 Orders.Order ID : Int32s
+
+params (0):
+
+formulas (0):
+
+diagnostics (0):
+
+grand_total (1):
+  Sum(#Order Total) = Cur 12526.5
+
+details (9):
+  ri=0 | Cur 40.5 | DateTime 2001-06-05 00:00:00 | Str "Galaxy Outdoors" | Str "China" | Num 3083
+  ri=1 | Cur 125.7 | DateTime 2001-06-20 00:00:00 | Str "Min Dong Toy Store" | Str "China" | Num 3146
+  ri=2 | Cur 5879.7 | DateTime 2001-06-20 00:00:00 | Str "JinJing Sports" | Str "China" | Num 3147
+  ri=3 | Cur 2939.85 | DateTime 2001-06-20 00:00:00 | Str "Yue Xiu Bicycles" | Str "China" | Num 3148
+  ri=4 | Cur 67.8 | DateTime 2001-06-20 00:00:00 | Str "Hao Nannu Outdoors" | Str "China" | Num 3149
+  ri=5 | Cur 1739.85 | DateTime 2001-06-20 00:00:00 | Str "Globe Bike" | Str "China" | Num 3150
+  ri=6 | Cur 101.7 | DateTime 2001-06-20 00:00:00 | Str "Newpeople Biking Ltd." | Str "China" | Num 3151
+  ri=7 | Cur 1529.7 | DateTime 2001-06-21 00:00:00 | Str "C&C Sports People" | Str "China" | Num 3152
+  ri=8 | Cur 101.7 | DateTime 2001-06-21 00:00:00 | Str "AIC Childrens" | Str "China" | Num 3153

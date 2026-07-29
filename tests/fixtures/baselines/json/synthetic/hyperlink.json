@@ -1,5 +1,10 @@
 {
   "model": {
+    "authoring_version": {
+      "letter": 0,
+      "major": 14,
+      "minor": 0
+    },
     "data_definition": {
       "condition_formula_bodies": [],
       "custom_functions": [],
@@ -82,12 +87,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -107,12 +107,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -148,9 +143,7 @@
                       "formula": null,
                       "value": false
                     },
-                    "text_rotation": {
-                      "Other": 29812
-                    },
+                    "text_rotation": "Rotate0",
                     "tooltip_text": null,
                     "vertical_alignment": "Top"
                   },
@@ -191,6 +184,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -214,11 +208,9 @@
                   "name": "Text1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 }
               ],
-              "section_code": 6000,
               "width": 0
             }
           ]
@@ -245,12 +237,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -268,7 +255,6 @@
               "kind": "PageHeader",
               "name": "Section2",
               "objects": [],
-              "section_code": 12000,
               "width": 0
             }
           ]
@@ -295,12 +281,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -318,7 +299,6 @@
               "kind": "Detail",
               "name": "Section3",
               "objects": [],
-              "section_code": 24000,
               "width": 0
             }
           ]
@@ -345,12 +325,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -368,7 +343,6 @@
               "kind": "ReportFooter",
               "name": "Section4",
               "objects": [],
-              "section_code": 48000,
               "width": 0
             }
           ]
@@ -395,12 +369,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -418,12 +387,13 @@
               "kind": "PageFooter",
               "name": "Section5",
               "objects": [],
-              "section_code": 42000,
               "width": 0
             }
           ]
         }
-      ]
+      ],
+      "kind": "ColumnarReport",
+      "style": "Standard"
     },
     "report_options": {
       "convert_null_field_to_default": false,
@@ -503,7 +473,10 @@
     "summary_info": {
       "author": "",
       "comments": "",
+      "created": 126569431875510000,
       "keywords": "",
+      "last_printed": null,
+      "last_saved": 134282684002023278,
       "last_saved_by": "",
       "revision_number": "10",
       "save_with_preview": false,

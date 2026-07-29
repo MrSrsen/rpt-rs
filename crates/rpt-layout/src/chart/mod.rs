@@ -5,7 +5,7 @@
 //! ([`rpt_data::GroupInstance`]), so a chart's series is `(group key → summary value)`. Rather than
 //! rasterize via an external chart crate (which would then need per-backend image embedding), we emit
 //! the chart as ordinary [`rpt_pages::DrawOp`]s (bars = rects, axes = lines, labels = text) — so it
-//! renders identically through every backend (HTML/SVG/PDF/raster) with no new dependency.
+//! renders identically through any backend with no new dependency.
 //!
 //! The visual *shape* comes from the decoded [`rpt_model::ChartGraphType`], one
 //! renderer per submodule: [`bar`], [`line`], [`area`], [`pie`], [`doughnut`], [`scatter`], [`stock`],
@@ -37,7 +37,10 @@ mod stock;
 
 pub(crate) use area::area_chart;
 pub(crate) use bar::{bar_chart, bar_chart_multi};
-pub(crate) use common::{chart_text_op, legend, AxisTitles, ChartCtx, ChartText, LegendPosition};
+pub(crate) use common::{
+    chart_text_op, legend, series_legend, AxisTitles, ChartCtx, ChartStyle, ChartText,
+    LegendPosition,
+};
 pub(crate) use doughnut::doughnut_chart;
 pub(crate) use funnel::funnel_chart;
 pub(crate) use gantt::{gantt_chart, GanttBar};

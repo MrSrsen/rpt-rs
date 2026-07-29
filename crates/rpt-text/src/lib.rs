@@ -5,7 +5,10 @@
 //! - [`FontDb`] (always compiled, `fontdb` only): the shared **face-resolution policy** the physical
 //!   backends need — locate an OS face for a [`rpt_pages::FontSpec`] family (with bold/italic), then
 //!   hand its bytes to the backend's own parser. Depend on this crate with `default-features = false`
-//!   to get just this without the shaping stack.
+//!   to get just this without the shaping stack. [`FontSource`] names which face library it is built
+//!   from, so a backend takes the choice from its caller rather than fixing it, and it configures
+//!   [`FontProvider`] too ([`FontProvider::from_source`]) so both halves of the stack agree. Its
+//!   default is the bundled set: a reproducible render everywhere, with the host scan opt-in.
 //! - [`CosmicLayout`] / [`FontProvider`] (the default `cosmic` feature): the font-accurate
 //!   [`rpt_pages::TextLayout`] backed by [cosmic-text] — real per-glyph `hmtx` advances (matching the
 //!   native engine's GDI `GetCharWidthW`), Unicode/CJK line-breaking, bidi, and font fallback. Inject
@@ -16,7 +19,7 @@
 
 mod bundled;
 mod font_db;
-pub use font_db::FontDb;
+pub use font_db::{system_font_dirs, FaceReport, FaceRun, FontDb, FontInventory, FontSource};
 
 #[cfg(feature = "cosmic")]
 mod cosmic;

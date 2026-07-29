@@ -5,8 +5,7 @@
 #[cfg(test)]
 use super::common::AxisTitles;
 use super::common::{
-    centered_disc, disc_label, slice_color, title_op, truncate, value_label, ChartCtx,
-    SLICE_BORDER_W, WHITE,
+    centered_disc, disc_label, slice_color, title_op, value_label, ChartCtx, SLICE_BORDER_W, WHITE,
 };
 #[cfg(test)]
 use rpt_model::Rect;
@@ -29,7 +28,7 @@ pub(crate) fn doughnut_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<Dra
         return Vec::new();
     }
     let &ChartCtx {
-        def,
+        style,
         rect,
         title,
         show_labels,
@@ -46,7 +45,7 @@ pub(crate) fn doughnut_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<Dra
         (rh / 8).clamp(180, 360)
     };
     if !title.is_empty() {
-        ops.push(title_op(def, rl, rt + pad / 2, rw, title_h, title, &src));
+        ops.push(title_op(style, rl, rt + pad / 2, rw, title_h, title, &src));
     }
 
     // Centre the disc in the area below the title; leave a small margin for outer labels.
@@ -94,6 +93,7 @@ pub(crate) fn doughnut_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<Dra
         if show_labels && frac >= 0.05 {
             let mr = radius * (1.0 + INNER_RATIO) / 2.0;
             ops.push(value_label(
+                style,
                 cx + (mr * mid.cos()) as i32,
                 cy + (mr * mid.sin()) as i32 - 100,
                 &format!("{:.0}%", frac * 100.0),
@@ -105,7 +105,7 @@ pub(crate) fn doughnut_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<Dra
         let lr = radius * 1.02;
         let lx = cx + (lr * mid.cos()) as i32;
         let ly = cy + (lr * mid.sin()) as i32;
-        ops.push(disc_label(lx, ly, &truncate(label, 16), &src));
+        ops.push(disc_label(style, lx, ly, label, &src));
         angle += sweep;
     }
 

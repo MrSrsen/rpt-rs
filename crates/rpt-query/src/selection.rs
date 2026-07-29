@@ -21,10 +21,10 @@
 //! parameter pushes the concrete value into the `WHERE`.
 
 use crate::{Dialect, QueryColumn};
-use crystal_formula::ast::{Node, NodeKind};
-use crystal_formula::eval::{Date, Time, Value};
-use crystal_formula::token::op;
-use crystal_formula::{parse, RefKind, Syntax};
+use rpt_formula::ast::{Node, NodeKind};
+use rpt_formula::eval::{Date, Time, Value};
+use rpt_formula::token::op;
+use rpt_formula::{parse, RefKind, Syntax};
 use std::collections::HashMap;
 
 /// The result of pushing a selection formula down to SQL.
@@ -335,13 +335,13 @@ fn compare_op(o: u8) -> Option<&'static str> {
 /// Translate a Crystal `#…#` date/time literal to a SQL typed literal, or `None` if it isn't a plain
 /// date / datetime (a bare time, or an out-of-range component, is left to the per-row pipeline).
 ///
-/// The literal syntax is parsed by [`crystal_formula::parse_date_literal`] — the one shared parser —
+/// The literal syntax is parsed by [`rpt_formula::parse_date_literal`] — the one shared parser —
 /// so every spelling it accepts (numeric `#m/d/yyyy#` / `#yyyy-m-d#`, textual `#Month d, yyyy#`, an
 /// `AM`/`PM` time tail) can push down. The component-range guard keeps push-down conservative: a
 /// nonsensical value the parser tolerates (e.g. month 13) falls back rather than emitting a literal
 /// the database would reject.
 fn date_literal_sql(raw: &str) -> Option<String> {
-    match crystal_formula::parse_date_literal(raw).ok()? {
+    match rpt_formula::parse_date_literal(raw).ok()? {
         Value::Date(d) if date_ymd_in_range(&d) => Some(sql_date_literal(&d)),
         Value::DateTime(d, t) if date_ymd_in_range(&d) && time_hms_in_range(&t) => {
             Some(sql_timestamp_literal(&d, &t))
@@ -480,7 +480,7 @@ use rpt_data::normalize_param_name as normalize;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crystal_formula::eval::{Date, Time};
+    use rpt_formula::eval::{Date, Time};
     use rpt_model::FieldValueType;
 
     fn cols() -> Vec<QueryColumn> {
@@ -725,7 +725,7 @@ mod tests {
             value_type: FieldValueType::Date,
             expr: None,
         });
-        // The textual `Month d, yyyy` form now pushes down via the shared parser.
+        // The textual `Month d, yyyy` form pushes down via the shared parser.
         let p = push_down_selection("{orders.ship_date} >= #January 5, 2024#", &c);
         assert_eq!(
             p.where_sql.as_deref(),

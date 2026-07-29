@@ -17,9 +17,8 @@
 //! Charts (the `chart` module) and cross-tabs (`crosstab`) render as native draw-ops (bars / a pivot grid)
 //! computed from the dataset (the series/pivot builders live in `aggregate`). Subreports render
 //! recursively: a subreport object lays out its nested [`Report`] (sharing this formatter's text
-//! stack) and its draw-ops are translated into the object's box. Remaining first-cut scope:
-//! best-effort summary resolution; single row×column cross-tab axes; and page-1-only, unlinked
-//! subreports.
+//! stack) and its draw-ops are translated into the object's box. Summary resolution is best-effort;
+//! a cross-tab supports a single row × column axis pair; and only page-1, unlinked subreports render.
 //!
 //! The formatter is split across a few modules over a shared `Formatter` state holder:
 //! `paginate` owns the page-break cursor and band walk, `place` emits each object's draw-ops,
@@ -29,26 +28,30 @@
 mod aggregate;
 mod chart;
 mod crosstab;
+mod currency;
 pub mod diagnostics;
 mod emf;
 mod format;
 mod paginate;
 mod place;
 mod resolve;
+mod sections;
+mod tabs;
 mod text;
 
 pub use rpt_format_value::Locale;
 pub use text::{ApproxLayout, TextLayout, TWIPS_PER_PT};
 
-use crystal_formula::eval::Value;
 use resolve::{context, ResolveState};
 use rpt_data::DataContext;
 use rpt_data::{
     Column, Dataset, EvalSchedule, FormulaRegistry, GroupInstance, Row, RowSource, RunningTotals,
     ScheduledValues, ScopeData, SharedState, Summary,
 };
+use rpt_formula::eval::Value;
 use rpt_model::{
-    Alignment, AreaSectionKind, Color, Font, GroupAreaFormat, ImageFormat, Report, Section, Twips,
+    field_object_value_type, Alignment, AreaSectionKind, Color, Font, GroupAreaFormat, ImageFormat,
+    ReadingOrder, Report, ReportObject, ReportObjectKind, Section, Twips,
 };
 use rpt_pages::{
     Diagnostic, DrawOp, FontSpec, ImageAsset, ObjectKind, Page, PageCheckpoint, PageSize,
@@ -117,6 +120,10 @@ pub(crate) struct LayoutLine {
     /// Horizontal alignment of this line. Usually the object alignment, but a justified paragraph's
     /// last wrapped line falls back to left (typography does not stretch a paragraph's final line).
     pub(crate) align: TextAlign,
+    /// The owning paragraph's rigid character spacing, in twips — extra advance after every Unicode
+    /// scalar. It decided this line's wrap point and is carried onto the emitted run so the backend
+    /// draws at the same width it was measured at.
+    pub(crate) character_spacing: Twips,
 }
 
 /// One child page of a formatted subreport: its box-local draw-ops (the subreport's printable
@@ -126,6 +133,10 @@ pub(crate) struct LayoutLine {
 pub(crate) struct SubreportChunk {
     pub(crate) ops: Vec<DrawOp>,
     pub(crate) height: i32,
+    /// The child's unresolved currency fixups for this chunk, each paired with its index into
+    /// [`Self::ops`]. The parent re-anchors each to the physical page it merges that op onto; an op
+    /// the parent clips or slices away simply drops its fixup.
+    pub(crate) currency: Vec<(usize, CurrencyFixup)>,
 }
 
 /// A subreport formatted once for the band it sits in, cached so the band-planning phase can grow the
@@ -151,6 +162,11 @@ pub(crate) struct TextPlan {
     pub(crate) lines: Vec<LayoutLine>,
     pub(crate) color: Color,
     pub(crate) kind: ObjectKind,
+    /// Set when the field asks for one currency symbol per page: the amount and the currency spec,
+    /// carried so [`currency::apply`] can blank the symbol without re-evaluating the field. A plan is
+    /// pure data — a plan that is built and then discarded (a suppressed or blank band) records
+    /// nothing, because the fixup is pushed by the emit path, not here.
+    pub(crate) currency: Option<resolve::CurrencyMark>,
 }
 
 /// Lay out a whole report against its dataset, producing the paginated Page IR. Uses the
@@ -211,6 +227,7 @@ pub fn layout_scoped(
         locale,
     )
     .run()
+    .0
 }
 
 /// Run the evaluation-time schedule's read pass for a (sub)report: classify its
@@ -243,8 +260,11 @@ struct Bands<'a> {
     report_footer: Vec<&'a Section>,
     page_footer: Vec<&'a Section>,
     /// The `GroupAreaFormat` for each group level (parallel to `group_headers`), carrying
-    /// `keep_group_together` — the group-header area's format, since the section vectors drop it.
+    /// `keep_group_together` and `visible_groups_per_page` — the group-header area's format, since
+    /// the section vectors drop it.
     group_formats: Vec<GroupAreaFormat>,
+    /// The Detail area's "Records per page" cap (`visible_records_per_page`); `0` = no limit.
+    records_per_page: i32,
 }
 
 /// The level-matching key a group header and its footer share: the area name with its band token
@@ -292,6 +312,7 @@ impl<'a> Bands<'a> {
             report_footer: Vec::new(),
             page_footer: Vec::new(),
             group_formats: Vec::new(),
+            records_per_page: 0,
         };
         // Group headers appear in group-level order (outermost first); record each level's matching
         // key so its footer can be paired back to it by name, not by position.
@@ -314,7 +335,10 @@ impl<'a> Bands<'a> {
                     header_keys.push(group_area_key(&area.name, "Header"));
                     b.group_headers.push(sections);
                 }
-                AreaSectionKind::Detail => b.detail.extend(sections),
+                AreaSectionKind::Detail => {
+                    b.records_per_page = area.format.visible_records_per_page;
+                    b.detail.extend(sections);
+                }
                 AreaSectionKind::GroupFooter => {
                     footer_entries.push((group_area_key(&area.name, "Footer"), sections));
                 }
@@ -357,8 +381,9 @@ pub(crate) struct Formatter<'a> {
     text_layout: &'a dyn TextLayout,
     /// Multi-column detail layout, if the report uses "Format with Multiple Columns".
     multi_column: Option<rpt_model::MultiColumn>,
-    /// Horizontal offset added to every object's x, for placing a detail record in a given column
-    /// (0 for single-column and for all non-detail bands).
+    /// Horizontal offset added to every object's x. Two things shift a band sideways and they
+    /// compose: the column a multi-column detail record sits in, and the depth of a hierarchically
+    /// grouped instance in its parent/child tree. `0` for an ordinary single-column band.
     col_offset: i32,
     /// Report-lifetime Global/Shared variable store, threaded into every record's [`DataContext`]
     /// so running variables accumulate across the print pass.
@@ -377,6 +402,10 @@ pub(crate) struct Formatter<'a> {
     /// group-stack change (see [`Self::refresh_group_summaries`]) and handed to each per-record
     /// [`ResolveState`] as a cheap `Rc` clone rather than deep-cloned on every band emit.
     group_summaries: Rc<Vec<(String, Vec<Summary>)>>,
+    /// The group keys of [`Self::group_stack`], outermost first — rebuilt alongside
+    /// [`Self::group_summaries`] and positionally parallel to it, so a `GroupName ({cond})`
+    /// reference can resolve the key of the level it names rather than the nearest one.
+    group_keys: Rc<Vec<Value>>,
     /// The report grand-total summaries, shared into every [`ResolveState`] so a 1-argument
     /// (grand-total) summary — `Sum({field})`, whether a placed object or a summary function in a
     /// formula — resolves to the report total from any band, not the innermost group's subtotal.
@@ -393,6 +422,9 @@ pub(crate) struct Formatter<'a> {
     /// Embedded image bytes collected as pictures are emitted, drained into
     /// [`PagedDocument::assets`] so every backend can inline images automatically.
     assets: RefCell<BTreeMap<String, ImageAsset>>,
+    /// What band each named section is, seeded from this report's areas and merged with each
+    /// subreport's as it is formatted; drained into [`PagedDocument::sections`].
+    sections: RefCell<crate::sections::SectionMap>,
     /// A `NewPageAfter` on a just-emitted section defers a page break to the next flow band (so a
     /// trailing `NewPageAfter` doesn't leave a blank page at the end of the report).
     pending_page_break: bool,
@@ -400,13 +432,42 @@ pub(crate) struct Formatter<'a> {
     /// page top (so the following page prints as page 1). `PageNumber`/`PageNofM` honour the reset;
     /// `TotalPageCount` stays the whole-document count (a per-reset-section total needs a second pass).
     pending_page_number_reset: bool,
+    /// Set while the Report Header is being emitted. The page header belongs *below* the report
+    /// header, so no page a report header occupies carries one — including the continuation pages a
+    /// tall subreport inside it flows onto (native behavior: the page header first prints on the
+    /// report's first body page).
+    in_report_header: bool,
     /// The next per-placement instance id to hand out (see [`rpt_pages::ObjectRef::instance`]). One id
     /// per [`Formatter::emit_object`] call, shared by that object's text runs and its border/fill box;
     /// monotonic across the report, with subreport ids remapped into this space on merge.
     next_instance_id: u32,
+    /// The next subreport-placement id to hand out: one per merged subreport placement, monotonic
+    /// across the report. It is what separates two instances of the *same* subreport definition,
+    /// which are otherwise indistinguishable in a merged op's identity (see
+    /// [`Formatter::merge_currency_fixup`]).
+    next_subreport_placement: u32,
     /// Placed `TotalPageCount`/`PageNofM` runs to rewrite once the final page count is known (the
     /// forward reference a single pass cannot resolve; see [`Self::resolve_page_totals`]).
     page_count_fixups: Vec<PageCountFixup>,
+    /// Placed currency values whose field prints one symbol per page, resolved once page membership
+    /// is final (see [`Self::resolve_currency_symbols`]).
+    currency_fixups: Vec<CurrencyFixup>,
+    /// Whether this formatter is laying out a subreport. A subreport's "pages" are its own flow
+    /// chunks, not the parent's physical pages, so the page-scoped currency pass does not run on
+    /// them — its pending values are handed back for the parent to resolve against the physical
+    /// pages it merges them onto.
+    nested: bool,
+    /// Visible detail records placed on the current page, against the Detail area's "Records per
+    /// page" cap. Reset at every page top (see [`Formatter::open_page`]).
+    records_on_page: i32,
+    /// Group instances present on the current page, per group level (parallel to
+    /// `Bands::group_formats`), against each level's "Groups per page" cap. A group carried onto the
+    /// page by a break inside it counts, so this is reset to 1 — not 0 — for every level the page
+    /// opens inside.
+    groups_on_page: Vec<i32>,
+    /// Open "Underlay Following Sections" spans on the current page: the bottom each underlaid
+    /// section reached, and the companion band that ends it. Cleared at every page top.
+    underlay_spans: Vec<paginate::UnderlaySpan>,
 }
 
 /// A placed text run whose value depends on the final page count (`TotalPageCount` / `PageNofM`),
@@ -417,10 +478,43 @@ struct PageCountFixup {
     page_index: usize,
     /// Index of the [`DrawOp::Text`] within that page's ops.
     op_index: usize,
-    /// The special field to re-resolve, and the page number it displays (which honours any
-    /// page-number reset, so only the total is stale).
-    field: rpt_model::FieldObject,
+    /// The page number the run displays (it honours any page-number reset, so only the total is
+    /// stale), and the provisional total it was rendered with.
     page_number: i64,
+    provisional_total: i64,
+    /// What in the run has to be recomputed.
+    kind: PageCountFixupKind,
+}
+
+/// A placed currency value on a page whose field prints its symbol only once per page, recorded
+/// during the single layout pass and resolved once page membership is final (see
+/// [`Formatter::resolve_currency_symbols`]). The page a band lands on is decided *after* its text is
+/// resolved, so "the first value on this page" cannot be known while formatting.
+#[derive(Clone)]
+struct CurrencyFixup {
+    /// Index into [`Formatter::pages`] of the page carrying the run.
+    page_index: usize,
+    /// Index of the [`DrawOp::Text`] within that page's ops.
+    op_index: usize,
+    /// What the symbol is granted to, once per page: the report object's name, since the flag, the
+    /// symbol and its placement are all stored on the object's own format leaf. A value merged from
+    /// a subreport is keyed by its **placement** as well as the subreport and object names, because
+    /// the grant restarts for every subreport instance (see [`Formatter::merge_currency_fixup`]).
+    object: String,
+    /// The amount and the currency spec it was rendered through.
+    mark: resolve::CurrencyMark,
+}
+
+/// The two shapes a page-total reference takes on the page.
+#[derive(Clone)]
+enum PageCountFixupKind {
+    /// A placed special field object: the run's whole text is its value, so the run is re-resolved.
+    Field(Box<rpt_model::FieldObject>),
+    /// A page-total special embedded in a text object, held as its placeholder text: the run also
+    /// carries literal text and other references, so only this special's rendered fragment is
+    /// substituted. Re-resolving the whole text object instead would re-evaluate its formulas, firing
+    /// their `WhilePrintingRecords` side effects a second time.
+    Embedded(String),
 }
 
 /// One enclosing group's render-time state: its key, its condition field, and its computed summaries
@@ -462,7 +556,7 @@ impl<'a> Formatter<'a> {
         };
         // Draw-op coordinates are **printable-relative**: the base is 0,0 (the top-left of the
         // printable area), not the physical margin — the margin is carried once as the page origin
-        // and re-applied per backend (SVG/PDF add it, HTML uses a CSS-margin container). This keeps
+        // and re-applied once per backend. This keeps
         // the coordinate model in one place instead of scattering ±margin across every position site
         // and every backend.
         let origin = Point::new(m.left.0, m.top.0);
@@ -471,6 +565,7 @@ impl<'a> Formatter<'a> {
         // Draw-op coordinates are printable-relative (0-based), so the content origin is (0, 0); it is
         // not threaded as a field. The margin is carried once as the page origin (above).
         let bands = Bands::collect(report);
+        let group_levels = bands.group_formats.len();
         let page_footer_height: i32 = bands.page_footer.iter().map(|s| s.height.0).sum();
         let page_size = PageSize {
             width: Twips(page_w),
@@ -501,15 +596,24 @@ impl<'a> Formatter<'a> {
             scheduled,
             group_stack: Vec::new(),
             group_summaries: Rc::new(Vec::new()),
+            group_keys: Rc::new(Vec::new()),
             grand_summaries: Rc::new(dataset.grand_total.clone()),
             scope_data,
             locale,
             diagnostics: RefCell::new(Vec::new()),
             assets: RefCell::new(BTreeMap::new()),
+            sections: RefCell::new(crate::sections::SectionMap::from_report(report)),
             pending_page_break: false,
             pending_page_number_reset: false,
+            in_report_header: false,
             next_instance_id: 0,
+            next_subreport_placement: 0,
             page_count_fixups: Vec::new(),
+            currency_fixups: Vec::new(),
+            nested: false,
+            records_on_page: 0,
+            groups_on_page: vec![0; group_levels],
+            underlay_spans: Vec::new(),
         }
     }
 
@@ -520,18 +624,29 @@ impl<'a> Formatter<'a> {
         // A body bottom far past any realistic content height: the band-overflow checks never trip,
         // so `begin_page`/`finish_page` run exactly once and every band flows onto page 1.
         self.body_bottom = i32::MAX / 4;
+        // The per-section paging limits count bands rather than measure them, so height alone cannot
+        // keep them from breaking this flow onto a second page: clear them too.
+        self.bands.records_per_page = 0;
+        for f in &mut self.bands.group_formats {
+            f.visible_groups_per_page = 0;
+        }
     }
 
-    fn run(mut self) -> PagedDocument {
+    /// Lay the report out into pages. The second half of the pair is the currency fixups this run
+    /// did **not** resolve: a nested formatter leaves them to its parent, whose physical pages are
+    /// the ones the rule is scoped to (see [`Self::resolve_currency_symbols`]). A top-level run
+    /// resolves its own and returns none.
+    fn run(mut self) -> (PagedDocument, Vec<CurrencyFixup>) {
         // Note any raw SQL Command / stored-proc tables: their SQL is author-written for a specific
         // database and passed through verbatim (never translated), so the report renders with live
         // data only against that database — one aggregated diagnostic.
         self.note_command_tables();
         // Approximate layout drives pagination: fixed average advance + space-only wrapping (no real
-        // metrics, no CJK). Wrap points, can-grow heights, and page counts are then NOT cross-platform
-        // byte-parity with a real font stack — the same report on WASM (default ApproxLayout) vs native
-        // (CosmicLayout) can paginate differently. Emit one aggregated diagnostic so the divergence is
-        // not silent; inject a font-loaded CosmicLayout (`render_dataset_with`) for identical output.
+        // metrics, no CJK). Wrap points, can-grow heights, and page counts are then NOT byte-parity
+        // with a real font stack, so a report laid out through this impl can paginate differently
+        // from the same report laid out through CosmicLayout. Emit one aggregated diagnostic so the
+        // divergence is not silent; inject a font-loaded CosmicLayout (`render_dataset_with`) for
+        // identical output.
         if self.text_layout.is_approximate() {
             push_diag(
                 &self.diagnostics,
@@ -570,24 +685,50 @@ impl<'a> Formatter<'a> {
         }
         // Report footer (once) — resolved against the report's last record (Crystal's report-footer
         // record context) so its field/formula objects populate; the grand-total summaries are in
-        // scope so a 1-argument grand-total summary object also resolves.
+        // scope so a 1-argument grand-total summary object also resolves. It is the Report Header's
+        // underlay companion, so a span the header opened closes before it prints.
+        self.close_underlay_spans(paginate::UnderlayEnd::ReportFooter);
         let rf: Vec<&Section> = self.bands.report_footer.clone();
         let mut rf_state = self.state(None);
         rf_state.summaries = Rc::new(dataset.grand_total.clone());
         let last = dataset.iter_detail_rows().last().copied();
         for s in rf {
-            self.emit_band(s, last, &rf_state);
+            self.emit_band(s, last, &rf_state, None);
         }
         self.finish_page();
 
         // The final page count is now known: rewrite every `TotalPageCount`/`PageNofM` run that was
         // placed with a provisional total during the single pass.
         self.resolve_page_totals();
-        PagedDocument {
+        // Page membership is now final too: blank the repeated currency symbols.
+        let deferred = self.resolve_currency_symbols();
+        let doc = PagedDocument {
             pages: self.pages,
             checkpoints: self.checkpoints,
             diagnostics: self.diagnostics.into_inner(),
             assets: self.assets.into_inner(),
+            sections: self.sections.into_inner().finish(),
+        };
+        (doc, deferred)
+    }
+
+    /// Push one draw-op onto the current page. Every op the placement path emits goes through here so
+    /// a text run's horizontal tabs are resolved into positioned runs in one place (see
+    /// [`crate::tabs`]); returns how many ops landed, since a tabbed run splits into one per segment.
+    pub(crate) fn push_op(&mut self, op: DrawOp) -> usize {
+        match op {
+            DrawOp::Text(run) if run.text.contains('\t') => {
+                let runs = tabs::expand_tabs(run, self.text_layout);
+                let n = runs.len();
+                for r in runs {
+                    self.cur.push(DrawOp::Text(r));
+                }
+                n
+            }
+            other => {
+                self.cur.push(other);
+                1
+            }
         }
     }
 
@@ -599,6 +740,7 @@ impl<'a> Formatter<'a> {
             summaries: Rc::new(Vec::new()),
             group_summaries: Rc::clone(&self.group_summaries),
             grand_summaries: Rc::clone(&self.grand_summaries),
+            group_keys: Rc::clone(&self.group_keys),
             page_number: self.page_number,
             total_pages: self.pages.len() as i64 + 1,
             record_number: self.record_number,
@@ -616,29 +758,73 @@ impl<'a> Formatter<'a> {
         let total = self.pages.len() as i64;
         let diag: DiagSink = RefCell::new(Vec::new());
         for fx in std::mem::take(&mut self.page_count_fixups) {
-            let state = ResolveState {
+            let at = |total_pages| ResolveState {
                 page_number: fx.page_number,
-                total_pages: total,
+                total_pages,
                 ..ResolveState::default()
             };
-            let text =
-                resolve::field_text(self.report, &fx.field, None, &state, &self.locale, &diag);
-            if let Some(DrawOp::Text(run)) = self
+            let Some(DrawOp::Text(run)) = self
                 .pages
                 .get_mut(fx.page_index)
                 .and_then(|p| p.ops.get_mut(fx.op_index))
-            {
-                if let Some(m) = run.metrics.as_mut() {
-                    m.advance = Twips(self.text_layout.width_twips(&text, &run.font) as i32);
+            else {
+                continue;
+            };
+            let text = match &fx.kind {
+                PageCountFixupKind::Field(f) => {
+                    resolve::field_text(self.report, f, None, &at(total), &self.locale, &diag)
                 }
-                run.text = text;
+                // The embedded case substitutes the special's own rendering inside the run: the
+                // fragment it produced with the provisional total, replaced by the same rendering
+                // with the true one.
+                PageCountFixupKind::Embedded(placeholder) => {
+                    let render = |total_pages| {
+                        resolve::special_display(
+                            placeholder,
+                            self.report,
+                            &at(total_pages),
+                            &self.locale,
+                        )
+                    };
+                    run.text
+                        .replacen(&render(fx.provisional_total), &render(total), 1)
+                }
+            };
+            if let Some(m) = run.metrics.as_mut() {
+                m.advance = Twips(crate::text::spaced_width_twips(
+                    self.text_layout,
+                    &text,
+                    &run.font,
+                    run.character_spacing,
+                ) as i32);
             }
+            run.text = text;
         }
     }
 
-    /// Rebuild the [`Self::group_summaries`] projection from the current [`Self::group_stack`]. Called
-    /// once whenever the stack changes (a group is entered or left) so per-record [`Self::state`]
-    /// calls only bump the shared `Rc` instead of re-projecting and deep-cloning the whole stack.
+    /// Apply `OneCurrencySymbolPerPage`: on each page, the first printed value of each such field
+    /// keeps its symbol and every later one on that page has it blanked (see [`crate::currency`]).
+    ///
+    /// It runs here, not while formatting, because a band's text is resolved *before* the page-break
+    /// decision that follows it — so at format time the value's page is not yet settled. Blanking can
+    /// only shorten a single-line run, so nothing pagination computed is invalidated by it.
+    ///
+    /// A nested formatter resolves nothing and hands its fixups back instead: a subreport's pages are
+    /// its own flow chunks, and the rule is scoped to the physical page the parent finally places the
+    /// value on. The parent re-anchors them onto [`SubreportChunk::currency`] as it merges the
+    /// child's ops.
+    fn resolve_currency_symbols(&mut self) -> Vec<CurrencyFixup> {
+        if self.nested {
+            return std::mem::take(&mut self.currency_fixups);
+        }
+        currency::apply(&mut self.pages, &self.currency_fixups, self.text_layout);
+        Vec::new()
+    }
+
+    /// Rebuild the [`Self::group_summaries`] and [`Self::group_keys`] projections from the current
+    /// [`Self::group_stack`]. Called once whenever the stack changes (a group is entered or left) so
+    /// per-record [`Self::state`] calls only bump the shared `Rc`s instead of re-projecting and
+    /// deep-cloning the whole stack.
     pub(crate) fn refresh_group_summaries(&mut self) {
         self.group_summaries = Rc::new(
             self.group_stack
@@ -646,6 +832,7 @@ impl<'a> Formatter<'a> {
                 .map(|g| (g.condition_field.clone(), g.summaries.clone()))
                 .collect(),
         );
+        self.group_keys = Rc::new(self.group_stack.iter().map(|g| g.key.clone()).collect());
     }
 
     /// The current enclosing-group key path signature (`OnChangeOfGroup` running-total reset key):
@@ -755,6 +942,54 @@ pub(crate) fn align_of(a: Alignment) -> TextAlign {
         Alignment::Justified => TextAlign::Justified,
         _ => TextAlign::Left,
     }
+}
+
+/// Resolve an object's horizontal alignment, giving [`Alignment::DefaultAlign`] the meaning the
+/// engine gives it at paint time. An explicitly stored alignment always wins.
+///
+/// The default is not "flush left": it resolves from the content.
+/// * A **field object** takes its effective value type — numeric (number / currency / integer)
+///   aligns flush **right** so a column lines up on its decimal point; string, memo, date,
+///   date-time and everything else align left.
+/// * A **field heading** takes the field it heads: that field's own explicit alignment if it has
+///   one, else the same value-type rule — so a heading sits over its column the way the column
+///   itself sits.
+/// * A right-to-left paragraph reads flush right, its base direction.
+///
+/// The stored `DefaultAlign` byte is what the file holds and what the decoder reports; only the
+/// renderer needs the resolved value, so the resolution lives here.
+pub(crate) fn resolved_align(
+    report: &Report,
+    obj: &ReportObject,
+    reading_order: ReadingOrder,
+) -> TextAlign {
+    if !matches!(obj.format.horizontal_alignment, Alignment::DefaultAlign) {
+        return align_of(obj.format.horizontal_alignment);
+    }
+    match &obj.kind {
+        ReportObjectKind::Field(f) => {
+            if field_object_value_type(report, f).is_numeric() {
+                return TextAlign::Right;
+            }
+        }
+        ReportObjectKind::FieldHeading(h) => {
+            if let Some(headed) = report.objects().find(|o| o.name == h.field_object_name) {
+                if !matches!(headed.format.horizontal_alignment, Alignment::DefaultAlign) {
+                    return align_of(headed.format.horizontal_alignment);
+                }
+                if let ReportObjectKind::Field(f) = &headed.kind {
+                    if field_object_value_type(report, f).is_numeric() {
+                        return TextAlign::Right;
+                    }
+                }
+            }
+        }
+        _ => {}
+    }
+    if matches!(reading_order, ReadingOrder::RightToLeft) {
+        return TextAlign::Right;
+    }
+    TextAlign::Left
 }
 
 #[cfg(test)]

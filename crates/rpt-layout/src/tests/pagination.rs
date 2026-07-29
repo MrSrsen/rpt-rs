@@ -709,6 +709,80 @@ fn underlay_section_with_no_following_content_draws_normally() {
 }
 
 #[test]
+fn an_underlay_group_header_backs_the_detail_and_ends_at_its_group_footer() {
+    // The span rule: the detail rows draw over the underlay from its top, and the underlay's
+    // companion — the group footer of the same level — is NOT underlaid, so it prints below the
+    // underlay's full 4000-twip height even though the rows it backed were only 900 twips.
+    let (report, saved) = group_underlay_report(true, 4000, 15840);
+    let doc = rendered(&report, &saved);
+    assert_eq!(doc.pages.len(), 1);
+    let page = &doc.pages[0];
+
+    let (_, gh_top) = text_op(page, "GHNORMAL").expect("plain group header emitted");
+    let (u_i, u_top) = text_op(page, "UTOP").expect("underlay emitted");
+    assert_eq!(gh_top, 0);
+    assert_eq!(u_top, 400, "the underlay follows the plain header band");
+    // Painter's order plus a shared top: the rows overlay the underlay rather than being pushed below.
+    assert_eq!(page_text_tops(page, "line"), vec![400, 700, 1000]);
+    let (row_i, _) = text_op(page, "line").expect("detail emitted");
+    assert!(u_i < row_i, "the underlay op precedes the detail it backs");
+    let (_, gf_top) = text_op(page, "GROUPFTR").expect("group footer emitted");
+    assert_eq!(
+        gf_top, 4400,
+        "the group footer clears the underlay's bottom"
+    );
+}
+
+#[test]
+fn a_plain_group_header_of_the_same_size_pushes_everything_below_it() {
+    // The control: with underlay off the tall band advances the cursor, so the rows start after it.
+    let (report, saved) = group_underlay_report(false, 4000, 15840);
+    let doc = rendered(&report, &saved);
+    let page = &doc.pages[0];
+    assert_eq!(page_text_tops(page, "line"), vec![4400, 4700, 5000]);
+    assert_eq!(text_op(page, "GROUPFTR").expect("footer emitted").1, 5300);
+}
+
+#[test]
+fn an_underlay_shorter_than_what_it_backs_leaves_the_cursor_alone() {
+    // The span only ever drops the cursor: content that outgrew the underlay (900 twips of rows over
+    // a 600-twip band) keeps its own position, so the footer follows the rows, not the underlay.
+    let (report, saved) = group_underlay_report(true, 600, 15840);
+    let doc = rendered(&report, &saved);
+    let page = &doc.pages[0];
+    assert_eq!(page_text_tops(page, "line"), vec![400, 700, 1000]);
+    assert_eq!(text_op(page, "GROUPFTR").expect("footer emitted").1, 1300);
+}
+
+#[test]
+fn an_underlay_span_does_not_survive_a_page_turn() {
+    // An underlay is drawn once, on its own page. When the rows it backs overflow, the footer lands
+    // on the next page and flows from that page's top — the stale span must not push it down.
+    let (report, saved) = group_underlay_report(true, 4000, 2000);
+    let doc = rendered(&report, &saved);
+    assert!(doc.pages.len() > 1, "the tall underlay forces a page turn");
+    let last = doc.pages.last().expect("a page");
+    let (_, gf_top) = text_op(last, "GROUPFTR").expect("group footer emitted");
+    assert_eq!(gf_top, 0, "the footer starts at the top of its own page");
+}
+
+#[test]
+fn a_nested_underlay_ends_at_its_own_level_footer() {
+    // A level-2 group header's span closes at the level-2 footer, not the outer one: GF2 clears the
+    // underlay, and the second inner group opens right after it rather than inheriting the span.
+    let (report, saved) = nested_underlay_report();
+    let doc = rendered(&report, &saved);
+    let page = &doc.pages[0];
+    assert_eq!(text_op(page, "GH1").expect("outer header").1, 0);
+    // Inner group 1: underlay at 300, its two rows over it, GF2 below the underlay's 4000 twips.
+    // Inner group 2 repeats the shape from there; GF1 closes the outer group last.
+    assert_eq!(page_text_tops(page, "UTOP"), vec![300, 4600]);
+    assert_eq!(page_text_tops(page, "line"), vec![300, 600, 4600, 4900]);
+    assert_eq!(page_text_tops(page, "GF2"), vec![4300, 8600]);
+    assert_eq!(page_text_tops(page, "GF1"), vec![8900]);
+}
+
+#[test]
 fn keep_group_together_moves_a_group_that_would_split_to_a_fresh_page() {
     // Group A (header + 2 details = 900 twips) fills page 1; group B would not fit in the remaining
     // space but fits on a page by itself, so KeepGroupTogether moves the whole of group B to page 2 —
@@ -991,11 +1065,13 @@ fn section_box_underlays_and_grows_with_the_band() {
     );
 }
 
-/// A box that names a later end section spans down to that section's bottom, not only its own band.
+/// A box whose stored end-section index names a later section spans down to that section's bottom,
+/// not only its own band.
 #[test]
 fn box_spans_to_end_section() {
-    // Page header (300) then detail (500): a box in the page header naming the detail section as its
-    // end must reach the detail bottom = 300 + 500 = 800 twips from the box top.
+    // Page header (300) then detail (500): a box in the page header (section 0) whose end-section
+    // index is the detail section (1) must reach the detail bottom = 300 + 500 = 800 twips from the
+    // box top.
     let mut boxo = ReportObject::default();
     boxo.name = "Frame".into();
     boxo.bounds = Rect {
@@ -1005,14 +1081,13 @@ fn box_spans_to_end_section() {
         height: Twips(200), // decoded height only within its own band
     };
     let mut bs = rpt_model::BoxShape::default();
-    bs.end_section_name = "Details".into();
+    bs.shape.end_section_index = 1; // the Details section
     let border = Color {
         a: 255,
         r: 0x33,
         g: 0x33,
         b: 0x33,
     };
-    bs.shape.line_style = LineStyle::SingleLine;
     boxo.kind = ReportObjectKind::Box(bs);
     boxo.border.top = LineStyle::SingleLine;
     boxo.border.border_color = Some(border);
@@ -1043,10 +1118,12 @@ fn box_spans_to_end_section() {
     );
 }
 
-/// A line that names a later end section extends its lower endpoint down to that section's bottom.
+/// A line whose stored end-section index names a later section extends its lower endpoint down to
+/// that section's bottom.
 #[test]
 fn line_spans_to_end_section() {
-    // A vertical line in the page header ending in the detail section reaches y = 300 + 500 = 800.
+    // A vertical line in the page header (section 0) ending in the detail section (1) reaches
+    // y = 300 + 500 = 800.
     let mut lineo = ReportObject::default();
     lineo.name = "Rule".into();
     lineo.bounds = Rect {
@@ -1056,7 +1133,7 @@ fn line_spans_to_end_section() {
         height: Twips(200), // only within its own band before spanning
     };
     let mut ls = LineShape::default();
-    ls.end_section_name = "Details".into();
+    ls.shape.end_section_index = 1; // the Details section
     ls.shape.line_thickness = Twips(10);
     lineo.kind = ReportObjectKind::Line(ls);
     lineo.border.left = LineStyle::SingleLine;
@@ -1170,4 +1247,154 @@ fn suppress_if_blank_section_reserves_no_space_when_empty() {
         .filter(|op| matches!(op, DrawOp::Text(t) if t.text == "NOTE"))
         .count();
     assert_eq!(notes_shown, 4, "every non-blank note renders");
+}
+
+// --- Per-section paging limits ("Records per page" / "Groups per page"). ---
+
+/// `groups` region groups of `rows_per_group` rows each, grouped by `t.region`, with a 300-twip
+/// group header ("GH") and a 300-twip detail band ("line"). `records_per_page` sets the Detail
+/// area's cap and `groups_per_page` the group-header area's; `0` is the stored "no limit".
+fn paging_limit_report(
+    page_height: i32,
+    groups: usize,
+    rows_per_group: usize,
+    records_per_page: i32,
+    groups_per_page: i32,
+) -> (Report, SavedData) {
+    use rpt_model::{Group, GroupAreaFormat, SortDirection};
+    let mut report = Report::default();
+    report.print_options.content_width = Twips(12240);
+    report.print_options.content_height = Twips(page_height);
+    let mut g = Group::default();
+    g.condition_field = "t.region".into();
+    g.sort.direction = SortDirection::AscendingOrder;
+    report.data_definition.groups = vec![g];
+
+    let mut gaf = GroupAreaFormat::default();
+    gaf.visible_groups_per_page = groups_per_page;
+    let mut gh = area(
+        AreaSectionKind::GroupHeader,
+        vec![section(
+            AreaSectionKind::GroupHeader,
+            "GH",
+            300,
+            vec![text_object("Hdr", "GH", 0)],
+        )],
+    );
+    gh.format.group = Some(gaf);
+    let mut detail = area(
+        AreaSectionKind::Detail,
+        vec![section(
+            AreaSectionKind::Detail,
+            "Details",
+            300,
+            vec![text_object("Row", "line", 0)],
+        )],
+    );
+    detail.format.visible_records_per_page = records_per_page;
+    report.report_definition.areas = vec![gh, detail];
+
+    let rows: Vec<Vec<Option<String>>> = (0..groups)
+        .flat_map(|gi| {
+            (0..rows_per_group).map(move |ri| {
+                vec![
+                    Some(((b'A' + gi as u8) as char).to_string()),
+                    Some((gi * rows_per_group + ri).to_string()),
+                ]
+            })
+        })
+        .collect();
+    let saved = SavedData {
+        record_count: rows.len() as u32,
+        columns: vec![
+            SavedColumn {
+                name: "t.region".into(),
+                value_type: FieldValueType::String,
+            },
+            SavedColumn {
+                name: "t.x".into(),
+                value_type: FieldValueType::Number,
+            },
+        ],
+        rows,
+    };
+    (report, saved)
+}
+
+#[test]
+fn records_per_page_breaks_at_the_cap_not_where_the_page_fills() {
+    // 3 groups × 4 rows on a page tall enough for every band: without a cap the whole report is one
+    // page. A cap of 5 breaks after the 5th record wherever it falls — the count runs across the
+    // group boundary, so page 1 carries group A's 4 rows plus group B's first.
+    let (uncapped, saved) = paging_limit_report(9000, 3, 4, 0, 0);
+    let doc = rendered(&uncapped, &saved);
+    assert_eq!(doc.pages.len(), 1, "height alone never breaks this report");
+
+    let (capped, saved) = paging_limit_report(9000, 3, 4, 5, 0);
+    let doc = rendered(&capped, &saved);
+    let per_page: Vec<usize> = doc
+        .pages
+        .iter()
+        .map(|p| page_text_tops(p, "line").len())
+        .collect();
+    assert_eq!(per_page, vec![5, 5, 2], "the break lands at the 5th record");
+    // Group B opens on page 1 (records 5) and continues on page 2, so page 1 carries two headers.
+    let headers: Vec<usize> = doc
+        .pages
+        .iter()
+        .map(|p| page_text_tops(p, "GH").len())
+        .collect();
+    assert_eq!(headers, vec![2, 1, 0]);
+}
+
+#[test]
+fn records_per_page_break_precedes_the_next_group_header() {
+    // Group A's 5 rows exactly fill a cap of 5. The next group's header does not print in the space
+    // left on page 1: a page with no record quota left starts the next group on a fresh page.
+    let (report, saved) = paging_limit_report(9000, 2, 5, 5, 0);
+    let doc = rendered(&report, &saved);
+    assert_eq!(doc.pages.len(), 2);
+    assert_eq!(page_text_tops(&doc.pages[0], "GH").len(), 1);
+    assert_eq!(
+        page_text_tops(&doc.pages[1], "GH"),
+        vec![0],
+        "group B's header opens page 2"
+    );
+}
+
+#[test]
+fn groups_per_page_breaks_at_the_cap_not_where_the_page_fills() {
+    // 4 groups × 2 rows fit one page on height alone; a cap of 2 groups splits them 2 + 2.
+    let (uncapped, saved) = paging_limit_report(9000, 4, 2, 0, 0);
+    assert_eq!(rendered(&uncapped, &saved).pages.len(), 1);
+
+    let (capped, saved) = paging_limit_report(9000, 4, 2, 0, 2);
+    let doc = rendered(&capped, &saved);
+    let headers: Vec<usize> = doc
+        .pages
+        .iter()
+        .map(|p| page_text_tops(p, "GH").len())
+        .collect();
+    assert_eq!(headers, vec![2, 2]);
+}
+
+#[test]
+fn a_group_carried_over_a_page_break_counts_against_the_next_page_cap() {
+    // The page fits 8 bands (2400 / 300). Group A (header + 4 rows) plus group B's header + 2 rows
+    // fill page 1 on height, so B carries onto page 2 — where it occupies one of the two group slots,
+    // leaving room for group C alone. Counting only the headers that *start* on a page would fit D
+    // there as well.
+    let (report, saved) = paging_limit_report(2400, 4, 4, 0, 2);
+    let doc = rendered(&report, &saved);
+    let headers: Vec<usize> = doc
+        .pages
+        .iter()
+        .map(|p| page_text_tops(p, "GH").len())
+        .collect();
+    assert_eq!(headers, vec![2, 1, 1]);
+    assert_eq!(
+        page_text_tops(&doc.pages[1], "line").len(),
+        2 + 4,
+        "group B's remaining rows and the whole of group C"
+    );
 }

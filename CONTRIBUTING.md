@@ -4,7 +4,7 @@ Thanks for your interest in improving rpt-rs. This document covers how to build,
 
 ## Getting started
 
-You need a Rust toolchain (the minimum supported version is **1.89**). Then:
+You need a Rust toolchain (the minimum supported version is **1.92**). Then:
 
 ```sh
 cargo build            # build the workspace
@@ -25,27 +25,28 @@ The reader crates, and the boundary between them, are intentional:
 
 | Crate             | Role                                                                                                                                                                                                      |
 |-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `rpt`             | Pure I/O. Decodes the **stored** facts from the bytes: container → records → typed model.                                                                                                                 |
-| `crystal-formula` | The standalone Crystal/Basic formula-language engine (no `.rpt` coupling).                                                                                                                                |
+| `rpt-reader`      | Pure I/O. Decodes the **stored** facts from the bytes: container → records → typed model.                                                                                                                 |
+| `rpt-model`       | The format-neutral, pure-data semantic model `rpt-reader` produces — no I/O, no decoder dependency. |
+| `rpt-formula` | The standalone Crystal/Basic formula-language engine (no `.rpt` coupling).                                                                                                                                |
 | `rpt-json`        | The exhaustive JSON export **library** (the `rpt json-dump` surface) — the decode regression surface. A pure projection of the decoded model: stored facts only, nothing derived. |
 | `rpt-kdl`         | The sparse, human-readable KDL authoring projection of the same model (the `rpt kdl` surface). |
 | `rpt-cli`         | The `rpt` inspection CLI; its `json-dump` / `kdl` subcommands are thin callers of those two libraries. |
 
-**The boundary is load-bearing.** If a value is read directly from the file, decode it in `rpt`. If a value is _computed
-or inferred_ (not present in the bytes), it is computed on demand by the consumer that needs it — never as a stored
-field on an `rpt` model struct, and never in the export. Keeping I/O separate from derivation is the core design rule,
-and keeping derivation out of `json-dump` is what makes a baseline diff mean "the decode changed".
+**The boundary is load-bearing.** If a value is read directly from the file, decode it in `rpt-reader`. If a value is
+_computed or inferred_ (not present in the bytes), it is computed on demand by the consumer that needs it — never as a
+stored field on an `rpt-model` struct, and never in the export. Keeping I/O separate from derivation is the core design
+rule, and keeping derivation out of `json-dump` is what makes a baseline diff mean "the decode changed".
 
 ## The `.rpt` format
 
 `.rpt` is an undocumented, encrypted binary format. If you're working on decoding, start with the documentation in
 [`docs/`](docs/):
 
-- [Format overview](docs/01-format-overview.md), [container](docs/02-container.md),
-  [stream decoding](docs/03-stream-decoding.md), [record tree](docs/04-record-tree.md), and
-  [semantic model](docs/05-semantic-model.md) explain the pipeline end to end.
-- The [block catalog](docs/07-block-catalog.md) and [support matrix](docs/08-support-matrix.md) describe each decoded
-  record type and what is and isn't supported.
+- [Format overview](docs/format/01-overview.md), [container](docs/format/02-container.md),
+  [stream decoding](docs/format/03-stream-decoding.md), [record tree](docs/format/04-record-tree.md), and
+  [semantic model](docs/reader/01-semantic-model.md) explain the pipeline end to end.
+- The [block catalog](docs/format/06-block-catalog.md) and [support matrix](docs/reader/02-support-matrix.md) describe
+  each decoded record type and what is and isn't supported.
 
 ## Tests and JSON baselines
 
@@ -79,6 +80,27 @@ containing credentials, or any private data.
 ## Pull requests
 
 - Keep changes focused; one logical change per PR.
-- Make sure `cargo fmt`, `cargo clippy -- -D warnings`, `cargo test`, and the two `scripts/check-*.sh` guards pass.
+- Make sure `cargo fmt`, `cargo clippy -- -D warnings`, `cargo test`, and the three `scripts/check-*.sh` guards pass.
 - Update [`CHANGELOG.md`](CHANGELOG.md) under `## [Unreleased]` for user-visible changes.
 - Update the docs when you change behavior or add support for a record type.
+
+## Releasing
+
+The version lives in exactly one place: `version` under `[workspace.package]` in the root `Cargo.toml`. Every crate
+inherits it (`version.workspace = true`), and the binaries compile it in via `CARGO_PKG_VERSION` — which is what
+`rpt --version` and `rpt-render --version` print, and what their `--help` headers carry. A git tag names a commit; it
+never supplies the version, so a binary reports the same thing whether it came from a release, a checkout, or
+`cargo install`.
+
+To cut a release:
+
+1. Bump `[workspace.package] version` in the root `Cargo.toml`, and `cargo build` so `Cargo.lock` follows.
+2. Roll `## [Unreleased]` in [`CHANGELOG.md`](CHANGELOG.md) into `## [x.y.z] - YYYY-MM-DD`.
+3. Check the tag you are about to push before you push it:
+
+   ```sh
+   bash scripts/check-release-version.sh v0.4.0
+   ```
+
+4. Commit, then tag the commit `vx.y.z` and push the tag. CI's `create-release` job runs the same check and fails the
+   release if the tag and the manifest disagree, so a mistyped tag cannot ship binaries that name a different version.

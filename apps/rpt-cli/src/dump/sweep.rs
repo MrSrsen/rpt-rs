@@ -4,12 +4,15 @@
 
 use std::fmt::Write as _;
 
-use rpt::Rpt;
+use rpt_reader::raw::Dialect;
+use rpt_reader::Rpt;
 use serde::Serialize;
+
+use rpt_reader::raw::LpString;
 
 use crate::util::{paint, print_json, CliError, BOLD};
 
-use super::collect::gather;
+use super::collect::{gather, selector_dialect};
 use super::parse::{anchor_string_index, lp_strings, parse_cols, type_label, Col};
 use super::{bad_arg, DumpMatch, DumpOpts};
 
@@ -69,9 +72,9 @@ pub(super) fn diff_matches(out: &mut String, base: (&str, &[u8]), other: (&str, 
 /// `aidx` the anchoring string's index (for the `str` anchoring-text column).
 fn cell(
     col: &Col,
-    leaf: &[u8],
+    bytes: &[u8],
     anchor: Option<usize>,
-    strings: &[(usize, String, usize)],
+    strings: &[LpString],
     aidx: Option<usize>,
 ) -> String {
     match col {
@@ -81,7 +84,7 @@ fn cell(
                 Some(k) => strings.get(*k),
                 None => aidx.and_then(|k| strings.get(k)),
             };
-            pick.map_or_else(|| "-".into(), |(_, t, _)| t.clone())
+            pick.map_or_else(|| "-".into(), |s| s.text.clone())
         }
         Col::Scalar {
             anchored,
@@ -100,7 +103,7 @@ fn cell(
             if pos < 0 {
                 return "-".into();
             }
-            width.read(leaf, pos as usize).map_or_else(
+            width.read(bytes, pos as usize).map_or_else(
                 || "-".into(),
                 |v| format!("0x{:0width$x}", v, width = width.digits()),
             )
@@ -113,17 +116,57 @@ fn match_bytes<'a>(m: &'a DumpMatch, opts: &DumpOpts) -> &'a [u8] {
     if opts.whole {
         &m.whole
     } else {
-        &m.leaf
+        &m.joined_runs
+    }
+}
+
+/// Append every file under `dir`, recursively, whose name matches `pat`.
+fn walk_matching(dir: &std::path::Path, pat: &str, out: &mut Vec<String>) {
+    let Ok(entries) = std::fs::read_dir(dir) else {
+        return;
+    };
+    for e in entries.flatten() {
+        let p = e.path();
+        if p.is_dir() {
+            walk_matching(&p, pat, out);
+        } else if p
+            .file_name()
+            .and_then(|f| f.to_str())
+            .is_some_and(|n| wildcard_match(pat, n))
+        {
+            out.push(p.to_string_lossy().into_owned());
+        }
     }
 }
 
 /// Expand a glob into matching paths. `*` and `?` apply to the final path component; the directory
 /// part is literal. Dependency-free — enough for the `dir/*.rpt` corpus-sweep workflow.
+///
+/// Two recursive forms exist because a report corpus is a tree of subdirectories, and a
+/// single-directory sweep over one silently matches nothing — which reads as "no record does X"
+/// rather than as "you swept no files": naming a **directory** sweeps every `.rpt` beneath it, and
+/// `**` before the final component recurses from the path above it.
 pub(super) fn expand_glob(pattern: &str) -> Vec<String> {
     let path = std::path::Path::new(pattern);
+    if path.is_dir() {
+        let mut out = Vec::new();
+        walk_matching(path, "*.rpt", &mut out);
+        out.sort();
+        return out;
+    }
     let Some(pat) = path.file_name().and_then(|f| f.to_str()) else {
         return Vec::new();
     };
+    if let Some(root) = path.parent().and_then(|p| p.to_str()).and_then(|p| {
+        p.strip_suffix("**")
+            .map(|r| r.trim_end_matches('/'))
+            .map(|r| if r.is_empty() { "." } else { r })
+    }) {
+        let mut out = Vec::new();
+        walk_matching(std::path::Path::new(root), pat, &mut out);
+        out.sort();
+        return out;
+    }
     if !pat.contains('*') && !pat.contains('?') {
         return if path.exists() {
             vec![pattern.to_string()]
@@ -248,7 +291,7 @@ fn sweep_file(file: &str, opts: &DumpOpts, want: u16, cols: &[(String, Col)]) ->
             let bytes = match_bytes(m, opts);
             let strings = lp_strings(bytes);
             let aidx = anchor_string_index(&strings, needle);
-            let anchor = aidx.map(|k| strings[k].0 + strings[k].2);
+            let anchor = aidx.map(|k| strings[k].end());
             SweepRow {
                 file: base.clone(),
                 rec: Some(i),
@@ -265,6 +308,8 @@ fn sweep_file(file: &str, opts: &DumpOpts, want: u16, cols: &[(String, Col)]) ->
 /// The corpus-sweep table: one row per `(file, record)` across `files`, extracting `--cols`. With
 /// no `--cols`, a coverage table (one row per file: how many records of the type it holds).
 pub(super) fn dump_sweep(files: &[String], opts: &DumpOpts, want: u16) -> Result<(), CliError> {
+    // The table names the type once, over every file, so it takes the selector's vocabulary.
+    let dialect = selector_dialect(opts.stream.as_deref());
     let cols = match opts.cols.as_deref() {
         Some(spec) => parse_cols(spec).ok_or_else(|| bad_arg("--cols"))?,
         None => Vec::new(),
@@ -292,7 +337,7 @@ pub(super) fn dump_sweep(files: &[String], opts: &DumpOpts, want: u16) -> Result
                 }
             })
             .collect();
-        return render_sweep(opts, want, &["matches".to_string()], rows, false);
+        return render_sweep(opts, want, dialect, &["matches".to_string()], rows, false);
     }
 
     let headers: Vec<String> = cols.iter().map(|(h, _)| h.clone()).collect();
@@ -300,7 +345,7 @@ pub(super) fn dump_sweep(files: &[String], opts: &DumpOpts, want: u16) -> Result
         .iter()
         .flat_map(|f| sweep_file(f, opts, want, &cols))
         .collect();
-    render_sweep(opts, want, &headers, rows, true)
+    render_sweep(opts, want, dialect, &headers, rows, true)
 }
 
 /// Emit the sweep table as aligned text (or `--json`). `with_rec` prints the per-file match index
@@ -308,13 +353,14 @@ pub(super) fn dump_sweep(files: &[String], opts: &DumpOpts, want: u16) -> Result
 fn render_sweep(
     opts: &DumpOpts,
     want: u16,
+    dialect: Dialect,
     headers: &[String],
     rows: Vec<SweepRow>,
     with_rec: bool,
 ) -> Result<(), CliError> {
     if opts.json {
         let json = SweepJson {
-            type_name: type_label(want),
+            type_name: type_label(want, dialect),
             columns: headers.to_vec(),
             rows: rows
                 .into_iter()
@@ -347,7 +393,7 @@ fn render_sweep(
     let mut out = String::new();
     let heading = format!(
         "── sweep · {} · {} file-row(s) ──",
-        type_label(want),
+        type_label(want, dialect),
         rows.len()
     );
     let _ = writeln!(out, "{}", paint(opts.color, BOLD, &heading));
@@ -404,11 +450,11 @@ mod tests {
 
     #[test]
     fn cell_absolute_anchored_and_string() {
-        // leaf: [len=3]"id"\0 then tail 04 00 05 06
-        let leaf = [0, 0, 0, 3, b'i', b'd', 0, 0x04, 0x00, 0x05, 0x06];
-        let strings = lp_strings(&leaf);
+        // one run: [len=3]"id"\0 then tail 04 00 05 06
+        let run = [0, 0, 0, 3, b'i', b'd', 0, 0x04, 0x00, 0x05, 0x06];
+        let strings = lp_strings(&run);
         let aidx = anchor_string_index(&strings, None);
-        let anchor = aidx.map(|k| strings[k].0 + strings[k].2); // = 7
+        let anchor = aidx.map(|k| strings[k].end()); // = 7
         assert_eq!(anchor, Some(7));
         // absolute u8 at 7
         assert_eq!(
@@ -418,7 +464,7 @@ mod tests {
                     off: 7,
                     width: Width::U8
                 },
-                &leaf,
+                &run,
                 anchor,
                 &strings,
                 aidx
@@ -433,7 +479,7 @@ mod tests {
                     off: 0,
                     width: Width::U8
                 },
-                &leaf,
+                &run,
                 anchor,
                 &strings,
                 aidx
@@ -448,7 +494,7 @@ mod tests {
                     off: 2,
                     width: Width::U16be
                 },
-                &leaf,
+                &run,
                 anchor,
                 &strings,
                 aidx
@@ -456,9 +502,9 @@ mod tests {
             "0x0506"
         );
         // anchor position column
-        assert_eq!(cell(&Col::Anchor, &leaf, anchor, &strings, aidx), "7");
+        assert_eq!(cell(&Col::Anchor, &run, anchor, &strings, aidx), "7");
         // anchoring string text
-        assert_eq!(cell(&Col::Str(None), &leaf, anchor, &strings, aidx), "id");
+        assert_eq!(cell(&Col::Str(None), &run, anchor, &strings, aidx), "id");
         // out of range -> dash
         assert_eq!(
             cell(
@@ -467,7 +513,7 @@ mod tests {
                     off: 999,
                     width: Width::U8
                 },
-                &leaf,
+                &run,
                 anchor,
                 &strings,
                 aidx
@@ -482,7 +528,7 @@ mod tests {
                     off: 0,
                     width: Width::U8
                 },
-                &leaf,
+                &run,
                 None,
                 &strings,
                 aidx

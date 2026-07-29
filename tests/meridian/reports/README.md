@@ -25,5 +25,4 @@ as skipped, so CI stays green.
 - The data has real shape to exploit: a Q4 order surge, a mid-2022 fuel-price spike, one under-performing
   carrier (`carrier_id = 1`) for Radar/Gauge stories, a Pareto customer-revenue curve for Top-N, and
   right-skewed transit times for histograms. Nullable fields exercise `IsNull`/`HasValue`.
-- After authoring, establish the cross-engine oracle and bless the HTML baseline
-  (`make bless-fixtures`).
+- After authoring, bless the baseline (`make bless-fixtures`).

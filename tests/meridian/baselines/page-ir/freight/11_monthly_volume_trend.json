@@ -1,0 +1,767 @@
+// document
+{
+  "sections": {
+    "ChartsSection": {
+      "band": "ReportHeader"
+    },
+    "DetailSection1": {
+      "band": "Detail"
+    },
+    "PageFooterSection1": {
+      "band": "PageFooter"
+    },
+    "PageHeaderSection1": {
+      "band": "PageHeader"
+    },
+    "ReportFooterSection1": {
+      "band": "ReportFooter"
+    },
+    "ReportHeaderSection1": {
+      "band": "ReportHeader"
+    },
+    "bookeddateFooterSection1": {
+      "band": "GroupFooter",
+      "group_level": 0
+    },
+    "bookeddateHeaderSection1": {
+      "band": "GroupHeader",
+      "group_level": 0
+    }
+  }
+}
+// page 1
+{
+  "number": 1,
+  "size": {
+    "width": 11899,
+    "height": 16838
+  },
+  "origin": {
+    "x": 720,
+    "y": 720
+  },
+  "ops": [
+    {
+      "op": "Image",
+      "bounds": {
+        "left": 0,
+        "top": 0,
+        "width": 790,
+        "height": 790
+      },
+      "image_id": "Picture1",
+      "fit": "Contain",
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "Picture1",
+        "kind": "Image",
+        "instance": 0
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 900,
+        "top": 60,
+        "width": 4200,
+        "height": 240
+      },
+      "text": "MERIDIAN GLOBAL LOGISTICS",
+      "font": {
+        "family": "Arial",
+        "size_pt": 11.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 3080,
+        "ascent": 176,
+        "line_height": 264
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "MastCompany",
+        "kind": "Field",
+        "instance": 1
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 5666,
+        "top": 60,
+        "width": 4800,
+        "height": 400
+      },
+      "text": "MONTHLY FREIGHT VOLUME TREND",
+      "font": {
+        "family": "Arial",
+        "size_pt": 16.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 5017,
+        "ascent": 256,
+        "line_height": 384
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "MastTitle",
+        "kind": "Field",
+        "instance": 2
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 0,
+        "y": 900
+      },
+      "to": {
+        "x": 10466,
+        "y": 900
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 140,
+          "b": 44
+        },
+        "width": 30,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "MastRule",
+        "kind": "Line",
+        "instance": 3
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 0,
+        "top": 0,
+        "width": 5133,
+        "height": 3100
+      },
+      "fill": null,
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 136,
+          "g": 136,
+          "b": 136
+        },
+        "width": 10,
+        "style": "Dashed"
+      },
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "LineChart",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 5333,
+        "top": 0,
+        "width": 5133,
+        "height": 3100
+      },
+      "fill": null,
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 136,
+          "g": 136,
+          "b": 136
+        },
+        "width": 10,
+        "style": "Dashed"
+      },
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "AreaChart",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 0,
+        "top": 10882,
+        "width": 10466,
+        "height": 300
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 95,
+          "g": 58,
+          "b": 31
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "PageHeaderSection1",
+        "object_name": "ColHeadBar",
+        "kind": "Box",
+        "instance": 6
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 700,
+        "top": 10922,
+        "width": 1600,
+        "height": 220
+      },
+      "text": "Booked date",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 255,
+        "g": 255,
+        "b": 255
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 985,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "PageHeaderSection1",
+        "object_name": "ColHead0",
+        "kind": "Field",
+        "instance": 7
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2300,
+        "top": 10922,
+        "width": 1600,
+        "height": 220
+      },
+      "text": "Mode",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 255,
+        "g": 255,
+        "b": 255
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 358,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "PageHeaderSection1",
+        "object_name": "ColHead1",
+        "kind": "Field",
+        "instance": 8
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3900,
+        "top": 10922,
+        "width": 1900,
+        "height": 220
+      },
+      "text": "Region",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 255,
+        "g": 255,
+        "b": 255
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 537,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "PageHeaderSection1",
+        "object_name": "ColHead2",
+        "kind": "Field",
+        "instance": 9
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 5800,
+        "top": 10922,
+        "width": 2100,
+        "height": 220
+      },
+      "text": "Weight (kg)",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 255,
+        "g": 255,
+        "b": 255
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 985,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "PageHeaderSection1",
+        "object_name": "ColHead3",
+        "kind": "Field",
+        "instance": 10
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7900,
+        "top": 10922,
+        "width": 2100,
+        "height": 220
+      },
+      "text": "Freight cost",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 255,
+        "g": 255,
+        "b": 255
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 1075,
+        "ascent": 128,
+        "line_height": 192
+      },
+      "source": {
+        "section": "PageHeaderSection1",
+        "object_name": "ColHead4",
+        "kind": "Field",
+        "instance": 11
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 11282,
+        "width": 4000,
+        "height": 240
+      },
+      "text": "",
+      "font": {
+        "family": "Arial",
+        "size_pt": 11.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 0,
+        "ascent": 176,
+        "line_height": 264
+      },
+      "source": {
+        "section": "bookeddateHeaderSection1",
+        "object_name": "GroupMonthLabel",
+        "kind": "Field",
+        "instance": 12
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 0,
+        "y": 11522
+      },
+      "to": {
+        "x": 10466,
+        "y": 11522
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 140,
+          "b": 44
+        },
+        "width": 30,
+        "style": "Single"
+      },
+      "source": {
+        "section": "bookeddateHeaderSection1",
+        "object_name": "GhRule",
+        "kind": "Line",
+        "instance": 13
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 0,
+        "y": 11562
+      },
+      "to": {
+        "x": 10466,
+        "y": 11562
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 140,
+          "b": 44
+        },
+        "width": 30,
+        "style": "Single"
+      },
+      "source": {
+        "section": "bookeddateFooterSection1",
+        "object_name": "GfRule",
+        "kind": "Line",
+        "instance": 14
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 700,
+        "top": 11622,
+        "width": 1200,
+        "height": 220
+      },
+      "text": "Shipments:",
+      "font": {
+        "family": "Arial",
+        "size_pt": 9.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 1008,
+        "ascent": 144,
+        "line_height": 216
+      },
+      "source": {
+        "section": "bookeddateFooterSection1",
+        "object_name": "GfCountLbl",
+        "kind": "Field",
+        "instance": 15
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1900,
+        "top": 11622,
+        "width": 900,
+        "height": 220
+      },
+      "text": "",
+      "font": {
+        "family": "Arial",
+        "size_pt": 9.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 0,
+        "ascent": 144,
+        "line_height": 216
+      },
+      "source": {
+        "section": "bookeddateFooterSection1",
+        "object_name": "GfCountVal",
+        "kind": "Field",
+        "instance": 16
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3200,
+        "top": 11622,
+        "width": 1600,
+        "height": 220
+      },
+      "text": "Total weight (kg):",
+      "font": {
+        "family": "Arial",
+        "size_pt": 9.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 1814,
+        "ascent": 144,
+        "line_height": 216
+      },
+      "source": {
+        "section": "bookeddateFooterSection1",
+        "object_name": "GfWeightLbl",
+        "kind": "Field",
+        "instance": 17
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 4900,
+        "top": 11622,
+        "width": 1400,
+        "height": 220
+      },
+      "text": "",
+      "font": {
+        "family": "Arial",
+        "size_pt": 9.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 0,
+        "ascent": 144,
+        "line_height": 216
+      },
+      "source": {
+        "section": "bookeddateFooterSection1",
+        "object_name": "GfWeightVal",
+        "kind": "Field",
+        "instance": 18
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 0,
+        "y": 11902
+      },
+      "to": {
+        "x": 10466,
+        "y": 11902
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 140,
+          "b": 44
+        },
+        "width": 30,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "RfRule",
+        "kind": "Line",
+        "instance": 19
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 12002,
+        "width": 3000,
+        "height": 260
+      },
+      "text": "TOTAL SHIPMENTS",
+      "font": {
+        "family": "Arial",
+        "size_pt": 10.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 1680,
+        "ascent": 160,
+        "line_height": 240
+      },
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "GrandLbl",
+        "kind": "Field",
+        "instance": 20
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 8466,
+        "top": 11982,
+        "width": 2000,
+        "height": 300
+      },
+      "text": " 0",
+      "font": {
+        "family": "Arial",
+        "size_pt": 14.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 95,
+        "g": 58,
+        "b": 31
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 313,
+        "ascent": 224,
+        "line_height": 336
+      },
+      "source": {
+        "section": "ReportFooterSection1",
+        "object_name": "GrandAmt",
+        "kind": "Field",
+        "instance": 21
+      }
+    }
+  ]
+}

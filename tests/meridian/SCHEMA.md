@@ -3,7 +3,7 @@
 The complete table and field catalog for the synthetic MGL database. This is the contract report authors bind against;
 it matches the generated DDL in `apps/meridian-seed/schema.sql` and the seed in `tests/meridian/sql/meridian.sql`.
 
-**Conventions.** Portable ANSI types drive both PostgreSQL (perf / Crystal oracle) and SQLite (fast CI) from one seeder.
+**Conventions.** Portable ANSI types drive both PostgreSQL (perf path) and SQLite (fast CI) from one seeder.
 The only per-engine differences are: `BYTEA`↔`BLOB` (image/logo/photo columns) and `BOOLEAN`↔`INTEGER`. Primary keys are
 `*_id` integers — `BIGINT` on the high-volume child tables (`order_line`, `invoice_line`, `shipment_leg`,
 `tracking_event`, `shipment_charge`). Text keys such as `currency_code`/`iso2`/`iso3` are `VARCHAR` (shown below as their

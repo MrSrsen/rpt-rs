@@ -1,5 +1,10 @@
 {
   "model": {
+    "authoring_version": {
+      "letter": 0,
+      "major": 14,
+      "minor": 0
+    },
     "data_definition": {
       "condition_formula_bodies": [],
       "custom_functions": [],
@@ -62,6 +67,7 @@
               "is_percentage_summary": false,
               "operation": "Sum",
               "operation_parameter": 0,
+              "second_group_for_percentage": null,
               "secondary_summarized_field": "",
               "summarized_field": "orders.total"
             }
@@ -1119,12 +1125,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -1144,12 +1145,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1188,7 +1184,7 @@
                   },
                   "kind": {
                     "CrossTab": {
-                      "column_axis_options": 0,
+                      "column_level_count": 0,
                       "columns": [
                         {
                           "field_ref": "",
@@ -1234,6 +1230,7 @@
                         "orders.partner_id"
                       ],
                       "grid_format": {
+                        "cell_count": 20,
                         "cells": [
                           {
                             "background_color": null,
@@ -1336,7 +1333,6 @@
                             "flags": 0
                           }
                         ],
-                        "raw": 20,
                         "style": {
                           "column_grand_total_color": {
                             "a": 255,
@@ -1360,12 +1356,6 @@
                           "suppress_row_grand_totals": false
                         }
                       },
-                      "measures": [
-                        {
-                          "field": "orders.total",
-                          "operation": "Sum"
-                        }
-                      ],
                       "options": {
                         "column_grand_total_color": null,
                         "keep_columns_together": true,
@@ -1383,7 +1373,7 @@
                         "suppress_empty_rows": false,
                         "suppress_row_grand_totals": false
                       },
-                      "row_axis_options": 0,
+                      "row_level_count": 0,
                       "rows": [
                         {
                           "field_ref": "",
@@ -1403,17 +1393,11 @@
                   "name": "CrossTab1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1487,6 +1471,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": true,
@@ -1510,17 +1495,11 @@
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1587,11 +1566,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -1605,11 +1609,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1627,30 +1635,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "GroupName",
                       "summary_code": null,
-                      "value_type": "String"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1724,6 +1732,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": true,
@@ -1747,17 +1756,11 @@
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1831,6 +1834,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": true,
@@ -1854,17 +1858,11 @@
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1931,11 +1929,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -1949,11 +1972,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 0,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToUnit",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1971,30 +1998,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "GroupName",
                       "summary_code": null,
-                      "value_type": "String"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2068,6 +2095,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": true,
@@ -2091,17 +2119,11 @@
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2168,11 +2190,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "YearMonthDay",
                           "day": "LeadingZeroNumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
                           "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "ShortYear"
                         },
@@ -2186,11 +2233,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2208,9 +2259,15 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Summary",
@@ -2221,17 +2278,11 @@
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2298,11 +2349,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "YearMonthDay",
                           "day": "LeadingZeroNumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
                           "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "ShortYear"
                         },
@@ -2316,11 +2392,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2338,9 +2418,15 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Summary",
@@ -2351,17 +2437,11 @@
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2428,11 +2508,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "YearMonthDay",
                           "day": "LeadingZeroNumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
                           "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "ShortYear"
                         },
@@ -2446,11 +2551,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2468,9 +2577,15 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Summary",
@@ -2481,17 +2596,11 @@
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2558,11 +2667,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "YearMonthDay",
                           "day": "LeadingZeroNumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
                           "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "ShortYear"
                         },
@@ -2576,11 +2710,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2598,9 +2736,15 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Summary",
@@ -2611,11 +2755,9 @@
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 }
               ],
-              "section_code": 6000,
               "width": 0
             }
           ]
@@ -2642,12 +2784,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -2665,7 +2802,6 @@
               "kind": "PageHeader",
               "name": "Section2",
               "objects": [],
-              "section_code": 12000,
               "width": 0
             }
           ]
@@ -2692,12 +2828,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -2715,7 +2846,6 @@
               "kind": "Detail",
               "name": "Section3",
               "objects": [],
-              "section_code": 24000,
               "width": 0
             }
           ]
@@ -2742,12 +2872,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -2765,7 +2890,6 @@
               "kind": "ReportFooter",
               "name": "Section4",
               "objects": [],
-              "section_code": 48000,
               "width": 0
             }
           ]
@@ -2792,12 +2916,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -2815,12 +2934,13 @@
               "kind": "PageFooter",
               "name": "Section5",
               "objects": [],
-              "section_code": 42000,
               "width": 0
             }
           ]
         }
-      ]
+      ],
+      "kind": "ColumnarReport",
+      "style": "Standard"
     },
     "report_options": {
       "convert_null_field_to_default": false,
@@ -2914,152 +3034,152 @@
       "rows": [
         [
           "1",
-          "7259.999999999999",
+          "72.6",
           "completed"
         ],
         [
           null,
-          "10164",
+          "101.64",
           "completed"
         ],
         [
           "2",
-          "12100",
+          "121",
           "completed"
         ],
         [
           null,
-          "3629.9999999999995",
+          "36.3",
           "cancelled"
         ],
         [
           "3",
-          "7744",
+          "77.44",
           "completed"
         ],
         [
           "1",
-          "18150",
+          "181.5",
           "completed"
         ],
         [
           null,
-          "1936",
+          "19.36",
           "completed"
         ],
         [
           "2",
-          "8712",
+          "87.12",
           "paid"
         ],
         [
           null,
-          "3629.9999999999995",
+          "36.3",
           "completed"
         ],
         [
           "3",
-          "6776.000000000001",
+          "67.76",
           "completed"
         ],
         [
           "1",
-          "21780",
+          "217.8",
           "completed"
         ],
         [
           null,
-          "2904",
+          "29.04",
           "cart"
         ],
         [
           "2",
-          "12100",
+          "121",
           "completed"
         ],
         [
           null,
-          "7259.999999999999",
+          "72.6",
           "completed"
         ],
         [
           "3",
-          "7744",
+          "77.44",
           "completed"
         ],
         [
           "1",
-          "18150",
+          "181.5",
           "completed"
         ],
         [
           null,
-          "1936",
+          "19.36",
           "completed"
         ],
         [
           "2",
-          "8712",
+          "87.12",
           "completed"
         ],
         [
           null,
-          "3629.9999999999995",
+          "36.3",
           "cancelled"
         ],
         [
           "3",
-          "6776.000000000001",
+          "67.76",
           "completed"
         ],
         [
           "1",
-          "21780",
+          "217.8",
           "completed"
         ],
         [
           null,
-          "2904",
+          "29.04",
           "completed"
         ],
         [
           "2",
-          "12100",
+          "121",
           "completed"
         ],
         [
           null,
-          "7259.999999999999",
+          "72.6",
           "cart"
         ],
         [
           "3",
-          "7744",
+          "77.44",
           "completed"
         ],
         [
           "1",
-          "18150",
+          "181.5",
           "completed"
         ],
         [
           null,
-          "1936",
+          "19.36",
           "completed"
         ],
         [
           "2",
-          "8712",
+          "87.12",
           "completed"
         ],
         [
           null,
-          "3629.9999999999995",
+          "36.3",
           "completed"
         ],
         [
           "3",
-          "6776.000000000001",
+          "67.76",
           "completed"
         ]
       ]
@@ -3068,7 +3188,10 @@
     "summary_info": {
       "author": "",
       "comments": "",
+      "created": 126569431875510000,
       "keywords": "",
+      "last_printed": null,
+      "last_saved": 134282700297291280,
       "last_saved_by": "",
       "revision_number": "10",
       "save_with_preview": false,

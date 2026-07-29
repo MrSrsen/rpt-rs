@@ -6,7 +6,7 @@
 
 #[cfg(test)]
 use super::common::AxisTitles;
-use super::common::{truncate, ChartCtx, AXIS, GRID, LABEL, PALETTE, TITLE_PT};
+use super::common::{ChartCtx, AXIS, GRID, LABEL, PALETTE, TITLE_PT};
 use rpt_format_value::Date;
 use rpt_model::{Rect, Twips};
 use rpt_pages::{DrawOp, FontSpec, LineOp, Point, RectOp, Stroke, TextAlign, TextRun};
@@ -30,6 +30,7 @@ pub(crate) fn gantt_chart(cx: &ChartCtx, bars: &[GanttBar]) -> Vec<DrawOp> {
         return Vec::new();
     }
     let &ChartCtx {
+        style,
         rect,
         title,
         axis_titles,
@@ -87,7 +88,7 @@ pub(crate) fn gantt_chart(cx: &ChartCtx, bars: &[GanttBar]) -> Vec<DrawOp> {
             text: title.to_string(),
             font: FontSpec {
                 family: "Arial".into(),
-                size_pt: TITLE_PT,
+                size_pt: style.scaled_pt(TITLE_PT),
                 bold: true,
                 ..Default::default()
             },
@@ -95,6 +96,7 @@ pub(crate) fn gantt_chart(cx: &ChartCtx, bars: &[GanttBar]) -> Vec<DrawOp> {
             align: TextAlign::Center,
             rotation: 0.0,
             metrics: None,
+            character_spacing: Twips(0),
             source: src(),
         }));
     }
@@ -133,13 +135,14 @@ pub(crate) fn gantt_chart(cx: &ChartCtx, bars: &[GanttBar]) -> Vec<DrawOp> {
             text: fmt_date(day),
             font: FontSpec {
                 family: "Arial".into(),
-                size_pt: 7.0,
+                size_pt: style.scaled_pt(7.0),
                 ..Default::default()
             },
             color: LABEL,
             align: TextAlign::Center,
             rotation: 0.0,
             metrics: None,
+            character_spacing: Twips(0),
             source: src(),
         }));
     }
@@ -156,13 +159,14 @@ pub(crate) fn gantt_chart(cx: &ChartCtx, bars: &[GanttBar]) -> Vec<DrawOp> {
             text: axis_titles.category.to_string(),
             font: FontSpec {
                 family: "Arial".into(),
-                size_pt: 8.0,
+                size_pt: style.scaled_pt(8.0),
                 ..Default::default()
             },
             color: LABEL,
             align: TextAlign::Center,
             rotation: 0.0,
             metrics: None,
+            character_spacing: Twips(0),
             source: src(),
         }));
     }
@@ -206,16 +210,17 @@ pub(crate) fn gantt_chart(cx: &ChartCtx, bars: &[GanttBar]) -> Vec<DrawOp> {
                     width: Twips((label_w - pad).max(1)),
                     height: Twips(MIN_ROW_LABEL_H.max(bar_h)),
                 },
-                text: truncate(&b.label, 18),
+                text: b.label.clone(),
                 font: FontSpec {
                     family: "Arial".into(),
-                    size_pt: 7.0,
+                    size_pt: style.scaled_pt(7.0),
                     ..Default::default()
                 },
                 color: LABEL,
                 align: TextAlign::Right,
                 rotation: 0.0,
                 metrics: None,
+                character_spacing: Twips(0),
                 source: src(),
             }));
         }

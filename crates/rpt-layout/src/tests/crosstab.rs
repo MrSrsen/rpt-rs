@@ -20,6 +20,7 @@ fn crosstab_renders_a_grid_from_data() {
         ],
     );
     let mut report = Report::default();
+    report.data_definition.field_definitions = vec![crosstab_measure_def()];
     report.print_options.content_width = Twips(12240);
     report.print_options.content_height = Twips(15840);
     report.report_definition.areas = vec![
@@ -92,6 +93,7 @@ fn crosstab_decomposed_cell_objects_are_not_double_drawn() {
         &[&["East", "Q1", "10"]],
     );
     let mut report = Report::default();
+    report.data_definition.field_definitions = vec![crosstab_measure_def()];
     report.print_options.content_width = Twips(12240);
     report.print_options.content_height = Twips(15840);
     report.report_definition.areas = vec![area(

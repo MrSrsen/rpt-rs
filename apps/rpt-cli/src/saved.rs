@@ -8,7 +8,7 @@
 
 use std::fmt::Write as _;
 
-use rpt::Rpt;
+use rpt_reader::Rpt;
 use serde::Serialize;
 
 use crate::util::{print_json, truncate, CliError};
@@ -64,6 +64,9 @@ struct SavedJson<'a> {
     total_rows: usize,
     #[serde(skip_serializing_if = "Option::is_none")]
     rows: Option<Vec<Vec<Option<String>>>>,
+    /// What the saved-data path made of the report's stored rows — so an empty rowset says whether
+    /// the report holds none or the decoder lost them.
+    status: String,
 }
 
 pub(crate) fn saved(
@@ -73,11 +76,8 @@ pub(crate) fn saved(
     limit: Option<&str>,
 ) -> Result<(), CliError> {
     let rpt = Rpt::open(file)?;
+    let status = rpt.saved_data_status();
     let Some(data) = rpt.saved_data() else {
-        // Distinguish "no saved data at all" from "a descriptor is present but the rows did not
-        // decode" — the latter is a real signal (an undecoded batch class).
-        let has_descriptor =
-            rpt.report().has_saved_data || rpt.saved_record_count().is_some_and(|n| n > 0);
         if json {
             print_json(&SavedJson {
                 file,
@@ -86,15 +86,16 @@ pub(crate) fn saved(
                 shown_rows: 0,
                 total_rows: 0,
                 rows: Some(Vec::new()),
+                status: status.to_string(),
             });
-        } else if has_descriptor {
-            println!(
-                "{file}: a saved-data descriptor is present ({} records) but the rows did not \
-                 decode (undecoded batch class — inspect the raw bytes with `rpt dump`)",
-                rpt.saved_record_count().unwrap_or(0)
-            );
+        } else if let Some(where_) = crate::util::subdocument_saved_data(&rpt) {
+            println!("{file}: {where_}");
+        } else if let Some(shortfall) = status.shortfall() {
+            // A batch the decoder could not read is a real signal, and the one thing the model
+            // cannot show: it names the batch to inspect rather than leaving "no saved data".
+            println!("{file}: {shortfall} — inspect the batch bytes with `rpt dump --saved`");
         } else {
-            println!("{file}: no saved data");
+            println!("{file}: {status}");
         }
         return Ok(());
     };
@@ -122,6 +123,7 @@ pub(crate) fn saved(
             } else {
                 Some(data.rows.iter().take(shown).cloned().collect())
             },
+            status: status.to_string(),
         });
         return Ok(());
     }
@@ -133,6 +135,11 @@ pub(crate) fn saved(
         data.record_count,
         data.columns.len()
     );
+    // Rows that decoded do not mean every row decoded: a batch lost partway through leaves the rest
+    // of the rowset behind, and the count above is the one the file claims.
+    if let Some(shortfall) = status.shortfall() {
+        let _ = writeln!(out, "   INCOMPLETE: {shortfall}");
+    }
     let _ = writeln!(out, "columns (positional):");
     for (i, c) in data.columns.iter().enumerate() {
         let _ = writeln!(out, "   [{i}] {:<34} {:?}", c.name, c.value_type);

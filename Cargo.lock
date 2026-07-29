@@ -21,12 +21,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "allocator-api2"
-version = "0.2.21"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "683d7910e743518b0e34f1186f92494becacb047c7b6bf616c96772180fef923"
-
-[[package]]
 name = "arrayref"
 version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -60,12 +54,6 @@ name = "base64"
 version = "0.22.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
-
-[[package]]
-name = "bitflags"
-version = "1.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
 
 [[package]]
 name = "bitflags"
@@ -197,7 +185,7 @@ version = "0.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "be17b688510d934ce13f48a2beba700e11583e281e0fda99c22bb256a14eda73"
 dependencies = [
- "bitflags 2.13.0",
+ "bitflags",
  "fontdb",
  "harfrust",
  "linebender_resource_handle",
@@ -240,13 +228,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ce6e4c961d6cd6c9a86db418387425e8bdeaf05b3c8bc1411e6dca4c252f1453"
 dependencies = [
  "hybrid-array",
-]
-
-[[package]]
-name = "crystal-formula"
-version = "0.0.0"
-dependencies = [
- "rpt-format-value",
 ]
 
 [[package]]
@@ -326,14 +307,13 @@ checksum = "843fba2746e448b37e26a819579957415c8cef339bf08564fe8b7ddbd959573c"
 dependencies = [
  "crc32fast",
  "miniz_oxide",
- "zlib-rs",
 ]
 
 [[package]]
 name = "float-cmp"
-version = "0.10.0"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b09cf3155332e944990140d967ff5eceb70df778b34f77d8075db46e4704e6d8"
+checksum = "98de4bbd547a563b716d8dfa9aad1cb19bfab00f4fa09a6a4ed21dbcf44ce9c4"
 dependencies = [
  "num-traits",
 ]
@@ -343,21 +323,6 @@ name = "fnv"
 version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
-
-[[package]]
-name = "foldhash"
-version = "0.1.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d9c4f5dac5e15c24eb999c26181a6ca40b39fe946cbe4c263c7209467bc83af2"
-
-[[package]]
-name = "font-types"
-version = "0.10.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "39a654f404bbcbd48ea58c617c2993ee91d1cb63727a37bf2323a4edeed1b8c5"
-dependencies = [
- "bytemuck",
-]
 
 [[package]]
 name = "font-types"
@@ -388,17 +353,7 @@ dependencies = [
  "memmap2",
  "slotmap",
  "tinyvec",
- "ttf-parser 0.25.1",
-]
-
-[[package]]
-name = "fontdue"
-version = "0.9.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2e57e16b3fe8ff4364c0661fdaac543fb38b29ea9bc9c2f45612d90adf931d2b"
-dependencies = [
- "hashbrown 0.15.5",
- "ttf-parser 0.21.1",
+ "ttf-parser",
 ]
 
 [[package]]
@@ -456,9 +411,9 @@ dependencies = [
 
 [[package]]
 name = "gif"
-version = "0.13.3"
+version = "0.14.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4ae047235e33e2829703574b54fdec96bfbad892062d97fed2f76022287de61b"
+checksum = "ee8cfcc411d9adbbaba82fb72661cc1bcca13e8bba98b364e62b2dba8f960159"
 dependencies = [
  "color_quant",
  "weezl",
@@ -470,7 +425,7 @@ version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9da2e5ae821f6e96664977bf974d6d6a2d6682f9ccee23e62ec1d134246845f9"
 dependencies = [
- "bitflags 2.13.0",
+ "bitflags",
  "bytemuck",
  "core_maths",
  "read-fonts 0.37.0",
@@ -484,17 +439,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e5274423e17b7c9fc20b6e7e208532f9b19825d82dfd615708b70edd83df41f1"
 dependencies = [
  "ahash",
-]
-
-[[package]]
-name = "hashbrown"
-version = "0.15.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9229cfe53dfd69f0609a49f65461bd93001ea1ef889cd5529dd176593f5338a1"
-dependencies = [
- "allocator-api2",
- "equivalent",
- "foldhash",
 ]
 
 [[package]]
@@ -597,9 +541,9 @@ dependencies = [
 
 [[package]]
 name = "krilla"
-version = "0.6.0"
+version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a0ddfec86fec13d068075e14f22a7e217c281f3ed69ddcb427bf3f5d504fd674"
+checksum = "27da593198b20eeba65caeb73c2bbeec3e53ab08fa549898312ce81c4fce5e33"
 dependencies = [
  "base64",
  "bumpalo",
@@ -609,16 +553,14 @@ dependencies = [
  "image-webp",
  "imagesize",
  "indexmap",
- "once_cell",
  "pdf-writer",
- "png 0.17.16",
+ "png",
  "rustc-hash",
- "rustybuzz",
  "siphasher",
- "skrifa 0.37.0",
+ "skrifa 0.42.1",
  "smallvec",
  "subsetter",
- "tiny-skia-path 0.11.4",
+ "tiny-skia-path",
  "xmp-writer",
  "yoke",
  "zune-jpeg",
@@ -716,7 +658,7 @@ dependencies = [
 
 [[package]]
 name = "meridian-seed"
-version = "0.0.0"
+version = "0.4.0"
 dependencies = [
  "rand_chacha",
  "rand_core 0.9.5",
@@ -724,7 +666,7 @@ dependencies = [
 
 [[package]]
 name = "metafile"
-version = "0.0.0"
+version = "0.4.0"
 
 [[package]]
 name = "miette"
@@ -835,7 +777,7 @@ version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2a180dd8642fa45cdb7dd721cd4c11b1cadd4929ce112ebd8b9f5803cc79d536"
 dependencies = [
- "bitflags 2.13.0",
+ "bitflags",
 ]
 
 [[package]]
@@ -878,11 +820,11 @@ dependencies = [
 
 [[package]]
 name = "pdf-writer"
-version = "0.14.0"
+version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "92a79477295a713c2ed425aa82a8b5d20cec3fdee203706cbe6f3854880c1c81"
+checksum = "f5e456864a7a304047bff84977dc6fb162bd956475d40ba50b2dcecaada7f753"
 dependencies = [
- "bitflags 2.13.0",
+ "bitflags",
  "itoa",
  "memchr",
  "ryu",
@@ -927,24 +869,11 @@ checksum = "19f132c84eca552bf34cab8ec81f1c1dcc229b811638f9d283dceabe58c5569e"
 
 [[package]]
 name = "png"
-version = "0.17.16"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "82151a2fc869e011c153adc57cf2789ccb8d9906ce52c0b39a6b5697749d7526"
-dependencies = [
- "bitflags 1.3.2",
- "crc32fast",
- "fdeflate",
- "flate2",
- "miniz_oxide",
-]
-
-[[package]]
-name = "png"
 version = "0.18.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "60769b8b31b2a9f263dae2776c37b1b28ae246943cf719eb6946a1db05128a61"
 dependencies = [
- "bitflags 2.13.0",
+ "bitflags",
  "crc32fast",
  "fdeflate",
  "flate2",
@@ -1083,23 +1012,13 @@ checksum = "973443cf09a9c8656b574a866ab68dfa19f0867d0340648c7d2f6a71b8a8ea68"
 
 [[package]]
 name = "read-fonts"
-version = "0.35.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6717cf23b488adf64b9d711329542ba34de147df262370221940dfabc2c91358"
-dependencies = [
- "bytemuck",
- "font-types 0.10.1",
-]
-
-[[package]]
-name = "read-fonts"
 version = "0.37.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7b634fabf032fab15307ffd272149b622260f55974d9fad689292a5d33df02e5"
 dependencies = [
  "bytemuck",
  "core_maths",
- "font-types 0.11.3",
+ "font-types",
 ]
 
 [[package]]
@@ -1109,7 +1028,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c4ed38b89c2c77ff968c524145ad65fb010f38af5c7a224b53b81d47ac2daa81"
 dependencies = [
  "bytemuck",
- "font-types 0.11.3",
+ "font-types",
 ]
 
 [[package]]
@@ -1118,7 +1037,7 @@ version = "0.5.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ed2bf2547551a7053d6fdfafda3f938979645c44812fbfcda098faae3f1a362d"
 dependencies = [
- "bitflags 2.13.0",
+ "bitflags",
 ]
 
 [[package]]
@@ -1128,8 +1047,132 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6c20b6793b5c2fa6553b250154b78d6d0db37e72700ae35fad9387a46f487c97"
 
 [[package]]
-name = "rpt"
-version = "0.0.0"
+name = "rpt-cli"
+version = "0.4.0"
+dependencies = [
+ "kdl",
+ "rpt-formula",
+ "rpt-json",
+ "rpt-kdl",
+ "rpt-query",
+ "rpt-reader",
+ "rpt-test-support",
+ "serde",
+ "serde_json",
+ "similar",
+ "thiserror",
+]
+
+[[package]]
+name = "rpt-data"
+version = "0.4.0"
+dependencies = [
+ "rpt-formula",
+ "rpt-model",
+ "rpt-test-support",
+ "thiserror",
+]
+
+[[package]]
+name = "rpt-db-postgres"
+version = "0.4.0"
+dependencies = [
+ "postgres",
+ "rpt-data",
+ "rpt-model",
+ "rpt-query",
+ "thiserror",
+]
+
+[[package]]
+name = "rpt-db-sqlite"
+version = "0.4.0"
+dependencies = [
+ "rpt-data",
+ "rpt-formula",
+ "rpt-model",
+ "rpt-query",
+ "rusqlite",
+ "thiserror",
+]
+
+[[package]]
+name = "rpt-format-value"
+version = "0.4.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
+name = "rpt-formula"
+version = "0.4.0"
+dependencies = [
+ "rpt-format-value",
+]
+
+[[package]]
+name = "rpt-json"
+version = "0.4.0"
+dependencies = [
+ "rpt-reader",
+ "serde",
+ "serde_json",
+ "thiserror",
+]
+
+[[package]]
+name = "rpt-kdl"
+version = "0.4.0"
+dependencies = [
+ "kdl",
+ "rpt-model",
+]
+
+[[package]]
+name = "rpt-layout"
+version = "0.4.0"
+dependencies = [
+ "metafile",
+ "rpt-data",
+ "rpt-format-value",
+ "rpt-formula",
+ "rpt-model",
+ "rpt-pages",
+ "rpt-test-support",
+]
+
+[[package]]
+name = "rpt-model"
+version = "0.4.0"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "rpt-pages"
+version = "0.4.0"
+dependencies = [
+ "rpt-model",
+ "rpt-test-support",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "rpt-query"
+version = "0.4.0"
+dependencies = [
+ "rpt-data",
+ "rpt-formula",
+ "rpt-model",
+ "sea-query",
+ "thiserror",
+]
+
+[[package]]
+name = "rpt-reader"
+version = "0.4.0"
 dependencies = [
  "cfb",
  "miniz_oxide",
@@ -1140,235 +1183,78 @@ dependencies = [
 ]
 
 [[package]]
-name = "rpt-cli"
-version = "0.0.0"
-dependencies = [
- "crystal-formula",
- "kdl",
- "rpt",
- "rpt-json",
- "rpt-kdl",
- "rpt-query",
- "rpt-test-support",
- "serde",
- "serde_json",
- "similar",
- "thiserror",
-]
-
-[[package]]
-name = "rpt-data"
-version = "0.0.0"
-dependencies = [
- "crystal-formula",
- "rpt-model",
- "rpt-test-support",
- "thiserror",
-]
-
-[[package]]
-name = "rpt-db-postgres"
-version = "0.0.0"
-dependencies = [
- "postgres",
- "rpt-data",
- "rpt-model",
- "rpt-query",
- "rpt-render",
- "rpt-render-html",
- "thiserror",
-]
-
-[[package]]
-name = "rpt-db-sqlite"
-version = "0.0.0"
-dependencies = [
- "crystal-formula",
- "rpt-data",
- "rpt-model",
- "rpt-query",
- "rusqlite",
- "thiserror",
-]
-
-[[package]]
-name = "rpt-format-value"
-version = "0.0.0"
-dependencies = [
- "serde",
-]
-
-[[package]]
-name = "rpt-json"
-version = "0.0.0"
-dependencies = [
- "rpt",
- "serde",
- "serde_json",
- "thiserror",
-]
-
-[[package]]
-name = "rpt-kdl"
-version = "0.0.0"
-dependencies = [
- "kdl",
- "rpt-model",
-]
-
-[[package]]
-name = "rpt-layout"
-version = "0.0.0"
-dependencies = [
- "crystal-formula",
- "metafile",
- "rpt-data",
- "rpt-format-value",
- "rpt-model",
- "rpt-pages",
- "rpt-render-util",
- "rpt-test-support",
-]
-
-[[package]]
-name = "rpt-model"
-version = "0.0.0"
-dependencies = [
- "serde",
-]
-
-[[package]]
-name = "rpt-pages"
-version = "0.0.0"
-dependencies = [
- "rpt-model",
- "rpt-test-support",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "rpt-query"
-version = "0.0.0"
-dependencies = [
- "crystal-formula",
- "rpt-data",
- "rpt-model",
- "sea-query",
- "thiserror",
-]
-
-[[package]]
 name = "rpt-render"
-version = "0.0.0"
+version = "0.4.0"
 dependencies = [
- "crystal-formula",
- "rpt",
  "rpt-data",
  "rpt-db-postgres",
+ "rpt-formula",
  "rpt-layout",
  "rpt-pages",
- "rpt-render-html",
+ "rpt-reader",
  "rpt-render-pdf",
- "rpt-render-raster",
- "rpt-render-svg",
  "rpt-test-support",
  "rpt-text",
+ "serde_json",
  "similar",
+ "thiserror",
 ]
 
 [[package]]
 name = "rpt-render-cli"
-version = "0.0.0"
+version = "0.4.0"
 dependencies = [
- "crystal-formula",
- "rpt",
  "rpt-data",
  "rpt-db-postgres",
  "rpt-db-sqlite",
+ "rpt-formula",
  "rpt-pages",
  "rpt-query",
+ "rpt-reader",
  "rpt-render",
- "rpt-render-raster",
- "rpt-render-svg",
+ "rpt-test-support",
  "thiserror",
 ]
 
 [[package]]
-name = "rpt-render-html"
-version = "0.0.0"
-dependencies = [
- "rpt-model",
- "rpt-pages",
- "rpt-render-svg",
- "rpt-render-util",
- "rpt-test-support",
- "serde_json",
-]
-
-[[package]]
 name = "rpt-render-pdf"
-version = "0.0.0"
+version = "0.4.0"
 dependencies = [
  "fontdb",
+ "harfrust",
  "krilla",
- "miniz_oxide",
  "rpt-model",
  "rpt-pages",
  "rpt-render-util",
  "rpt-test-support",
  "rpt-text",
- "rustybuzz",
-]
-
-[[package]]
-name = "rpt-render-raster"
-version = "0.0.0"
-dependencies = [
- "fontdb",
- "fontdue",
- "gif",
- "rpt-model",
- "rpt-pages",
- "rpt-render-util",
- "rpt-test-support",
- "rpt-text",
- "tiny-skia",
- "zune-jpeg",
-]
-
-[[package]]
-name = "rpt-render-svg"
-version = "0.0.0"
-dependencies = [
- "rpt-model",
- "rpt-pages",
- "rpt-render-util",
- "rpt-test-support",
+ "thiserror",
 ]
 
 [[package]]
 name = "rpt-render-util"
-version = "0.0.0"
+version = "0.4.0"
 dependencies = [
+ "rpt-model",
  "rpt-pages",
 ]
 
 [[package]]
 name = "rpt-test-support"
-version = "0.0.0"
+version = "0.4.0"
 dependencies = [
+ "miniz_oxide",
  "rpt-model",
 ]
 
 [[package]]
 name = "rpt-text"
-version = "0.0.0"
+version = "0.4.0"
 dependencies = [
  "cosmic-text",
  "fontdb",
  "rpt-pages",
- "ttf-parser 0.25.1",
+ "ttf-parser",
 ]
 
 [[package]]
@@ -1377,7 +1263,7 @@ version = "0.32.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7753b721174eb8ff87a9a0e799e2d7bc3749323e773db92e0984debb00019d6e"
 dependencies = [
- "bitflags 2.13.0",
+ "bitflags",
  "fallible-iterator 0.3.0",
  "fallible-streaming-iterator",
  "hashlink",
@@ -1396,24 +1282,6 @@ name = "rustversion"
 version = "1.0.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b39cdef0fa800fc44525c84ccb54a029961a8215f9619753635a9c0d2538d46d"
-
-[[package]]
-name = "rustybuzz"
-version = "0.20.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fd3c7c96f8a08ee34eff8857b11b49b07d71d1c3f4e88f8a88d4c9e9f90b1702"
-dependencies = [
- "bitflags 2.13.0",
- "bytemuck",
- "core_maths",
- "log",
- "smallvec",
- "ttf-parser 0.25.1",
- "unicode-bidi-mirroring",
- "unicode-ccc",
- "unicode-properties",
- "unicode-script",
-]
 
 [[package]]
 name = "ryu"
@@ -1519,16 +1387,6 @@ name = "siphasher"
 version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8ee5873ec9cce0195efcb7a4e9507a04cd49aec9c83d0389df45b1ef7ba2e649"
-
-[[package]]
-name = "skrifa"
-version = "0.37.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8c31071dedf532758ecf3fed987cdb4bd9509f900e026ab684b4ecb81ea49841"
-dependencies = [
- "bytemuck",
- "read-fonts 0.35.0",
-]
 
 [[package]]
 name = "skrifa"
@@ -1685,32 +1543,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tiny-skia"
-version = "0.12.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "47ffee5eaaf5527f630fb0e356b90ebdec84d5d18d937c5e440350f88c5a91ea"
-dependencies = [
- "arrayref",
- "arrayvec",
- "bytemuck",
- "cfg-if",
- "log",
- "png 0.18.1",
- "tiny-skia-path 0.12.0",
-]
-
-[[package]]
-name = "tiny-skia-path"
-version = "0.11.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9c9e7fc0c2e86a30b117d0462aa261b72b7a99b7ebd7deb3a14ceda95c5bdc93"
-dependencies = [
- "arrayref",
- "bytemuck",
- "strict-num",
-]
-
-[[package]]
 name = "tiny-skia-path"
 version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1791,12 +1623,6 @@ dependencies = [
 
 [[package]]
 name = "ttf-parser"
-version = "0.21.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2c591d83f69777866b9126b24c6dd9a18351f177e49d625920d19f989fd31cf8"
-
-[[package]]
-name = "ttf-parser"
 version = "0.25.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d2df906b07856748fa3f6e0ad0cbaa047052d4a7dd609e231c4f72cee8c36f31"
@@ -1815,18 +1641,6 @@ name = "unicode-bidi"
 version = "0.3.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5c1cb5db39152898a79168971543b1cb5020dff7fe43c8dc468b0885f5e29df5"
-
-[[package]]
-name = "unicode-bidi-mirroring"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5dfa6e8c60bb66d49db113e0125ee8711b7647b5579dc7f5f19c42357ed039fe"
-
-[[package]]
-name = "unicode-ccc"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ce61d488bcdc9bc8b5d1772c404828b17fc481c0a582b5581e95fb233aef503e"
 
 [[package]]
 name = "unicode-ident"
@@ -2038,7 +1852,7 @@ version = "0.48.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cb731d4c4d93eacc69a1ad2f270f905788a98e4a3438267bcafbe08d3431c8d8"
 dependencies = [
- "font-types 0.11.3",
+ "font-types",
  "indexmap",
  "kurbo",
  "log",
@@ -2126,12 +1940,6 @@ dependencies = [
  "syn",
  "synstructure",
 ]
-
-[[package]]
-name = "zlib-rs"
-version = "0.6.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5431d5661c32445236631278f27946e444ddafe4684cac70b185272d4f9c52d5"
 
 [[package]]
 name = "zmij"

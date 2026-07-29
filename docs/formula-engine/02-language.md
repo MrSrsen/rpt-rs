@@ -25,21 +25,21 @@ Lowest to highest binding (each level is a rung of the recursive-descent ladder)
 relational operators, and neither chains (both are non-associative); `&` binds tighter than comparison but looser than
 `+`/`-`; unary `-`/`Not` bind looser than `^` (so `-2^2` = `-(2^2)`).
 
-| Level | Operators                                 | Assoc.    |
-|-------|-------------------------------------------|-----------|
-| 1–5   | `Imp`, `Eqv`, `Xor`, `Or`, `And`          | left      |
-| 6     | `=` `<>` `In` `Like` `StartsWith`         | non-assoc |
-| 7     | `<` `>` `>=` `<=`                         | non-assoc |
-| 8     | `&` (concat)                              | left      |
-| 9     | `To` `_To` `To_` `_To_` (range)           | non-assoc |
-| 10    | `+` `-`                                   | left      |
-| 11    | `Mod`                                     | left      |
-| 12    | `\` (integer division)                    | left      |
-| 13    | `*` `/` `%`                               | left      |
-| 14    | prefix `-` `+` `$` `Not`                  | right     |
-| 15    | `^` (power)                               | left      |
-| 16    | postfix `expr[index]` (1-based subscript) | left      |
-| 17    | primary atoms                             | —         |
+| Level | Operators                                                                                                             | Assoc.    |
+|-------|-----------------------------------------------------------------------------------------------------------------------|-----------|
+| 1–5   | `Imp`, `Eqv`, `Xor`, `Or`, `And`                                                                                      | left      |
+| 6     | `=` `<>` `In` `Like` `StartsWith`                                                                                     | non-assoc |
+| 7     | `<` `>` `>=` `<=`                                                                                                     | non-assoc |
+| 8     | `&` (concat)                                                                                                          | left      |
+| 9     | `To` `_To` `To_` `_To_` (range), and the unary prefixes `UpFrom` `UpFromButNotIncluding` `UpTo` `UpToButNotIncluding` | non-assoc |
+| 10    | `+` `-`                                                                                                               | left      |
+| 11    | `Mod`                                                                                                                 | left      |
+| 12    | `\` (integer division)                                                                                                | left      |
+| 13    | `*` `/` `%`                                                                                                           | left      |
+| 14    | prefix `-` `+` `$` `Not`                                                                                              | right     |
+| 15    | `^` (power)                                                                                                           | left      |
+| 16    | postfix `expr[index]` (1-based subscript)                                                                             | left      |
+| 17    | primary atoms                                                                                                         | —         |
 
 `$` is the currency prefix (`$2` is `Currency(2)`); binary `%` is "percent of" (`x % y` = `100*x/y`); `In` tests
 substring / array membership / range containment; `Like` is VB wildcard matching (`*` any run, `?` any one char).
@@ -47,8 +47,8 @@ substring / array membership / range containment; `Like` is VB wildcard matching
 ## Expressions
 
 Primary atoms: number/string/boolean (`True`/`Yes`, `False`/`No`) literals, `#...#` date literals, `{...}` references,
-`( … )` grouping, `[ e, … ]` array literals, function calls `name(args)`, bare identifiers (variables / 0-ary
-builtins), and — as *expressions* in Crystal syntax — `If` and `Select`:
+`( … )` grouping, `[ e, … ]` array literals, function calls `name(args)`, bare identifiers (variables / 0-ary builtins),
+and — as *expressions* in Crystal syntax — `If` and `Select`:
 
 ```
 If {orders.amount} > 1000 Then "large" Else If {orders.amount} > 100 Then "medium" Else "small"
@@ -149,8 +149,9 @@ Do [While|Until cond]
 Loop [While|Until cond]
 ```
 
-The condition may lead (pre-test) or trail (post-test); `Until` is the negation of `While`. A `Do … Loop` with no
-condition is flagged as a diagnostic (it would be an infinite loop).
+The condition may lead (pre-test) or trail (post-test); `Until` is the negation of `While`. A `Do … Loop` with **no**
+condition is a deliberate infinite loop, left to `Exit Do`; the evaluator's per-loop iteration cap catches a missing
+one. A `Do` carrying **both** a leading and a trailing condition is flagged as a diagnostic, and the leading one wins.
 
 ### Select … Case
 
@@ -195,7 +196,8 @@ An
   ```
 
   A malformed literal is reported as a `Diagnostic` (the node still carries its raw text, keeping the tree total).
-- **Arrays:** `[1, 2, 3]`; subscripting is 1-based. **Ranges:** `1 To 10`, with `_To`/`To_`/`_To_` excluding a bound.
+- **Arrays:** `[1, 2, 3]`; subscripting is 1-based. **Ranges:** `1 To 10`, with `_To`/`To_`/`_To_` excluding a bound. A
+  range open at one end is written with a unary prefix — `UpFrom 5`, `UpTo 5`, and the `…ButNotIncluding` pair.
 
 ## A grammar sketch (EBNF-ish)
 
@@ -224,4 +226,4 @@ group       = "(" [ statement { ";" statement } [ ";" ] ] ")" ;   (* value = the
 
 ---
 
-← [Architecture & VM](01-architecture.md) · [Index](../README.md) · **Next:** [Builtin functions](03-builtins.md) →
+← [Architecture & VM](01-architecture.md) · [Index](README.md) · **Next:** [Builtin functions](03-builtins.md) →

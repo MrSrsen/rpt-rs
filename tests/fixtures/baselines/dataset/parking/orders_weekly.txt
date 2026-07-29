@@ -1,0 +1,121 @@
+# L2 dataset snapshot: parking/orders_weekly
+row_count: 30
+
+columns (2):
+    0 orders.id : Int32s
+    1 orders.created_at : DateTime
+
+params (0):
+
+formulas (0):
+
+diagnostics (0):
+
+grand_total (0):
+
+groups (25):
+  level 0 field=orders.created_at key=Date 2023-12-31
+    summaries (0):
+    details (2):
+      ri=0 | Num 1 | DateTime 2024-01-03 00:00:00
+      ri=1 | Num 2 | DateTime 2024-01-05 00:00:00
+  level 0 field=orders.created_at key=Date 2024-01-07
+    summaries (0):
+    details (1):
+      ri=2 | Num 3 | DateTime 2024-01-08 00:00:00
+  level 0 field=orders.created_at key=Date 2024-01-14
+    summaries (0):
+    details (1):
+      ri=3 | Num 4 | DateTime 2024-01-20 00:00:00
+  level 0 field=orders.created_at key=Date 2024-01-28
+    summaries (0):
+    details (2):
+      ri=4 | Num 5 | DateTime 2024-01-28 00:00:00
+      ri=5 | Num 6 | DateTime 2024-02-01 00:00:00
+  level 0 field=orders.created_at key=Date 2024-02-04
+    summaries (0):
+    details (1):
+      ri=6 | Num 7 | DateTime 2024-02-06 00:00:00
+  level 0 field=orders.created_at key=Date 2024-02-11
+    summaries (0):
+    details (1):
+      ri=7 | Num 8 | DateTime 2024-02-14 00:00:00
+  level 0 field=orders.created_at key=Date 2024-02-18
+    summaries (0):
+    details (1):
+      ri=8 | Num 9 | DateTime 2024-02-19 00:00:00
+  level 0 field=orders.created_at key=Date 2024-02-25
+    summaries (0):
+    details (2):
+      ri=9 | Num 10 | DateTime 2024-02-25 00:00:00
+      ri=10 | Num 11 | DateTime 2024-03-02 00:00:00
+  level 0 field=orders.created_at key=Date 2024-03-03
+    summaries (0):
+    details (1):
+      ri=11 | Num 12 | DateTime 2024-03-07 00:00:00
+  level 0 field=orders.created_at key=Date 2024-03-10
+    summaries (0):
+    details (1):
+      ri=12 | Num 13 | DateTime 2024-03-15 00:00:00
+  level 0 field=orders.created_at key=Date 2024-03-17
+    summaries (0):
+    details (1):
+      ri=13 | Num 14 | DateTime 2024-03-22 00:00:00
+  level 0 field=orders.created_at key=Date 2024-03-24
+    summaries (0):
+    details (1):
+      ri=14 | Num 15 | DateTime 2024-03-29 00:00:00
+  level 0 field=orders.created_at key=Date 2024-03-31
+    summaries (0):
+    details (1):
+      ri=15 | Num 16 | DateTime 2024-04-04 00:00:00
+  level 0 field=orders.created_at key=Date 2024-04-07
+    summaries (0):
+    details (1):
+      ri=16 | Num 17 | DateTime 2024-04-09 00:00:00
+  level 0 field=orders.created_at key=Date 2024-04-14
+    summaries (0):
+    details (1):
+      ri=17 | Num 18 | DateTime 2024-04-16 00:00:00
+  level 0 field=orders.created_at key=Date 2024-04-21
+    summaries (0):
+    details (2):
+      ri=18 | Num 19 | DateTime 2024-04-21 00:00:00
+      ri=19 | Num 20 | DateTime 2024-04-27 00:00:00
+  level 0 field=orders.created_at key=Date 2024-04-28
+    summaries (0):
+    details (1):
+      ri=20 | Num 21 | DateTime 2024-05-03 00:00:00
+  level 0 field=orders.created_at key=Date 2024-05-05
+    summaries (0):
+    details (1):
+      ri=21 | Num 22 | DateTime 2024-05-08 00:00:00
+  level 0 field=orders.created_at key=Date 2024-05-12
+    summaries (0):
+    details (1):
+      ri=22 | Num 23 | DateTime 2024-05-16 00:00:00
+  level 0 field=orders.created_at key=Date 2024-05-19
+    summaries (0):
+    details (1):
+      ri=23 | Num 24 | DateTime 2024-05-23 00:00:00
+  level 0 field=orders.created_at key=Date 2024-05-26
+    summaries (0):
+    details (1):
+      ri=24 | Num 25 | DateTime 2024-05-30 00:00:00
+  level 0 field=orders.created_at key=Date 2024-06-02
+    summaries (0):
+    details (1):
+      ri=25 | Num 26 | DateTime 2024-06-05 00:00:00
+  level 0 field=orders.created_at key=Date 2024-06-09
+    summaries (0):
+    details (1):
+      ri=26 | Num 27 | DateTime 2024-06-10 00:00:00
+  level 0 field=orders.created_at key=Date 2024-06-16
+    summaries (0):
+    details (1):
+      ri=27 | Num 28 | DateTime 2024-06-17 00:00:00
+  level 0 field=orders.created_at key=Date 2024-06-23
+    summaries (0):
+    details (2):
+      ri=28 | Num 29 | DateTime 2024-06-24 00:00:00
+      ri=29 | Num 30 | DateTime 2024-06-29 00:00:00

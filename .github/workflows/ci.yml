@@ -8,16 +8,37 @@ on:
 permissions:
   contents: read
 
+# Rapid pushes to a branch otherwise run the full matrix redundantly. Tag runs are exempt from
+# cancellation: a release is not repeatable-on-demand the way a branch build is, and cancelling one
+# mid-upload leaves a half-populated GitHub Release.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+
 env:
   CARGO_TERM_COLOR: always
+
+# Actions are pinned by commit SHA, not by tag or branch: a tag can be force-moved and `@stable` is a
+# branch, so a mutable ref gives us no way to detect substitution. The trailing comment records the
+# version the SHA was resolved from, which is also what lets Dependabot bump it. Note that
+# dtolnay/rust-toolchain normally derives the Rust version FROM the ref it is invoked with, so pinning
+# it to a SHA means every call site must state its `toolchain:` explicitly.
+#
+# `persist-credentials: false` on every checkout: no step needs the token after checkout, and leaving
+# it in .git/config exposes it to everything that runs later — including the third-party action in the
+# release jobs, which is the one place a compromise would reach a published artifact.
 
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
+        with:
+          toolchain: stable
           components: rustfmt, clippy
       # Fail if any member crate re-declares a [workspace.dependencies] crate with a bare version
       # instead of inheriting it via { workspace = true } — which risks two compiled copies drifting.
@@ -39,20 +60,35 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      # Some tests depend on local-only fixtures that are absent in CI; they skip
-      # gracefully so the suite still runs green on a clean checkout.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
+        with:
+          toolchain: stable
+      # The hermetic baseline harnesses run here and need no service of their own: the typography Page
+      # IR baselines and the PDF content-stream baselines both render from committed fixtures with the
+      # bundled faces and no database. Only the DB-backed render corpus gets its own job (below).
+      #
+      # qpdf is what makes the L4b artifact layer an actual check rather than a skip: without it the
+      # gate reports ok in 0.00s, so RPT_REQUIRE_QPDF turns a missing reader into a failure instead of
+      # a silent pass.
+      - name: Install the PDF reader the artifact layer reads back with
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends qpdf
       - name: Test
+        env:
+          RPT_REQUIRE_QPDF: '1'
         run: cargo test --all-features
 
   # Render-parity corpus: seed the committed SQL fixtures into a real PostgreSQL (the single DB
-  # technology for render testing) and diff the rendered HTML against the committed baselines. The
+  # technology for render testing) and diff the rendered Page IR against the committed baselines. The
   # test skips without RPT_DB_URL, so it only runs where a server is provided — here, and locally via
   # `docker compose up -d --wait` (see docker-compose.yml / Makefile).
   render-fixtures:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     services:
       postgres:
         image: postgres:16-alpine
@@ -68,44 +104,139 @@ jobs:
           --health-timeout 3s
           --health-retries 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
+        with:
+          toolchain: stable
+      # The harness returns green when RPT_DB_URL is unset or empty, so a passing job is not on its
+      # own evidence that the corpus ran: a dropped `env:` line or a service that never came up would
+      # read as a pass having rendered nothing. The summary line the harness prints after rendering is
+      # the proof, so require it. Everything past that point — the fixture-count floor and the
+      # baseline diff — the harness asserts itself.
       - name: Render fixtures against PostgreSQL
         env:
           RPT_DB_URL: postgres://rpt:rpt@localhost:5432/rptfixtures
-        run: cargo test -p rpt-render --test postgres_fixtures
+        run: |
+          set -euo pipefail
+          cargo test -p rpt-render --test postgres_fixtures -- --nocapture 2>&1 | tee corpus.log
+          if ! grep -qE '^postgres fixtures: [0-9]+ Page IR baseline\(s\) checked' corpus.log; then
+            echo "::error::the render corpus did not run — no summary line from the harness, so RPT_DB_URL or the service container is wrong"
+            exit 1
+          fi
 
   msrv:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
       # Verify the crate still builds on its declared minimum supported Rust version.
-      - uses: dtolnay/rust-toolchain@1.89.0
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
+        with:
+          toolchain: 1.92.0
+      # The toolchain above is a literal, and the action is pinned to a SHA rather than to a version
+      # ref — so a dropped or mistyped `toolchain:` input silently gives the runner's default Rust and
+      # this job then proves the floor holds on stable. Assert the rustc actually in use is the one
+      # the manifest declares, which also stops the two numbers drifting apart.
+      - name: Toolchain is the manifest's rust-version
+        run: |
+          set -euo pipefail
+          want=$(awk -F'"' '/^rust-version[[:space:]]*=/ { print $2; exit }' Cargo.toml)
+          have=$(rustc -V | awk '{ print $2 }')
+          case "$have" in
+            "$want" | "$want".*) echo "msrv job is running rustc $have (manifest rust-version $want)" ;;
+            *)
+              echo "::error::msrv job is running rustc $have, but [workspace.package] rust-version is $want"
+              exit 1
+              ;;
+          esac
       - name: Build (MSRV)
         run: cargo build --all-features
 
+  # Every feature-OFF path in the workspace. The `check` job runs `--all-features`, which turns
+  # everything ON and so never compiles a single feature-off configuration; this job is the only place
+  # they are seen at all.
+  #
+  # Each entry runs `clippy --all-targets -- -D warnings`, not `cargo build`. A feature that switches
+  # a code path off usually leaves an import, a field, or a whole function unreachable, and that is a
+  # WARNING — a build step compiles such a configuration happily and proves nothing. `--all-targets`
+  # additionally compiles the test targets, whose cfg'd-out helpers are the other half of the same
+  # class.
+  #
+  # Listed per crate rather than as a power set: only combinations that select genuinely different
+  # code are worth a compile. Every crate's ALL-ON point is `check`; its ALL-OFF point is the
+  # workspace-default sweep at the end of this job; the entries in between are the ones a single
+  # feature toggles.
   feature-matrix:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      - name: Build without default features
-        run: cargo build -p rpt --no-default-features
-      - name: Build with serde
-        run: cargo build -p rpt --no-default-features --features serde
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
+        with:
+          toolchain: stable
+          components: clippy
+      # rpt-reader's serde is optional; the reader must decode without it.
+      - name: rpt-reader without default features
+        run: cargo clippy -p rpt-reader --no-default-features --all-targets -- -D warnings
+      - name: rpt-reader with serde
+        run: cargo clippy -p rpt-reader --no-default-features --features serde --all-targets -- -D warnings
       # rpt-text's default `cosmic` feature swaps in the whole cosmic-text shaping stack; with it off,
       # only the fontdb face resolver compiles. Exercise both so neither path bit-rots.
-      - name: Build rpt-text without default features
-        run: cargo build -p rpt-text --no-default-features
+      - name: rpt-text without default features
+        run: cargo clippy -p rpt-text --no-default-features --all-targets -- -D warnings
       # rpt-model's serde is optional; the pure-data path must build without it.
-      - name: Build rpt-model without default features
-        run: cargo build -p rpt-model --no-default-features
+      - name: rpt-model without default features
+        run: cargo clippy -p rpt-model --no-default-features --all-targets -- -D warnings
+      # rpt-format-value's serde is optional in the same way.
+      - name: rpt-format-value without default features
+        run: cargo clippy -p rpt-format-value --no-default-features --all-targets -- -D warnings
+      # rpt-formula's `differential` exposes the tree-walking evaluator the VM is differential-tested
+      # against; the shipping configuration is the one WITHOUT it.
+      - name: rpt-formula without default features
+        run: cargo clippy -p rpt-formula --no-default-features --all-targets -- -D warnings
+      # The renderer CLI's live-DB backends. Its ~40 cfg blocks are the largest feature-switched
+      # surface in the workspace, and each driver selects a different subset of them: with no driver
+      # the whole DB path is compiled out, and with one driver the other's is. Both drivers together
+      # is the default, covered by `check`.
+      - name: rpt-render-cli with no database drivers
+        run: cargo clippy -p rpt-render-cli --no-default-features --all-targets -- -D warnings
+      - name: rpt-render-cli with only PostgreSQL
+        run: cargo clippy -p rpt-render-cli --no-default-features --features db-postgres --all-targets -- -D warnings
+      - name: rpt-render-cli with only SQLite
+        run: cargo clippy -p rpt-render-cli --no-default-features --features db-sqlite --all-targets -- -D warnings
+      # `db` is the shared live-DB machinery, reachable only through a driver: on its own it yields a
+      # binary that accepts `--db`, resolves the connections, and then always fails. The crate rejects
+      # the combination with a compile_error!, and this asserts the rejection is real — without it the
+      # guard could be deleted and the degenerate build would silently come back.
+      - name: rpt-render-cli rejects `db` without a driver
+        run: |
+          if cargo build -p rpt-render-cli --no-default-features --features db 2>/dev/null; then
+            echo "::error::--features db built without a driver; the compile_error! guard is gone"
+            exit 1
+          fi
+      # The workspace at its DEFAULT feature set — the other endpoint from `check`'s --all-features,
+      # and the configuration a plain `cargo build` in a checkout produces. Covers every crate at once,
+      # including those whose optional features are off by default and are otherwise only ever
+      # compiled (never linted) by the wasm job.
+      - name: Workspace with default features
+        run: cargo clippy --workspace --all-targets -- -D warnings
 
   baseline:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
+        with:
+          toolchain: stable
       # The decode regression net: `rpt json-dump` is the full serde serialization of the decoded
       # model, so every decoded field is observed, not just the subset a curated export projects.
       # Needs no sandbox — the dump depends on nothing outside the .rpt, so it is reproducible on
@@ -113,33 +244,52 @@ jobs:
       - name: JSON baseline regression
         run: cargo test -p rpt-cli --test json_baseline
 
-  # Enforce the WASM-safety boundary at compile time. The render/data pipeline is meant to build
-  # for a target with no OS, filesystem, or threads; this job fails if a native-only dependency
-  # (tokio, a filesystem/DB crate) sneaks into one of the portable crates, rather than letting the
-  # regression surface only in a downstream WASM consumer. The native-only DB backends
-  # (rpt-db-postgres / rpt-db-sqlite), the decoder (rpt), and the physical backends
-  # (rpt-render-pdf / rpt-render-raster, which link fontdb/tiny-skia) are intentionally excluded.
+  # Enforce the WASM-safety boundary at compile time: this job fails if a native-only dependency
+  # (tokio, a filesystem or DB crate) reaches one of the portable crates, instead of letting the
+  # regression surface only in a downstream WASM consumer.
+  #
+  # It gates the 13 crates whose portability is an intended INVARIANT: the whole render/data pipeline
+  # plus its dependency-free leaves — including the text stack (rpt-text) and the PDF backend
+  # (rpt-render-pdf, krilla + fontdb + harfrust), which compile for wasm32 unmodified. Only the host
+  # font *scan* is unavailable there, so a WASM render falls back to the bundled faces.
+  #
+  # Deliberately NOT gated: `rpt-reader` and `rpt-json` are reader-side, and docs/project/codebase.md
+  # states rpt-json is "not WASM-safe by design" — gating them would turn an accident into a contract
+  # and fail CI on a change that is legitimately allowed. `rpt-test-support` is a dev-only helper. The
+  # two DB drivers cannot build here at all, by design: native database clients live behind the
+  # RowSource trait precisely so the portable core never links them.
+  #
+  # Add every new pipeline crate to this list. A crate absent from it is unprotected — this is what
+  # keeps a pipeline crate's portability a checked property instead of an unverified claim.
   wasm:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
+        with:
+          toolchain: stable
           targets: wasm32-unknown-unknown
       - name: Build portable crates for wasm32
         run: >-
           cargo build --target wasm32-unknown-unknown
           -p rpt-model -p rpt-pages -p rpt-layout -p rpt-data -p rpt-query
-          -p rpt-format-value -p rpt-render-html -p rpt-render-svg -p rpt-kdl
+          -p rpt-format-value -p rpt-kdl -p rpt-formula -p metafile
+          -p rpt-text -p rpt-render -p rpt-render-pdf -p rpt-render-util
 
   # Supply-chain gate: RUSTSEC advisories, duplicate-version drift, and crate sources. Licenses are
   # intentionally out of scope here (owned by a separate ticket); deny.toml configures only the
   # advisories/bans/sources checks and the job runs exactly those.
   cargo-deny:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: EmbarkStudios/cargo-deny-action@v2
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: EmbarkStudios/cargo-deny-action@3c6349835b2b7b196a839186cb8b78e02f7b5f25 # v2
         with:
           command: check advisories bans sources
 
@@ -148,13 +298,37 @@ jobs:
   # each tried to create it they would race and fail with "release not found".
   # Idempotent so re-running a tag (or re-running failed jobs) is safe.
   create-release:
-    needs: [check, test, msrv, feature-matrix, baseline]
+    # Every job that can prove something about this commit gates the release: without cargo-deny,
+    # render-fixtures and wasm here, a tagged release could publish with the supply-chain check red,
+    # the render corpus failing, or the WASM-safety boundary broken. render-fixtures needs a service
+    # container, but it already runs on every push, so gating costs no extra CI time — and for a
+    # release whose claim is that the render pipeline is trustworthy, it is the most consequential of
+    # the three.
+    needs: [check, test, msrv, feature-matrix, baseline, cargo-deny, render-fixtures, wasm]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      # The manifest is the single source of the version and the binaries compile it in; the tag only
+      # names a commit. Checking them here fails a mistyped tag before the release exists, rather than
+      # publishing binaries whose `--version` contradicts the release they hang under.
+      - name: Tag matches the manifest version
+        run: bash scripts/check-release-version.sh "$GITHUB_REF_NAME"
+      # The archives ship THIRD-PARTY-NOTICES.md, so a stale one would publish a notice file that
+      # omits a dependency added since it was last generated. Checked here rather than on every push:
+      # the file only has to be right at the moment it is distributed, and this job runs once per tag
+      # instead of five times across the build matrix.
+      - name: Third-party notices are current
+        run: |
+          set -euo pipefail
+          cargo install cargo-about --locked --features cli
+          cargo fetch --locked
+          bash scripts/gen-third-party-notices.sh --check
       - name: Create release if it does not exist
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -175,8 +349,12 @@ jobs:
     needs: [create-release]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
     permissions:
       contents: write
+      # Provenance needs an OIDC token to sign with, and the attestation store to write to.
+      id-token: write
+      attestations: write
     strategy:
       fail-fast: false
       matrix:
@@ -192,16 +370,135 @@ jobs:
           - target: x86_64-pc-windows-msvc
             os: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      # Builds both binaries for the target, archives them (.tar.gz on Unix,
-      # .zip on Windows) with a sha256 checksum, creates the GitHub Release for
-      # the tag if it does not exist yet, and uploads the archive as an asset.
-      - name: Build and upload binaries
-        uses: taiki-e/upload-rust-binary-action@v1
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          bin: rpt,rpt-render
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
+        with:
+          toolchain: stable
+          targets: ${{ matrix.target }}
+      # The musl targets need a cross linker; aarch64 also needs one that is not the host's. This
+      # sets both up so a plain `cargo build --target` works, which is what lets the build and the
+      # symbol split be separate steps.
+      - uses: taiki-e/setup-cross-toolchain-action@12b7ad4acfa95a1476779d6c06699b96ec1691f8 # v1
+        if: contains(matrix.target, 'linux-musl')
+        with:
           target: ${{ matrix.target }}
-          archive: rpt-rs-$tag-$target
-          include: README.md,LICENSE
-          checksum: sha256
-          token: ${{ secrets.GITHUB_TOKEN }}
+      # llvm-objcopy rather than the host GNU objcopy: the latter is the wrong architecture for the
+      # aarch64 cross build, and rust-objcopy wraps the arch-agnostic LLVM one that ships with the
+      # toolchain.
+      - name: Install rust-objcopy
+        if: contains(matrix.target, 'linux-musl')
+        run: |
+          rustup component add llvm-tools-preview
+          cargo install cargo-binutils --locked
+      - name: Build
+        run: cargo build --release --target ${{ matrix.target }} -p rpt-cli -p rpt-render-cli
+
+      # Split the debug info out rather than discarding it. `strip` alone would throw away the
+      # symbols; this keeps them in a sidecar and records a .gnu_debuglink in the binary, so Rust's
+      # runtime backtrace resolves function names AND source lines when the sidecar sits alongside,
+      # and the binary still runs normally when it does not. The panic message and its own source
+      # location survive either way -- those come from #[track_caller] data compiled in, not from
+      # debug info -- so a user without the symbols still reports where a panic was raised.
+      - name: Split debug info (Linux)
+        if: contains(matrix.target, 'linux-musl')
+        run: |
+          set -euo pipefail
+          cd "target/${{ matrix.target }}/release"
+          for b in rpt rpt-render; do
+            rust-objcopy --only-keep-debug "$b" "$b.debug"
+            rust-objcopy --strip-debug --strip-unneeded --add-gnu-debuglink="$b.debug" "$b"
+            chmod 644 "$b.debug"
+          done
+      # macOS keeps DWARF in the .o files and the binary carries only a debug map, so the symbols
+      # have to be collected with dsymutil BEFORE stripping -- there is nothing to extract from the
+      # binary itself once it is stripped. Without this step a macOS backtrace gets function names
+      # but no source lines.
+      - name: Split debug info (macOS)
+        if: contains(matrix.target, 'apple-darwin')
+        run: |
+          set -euo pipefail
+          cd "target/${{ matrix.target }}/release"
+          for b in rpt rpt-render; do
+            dsymutil "$b" -o "$b.dSYM"
+            strip -x "$b"
+          done
+      # MSVC already emits a separate .pdb and the executable never carried the debug info, so there
+      # is nothing to split -- the .pdb just needs shipping, which it currently is not. Without it a
+      # Windows backtrace has neither names nor lines.
+      - name: Collect debug info (Windows)
+        if: contains(matrix.target, 'windows')
+        shell: bash
+        run: ls -la "target/${{ matrix.target }}/release"/*.pdb
+
+      - name: Archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          stage="$(mktemp -d)"
+          name="rpt-rs-${GITHUB_REF_NAME}-${{ matrix.target }}"
+          bindir="target/${{ matrix.target }}/release"
+          # THIRD-PARTY-NOTICES.md goes in the archive because the binaries are statically linked:
+          # every dependency and every bundled font face is distributed inside them, and LICENSE
+          # covers only this project's own code.
+          cp README.md LICENSE THIRD-PARTY-NOTICES.md "$stage/"
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            cp "$bindir/rpt.exe" "$bindir/rpt-render.exe" "$stage/"
+            (cd "$stage" && 7z a -tzip "$name.zip" ./* >/dev/null)
+            mv "$stage/$name.zip" .
+            archive="$name.zip"
+          else
+            cp "$bindir/rpt" "$bindir/rpt-render" "$stage/"
+            tar -czf "$name.tar.gz" -C "$stage" .
+            archive="$name.tar.gz"
+          fi
+          if command -v sha256sum >/dev/null; then
+            sha256sum "$archive" > "$archive.sha256"
+          else
+            shasum -a 256 "$archive" > "$archive.sha256"
+          fi
+          echo "ARCHIVE=$archive" >> "$GITHUB_ENV"
+
+      # The symbols go up as SEPARATE assets, not inside the archive: the common download stays
+      # small and symbols are fetched only by someone decoding a trace.
+      - name: Archive debug symbols
+        shell: bash
+        run: |
+          set -euo pipefail
+          name="rpt-rs-${GITHUB_REF_NAME}-${{ matrix.target }}-debug"
+          bindir="target/${{ matrix.target }}/release"
+          stage="$(mktemp -d)"
+          # Same notices as the binary archive: separated debug info is still built from the linked
+          # dependency tree, and this archive is downloaded on its own.
+          cp LICENSE THIRD-PARTY-NOTICES.md "$stage/"
+          case "${{ runner.os }}" in
+            Linux)   cp "$bindir"/rpt.debug "$bindir"/rpt-render.debug "$stage/" ;;
+            macOS)   cp -R "$bindir"/rpt.dSYM "$bindir"/rpt-render.dSYM "$stage/" ;;
+            Windows) cp "$bindir"/rpt.pdb "$bindir"/rpt_render.pdb "$stage/" 2>/dev/null || cp "$bindir"/*.pdb "$stage/" ;;
+          esac
+          tar -czf "$name.tar.gz" -C "$stage" .
+          echo "DEBUG_ARCHIVE=$name.tar.gz" >> "$GITHUB_ENV"
+
+      # SLSA build provenance. The sha256 the previous step writes attests to nothing an attacker
+      # inside that same step could not forge -- it is computed by the very job that produced the
+      # bytes. This signs the artifacts with an OIDC identity tied to this workflow and this commit,
+      # so a consumer can verify WHERE a binary was built rather than only that it hashes to what the
+      # release page claims:
+      #     gh attestation verify rpt-rs-vX.Y.Z-<target>.tar.gz --repo <owner>/<repo>
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1
+        with:
+          subject-path: |
+            ${{ env.ARCHIVE }}
+            ${{ env.DEBUG_ARCHIVE }}
+
+      - name: Upload to the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release upload "$GITHUB_REF_NAME" \
+            "$ARCHIVE" "$ARCHIVE.sha256" "$DEBUG_ARCHIVE" \
+            --repo "$GITHUB_REPOSITORY" --clobber

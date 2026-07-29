@@ -42,7 +42,7 @@ pub struct Table {
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct CommandParameter {
-    /// The parameter's stored name (e.g. `cardCode` or a placeholder like `$[BOY_AB_FROMDATE]`).
+    /// The parameter's stored name (e.g. `cardCode` or a placeholder like `$[FromDate]`).
     pub name: String,
     /// The parameter's declared value type.
     pub value_type: FieldValueType,

@@ -1,5 +1,10 @@
 {
   "model": {
+    "authoring_version": {
+      "letter": 0,
+      "major": 14,
+      "minor": 0
+    },
     "data_definition": {
       "condition_formula_bodies": [],
       "custom_functions": [],
@@ -362,12 +367,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -387,12 +387,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -466,6 +461,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": true,
@@ -489,11 +485,9 @@
                   "name": "Text11",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 }
               ],
-              "section_code": 6000,
               "width": 0
             }
           ]
@@ -520,12 +514,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -591,23 +580,10 @@
                     "Box": {
                       "corner_ellipse_height": 255,
                       "corner_ellipse_width": 255,
-                      "end_section_name": "PageHeaderSection1",
-                      "fill_color": {
-                        "a": 255,
-                        "b": 192,
-                        "g": 192,
-                        "r": 192
-                      },
                       "shape": {
                         "bottom": 298,
+                        "end_section_index": 1,
                         "extend_to_bottom_of_section": false,
-                        "line_color": {
-                          "a": 255,
-                          "b": 0,
-                          "g": 0,
-                          "r": 0
-                        },
-                        "line_style": "SingleLine",
                         "line_thickness": 10,
                         "right": 11519
                       }
@@ -616,17 +592,11 @@
                   "name": "Box8",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 64,
@@ -665,17 +635,10 @@
                   },
                   "kind": {
                     "Line": {
-                      "end_section_name": "PageHeaderSection1",
                       "shape": {
                         "bottom": 178,
+                        "end_section_index": 1,
                         "extend_to_bottom_of_section": false,
-                        "line_color": {
-                          "a": 255,
-                          "b": 64,
-                          "g": 51,
-                          "r": 239
-                        },
-                        "line_style": "SingleLine",
                         "line_thickness": 40,
                         "right": 1098
                       }
@@ -684,17 +647,11 @@
                   "name": "Line31",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 255,
@@ -733,17 +690,10 @@
                   },
                   "kind": {
                     "Line": {
-                      "end_section_name": "PageHeaderSection1",
                       "shape": {
                         "bottom": 178,
+                        "end_section_index": 1,
                         "extend_to_bottom_of_section": false,
-                        "line_color": {
-                          "a": 255,
-                          "b": 255,
-                          "g": 255,
-                          "r": 255
-                        },
-                        "line_style": "SingleLine",
                         "line_thickness": 40,
                         "right": 2133
                       }
@@ -752,17 +702,11 @@
                   "name": "Line32",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 64,
@@ -801,17 +745,10 @@
                   },
                   "kind": {
                     "Line": {
-                      "end_section_name": "PageHeaderSection1",
                       "shape": {
                         "bottom": 178,
+                        "end_section_index": 1,
                         "extend_to_bottom_of_section": false,
-                        "line_color": {
-                          "a": 255,
-                          "b": 64,
-                          "g": 51,
-                          "r": 239
-                        },
-                        "line_style": "SingleLine",
                         "line_thickness": 40,
                         "right": 3000
                       }
@@ -820,17 +757,11 @@
                   "name": "Line33",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 110,
@@ -869,17 +800,10 @@
                   },
                   "kind": {
                     "Line": {
-                      "end_section_name": "PageHeaderSection1",
                       "shape": {
                         "bottom": 178,
+                        "end_section_index": 1,
                         "extend_to_bottom_of_section": false,
-                        "line_color": {
-                          "a": 255,
-                          "b": 110,
-                          "g": 59,
-                          "r": 60
-                        },
-                        "line_style": "SingleLine",
                         "line_thickness": 40,
                         "right": 5355
                       }
@@ -888,17 +812,11 @@
                   "name": "Line34",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 255,
@@ -937,17 +855,10 @@
                   },
                   "kind": {
                     "Line": {
-                      "end_section_name": "PageHeaderSection1",
                       "shape": {
                         "bottom": 178,
+                        "end_section_index": 1,
                         "extend_to_bottom_of_section": false,
-                        "line_color": {
-                          "a": 255,
-                          "b": 255,
-                          "g": 255,
-                          "r": 255
-                        },
-                        "line_style": "SingleLine",
                         "line_thickness": 40,
                         "right": 6278
                       }
@@ -956,17 +867,11 @@
                   "name": "Line35",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 52,
@@ -1005,17 +910,10 @@
                   },
                   "kind": {
                     "Line": {
-                      "end_section_name": "PageHeaderSection1",
                       "shape": {
                         "bottom": 178,
+                        "end_section_index": 1,
                         "extend_to_bottom_of_section": false,
-                        "line_color": {
-                          "a": 255,
-                          "b": 52,
-                          "g": 34,
-                          "r": 178
-                        },
-                        "line_style": "SingleLine",
                         "line_thickness": 40,
                         "right": 7313
                       }
@@ -1024,17 +922,11 @@
                   "name": "Line36",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 65,
@@ -1073,17 +965,10 @@
                   },
                   "kind": {
                     "Line": {
-                      "end_section_name": "PageHeaderSection1",
                       "shape": {
                         "bottom": 178,
+                        "end_section_index": 1,
                         "extend_to_bottom_of_section": false,
-                        "line_color": {
-                          "a": 255,
-                          "b": 65,
-                          "g": 99,
-                          "r": 0
-                        },
-                        "line_style": "SingleLine",
                         "line_thickness": 40,
                         "right": 9555
                       }
@@ -1092,17 +977,11 @@
                   "name": "Line37",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 255,
@@ -1141,17 +1020,10 @@
                   },
                   "kind": {
                     "Line": {
-                      "end_section_name": "PageHeaderSection1",
                       "shape": {
                         "bottom": 178,
+                        "end_section_index": 1,
                         "extend_to_bottom_of_section": false,
-                        "line_color": {
-                          "a": 255,
-                          "b": 255,
-                          "g": 255,
-                          "r": 255
-                        },
-                        "line_style": "SingleLine",
                         "line_thickness": 40,
                         "right": 10515
                       }
@@ -1160,17 +1032,11 @@
                   "name": "Line38",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 46,
@@ -1209,17 +1075,10 @@
                   },
                   "kind": {
                     "Line": {
-                      "end_section_name": "PageHeaderSection1",
                       "shape": {
                         "bottom": 178,
+                        "end_section_index": 1,
                         "extend_to_bottom_of_section": false,
-                        "line_color": {
-                          "a": 255,
-                          "b": 46,
-                          "g": 16,
-                          "r": 200
-                        },
-                        "line_style": "SingleLine",
                         "line_thickness": 40,
                         "right": 11355
                       }
@@ -1228,11 +1087,9 @@
                   "name": "Line39",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 }
               ],
-              "section_code": 12000,
               "width": 0
             }
           ]
@@ -1259,12 +1116,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -1284,12 +1136,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1356,11 +1203,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "YearMonthDay",
                           "day": "LeadingZeroNumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
                           "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "ShortYear"
                         },
@@ -1374,11 +1246,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 0,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToUnit",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1396,30 +1272,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "DatabaseField",
                       "summary_code": null,
-                      "value_type": "Int32s"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "id1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1486,11 +1362,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -1504,11 +1405,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1526,30 +1431,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "DatabaseField",
                       "summary_code": null,
-                      "value_type": "PersistentMemo"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "City1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1616,11 +1521,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -1634,11 +1564,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1656,30 +1590,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "DatabaseField",
                       "summary_code": null,
-                      "value_type": "PersistentMemo"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "Region1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1746,11 +1680,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -1764,11 +1723,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1786,30 +1749,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "DatabaseField",
                       "summary_code": null,
-                      "value_type": "PersistentMemo"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "Province1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1876,11 +1839,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -1894,11 +1882,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1916,30 +1908,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "DatabaseField",
                       "summary_code": null,
-                      "value_type": "PersistentMemo"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "Country1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 64,
@@ -1978,17 +1970,10 @@
                   },
                   "kind": {
                     "Line": {
-                      "end_section_name": "DetailSection1",
                       "shape": {
                         "bottom": 3240,
+                        "end_section_index": 2,
                         "extend_to_bottom_of_section": false,
-                        "line_color": {
-                          "a": 255,
-                          "b": 64,
-                          "g": 51,
-                          "r": 239
-                        },
-                        "line_style": "SingleLine",
                         "line_thickness": 40,
                         "right": 1098
                       }
@@ -1997,17 +1982,11 @@
                   "name": "Line1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2081,6 +2060,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -2104,17 +2084,11 @@
                   "name": "Text6",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2188,6 +2162,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -2211,17 +2186,11 @@
                   "name": "Text7",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2295,6 +2264,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -2318,17 +2288,11 @@
                   "name": "Text8",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2402,6 +2366,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -2429,6 +2394,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -2452,17 +2418,11 @@
                   "name": "Text9",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2536,6 +2496,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -2559,8 +2520,7 @@
                   "name": "Text10",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
@@ -2610,23 +2570,10 @@
                     "Box": {
                       "corner_ellipse_height": 255,
                       "corner_ellipse_width": 255,
-                      "end_section_name": "DetailSection1",
-                      "fill_color": {
-                        "a": 255,
-                        "b": 192,
-                        "g": 192,
-                        "r": 192
-                      },
                       "shape": {
                         "bottom": 3390,
+                        "end_section_index": 2,
                         "extend_to_bottom_of_section": false,
-                        "line_color": {
-                          "a": 255,
-                          "b": 0,
-                          "g": 0,
-                          "r": 0
-                        },
-                        "line_style": "SingleLine",
                         "line_thickness": 10,
                         "right": 11625
                       }
@@ -2635,17 +2582,11 @@
                   "name": "Box1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 255,
@@ -2684,17 +2625,10 @@
                   },
                   "kind": {
                     "Line": {
-                      "end_section_name": "DetailSection1",
                       "shape": {
                         "bottom": 3240,
+                        "end_section_index": 2,
                         "extend_to_bottom_of_section": false,
-                        "line_color": {
-                          "a": 255,
-                          "b": 255,
-                          "g": 255,
-                          "r": 255
-                        },
-                        "line_style": "SingleLine",
                         "line_thickness": 40,
                         "right": 2133
                       }
@@ -2703,17 +2637,11 @@
                   "name": "Line4",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 64,
@@ -2752,17 +2680,10 @@
                   },
                   "kind": {
                     "Line": {
-                      "end_section_name": "DetailSection1",
                       "shape": {
                         "bottom": 3240,
+                        "end_section_index": 2,
                         "extend_to_bottom_of_section": false,
-                        "line_color": {
-                          "a": 255,
-                          "b": 64,
-                          "g": 51,
-                          "r": 239
-                        },
-                        "line_style": "SingleLine",
                         "line_thickness": 40,
                         "right": 3120
                       }
@@ -2771,17 +2692,11 @@
                   "name": "Line6",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 110,
@@ -2820,17 +2735,10 @@
                   },
                   "kind": {
                     "Line": {
-                      "end_section_name": "DetailSection1",
                       "shape": {
                         "bottom": 3240,
+                        "end_section_index": 2,
                         "extend_to_bottom_of_section": false,
-                        "line_color": {
-                          "a": 255,
-                          "b": 110,
-                          "g": 59,
-                          "r": 60
-                        },
-                        "line_style": "SingleLine",
                         "line_thickness": 40,
                         "right": 5355
                       }
@@ -2839,17 +2747,11 @@
                   "name": "Line8",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 255,
@@ -2888,17 +2790,10 @@
                   },
                   "kind": {
                     "Line": {
-                      "end_section_name": "DetailSection1",
                       "shape": {
                         "bottom": 3240,
+                        "end_section_index": 2,
                         "extend_to_bottom_of_section": false,
-                        "line_color": {
-                          "a": 255,
-                          "b": 255,
-                          "g": 255,
-                          "r": 255
-                        },
-                        "line_style": "SingleLine",
                         "line_thickness": 40,
                         "right": 6278
                       }
@@ -2907,17 +2802,11 @@
                   "name": "Line11",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 52,
@@ -2956,17 +2845,10 @@
                   },
                   "kind": {
                     "Line": {
-                      "end_section_name": "DetailSection1",
                       "shape": {
                         "bottom": 3240,
+                        "end_section_index": 2,
                         "extend_to_bottom_of_section": false,
-                        "line_color": {
-                          "a": 255,
-                          "b": 52,
-                          "g": 34,
-                          "r": 178
-                        },
-                        "line_style": "SingleLine",
                         "line_thickness": 40,
                         "right": 7313
                       }
@@ -2975,17 +2857,11 @@
                   "name": "Line13",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 65,
@@ -3024,17 +2900,10 @@
                   },
                   "kind": {
                     "Line": {
-                      "end_section_name": "DetailSection1",
                       "shape": {
                         "bottom": 3240,
+                        "end_section_index": 2,
                         "extend_to_bottom_of_section": false,
-                        "line_color": {
-                          "a": 255,
-                          "b": 65,
-                          "g": 99,
-                          "r": 0
-                        },
-                        "line_style": "SingleLine",
                         "line_thickness": 40,
                         "right": 9555
                       }
@@ -3043,17 +2912,11 @@
                   "name": "Line15",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 255,
@@ -3092,17 +2955,10 @@
                   },
                   "kind": {
                     "Line": {
-                      "end_section_name": "DetailSection1",
                       "shape": {
                         "bottom": 3240,
+                        "end_section_index": 2,
                         "extend_to_bottom_of_section": false,
-                        "line_color": {
-                          "a": 255,
-                          "b": 255,
-                          "g": 255,
-                          "r": 255
-                        },
-                        "line_style": "SingleLine",
                         "line_thickness": 40,
                         "right": 10515
                       }
@@ -3111,17 +2967,11 @@
                   "name": "Line19",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 46,
@@ -3160,17 +3010,10 @@
                   },
                   "kind": {
                     "Line": {
-                      "end_section_name": "DetailSection1",
                       "shape": {
                         "bottom": 3240,
+                        "end_section_index": 2,
                         "extend_to_bottom_of_section": false,
-                        "line_color": {
-                          "a": 255,
-                          "b": 46,
-                          "g": 16,
-                          "r": 200
-                        },
-                        "line_style": "SingleLine",
                         "line_thickness": 40,
                         "right": 11475
                       }
@@ -3179,11 +3022,9 @@
                   "name": "Line21",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 }
               ],
-              "section_code": 24000,
               "width": 0
             }
           ]
@@ -3210,12 +3051,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -3233,7 +3069,6 @@
               "kind": "ReportFooter",
               "name": "ReportFooterSection1",
               "objects": [],
-              "section_code": 48000,
               "width": 0
             }
           ]
@@ -3260,12 +3095,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -3357,11 +3187,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -3375,11 +3230,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -3397,29 +3256,35 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Special",
                       "summary_code": null,
-                      "value_type": "String"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "PageNofM1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 42000
+                  }
                 }
               ],
-              "section_code": 42000,
               "width": 0
             }
           ]
         }
-      ]
+      ],
+      "kind": "ColumnarReport",
+      "style": "Standard"
     },
     "report_options": {
       "convert_null_field_to_default": false,
@@ -52464,7 +52329,10 @@
     "summary_info": {
       "author": "",
       "comments": "",
+      "created": 132548541398320000,
       "keywords": "",
+      "last_printed": null,
+      "last_saved": 132548611884400000,
       "last_saved_by": "",
       "revision_number": "33",
       "save_with_preview": true,

@@ -16,7 +16,7 @@ pub struct MetafileHeader {
 }
 
 /// The fully resolved drawing state at the moment a primitive is emitted: the current pen, brush,
-/// font, and text colour, with the metafile's object selection and graphics-state stack already
+/// font, and text color, with the metafile's object selection and graphics-state stack already
 /// applied. A `None` pen or brush means the corresponding attribute is disabled (a `PS_NULL` pen or
 /// hollow brush), so a shape with `pen: None` has no outline and one with `brush: None` no fill.
 #[derive(Clone, Copy, Debug)]
@@ -27,7 +27,7 @@ pub struct GraphicsState<'a> {
     pub brush: Option<Brush>,
     /// The current font (for text runs).
     pub font: &'a Font,
-    /// The current text colour.
+    /// The current text color.
     pub text_color: Color,
 }
 
@@ -67,7 +67,7 @@ pub trait MetafileSink {
     }
 
     /// A text run whose reference point is `position`. The typeface is [`GraphicsState::font`] and
-    /// the colour [`GraphicsState::text_color`].
+    /// the color [`GraphicsState::text_color`].
     fn text(&mut self, text: &str, position: Point, state: &GraphicsState<'_>) {
         let _ = (text, position, state);
     }
@@ -140,7 +140,7 @@ pub enum Primitive {
         position: Point,
         /// The typeface.
         font: Font,
-        /// The text colour.
+        /// The text color.
         color: Color,
     },
     /// A raster image blitted into `bounds`.

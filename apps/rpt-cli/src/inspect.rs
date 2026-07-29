@@ -1,7 +1,8 @@
 //! `inspect` — a one-screen report + per-stream summary.
 
-use rpt::model::{Report, ReportObjectKind};
-use rpt::Rpt;
+use rpt_reader::model::{Report, ReportObjectKind};
+use rpt_reader::raw::Dialect;
+use rpt_reader::Rpt;
 use serde::Serialize;
 
 use crate::util::{print_json, CliError};
@@ -97,8 +98,8 @@ struct InspectReport<'a> {
 
 /// Format an axis chart's per-axis gridline modes as `group=<mode> value=<mode>`, or `None` for the
 /// axis-less families (Pie/Doughnut/Funnel/Gauge), whose gridlines stay at the `None` default.
-fn chart_gridlines(def: &rpt::model::ChartDefinition) -> Option<String> {
-    use rpt::model::ChartGridType;
+fn chart_gridlines(def: &rpt_reader::model::ChartDefinition) -> Option<String> {
+    use rpt_reader::model::ChartGridType;
     if def.group_axis_gridlines == ChartGridType::None
         && def.value_axis_gridlines == ChartGridType::None
     {
@@ -139,14 +140,14 @@ pub(crate) fn inspect(file: &str, json: bool) -> Result<(), CliError> {
     let rpt = Rpt::open(file)?;
     let si = rpt.summary_info();
     let report = rpt.report();
-    // The record inventory is projected on demand from the substrate, not stored on the model.
+    // The record inventory is built on demand from the decoded records, not stored on the model.
     let inventory = rpt.inventory();
     let record_count: usize = inventory.iter().map(|e| e.count).sum();
     let distinct_record_types = inventory.len();
     let top: Vec<(String, usize)> = inventory
         .iter()
         .take(8)
-        .map(|e| match e.name() {
+        .map(|e| match e.name(Dialect::Contents) {
             Some(n) => (n.to_string(), e.count),
             None => (format!("{:#06x}", e.tag), e.count),
         })
@@ -271,13 +272,13 @@ pub(crate) fn inspect(file: &str, json: bool) -> Result<(), CliError> {
 
 #[cfg(test)]
 mod tests {
-    // The builders below construct `rpt` model structs via `Default` + field assignment rather than
+    // The builders below construct `rpt-model` structs via `Default` + field assignment rather than
     // full struct literals (which would spell out every nested chart/definition field); the lint
     // cannot offer a useful rewrite here, so it is allowed for this test module.
     #![allow(clippy::field_reassign_with_default)]
 
     use super::*;
-    use rpt::model::{
+    use rpt_reader::model::{
         Area, ChartObject, Report, ReportObject, ReportObjectKind, Section, Subreport,
     };
 

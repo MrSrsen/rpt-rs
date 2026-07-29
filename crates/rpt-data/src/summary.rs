@@ -1,14 +1,14 @@
 //! One incremental summary reducer shared by the batch group aggregate ([`crate::pipeline`]), the
 //! running totals ([`crate::running_total`]), and the cross-tab pivot cells (`rpt-layout`). Folding
-//! the same way everywhere keeps those three paths from silently diverging (they historically differed
-//! on `WeightedAvg`, `DistinctCount`, currency, and empty min/max).
+//! the same way everywhere is what keeps those three paths from silently diverging on `WeightedAvg`,
+//! `DistinctCount`, currency, and empty min/max.
 //!
 //! Parameterized / order-statistic operations (percentile, median, Nth, variance, standard deviation)
 //! need the full value set at once, so [`SummaryAccumulator::value`] returns `None` for them and the
 //! batch aggregate computes them directly.
 
 use crate::value_order::{compare_values, value_key};
-use crystal_formula::eval::Value;
+use rpt_formula::eval::Value;
 use rpt_model::SummaryOperation;
 use std::collections::HashSet;
 
@@ -110,7 +110,7 @@ impl SummaryAccumulator {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crystal_formula::eval::Date;
+    use rpt_formula::eval::Date;
 
     fn fold_all(vals: &[Value]) -> SummaryAccumulator {
         let mut a = SummaryAccumulator::new();

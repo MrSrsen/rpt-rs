@@ -5,7 +5,7 @@
 //! as an aligned table you can scan by column:
 //!
 //! ```text
-//! INFO   render  rendering "invoice.rpt" → stdout (HTML)
+//! INFO   render  rendering "invoice.rpt" → stdout (PDF)
 //! INFO   decode  report has 6 subreport(s)
 //! WARN   layout  table "Command" binds a raw SQL command …
 //! INFO   data    datasource: none — no database contacted, no SQL sent; static bands only
@@ -16,12 +16,14 @@
 //!   mechanical detail — SQL, timings, push-down) only at VERBOSE (`-v`). `-q` prints errors
 //!   only (warnings are still counted for the summary).
 //! - **Components** name the pipeline stage the line comes from ([`Comp`]).
-//! - Colour is applied only when stderr is a TTY and `NO_COLOR` is unset.
+//! - Color is applied only when stderr is a TTY and `NO_COLOR` is unset.
 //!
 //! Warnings feed the **fidelity channel**: each [`warn`](Log::warn) is recorded so the run can
 //! end with a one-line summary count ("rendered with N warnings").
 
-use std::cell::{Cell, RefCell};
+#[cfg(feature = "db")]
+use std::cell::Cell;
+use std::cell::RefCell;
 use std::io::IsTerminal;
 
 /// How much the CLI prints to stderr.
@@ -65,7 +67,7 @@ impl Comp {
     }
 }
 
-/// One line's severity — drives the `LEVEL` column and its colour.
+/// One line's severity — drives the `LEVEL` column and its color.
 #[derive(Clone, Copy)]
 enum Sev {
     Error,
@@ -84,7 +86,7 @@ impl Sev {
         }
     }
 
-    /// SGR colour code for the level label (used only when colour is enabled).
+    /// SGR color code for the level label (used only when color is enabled).
     fn color(self) -> &'static str {
         match self {
             Sev::Error => "1;31", // bold red
@@ -102,24 +104,26 @@ pub struct Log {
     warnings: RefCell<Vec<String>>,
     /// Monotonic counter handing out a 1-based id to each SQL query across all scopes (main report +
     /// every subreport), so a query's SQL / execution / row-count lines can be tagged `[query N]`.
+    #[cfg(feature = "db")]
     query_seq: Cell<usize>,
 }
 
 impl Log {
     pub fn new(level: Level) -> Log {
-        // Colour only when stderr is a real terminal and the user hasn't opted out via NO_COLOR.
+        // Color only when stderr is a real terminal and the user hasn't opted out via NO_COLOR.
         let color = std::io::stderr().is_terminal() && std::env::var_os("NO_COLOR").is_none();
         Log {
             level,
             color,
             warnings: RefCell::new(Vec::new()),
+            #[cfg(feature = "db")]
             query_seq: Cell::new(0),
         }
     }
 
     /// Allocate the next 1-based query id, shared across the main report and all subreport scopes,
     /// so the SQL / execution / row-count lines of one query can be grouped by a `[query N]` tag.
-    #[cfg_attr(not(feature = "db"), allow(dead_code))]
+    #[cfg(feature = "db")]
     pub fn next_query_id(&self) -> usize {
         let n = self.query_seq.get() + 1;
         self.query_seq.set(n);
@@ -127,8 +131,8 @@ impl Log {
     }
 
     /// Is verbose (`-v`) detail being printed? Guard expensive-to-format `DEBUG` lines with this.
-    // Only used on the live-DB path (verbose SQL logging); dead in a DB-free build.
-    #[cfg_attr(not(feature = "db-postgres"), allow(dead_code))]
+    /// Only the live-DB path has any (the generated SQL), so a DB-free build does not carry it.
+    #[cfg(feature = "db")]
     pub fn is_verbose(&self) -> bool {
         self.level >= Level::Verbose
     }

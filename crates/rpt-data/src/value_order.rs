@@ -1,9 +1,9 @@
 //! One canonical ordering and key over runtime [`Value`]s, shared by grouping/sort (`pipeline`),
 //! the running-total min/max ([`running_total`](crate::running_total)), and the cross-tab pivot key
-//! (`rpt-layout`). A single implementation avoids the divergence that once let a running `Max` over
-//! dates rank by an unpadded `Debug` string (ranking Feb above Dec).
+//! (`rpt-layout`). A single implementation avoids ever ranking a running `Max` over dates by an
+//! unpadded `Debug` string, which would rank Feb above Dec.
 
-use crystal_formula::eval::Value;
+use rpt_formula::eval::Value;
 use std::cmp::Ordering;
 
 /// Total ordering over values for sort / group / running min-max: nulls sort first; temporal and
@@ -13,8 +13,7 @@ use std::cmp::Ordering;
 /// Strings compare by **case-sensitive** Unicode-scalar order (so uppercase ASCII sorts before
 /// lowercase, and `"abc"` / `"ABC"` are distinct group buckets). This one comparison drives record
 /// sort, group ordering, and group bucketing together, so they never disagree. A locale- or
-/// case-insensitive collation is not yet modelled — case-sensitivity is the pinned default until one
-/// is (a full collation model is a possible follow-up).
+/// case-insensitive collation is not modelled; case-sensitivity is the fixed default.
 pub fn compare_values(a: &Value, b: &Value) -> Ordering {
     match (a, b) {
         (Value::Null, Value::Null) => Ordering::Equal,
@@ -53,13 +52,13 @@ pub fn value_key(v: &Value) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crystal_formula::eval::{Date, Time};
+    use rpt_formula::eval::{Date, Time};
 
     #[test]
     fn dates_order_chronologically_not_by_debug_string() {
         let feb = Value::Date(Date::new(2024, 2, 1));
         let dec = Value::Date(Date::new(2024, 12, 1));
-        // The bug: a Debug/text key ranks "month: 12" < "month: 2", so Dec sorts before Feb.
+        // An unpadded Debug/text key would rank "month: 12" below "month: 2", sorting Dec before Feb.
         assert_eq!(compare_values(&dec, &feb), Ordering::Greater);
         assert_eq!(compare_values(&feb, &dec), Ordering::Less);
         // And the key text is itself order-preserving.
@@ -82,7 +81,7 @@ mod tests {
         // Pinned decision: string ordering is case-sensitive Unicode-scalar order (uppercase ASCII
         // sorts before lowercase). The same comparison and key drive record sort, group ordering, and
         // group bucketing, so case-differing values land in distinct buckets. A locale/case-insensitive
-        // collation is a possible follow-up, not current behavior.
+        // collation is not modelled.
         let s = |t: &str| Value::Str(t.to_string());
         assert_eq!(compare_values(&s("A"), &s("a")), Ordering::Less);
         assert_eq!(compare_values(&s("abc"), &s("ABC")), Ordering::Greater);

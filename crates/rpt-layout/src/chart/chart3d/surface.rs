@@ -1,11 +1,11 @@
 //! 3-D surface mesh chart: categories run along X (the shared Num+Ord frame slots) and data series
 //! recede along Z, with each series drawn as a continuous **top ribbon** — a strip of quads joining
 //! consecutive category heights across the series' z-band. Unlike the riser there are no front/side
-//! faces and no directional shading: the native surface fills each series a flat palette colour
+//! faces and no directional shading: the native surface fills each series a flat palette color
 //! rather than per-facet normal shading, and the ribbons are globally painter-sorted
 //! back-to-front over the same scenery walls/floor.
 
-use super::projection::{face, p3};
+use super::projection::{face, face_edge, p3};
 use super::scene::{compose, setup_3d};
 #[cfg(test)]
 use crate::chart::common::AxisTitles;
@@ -17,7 +17,7 @@ use rpt_pages::DrawOp;
 /// Build the draw-ops for a 3-D surface chart. `categories` are the X-axis slots; `series` is one row
 /// per data binding (`name`, value-per-category), receding along Z. Each series is a top ribbon of
 /// `categories.len() − 1` flat quads (`PALETTE[s]`, no shading), so a chart of `S` series over `C`
-/// categories has `S × (C − 1)` data faces. Draws the three background planes first, then the ribbon
+/// categories has `S × (C − 1)` data faces. Draws the background room first, then the ribbon
 /// quads globally painter-sorted back-to-front, then the category labels. Returns an empty vec if
 /// there is nothing to plot or a single category (no segment to span).
 pub(crate) fn surface_3d(
@@ -30,12 +30,14 @@ pub(crate) fn surface_3d(
     if s_count == 0 || c_count < 2 {
         return Vec::new();
     }
-    let &ChartCtx { rect, title, .. } = cx;
+    let &ChartCtx {
+        style, rect, title, ..
+    } = cx;
     let src = || cx.src();
 
     // Frame, projection, and background scenery from the shared 3-D scene setup (single depth band).
     let (f, max_val, proj, background, axis_labels) =
-        setup_3d(rect, title, categories, series, view_angle, &[], &src);
+        setup_3d(style, rect, title, categories, series, view_angle, &src);
 
     let plot_left = f.plot_left;
     let plot_bottom = f.plot_bottom;
@@ -70,7 +72,7 @@ pub(crate) fn surface_3d(
                     p3(x0, y0, zb),
                 ],
                 color,
-                None,
+                Some(face_edge()),
                 &src,
             ));
         }
@@ -81,6 +83,7 @@ pub(crate) fn surface_3d(
 
 #[cfg(test)]
 mod tests {
+    use super::super::scene::ROOM_FACES;
     use super::*;
     use rpt_pages::Fill;
 
@@ -132,16 +135,36 @@ mod tests {
             rpt_model::ChartViewAngle::Standard,
         );
         let polys = fills(&ops).len();
-        // 3 scenery planes + S×(C−1) ribbon quads = 3 + 2×9 = 21.
+        // The room's faces + S×(C−1) ribbon quads.
         assert_eq!(
             polys,
-            3 + 2 * 9,
-            "3 planes + S×(C−1) ribbon quads, got {polys}"
+            ROOM_FACES + 2 * 9,
+            "room + S×(C−1) ribbon quads, got {polys}"
         );
     }
 
     #[test]
-    fn each_series_is_a_single_flat_palette_colour() {
+    fn every_face_is_outlined_in_the_face_ink() {
+        // The engine strokes each mesh quad with the same black hairline it strokes the room's
+        // scenery with, so the surface reads as a wireframed mesh rather than a flat color field.
+        use super::super::projection::FACE_INK;
+        let cats: Vec<String> = (0..4).map(|c| format!("c{c}")).collect();
+        let series = vec![("s".to_string(), vec![1.0, 5.0, 3.0, 7.0])];
+        let ops = surface_3d(
+            &ChartCtx::test(rect(), "", AxisTitles::default(), false),
+            &cats,
+            &series,
+            rpt_model::ChartViewAngle::Standard,
+        );
+        assert!(
+            ops.iter().all(|o| !matches!(o, DrawOp::Polygon(p)
+                if p.stroke.as_ref().is_none_or(|s| s.color != FACE_INK))),
+            "every filled face carries the black outline"
+        );
+    }
+
+    #[test]
+    fn each_series_is_a_single_flat_palette_color() {
         let cats: Vec<String> = (0..4).map(|c| format!("c{c}")).collect();
         let series = vec![
             ("s1".to_string(), vec![1.0, 5.0, 3.0, 7.0]),
@@ -153,13 +176,13 @@ mod tests {
             &series,
             rpt_model::ChartViewAngle::Standard,
         );
-        // Skip the 3 scenery planes; every ribbon quad is its series' flat palette colour (no shading,
-        // unlike the riser's shade ladder). Painter-sorting interleaves the series, so count colours.
-        let data = &fills(&ops)[3..];
+        // Skip the room's faces; every ribbon quad is its series' flat palette color (no shading,
+        // unlike the riser's shade ladder). Painter-sorting interleaves the series, so count colors.
+        let data = &fills(&ops)[ROOM_FACES..];
         assert_eq!(data.len(), 2 * 3, "S×(C−1) ribbon quads");
         assert!(
             data.iter().all(|&c| c == PALETTE[0] || c == PALETTE[1]),
-            "only the two series' flat palette colours appear (no shaded variants)"
+            "only the two series' flat palette colors appear (no shaded variants)"
         );
         let n0 = data.iter().filter(|&&c| c == PALETTE[0]).count();
         let n1 = data.iter().filter(|&&c| c == PALETTE[1]).count();

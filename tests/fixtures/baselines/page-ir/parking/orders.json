@@ -1,0 +1,1631 @@
+// document
+{
+  "sections": {
+    "GroupFooterSection1": {
+      "band": "GroupFooter",
+      "group_level": 0
+    },
+    "GroupHeaderSection1": {
+      "band": "GroupHeader",
+      "group_level": 0
+    },
+    "Section1": {
+      "band": "ReportHeader"
+    },
+    "Section2": {
+      "band": "PageHeader"
+    },
+    "Section3": {
+      "band": "Detail"
+    },
+    "Section4": {
+      "band": "ReportFooter"
+    },
+    "Section5": {
+      "band": "PageFooter"
+    }
+  }
+}
+// page 1
+{
+  "number": 1,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": [
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 4215,
+        "top": 120,
+        "width": 1890,
+        "height": 240
+      },
+      "text": "Orders",
+      "font": {
+        "family": "Arial",
+        "size_pt": 10.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 0,
+        "g": 0,
+        "b": 0
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 600,
+        "ascent": 160,
+        "line_height": 240
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Text1",
+        "kind": "Text",
+        "instance": 0
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1980,
+        "top": 615,
+        "width": 5400,
+        "height": 360
+      },
+      "text": "Sum of id / created_at",
+      "font": {
+        "family": "Arial",
+        "size_pt": 13.5,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2040,
+        "top": 4285,
+        "width": 3280,
+        "height": 260
+      },
+      "text": "Sum of id",
+      "font": {
+        "family": "Arial",
+        "size_pt": 7.5,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 90.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2955,
+        "top": 4635,
+        "width": 4365,
+        "height": 260
+      },
+      "text": "created_at",
+      "font": {
+        "family": "Arial",
+        "size_pt": 7.5,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2280,
+        "top": 4175,
+        "width": 615,
+        "height": 220
+      },
+      "text": "0",
+      "font": {
+        "family": "Arial",
+        "size_pt": 7.5,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 2955,
+        "y": 3817
+      },
+      "to": {
+        "x": 7320,
+        "y": 3817
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2280,
+        "top": 3707,
+        "width": 615,
+        "height": 220
+      },
+      "text": "20",
+      "font": {
+        "family": "Arial",
+        "size_pt": 7.5,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 2955,
+        "y": 3348
+      },
+      "to": {
+        "x": 7320,
+        "y": 3348
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2280,
+        "top": 3238,
+        "width": 615,
+        "height": 220
+      },
+      "text": "40",
+      "font": {
+        "family": "Arial",
+        "size_pt": 7.5,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 2955,
+        "y": 2880
+      },
+      "to": {
+        "x": 7320,
+        "y": 2880
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2280,
+        "top": 2770,
+        "width": 615,
+        "height": 220
+      },
+      "text": "60",
+      "font": {
+        "family": "Arial",
+        "size_pt": 7.5,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 2955,
+        "y": 2411
+      },
+      "to": {
+        "x": 7320,
+        "y": 2411
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2280,
+        "top": 2301,
+        "width": 615,
+        "height": 220
+      },
+      "text": "80",
+      "font": {
+        "family": "Arial",
+        "size_pt": 7.5,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 2955,
+        "y": 1943
+      },
+      "to": {
+        "x": 7320,
+        "y": 1943
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2280,
+        "top": 1833,
+        "width": 615,
+        "height": 220
+      },
+      "text": "100",
+      "font": {
+        "family": "Arial",
+        "size_pt": 7.5,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 2955,
+        "y": 1474
+      },
+      "to": {
+        "x": 7320,
+        "y": 1474
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2280,
+        "top": 1364,
+        "width": 615,
+        "height": 220
+      },
+      "text": "120",
+      "font": {
+        "family": "Arial",
+        "size_pt": 7.5,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 2955,
+        "y": 1005
+      },
+      "to": {
+        "x": 7320,
+        "y": 1005
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 221,
+          "g": 221,
+          "b": 221
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2280,
+        "top": 895,
+        "width": 615,
+        "height": 220
+      },
+      "text": "140",
+      "font": {
+        "family": "Arial",
+        "size_pt": 7.5,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 2955,
+        "y": 1005
+      },
+      "to": {
+        "x": 2955,
+        "y": 4285
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 85,
+          "g": 85,
+          "b": 85
+        },
+        "width": 15,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 2955,
+        "y": 4285
+      },
+      "to": {
+        "x": 7320,
+        "y": 4285
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 85,
+          "g": 85,
+          "b": 85
+        },
+        "width": 15,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 3100,
+        "top": 3934,
+        "width": 436,
+        "height": 351
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2955,
+        "top": 4315,
+        "width": 727,
+        "height": 320
+      },
+      "text": "1/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 3827,
+        "top": 3348,
+        "width": 436,
+        "height": 937
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 239,
+          "g": 162,
+          "b": 82
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3682,
+        "top": 4315,
+        "width": 727,
+        "height": 320
+      },
+      "text": "2/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 4554,
+        "top": 2763,
+        "width": 436,
+        "height": 1522
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 0,
+          "g": 148,
+          "b": 112
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 4409,
+        "top": 4315,
+        "width": 727,
+        "height": 320
+      },
+      "text": "3/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 5281,
+        "top": 2177,
+        "width": 436,
+        "height": 2108
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 221,
+          "g": 88,
+          "b": 31
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 5136,
+        "top": 4315,
+        "width": 727,
+        "height": 320
+      },
+      "text": "4/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 6008,
+        "top": 1591,
+        "width": 436,
+        "height": 2694
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 162,
+          "g": 45,
+          "b": 98
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 5863,
+        "top": 4315,
+        "width": 727,
+        "height": 320
+      },
+      "text": "5/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 6735,
+        "top": 1005,
+        "width": 436,
+        "height": 3280
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 254,
+          "g": 206,
+          "b": 96
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 6590,
+        "top": 4315,
+        "width": 727,
+        "height": 320
+      },
+      "text": "6/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 7470,
+        "top": 2145,
+        "width": 150,
+        "height": 150
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 58,
+          "g": 101,
+          "b": 152
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7680,
+        "top": 2145,
+        "width": 1410,
+        "height": 202
+      },
+      "text": "1/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 7470,
+        "top": 2355,
+        "width": 150,
+        "height": 150
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 239,
+          "g": 162,
+          "b": 82
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7680,
+        "top": 2355,
+        "width": 1410,
+        "height": 202
+      },
+      "text": "2/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 7470,
+        "top": 2565,
+        "width": 150,
+        "height": 150
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 0,
+          "g": 148,
+          "b": 112
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7680,
+        "top": 2565,
+        "width": 1410,
+        "height": 202
+      },
+      "text": "3/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 7470,
+        "top": 2775,
+        "width": 150,
+        "height": 150
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 221,
+          "g": 88,
+          "b": 31
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7680,
+        "top": 2775,
+        "width": 1410,
+        "height": 202
+      },
+      "text": "4/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 7470,
+        "top": 2985,
+        "width": 150,
+        "height": 150
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 162,
+          "g": 45,
+          "b": 98
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7680,
+        "top": 2985,
+        "width": 1410,
+        "height": 202
+      },
+      "text": "5/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 7470,
+        "top": 3195,
+        "width": 150,
+        "height": 150
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 254,
+          "g": 206,
+          "b": 96
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 7680,
+        "top": 3195,
+        "width": 1410,
+        "height": 202
+      },
+      "text": "6/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 6.75,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "Graph1",
+        "kind": "Chart",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 5535,
+        "width": 2565,
+        "height": 240
+      },
+      "text": "1/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 10.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 0,
+        "g": 0,
+        "b": 0
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 672,
+        "ascent": 160,
+        "line_height": 240
+      },
+      "source": {
+        "section": "GroupHeaderSection1",
+        "object_name": "GroupNamecreatedatmonthly1",
+        "kind": "Field",
+        "instance": 2
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 11220,
+        "width": 2565,
+        "height": 240
+      },
+      "text": "2/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 10.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 0,
+        "g": 0,
+        "b": 0
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 672,
+        "ascent": 160,
+        "line_height": 240
+      },
+      "source": {
+        "section": "GroupHeaderSection1",
+        "object_name": "GroupNamecreatedatmonthly1",
+        "kind": "Field",
+        "instance": 3
+      }
+    }
+  ]
+}
+// page 2
+{
+  "number": 2,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": [
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 3955,
+        "width": 2565,
+        "height": 240
+      },
+      "text": "3/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 10.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 0,
+        "g": 0,
+        "b": 0
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 672,
+        "ascent": 160,
+        "line_height": 240
+      },
+      "source": {
+        "section": "GroupHeaderSection1",
+        "object_name": "GroupNamecreatedatmonthly1",
+        "kind": "Field",
+        "instance": 4
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 9640,
+        "width": 2565,
+        "height": 240
+      },
+      "text": "4/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 10.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 0,
+        "g": 0,
+        "b": 0
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 672,
+        "ascent": 160,
+        "line_height": 240
+      },
+      "source": {
+        "section": "GroupHeaderSection1",
+        "object_name": "GroupNamecreatedatmonthly1",
+        "kind": "Field",
+        "instance": 5
+      }
+    }
+  ]
+}
+// page 3
+{
+  "number": 3,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": [
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 1865,
+        "width": 2565,
+        "height": 240
+      },
+      "text": "5/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 10.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 0,
+        "g": 0,
+        "b": 0
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 672,
+        "ascent": 160,
+        "line_height": 240
+      },
+      "source": {
+        "section": "GroupHeaderSection1",
+        "object_name": "GroupNamecreatedatmonthly1",
+        "kind": "Field",
+        "instance": 6
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 0,
+        "top": 7550,
+        "width": 2565,
+        "height": 240
+      },
+      "text": "6/2024",
+      "font": {
+        "family": "Arial",
+        "size_pt": 10.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 0,
+        "g": 0,
+        "b": 0
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 672,
+        "ascent": 160,
+        "line_height": 240
+      },
+      "source": {
+        "section": "GroupHeaderSection1",
+        "object_name": "GroupNamecreatedatmonthly1",
+        "kind": "Field",
+        "instance": 7
+      }
+    }
+  ]
+}

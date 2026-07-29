@@ -1,10 +1,10 @@
 //! `anonymize` — strip personally identifying authoring metadata, writing a clean `.rpt`.
 //!
-//! A thin driver over [`rpt::Rpt::anonymize`]: it reports what was removed and writes the single
+//! A thin driver over [`rpt_reader::Rpt::anonymize`]: it reports what was removed and writes the single
 //! output path passed on the command line. `--dry-run` reports without writing anything, which is
 //! how you inspect a corpus before rewriting it.
 
-use rpt::Rpt;
+use rpt_reader::Rpt;
 
 use crate::util::{print_json, CliError};
 

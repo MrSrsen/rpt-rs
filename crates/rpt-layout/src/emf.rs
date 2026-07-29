@@ -2,7 +2,7 @@
 //!
 //! Bridges the standalone [`metafile`] crate to the [`rpt_pages`] Page IR: a user-inserted EMF
 //! picture is a *vector command stream*, so replaying its records is the faithful render (the
-//! alternative is the placeholder box a raster-only backend draws). The [`metafile`] parser decodes
+//! alternative is a placeholder box). The [`metafile`] parser decodes
 //! the stream into device-independent primitives; [`PageSink`] maps each into a [`DrawOp`], scaling
 //! the metafile's device-space bounds onto the picture object's destination twip box.
 
@@ -226,6 +226,7 @@ impl MetafileSink for PageSink {
             align: TextAlign::Left,
             rotation: 0.0,
             metrics: None,
+            character_spacing: Twips(0),
             source: self.source.clone(),
         }));
     }
@@ -257,7 +258,7 @@ impl MetafileSink for PageSink {
     }
 }
 
-/// Convert a [`metafile`] colour into an [`rpt_model`] colour.
+/// Convert a [`metafile`] color into an [`rpt_model`] color.
 fn color(c: metafile::Color) -> Color {
     Color {
         a: c.a,

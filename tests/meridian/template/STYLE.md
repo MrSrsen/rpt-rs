@@ -29,7 +29,7 @@ all shared chrome (logo, title, footer, fonts, colors, page setup).
 ## 2. Typography
 
 Body font **Arial** (a safe, metrics-stable default; the deterministic `ApproxLayout` renderer approximates all fonts,
-so family choice is about the real-engine/oracle look, not baseline stability).
+so family choice is about the intended visual look, not baseline stability).
 
 | Element | Font | Size | Weight | Color |
 | ------- | ---- | ---- | ------ | ----- |

@@ -8,8 +8,8 @@ use super::bar::bar_chart;
 #[cfg(test)]
 use super::common::AxisTitles;
 use super::common::{
-    category_stride, compute_frame, emit_value_axis, fmt_val, nice_scale, value_frac, value_label,
-    ChartCtx, LABEL, LABEL_PT, PALETTE,
+    compute_frame, emit_value_axis, fmt_val, nice_scale, value_frac, value_label, ChartCtx, LABEL,
+    LABEL_PT, PALETTE,
 };
 use rpt_model::{Rect, Twips};
 use rpt_pages::{DrawOp, FontSpec, RectOp, TextAlign, TextRun};
@@ -23,7 +23,7 @@ pub(crate) fn numeric_axis_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec
         return Vec::new();
     }
     let &ChartCtx {
-        def,
+        style,
         rect,
         title,
         axis_titles,
@@ -43,8 +43,8 @@ pub(crate) fn numeric_axis_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec
     let src = || cx.src();
     let mut ops: Vec<DrawOp> = Vec::new();
     // Reuse the shared value-axis frame for the Y scale, title, axes, and gridlines.
-    let f = compute_frame(rect, title, axis_titles, series);
-    emit_value_axis(def, &mut ops, &f, rect, title, axis_titles, &src);
+    let f = compute_frame(style, rect, title, axis_titles, series);
+    emit_value_axis(style, &mut ops, &f, rect, title, axis_titles, &src);
 
     // Numeric X scale: 0..nice_max over the parsed keys, mapped into the plot rectangle.
     let key_max = keys.iter().copied().fold(0.0_f64, f64::max);
@@ -53,7 +53,7 @@ pub(crate) fn numeric_axis_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec
     let x_at = |k: f64| f.plot_left + ((k.max(0.0) / x_max) * plot_w) as i32;
 
     let bar_w = (f.slot / 2).max(15);
-    let stride = category_stride(&f, series.len());
+    let stride = f.cats.stride;
     for (idx, ((label, val), key)) in series.iter().zip(&keys).enumerate() {
         let h = (value_frac(*val, f.max_val) * f.plot_h as f64) as i32;
         let px = x_at(*key);
@@ -73,6 +73,7 @@ pub(crate) fn numeric_axis_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec
         }));
         if show_labels {
             ops.push(value_label(
+                style,
                 px,
                 (by - 230).max(f.plot_top()),
                 &fmt_val(*val),
@@ -94,13 +95,14 @@ pub(crate) fn numeric_axis_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec
             text: label.clone(),
             font: FontSpec {
                 family: "Arial".into(),
-                size_pt: LABEL_PT,
+                size_pt: style.scaled_pt(LABEL_PT),
                 ..Default::default()
             },
             color: LABEL,
             align: TextAlign::Center,
             rotation: 0.0,
             metrics: None,
+            character_spacing: Twips(0),
             source: src(),
         }));
     }
@@ -178,7 +180,8 @@ mod tests {
     /// With "show value" off, bars still draw but no per-bar value label is emitted.
     #[test]
     fn show_labels_false_omits_value_labels() {
-        let s = vec![("10".into(), 12.0), ("20".into(), 27.0), ("40".into(), 6.0)];
+        // Fractional values so a data label could never be mistaken for a whole-number tick label.
+        let s = vec![("10".into(), 12.5), ("20".into(), 27.5), ("40".into(), 6.5)];
         let ops = numeric_axis_chart(
             &ChartCtx::test(rect(), "N", AxisTitles::default(), false),
             &s,
@@ -191,7 +194,7 @@ mod tests {
             })
             .collect();
         assert_eq!(bar_lefts(&ops).len(), 3, "bars present");
-        for v in ["12", "27", "6"] {
+        for v in ["12.5", "27.5", "6.5"] {
             assert!(
                 !texts.contains(&v.to_string()),
                 "value label {v} must be omitted: {texts:?}"

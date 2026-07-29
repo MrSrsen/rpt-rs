@@ -1,10 +1,11 @@
 //! Object formatting DTOs (SDK: `IObjectFormat`, `IBorder`, `IFont`, `IFieldFormat`).
 
 use super::enums::{
-    Alignment, BooleanOutputType, CurrencyPosition, CurrencySymbolFormat, DateOrder,
-    DateSystemDefaultType, DateTimeOrder, DayFormat, DayOfWeekFormat, HourFormat, HyperlinkType,
-    LineStyle, MinuteFormat, MonthFormat, NegativeFormat, ReadingOrder, RoundingFormat,
-    SecondFormat, TextFormat, TextRotationAngle, VerticalAlignment, YearFormat,
+    AMPMFormat, Alignment, BooleanOutputType, CalendarType, CurrencyPosition, CurrencySymbolFormat,
+    DateOrder, DateSystemDefaultType, DateTimeOrder, DayFormat, DayOfWeekEnclosure,
+    DayOfWeekFormat, DayOfWeekPosition, EraFormat, HourFormat, HyperlinkType, LineStyle,
+    MinuteFormat, MonthFormat, NegativeFormat, ReadingOrder, RoundingFormat, SecondFormat,
+    TextFormat, TextRotationAngle, TimeBase, VerticalAlignment, YearFormat,
 };
 use super::primitives::{Color, Conditioned};
 
@@ -130,17 +131,15 @@ pub struct FontColor {
 pub struct FieldFormat {
     /// SDK `CommonFormat` — options common to all field types.
     pub common: CommonFieldFormat,
-    /// SDK `NumericFormat` — the number format the engine reports for this field. Each field stores
-    /// *two* numeric-format slots (a currency-format slot and a number-format slot); the engine
-    /// surfaces the currency slot for a Currency-valued field and the number slot otherwise. This
-    /// holds the number slot as decoded; the value-type resolution pass swaps in
-    /// [`currency_numeric`](Self::currency_numeric) for Currency-valued fields, so this ends up
-    /// holding the reported format.
+    /// SDK `NumericFormat` — the stored **number-format** slot (the second `0x00f8` of the pair).
+    ///
+    /// A field stores *two* numeric-format slots, both decoded verbatim. Which one the engine
+    /// applies depends on the field's effective value type — the currency slot for a Currency-valued
+    /// field, this one otherwise — and that selection is a runtime resolution, so it lives with the
+    /// consumer (`rpt-layout` for the render path), not on this struct.
     pub numeric: NumericFieldFormat,
-    /// The stored **currency-format** numeric slot (the first `0x00f8` of the pair). A stored fact
-    /// used only to resolve [`numeric`](Self::numeric) for Currency-valued fields; not part of the
-    /// exported surface.
-    #[cfg_attr(feature = "serde", serde(skip))]
+    /// The stored **currency-format** numeric slot (the first `0x00f8` of the pair) — the slot the
+    /// engine applies to a Currency-valued field. See [`numeric`](Self::numeric).
     pub currency_numeric: NumericFieldFormat,
     /// SDK `BooleanFormat` — the boolean output format, applies to Boolean fields.
     pub boolean: BooleanFieldFormat,
@@ -173,26 +172,42 @@ pub struct DateTimeFieldFormat {
     pub separator: String,
 }
 
-/// SDK: `ITimeFieldFormat` — the **stored** per-field time format. Only the hour/minute/second
-/// element-display enums are modelled: they are stored in the `0x00f6` leaf (bytes 2/3/4) and are a
-/// genuine per-field fact on an explicit (non-system-default) field. The rest of the SDK's
-/// `TimeFieldFormat` surface (`TimeBase`, `AMString`/`PMString`, `AMPMFormat`, the hour/minute/second
-/// separators) is **not** in the stored leaf — the engine resolves it at runtime from the host
-/// locale — so it is not modelled as a stored fact.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+/// SDK: `ITimeFieldFormat` — the **stored** per-field time format. The whole SDK surface is stored
+/// in the `0x00f6` leaf: five one-byte enums (`TimeBase`, `AMPMFormat`, then the hour/minute/second
+/// element styles) followed by four length-prefixed strings (AM, PM, hour-minute separator,
+/// minute-second separator). Like the date format, these are reported verbatim only for an explicit
+/// (`use_system_defaults == false`) time/datetime-valued field; a system-default field has the
+/// engine resolve the effective format from the host locale at runtime.
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct TimeFieldFormat {
+    /// SDK `TimeBase` — 12-hour (with an AM/PM designator) or 24-hour.
+    pub time_base: TimeBase,
+    /// SDK `AMPMFormat` — whether the AM/PM designator precedes or follows the time. Only takes
+    /// effect under [`TimeBase::TwelveHour`].
+    pub am_pm_format: AMPMFormat,
     /// SDK `HourFormat` — the hour element's display style.
     pub hour: HourFormat,
     /// SDK `MinuteFormat` — the minute element's display style.
     pub minute: MinuteFormat,
     /// SDK `SecondFormat` — the second element's display style.
     pub second: SecondFormat,
+    /// SDK `AMString` — the designator printed for the first half of the day (e.g. `" am"`). Often
+    /// carries its own leading space, which is the whole gap between the time and the designator.
+    pub am_string: String,
+    /// SDK `PMString` — the designator printed for the second half of the day (e.g. `" pm"`).
+    pub pm_string: String,
+    /// SDK `HourMinuteSeparator` — the string placed between the hour and the minute (`":"`).
+    pub hour_minute_separator: String,
+    /// SDK `MinuteSecondSeparator` — the string placed between the minute and the second. Genuinely
+    /// empty on some fields, which renders the two elements butted together (`0:0000`).
+    pub minute_second_separator: String,
 }
 
-/// SDK: `IDateFieldFormat` — the **stored** per-field date format. Only the
-/// three elements the SDK exposes (day / month / year) are modelled here.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+/// SDK: `IDateFieldFormat` — the **stored** per-field date format: the element styles, the
+/// calendar/era the date is rendered in, and the literal separators placed between and around the
+/// elements.
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct DateFieldFormat {
     /// SDK `DateOrder` — the relative order of the day/month/year elements. Stored in the `0x00f2`
@@ -209,9 +224,29 @@ pub struct DateFieldFormat {
     /// so a consumer that needs the displayed format must resolve it from this + the host locale
     /// rather than reading the stored enums verbatim.
     pub system_default: DateSystemDefaultType,
-    /// SDK `DayOfWeekType` — the weekday element of the date. Not exported, so decoded for record
-    /// completeness only.
+    /// SDK `DayOfWeekType` — the weekday element of the date.
     pub day_of_week: DayOfWeekFormat,
+    /// SDK `EraType` — the era/period designator. Stored in the `0x00f2` leaf byte 6.
+    pub era: EraFormat,
+    /// SDK `CalendarType` — the calendar the date is rendered in. Stored in the `0x00f2` leaf
+    /// byte 7.
+    pub calendar: CalendarType,
+    /// SDK `DayOfWeekPosition` — which side of the date the weekday element sits on. Stored in the
+    /// byte that follows the five separator strings.
+    pub day_of_week_position: DayOfWeekPosition,
+    /// SDK `DayOfWeekEnclosure` — the bracket pair wrapped around the weekday element. Stored in
+    /// the leaf's last byte, as an ordinal into the engine's table of bracket pairs.
+    pub day_of_week_enclosure: DayOfWeekEnclosure,
+    /// SDK `DatePrefixSeparator` — the literal placed before the whole date.
+    pub prefix_separator: String,
+    /// SDK `DateFirstSeparator` — the literal between the first and second date elements.
+    pub first_separator: String,
+    /// SDK `DateSecondSeparator` — the literal between the second and third date elements.
+    pub second_separator: String,
+    /// SDK `DateSuffixSeparator` — the literal placed after the whole date.
+    pub suffix_separator: String,
+    /// SDK `DayOfWeekSeparator` — the literal between the weekday element and the date.
+    pub day_of_week_separator: String,
 }
 
 /// SDK: `ICommonFieldFormat` — options common to all field formats.
@@ -249,6 +284,19 @@ pub struct NumericFieldFormat {
     pub thousands_separator: bool,
     /// SDK `EnableSuppressIfZero` — hide the field when its value is zero. Stored at leaf byte 1.
     pub suppress_if_zero: bool,
+    /// SDK `UseLeadZero` — show the leading zero of a value below one (`0.5` rather than `.5`).
+    /// Stored at leaf byte 6 (default `true`).
+    pub use_lead_zero: bool,
+    /// SDK `DisplayReverseSign` — render the value with its sign flipped. Stored in the third of
+    /// the three two-byte flags that follow the symbol strings.
+    pub display_reverse_sign: bool,
+    /// SDK `OneCurrencySymbolPerPage` — show the currency symbol on the first value of each page
+    /// rather than on every value. Stored at leaf byte 12.
+    pub one_currency_symbol_per_page: bool,
+    /// SDK `ZeroValueString` — the literal shown in place of a zero value. The engine's own
+    /// "unset" marker is the literal string `<Default Format>`, not an empty string, so this is
+    /// reported as stored rather than normalized away.
+    pub zero_value_string: String,
     /// SDK `DecimalSymbol` — the decimal separator string (e.g. `"."`).
     pub decimal_symbol: String,
     /// SDK `ThousandSymbol` — the thousands separator string (e.g. `","`).
@@ -270,6 +318,10 @@ impl Default for NumericFieldFormat {
             currency_position: CurrencyPosition::LeadingCurrencyInsideNegative,
             thousands_separator: true,
             suppress_if_zero: false,
+            use_lead_zero: true,
+            display_reverse_sign: false,
+            one_currency_symbol_per_page: false,
+            zero_value_string: String::new(),
             decimal_symbol: String::new(),
             thousand_symbol: String::new(),
             currency_symbol_text: String::new(),
@@ -291,9 +343,14 @@ pub struct BooleanFieldFormat {
 /// `MaxNumberOfLines` (bytes 13-14, `u16` BE), `TextFormat` (byte 15), `ReadingOrder` (byte 16).
 /// These are genuine stored facts on every string field (not runtime-resolved like the date/time
 /// effective formats). `TextFormat` is the render-relevant one (plain / HTML / RTF interpretation).
-/// The leaf's trailing spacing members (`LineSpacing` at bytes 17-20 as a 16.16 fixed-point multiple —
-/// `0x00010000` = `1.0`; `CharacterSpacing` at bytes 21-24; `LineSpacingType` at byte 25 — `0` =
-/// `crLineSpacingTypeMultiple`) are invariant and not modelled.
+/// The leaf's trailing spacing members are invariant and not modelled: `LineSpacing` at bytes 17-20
+/// (16.16 fixed-point multiple — `0x00010000` = `1.0`) and `LineSpacingType` at byte 25 (`0` =
+/// `crLineSpacingTypeMultiple`). The SDK's `CharacterSpacing` is **not located**: bytes 21-24 are the
+/// leaf's only unassigned slot and so are its structural home, but that placement is unproven and
+/// deliberately not decoded. No report stores anything but zero there, and no minimal pair can be
+/// authored to settle it — RAS accepts `StringFormat.CharacterSpacing` in memory and then drops it on
+/// save. Letter spacing on a *text* object is a different, fully decoded value:
+/// [`TextRun::character_spacing`](crate::TextRun::character_spacing).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct StringFieldFormat {

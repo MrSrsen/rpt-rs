@@ -9,9 +9,9 @@
 //! Reports both syntax errors (the parser) and semantic ones (the validator: unknown functions, wrong
 //! arity, operator type errors), for the main report and every subreport.
 
-use crystal_formula::{validate_str, Severity, Syntax};
-use rpt::model::{FieldKindData, FormulaSyntax, Report, ReportObjectKind};
-use rpt::Rpt;
+use rpt_formula::{validate_str, Severity, Syntax};
+use rpt_reader::model::{FieldKindData, FormulaSyntax, Report, ReportObjectKind};
+use rpt_reader::Rpt;
 use serde::Serialize;
 
 use crate::util::{print_json, CliError};
@@ -22,7 +22,7 @@ rpt formulas — check every formula in a report, without rendering it
 Parses and validates each formula the report defines and LISTS every one, so you can see what was
 covered rather than only how many — with --source, the formula bodies too. Covers formula fields, the record- and group-selection
 formulas, and conditional-format formulas wherever they hang — on a section, an object's format, its
-border, or a field/text object's font colour — in the main report and every subreport. Problems are
+border, or a field/text object's font color — in the main report and every subreport. Problems are
 reported under their formula with the message and the offending byte span. Reads the .rpt alone: no
 database connection, no render.
 
@@ -284,7 +284,7 @@ fn summary(checked: usize, empty: usize, errors: usize, warnings: usize) -> Stri
 /// Check every formula `report` defines, recording each in `formulas` and any problem in `findings`.
 ///
 /// Conditional-format formulas hang off several places in the model, not just the object format: a
-/// section, an object's format, its border, and a field/text/field-heading object's font colour.
+/// section, an object's format, its border, and a field/text/field-heading object's font color.
 /// Walking only the object format misses most of them.
 fn check_report(
     report: &Report,
@@ -323,7 +323,7 @@ fn check_report(
         if empty {
             return;
         }
-        let ctx = crystal_formula::ValidationContext::default();
+        let ctx = rpt_formula::ValidationContext::default();
         for d in validate_str(body, syntax, &ctx) {
             findings.push(Finding {
                 subreport: subreport.to_string(),
@@ -384,7 +384,7 @@ fn check_report(
         }
     }
     // Per-object conditional formats. These are the ones a render evaluates most often and the least
-    // visible when broken — a wrong colour looks deliberate.
+    // visible when broken — a wrong color looks deliberate.
     for obj in report.objects() {
         for (key, body) in &obj.format.condition_formulas {
             check(
@@ -404,7 +404,7 @@ fn check_report(
         }
         for (key, body) in font_color_formulas(&obj.kind) {
             check(
-                format!("{}'s font-colour {key} formula", obj.name),
+                format!("{}'s font-color {key} formula", obj.name),
                 body,
                 Syntax::Crystal,
                 "font-color-format",
@@ -413,7 +413,7 @@ fn check_report(
     }
 }
 
-/// The font-colour conditional formulas of the object kinds that carry one.
+/// The font-color conditional formulas of the object kinds that carry one.
 fn font_color_formulas(kind: &ReportObjectKind) -> &[(String, String)] {
     match kind {
         ReportObjectKind::Field(f) => &f.font_color.condition_formulas,

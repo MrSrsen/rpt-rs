@@ -19,7 +19,7 @@ rusqlite = { workspace = true, features = ["bundled"] }
 thiserror = { workspace = true }
 
 [dev-dependencies]
-crystal-formula = { workspace = true }
+rpt-formula = { workspace = true }
 
 [lints]
 workspace = true

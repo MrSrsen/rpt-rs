@@ -1,5 +1,10 @@
 {
   "model": {
+    "authoring_version": {
+      "letter": 0,
+      "major": 14,
+      "minor": 0
+    },
     "data_definition": {
       "condition_formula_bodies": [],
       "custom_functions": [],
@@ -386,12 +391,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -411,12 +411,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -490,6 +485,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -513,17 +509,11 @@
                   "name": "Text1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -569,48 +559,80 @@
                         "orders.id"
                       ],
                       "definition": {
+                        "bar_size": "Large",
                         "category_period": "Weekly",
                         "category_refs": [
                           "{orders.created_at}"
                         ],
+                        "chart_color": "Color",
                         "data_axis_title": "Sum of id",
                         "data_label": "",
                         "data_labels_show_value": false,
+                        "data_point": "None",
                         "data_refs": [
                           "Sum ({orders.id}, {orders.created_at}, \"daily\")"
                         ],
+                        "data_value_number_format": "NoDecimal",
                         "element_fonts": [
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 700
                           },
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 400
                           },
                           {
+                            "is_default": true,
+                            "italic": true,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 700
                           },
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 700
                           },
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 700
                           },
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 700
                           },
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 400
                           },
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 400
+                          },
+                          {
+                            "is_default": true,
+                            "italic": false,
+                            "name": "Arial",
+                            "weight": 0
+                          },
+                          {
+                            "is_default": true,
+                            "italic": false,
+                            "name": "Arial",
+                            "weight": 400
                           }
                         ],
                         "footnote": "",
@@ -618,13 +640,42 @@
                         "graph_type": "Area",
                         "group_axis_gridlines": "None",
                         "group_axis_title": "created_at",
+                        "is_vertical_bar": true,
                         "layout_type": "Detail",
+                        "legend_layout": "Percentage",
                         "legend_position": "Right",
                         "legend_visible": true,
+                        "marker_shape": "Rectangle",
+                        "marker_size": "Medium",
+                        "pie_size": "Large",
+                        "series_axis_auto_range": true,
+                        "series_axis_auto_scale": false,
+                        "series_axis_division_method": "Automatic",
+                        "series_axis_divisions": 1,
+                        "series_axis_gridlines": "None",
+                        "series_axis_max": 0.0,
+                        "series_axis_min": 0.0,
+                        "series_axis_number_format": "NoDecimal",
                         "series_colors": [],
+                        "slice_detachment": "NoDetachment",
                         "subtitle": "",
                         "title": "Sum of id / created_at",
+                        "value_axis2_auto_range": true,
+                        "value_axis2_auto_scale": false,
+                        "value_axis2_division_method": "Automatic",
+                        "value_axis2_divisions": 1,
+                        "value_axis2_gridlines": "None",
+                        "value_axis2_max": 0.0,
+                        "value_axis2_min": 0.0,
+                        "value_axis2_number_format": "NoDecimal",
+                        "value_axis_auto_range": true,
+                        "value_axis_auto_scale": false,
+                        "value_axis_division_method": "Automatic",
+                        "value_axis_divisions": 1,
                         "value_axis_gridlines": "Major",
+                        "value_axis_max": 0.0,
+                        "value_axis_min": 0.0,
+                        "value_axis_number_format": "NoDecimal",
                         "view_angle": "Standard"
                       }
                     }
@@ -632,11 +683,9 @@
                   "name": "Graph1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 }
               ],
-              "section_code": 6000,
               "width": 0
             }
           ]
@@ -663,12 +712,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -686,7 +730,6 @@
               "kind": "PageHeader",
               "name": "Section2",
               "objects": [],
-              "section_code": 12000,
               "width": 0
             }
           ]
@@ -717,12 +760,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -742,12 +780,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -814,11 +847,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -832,11 +890,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -854,24 +916,28 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "GroupName",
                       "summary_code": null,
-                      "value_type": "String"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "GroupNamecreatedatmonthly1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 18000
+                  }
                 }
               ],
-              "section_code": 18000,
               "width": 0
             }
           ]
@@ -898,12 +964,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -921,7 +982,6 @@
               "kind": "Detail",
               "name": "Section3",
               "objects": [],
-              "section_code": 24000,
               "width": 0
             }
           ]
@@ -948,12 +1008,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -971,7 +1026,6 @@
               "kind": "GroupFooter",
               "name": "GroupFooterSection1",
               "objects": [],
-              "section_code": 30000,
               "width": 0
             }
           ]
@@ -998,12 +1052,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -1021,7 +1070,6 @@
               "kind": "ReportFooter",
               "name": "Section4",
               "objects": [],
-              "section_code": 48000,
               "width": 0
             }
           ]
@@ -1048,12 +1096,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -1071,12 +1114,13 @@
               "kind": "PageFooter",
               "name": "Section5",
               "objects": [],
-              "section_code": 42000,
               "width": 0
             }
           ]
         }
-      ]
+      ],
+      "kind": "ColumnarReport",
+      "style": "Standard"
     },
     "report_options": {
       "convert_null_field_to_default": false,
@@ -1290,7 +1334,10 @@
     "summary_info": {
       "author": "",
       "comments": "",
+      "created": 126569431875510000,
       "keywords": "",
+      "last_printed": null,
+      "last_saved": 134281914137627454,
       "last_saved_by": "",
       "revision_number": "21",
       "save_with_preview": false,

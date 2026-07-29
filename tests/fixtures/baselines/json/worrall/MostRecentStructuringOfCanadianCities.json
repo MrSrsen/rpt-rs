@@ -1,5 +1,10 @@
 {
   "model": {
+    "authoring_version": {
+      "letter": 0,
+      "major": 14,
+      "minor": 0
+    },
     "data_definition": {
       "condition_formula_bodies": [
         "pagenumber=1\r\n"
@@ -381,12 +386,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -406,12 +406,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -485,6 +480,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": true,
@@ -508,17 +504,11 @@
                   "name": "Text2",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -592,6 +582,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -615,22 +606,15 @@
                   "name": "Text3",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 }
               ],
-              "section_code": 6000,
               "width": 0
             },
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -650,12 +634,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 192,
@@ -694,17 +673,10 @@
                   },
                   "kind": {
                     "Line": {
-                      "end_section_name": "TSection5",
                       "shape": {
                         "bottom": 0,
+                        "end_section_index": 1,
                         "extend_to_bottom_of_section": false,
-                        "line_color": {
-                          "a": 255,
-                          "b": 192,
-                          "g": 192,
-                          "r": 192
-                        },
-                        "line_style": "SingleLine",
                         "line_thickness": 20,
                         "right": 10905
                       }
@@ -713,17 +685,11 @@
                   "name": "Line2",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6001
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -797,6 +763,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -824,6 +791,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -851,6 +819,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -878,6 +847,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -905,6 +875,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -932,6 +903,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -959,6 +931,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -986,6 +959,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -1009,17 +983,11 @@
                   "name": "Text7",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6001
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 192,
@@ -1058,17 +1026,10 @@
                   },
                   "kind": {
                     "Line": {
-                      "end_section_name": "TSection5",
                       "shape": {
                         "bottom": 2520,
+                        "end_section_index": 1,
                         "extend_to_bottom_of_section": false,
-                        "line_color": {
-                          "a": 255,
-                          "b": 192,
-                          "g": 192,
-                          "r": 192
-                        },
-                        "line_style": "SingleLine",
                         "line_thickness": 20,
                         "right": 10920
                       }
@@ -1077,22 +1038,15 @@
                   "name": "Line3",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6001
+                  }
                 }
               ],
-              "section_code": 6001,
               "width": 0
             },
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -1112,12 +1066,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1163,48 +1112,80 @@
                         "vw_major_cities_canada.Most_Recent_Structuring"
                       ],
                       "definition": {
+                        "bar_size": "Large",
                         "category_period": null,
                         "category_refs": [
                           "{vw_major_cities_canada.Most_Recent_Structuring}"
                         ],
+                        "chart_color": "Color",
                         "data_axis_title": "Count",
                         "data_label": "",
                         "data_labels_show_value": false,
+                        "data_point": "None",
                         "data_refs": [
                           "Count ({vw_major_cities_canada.Most_Recent_Structuring}, {vw_major_cities_canada.Most_Recent_Structuring})"
                         ],
+                        "data_value_number_format": "NoDecimal",
                         "element_fonts": [
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 700
                           },
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 400
                           },
                           {
+                            "is_default": true,
+                            "italic": true,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 700
                           },
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 700
                           },
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 700
                           },
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 700
                           },
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 400
                           },
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 400
+                          },
+                          {
+                            "is_default": true,
+                            "italic": false,
+                            "name": "Arial",
+                            "weight": 0
+                          },
+                          {
+                            "is_default": true,
+                            "italic": false,
+                            "name": "Arial",
+                            "weight": 400
                           }
                         ],
                         "footnote": "",
@@ -1212,13 +1193,44 @@
                         "graph_type": "Bar",
                         "group_axis_gridlines": "None",
                         "group_axis_title": "Date",
+                        "is_vertical_bar": true,
                         "layout_type": "Detail",
+                        "legend_layout": "Percentage",
                         "legend_position": "BottomCenter",
                         "legend_visible": false,
+                        "marker_shape": "Rectangle",
+                        "marker_size": {
+                          "Other": 5
+                        },
+                        "pie_size": "Large",
+                        "series_axis_auto_range": true,
+                        "series_axis_auto_scale": false,
+                        "series_axis_division_method": "Automatic",
+                        "series_axis_divisions": 1,
+                        "series_axis_gridlines": "None",
+                        "series_axis_max": 0.0,
+                        "series_axis_min": 0.0,
+                        "series_axis_number_format": "NoDecimal",
                         "series_colors": [],
+                        "slice_detachment": "NoDetachment",
                         "subtitle": "",
                         "title": "Most Recent Structuring by Date",
+                        "value_axis2_auto_range": true,
+                        "value_axis2_auto_scale": false,
+                        "value_axis2_division_method": "Automatic",
+                        "value_axis2_divisions": 1,
+                        "value_axis2_gridlines": "None",
+                        "value_axis2_max": 0.0,
+                        "value_axis2_min": 0.0,
+                        "value_axis2_number_format": "NoDecimal",
+                        "value_axis_auto_range": true,
+                        "value_axis_auto_scale": false,
+                        "value_axis_division_method": "Automatic",
+                        "value_axis_divisions": 7,
                         "value_axis_gridlines": "Major",
+                        "value_axis_max": 320.0,
+                        "value_axis_min": 0.0,
+                        "value_axis_number_format": "NoDecimal",
                         "view_angle": "Standard"
                       }
                     }
@@ -1226,11 +1238,9 @@
                   "name": "Graph1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6002
+                  }
                 }
               ],
-              "section_code": 6002,
               "width": 0
             }
           ]
@@ -1262,12 +1272,7 @@
                 ]
               ],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -1285,7 +1290,6 @@
               "kind": "PageHeader",
               "name": "TSection1",
               "objects": [],
-              "section_code": 12000,
               "width": 0
             }
           ]
@@ -1316,12 +1320,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -1413,8 +1412,7 @@
                   "name": "Text5",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 18000
+                  }
                 },
                 {
                   "border": {
@@ -1490,8 +1488,7 @@
                   "name": "Text6",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 18000
+                  }
                 },
                 {
                   "border": {
@@ -1567,17 +1564,11 @@
                   "name": "Text8",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 18000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 255,
@@ -1644,11 +1635,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -1662,11 +1678,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1684,24 +1704,28 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Formula",
                       "summary_code": null,
-                      "value_type": "String"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "GroupDateFormatted1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 18000
+                  }
                 }
               ],
-              "section_code": 18000,
               "width": 0
             }
           ]
@@ -1728,12 +1752,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -1753,12 +1772,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1825,11 +1839,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -1843,11 +1882,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1865,30 +1908,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "DatabaseField",
                       "summary_code": null,
-                      "value_type": "PersistentMemo"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "TLastYearsSales1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1955,11 +1998,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -1973,11 +2041,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1995,30 +2067,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "DatabaseField",
                       "summary_code": null,
-                      "value_type": "PersistentMemo"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "TCity1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2085,11 +2157,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -2103,11 +2200,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2125,30 +2226,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "DatabaseField",
                       "summary_code": null,
-                      "value_type": "PersistentMemo"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "TPhone1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 165,
@@ -2187,17 +2288,10 @@
                   },
                   "kind": {
                     "Line": {
-                      "end_section_name": "TSection3",
                       "shape": {
                         "bottom": 720,
+                        "end_section_index": 5,
                         "extend_to_bottom_of_section": false,
-                        "line_color": {
-                          "a": 255,
-                          "b": 165,
-                          "g": 121,
-                          "r": 90
-                        },
-                        "line_style": "SingleLine",
                         "line_thickness": 20,
                         "right": 11162
                       }
@@ -2206,11 +2300,9 @@
                   "name": "Line1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 }
               ],
-              "section_code": 24000,
               "width": 0
             }
           ]
@@ -2237,12 +2329,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -2262,12 +2349,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2341,6 +2423,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": true,
@@ -2364,17 +2447,11 @@
                   "name": "Text4",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 30000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 255,
@@ -2441,11 +2518,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "YearMonthDay",
                           "day": "LeadingZeroNumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
                           "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "ShortYear"
                         },
@@ -2459,11 +2561,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 0,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToUnit",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2481,30 +2587,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "RunningTotal",
                       "summary_code": null,
-                      "value_type": "Int32s"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "GroupTotalBW1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 30000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 255,
@@ -2571,11 +2677,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -2589,11 +2720,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2611,30 +2746,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Formula",
                       "summary_code": null,
-                      "value_type": "String"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "GroupDateFormatted21",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 30000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2708,6 +2843,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": true,
@@ -2731,11 +2867,9 @@
                   "name": "Text1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 30000
+                  }
                 }
               ],
-              "section_code": 30000,
               "width": 0
             }
           ]
@@ -2762,12 +2896,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -2785,7 +2914,6 @@
               "kind": "ReportFooter",
               "name": "TSection7",
               "objects": [],
-              "section_code": 48000,
               "width": 0
             }
           ]
@@ -2812,12 +2940,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -2837,12 +2960,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2909,11 +3027,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -2927,11 +3070,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2949,30 +3096,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Special",
                       "summary_code": null,
-                      "value_type": "String"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "Field2",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 42000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -3013,23 +3160,10 @@
                     "Box": {
                       "corner_ellipse_height": 0,
                       "corner_ellipse_width": 0,
-                      "end_section_name": "TSection2",
-                      "fill_color": {
-                        "a": 255,
-                        "b": 255,
-                        "g": 255,
-                        "r": 255
-                      },
                       "shape": {
                         "bottom": 468,
+                        "end_section_index": 8,
                         "extend_to_bottom_of_section": false,
-                        "line_color": {
-                          "a": 255,
-                          "b": 0,
-                          "g": 0,
-                          "r": 255
-                        },
-                        "line_style": "SingleLine",
                         "line_thickness": 30,
                         "right": 11160
                       }
@@ -3038,16 +3172,16 @@
                   "name": "Box1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 42000
+                  }
                 }
               ],
-              "section_code": 42000,
               "width": 0
             }
           ]
         }
-      ]
+      ],
+      "kind": "ColumnarReport",
+      "style": "Standard"
     },
     "report_options": {
       "convert_null_field_to_default": false,
@@ -3128,2100 +3262,2100 @@
       "record_count": 300,
       "rows": [
         [
-          "3145778",
+          "2019-03-25",
           "Richmond Hill",
           "York",
           "Ontario",
           "155"
         ],
         [
-          "3145778",
+          "2019-01-01",
           "Beaumont",
           "Edmonton Metropolitan Region",
           "Alberta",
           "2"
         ],
         [
-          "3145778",
+          "2017-09-22",
           "Delta",
           "Greater Vancouver",
           "British Columbia",
           "31"
         ],
         [
-          "3145778",
+          "2015-06-26",
           "West Kelowna",
           "Central Okanagan",
           "British Columbia",
           "69"
         ],
         [
-          "3145778",
+          "2015-01-01",
           "Chestermere",
           "Calgary Metropolitan Region",
           "Alberta",
           "6"
         ],
         [
-          "3145778",
+          "2014-09-12",
           "Maple Ridge",
           "Metro Vancouver",
           "British Columbia",
           "43"
         ],
         [
-          "3145778",
+          "2012-10-27",
           "Warman",
           "Corman Park No. 344",
           "Saskatchewan",
           "284"
         ],
         [
-          "3145778",
+          "2012-07-01",
           "Markham",
           "York",
           "Ontario",
           "140"
         ],
         [
-          "3145778",
+          "2012-01-01",
           "Morden",
           "Pembina Valley",
           "Manitoba",
           "75"
         ],
         [
-          "3145778",
+          "2010-09-05",
           "Lacombe",
           "Central Alberta",
           "Alberta",
           "11"
         ],
         [
-          "3145778",
+          "2009-11-09",
           "Meadow Lake",
           "Meadow Lake No. 588",
           "Saskatchewan",
           "275"
         ],
         [
-          "3145778",
+          "2009-11-03",
           "Martensville",
           "Corman Park No. 344",
           "Saskatchewan",
           "274"
         ],
         [
-          "3145778",
+          "2007-01-01",
           "Granby",
           "Montérégie",
           "Quebec",
           "188"
         ],
         [
-          "3145778",
+          "2006-01-01",
           "Dollard-des-Ormeaux",
           "Montréal",
           "Quebec",
           "191"
         ],
         [
-          "3145778",
+          "2006-01-01",
           "Boucherville",
           "Montérégie",
           "Quebec",
           "199"
         ],
         [
-          "3145778",
+          "2006-01-01",
           "La Tuque",
           "Mauricie",
           "Quebec",
           "251"
         ],
         [
-          "3145778",
+          "2006-01-01",
           "Dorval",
           "Montréal",
           "Quebec",
           "229"
         ],
         [
-          "3145778",
+          "2006-01-01",
           "Saint-Bruno-de-Montarville",
           "Montérégie",
           "Quebec",
           "214"
         ],
         [
-          "3145778",
+          "2006-01-01",
           "Pointe-Claire",
           "Montréal",
           "Quebec",
           "205"
         ],
         [
-          "3145778",
+          "2006-01-01",
           "Beaconsfield",
           "Montréal",
           "Quebec",
           "224"
         ],
         [
-          "3145778",
+          "2006-01-01",
           "L'Ancienne-Lorette",
           "Capitale-Nationale",
           "Quebec",
           "234"
         ],
         [
-          "3145778",
+          "2006-01-01",
           "Mount Royal",
           "Montréal",
           "Quebec",
           "226"
         ],
         [
-          "3145778",
+          "2006-01-01",
           "Brossard",
           "Montérégie",
           "Quebec",
           "185"
         ],
         [
-          "3145778",
+          "2006-01-01",
           "Côte Saint-Luc",
           "Montréal",
           "Quebec",
           "203"
         ],
         [
-          "3145778",
+          "2006-01-01",
           "Saint-Lambert",
           "Montérégie",
           "Quebec",
           "220"
         ],
         [
-          "3145778",
+          "2006-01-01",
           "Westmount",
           "Montréal",
           "Quebec",
           "222"
         ],
         [
-          "3145778",
+          "2006-01-01",
           "Kirkland",
           "Montréal",
           "Quebec",
           "223"
         ],
         [
-          "3145778",
+          "2006-01-01",
           "Longueuil",
           "Montérégie",
           "Quebec",
           "177"
         ],
         [
-          "3145778",
+          "2006-01-01",
           "Saint-Augustin-de-Desmaures",
           "Capitale-Nationale",
           "Quebec",
           "231"
         ],
         [
-          "3145778",
+          "2005-09-01",
           "Brooks",
           "Southern Alberta",
           "Alberta",
           "3"
         ],
         [
-          "3145778",
+          "2004-07-07",
           "Drummondville",
           "Centre-du-Québec",
           "Quebec",
           "186"
         ],
         [
-          "3145778",
+          "2004-01-01",
           "Temiskaming Shores",
           "Timiskaming",
           "Ontario",
           "161"
         ],
         [
-          "3145778",
+          "2003-02-12",
           "Sept-Îles",
           "Côte-Nord",
           "Quebec",
           "212"
         ],
         [
-          "3145778",
+          "2003-01-08",
           "Mont-Laurier",
           "Laurentides",
           "Quebec",
           "244"
         ],
         [
-          "3145778",
+          "2003-01-01",
           "Dieppe",
           "Westmorland",
           "New Brunswick",
           "84"
         ],
         [
-          "3145778",
+          "2002-10-09",
           "Magog",
           "Estrie",
           "Quebec",
           "216"
         ],
         [
-          "3145778",
+          "2002-09-11",
           "Saint-Sauveur",
           "Laurentides",
           "Quebec",
           "269"
         ],
         [
-          "3145778",
+          "2002-06-01",
           "Repentigny",
           "Lanaudière",
           "Quebec",
           "184"
         ],
         [
-          "3145778",
+          "2002-04-24",
           "Salaberry-de-Valleyfield",
           "Montérégie",
           "Quebec",
           "198"
         ],
         [
-          "3145778",
+          "2002-04-07",
           "Winkler",
           "Pembina Valley",
           "Manitoba",
           "80"
         ],
         [
-          "3145778",
+          "2002-02-27",
           "Sainte-Agathe-des-Monts",
           "Laurentides",
           "Quebec",
           "265"
         ],
         [
-          "3145778",
+          "2002-02-18",
           "Saguenay",
           "Saguenay–Lac-Saint-Jean",
           "Quebec",
           "179"
         ],
         [
-          "3145778",
+          "2002-01-01",
           "Shawinigan",
           "Mauricie",
           "Quebec",
           "189"
         ],
         [
-          "3145778",
+          "2002-01-01",
           "Lévis",
           "Chaudière-Appalaches",
           "Quebec",
           "180"
         ],
         [
-          "3145778",
+          "2002-01-01",
           "Trois-Rivières",
           "Mauricie",
           "Quebec",
           "181"
         ],
         [
-          "3145778",
+          "2002-01-01",
           "Rimouski",
           "Bas-Saint-Laurent",
           "Quebec",
           "193"
         ],
         [
-          "3145778",
+          "2002-01-01",
           "Rouyn-Noranda",
           "Abitibi-Témiscamingue",
           "Quebec",
           "197"
         ],
         [
-          "3145778",
+          "2002-01-01",
           "Beauharnois",
           "Montérégie",
           "Quebec",
           "249"
         ],
         [
-          "3145778",
+          "2002-01-01",
           "Sherbrooke",
           "Estrie",
           "Quebec",
           "178"
         ],
         [
-          "3145778",
+          "2002-01-01",
           "Gatineau",
           "Outaouais",
           "Quebec",
           "176"
         ],
         [
-          "3145778",
+          "2002-01-01",
           "Saint-Jérôme",
           "Laurentides",
           "Quebec",
           "187"
         ],
         [
-          "3145778",
+          "2002-01-01",
           "Québec City",
           "Capitale-Nationale",
           "Quebec",
           "174"
         ],
         [
-          "3145778",
+          "2002-01-01",
           "Montreal",
           "Montréal",
           "Quebec",
           "173"
         ],
         [
-          "3145778",
+          "2002-01-01",
           "Alma",
           "Saguenay–Lac-Saint-Jean",
           "Quebec",
           "206"
         ],
         [
-          "3145778",
+          "2002-01-01",
           "Val-d'Or",
           "Abitibi-Témiscamingue",
           "Quebec",
           "204"
         ],
         [
-          "3145778",
+          "2001-12-27",
           "Saint-Hyacinthe",
           "Montérégie",
           "Quebec",
           "190"
         ],
         [
-          "3145778",
+          "2001-10-17",
           "Thetford Mines",
           "Chaudière-Appalaches",
           "Quebec",
           "211"
         ],
         [
-          "3145778",
+          "2001-09-26",
           "Matane",
           "Bas-Saint-Laurent",
           "Quebec",
           "240"
         ],
         [
-          "3145778",
+          "2001-09-26",
           "Saint-Georges",
           "Chaudière-Appalaches",
           "Quebec",
           "207"
         ],
         [
-          "3145778",
+          "2001-06-27",
           "Terrebonne",
           "Lanaudière",
           "Quebec",
           "182"
         ],
         [
-          "3145778",
+          "2001-05-16",
           "Lavaltrie",
           "Lanaudière",
           "Quebec",
           "248"
         ],
         [
-          "3145778",
+          "2001-04-19",
           "Iqaluit",
           "Qikiqtaaluk",
           "Nunavut",
           "118"
         ],
         [
-          "3145778",
+          "2001-01-24",
           "Saint-Jean-sur-Richelieu",
           "Montérégie",
           "Quebec",
           "183"
         ],
         [
-          "3145778",
+          "2001-01-01",
           "Norfolk County",
           "Norfolk",
           "Ontario",
           "143"
         ],
         [
-          "3145778",
+          "2001-01-01",
           "Ottawa",
           "Ottawa",
           "Ontario",
           "147"
         ],
         [
-          "3145778",
+          "2001-01-01",
           "Kawartha Lakes",
           "Kawartha Lakes",
           "Ontario",
           "135"
         ],
         [
-          "3145778",
+          "2001-01-01",
           "Haldimand County",
           "Haldimand",
           "Ontario",
           "133"
         ],
         [
-          "3145778",
+          "2001-01-01",
           "The Blue Mountains",
           "Grey",
           "Ontario",
           "298"
         ],
         [
-          "3145778",
+          "2001-01-01",
           "Greater Sudbury",
           "Sudbury",
           "Ontario",
           "131"
         ],
         [
-          "3145778",
+          "2000-11-07",
           "Humboldt",
           "Humboldt No. 370",
           "Saskatchewan",
           "272"
         ],
         [
-          "3145778",
+          "2000-10-01",
           "Cold Lake",
           "Central Alberta",
           "Alberta",
           "7"
         ],
         [
-          "3145778",
+          "2000-07-01",
           "L'Assomption",
           "Lanaudière",
           "Quebec",
           "233"
         ],
         [
-          "3145778",
+          "2000-03-15",
           "Sorel-Tracy",
           "Montérégie",
           "Quebec",
           "201"
         ],
         [
-          "3145778",
+          "2000-03-01",
           "Saint-Lin-Laurentides",
           "Lanaudière",
           "Quebec",
           "243"
         ],
         [
-          "3145778",
+          "2000-01-01",
           "Pickering",
           "Durham",
           "Ontario",
           "151"
         ],
         [
-          "3145778",
+          "2000-01-01",
           "Kenora",
           "Kenora",
           "Ontario",
           "136"
         ],
         [
-          "3145778",
+          "2000-01-01",
           "Lachute",
           "Laurentides",
           "Quebec",
           "250"
         ],
         [
-          "3145778",
+          "2000-01-01",
           "Mirabel",
           "Laurentides",
           "Quebec",
           "200"
         ],
         [
-          "3735601",
+          "1999-01-01",
           "Brant",
           "Brant",
           "Ontario",
           "122"
         ],
         [
-          "3735601",
+          "1998-12-30",
           "Rivière-du-Loup",
           "Bas-Saint-Laurent",
           "Quebec",
           "228"
         ],
         [
-          "3735601",
+          "1998-12-30",
           "Coaticook",
           "Estrie",
           "Quebec",
           "268"
         ],
         [
-          "3735601",
+          "1998-01-01",
           "Prince Edward County",
           "Prince Edward",
           "Ontario",
           "153"
         ],
         [
-          "3735601",
+          "1998-01-01",
           "Quinte West",
           "Hastings",
           "Ontario",
           "154"
         ],
         [
-          "3735601",
+          "1998-01-01",
           "Toronto",
           "Toronto",
           "Ontario",
           "165"
         ],
         [
-          "3735601",
+          "1998-01-01",
           "Kingston",
           "Frontenac",
           "Ontario",
           "137"
         ],
         [
-          "3735601",
+          "1998-01-01",
           "Clarence-Rockland",
           "Prescott and Russell",
           "Ontario",
           "127"
         ],
         [
-          "3735601",
+          "1998-01-01",
           "Dryden",
           "Kenora",
           "Ontario",
           "129"
         ],
         [
-          "3735601",
+          "1997-12-17",
           "Dolbeau-Mistassini",
           "Saguenay–Lac-Saint-Jean",
           "Quebec",
           "241"
         ],
         [
-          "3735601",
+          "1997-08-27",
           "Sainte-Adèle",
           "Laurentides",
           "Quebec",
           "257"
         ],
         [
-          "3735601",
+          "1996-04-01",
           "Queens",
           "Queens",
           "Nova Scotia",
           "95"
         ],
         [
-          "3735601",
+          "1996-04-01",
           "Halifax",
           "Halifax",
           "Nova Scotia",
           "94"
         ],
         [
-          "3735601",
+          "1996-01-01",
           "Saint-Félicien",
           "Saguenay–Lac-Saint-Jean",
           "Quebec",
           "259"
         ],
         [
-          "3735601",
+          "1995-12-12",
           "Abbotsford",
           "Fraser Valley",
           "British Columbia",
           "20"
         ],
         [
-          "3735601",
+          "1995-08-01",
           "Cape Breton",
           "Cape Breton",
           "Nova Scotia",
           "93"
         ],
         [
-          "3735601",
+          "1995-04-01",
           "Stratford",
           "Queens",
           "Prince Edward Island",
           "296"
         ],
         [
-          "3735601",
+          "1995-04-01",
           "Summerside",
           "Prince",
           "Prince Edward Island",
           "172"
         ],
         [
-          "3735601",
+          "1995-04-01",
           "Cornwall",
           "Queens",
           "Prince Edward Island",
           "297"
         ],
         [
-          "3735601",
+          "1995-03-29",
           "Saint-Raymond",
           "Capitale-Nationale",
           "Quebec",
           "267"
         ],
         [
-          "3735601",
+          "1995-01-01",
           "Miramichi",
           "Northumberland",
           "New Brunswick",
           "87"
         ],
         [
-          "3735601",
+          "1994-03-16",
           "Vaudreuil-Dorion",
           "Montérégie",
           "Quebec",
           "210"
         ],
         [
-          "3735601",
+          "1993-06-01",
           "Victoriaville",
           "Centre-du-Québec",
           "Quebec",
           "196"
         ],
         [
-          "3735601",
+          "1992-12-08",
           "Langford",
           "Capital",
           "British Columbia",
           "41"
         ],
         [
-          "3735601",
+          "1992-01-01",
           "Sarnia",
           "Lambton",
           "Ontario",
           "156"
         ],
         [
-          "3735601",
+          "1991-01-01",
           "Vaughan",
           "York",
           "Ontario",
           "166"
         ],
         [
-          "3735601",
+          "1991-01-01",
           "Grand Falls-Windsor",
           "6",
           "Newfoundland and Labrador",
           "291"
         ],
         [
-          "3735601",
+          "1990-01-01",
           "Paradise",
           "1",
           "Newfoundland and Labrador",
           "290"
         ],
         [
-          "3735601",
+          "1988-07-21",
           "Mount Pearl",
           "1",
           "Newfoundland and Labrador",
           "91"
         ],
         [
-          "3735601",
+          "1987-01-17",
           "Amos",
           "Abitibi-Témiscamingue",
           "Quebec",
           "246"
         ],
         [
-          "3735601",
+          "1986-03-01",
           "Spruce Grove",
           "Edmonton Metropolitan Region",
           "Alberta",
           "17"
         ],
         [
-          "3735601",
+          "1985-07-01",
           "Fort Saskatchewan",
           "Edmonton Metropolitan Region",
           "Alberta",
           "9"
         ],
         [
-          "3735601",
+          "1985-06-24",
           "Colwood",
           "Capital",
           "British Columbia",
           "26"
         ],
         [
-          "3735601",
+          "1985-01-01",
           "Airdrie",
           "Calgary Metropolitan Region",
           "Alberta",
           "1"
         ],
         [
-          "3735601",
+          "1984-04-14",
           "Notre-Dame-de-l'Île-Perrot",
           "Montérégie",
           "Quebec",
           "264"
         ],
         [
-          "3735601",
+          "1983-09-01",
           "Leduc",
           "Edmonton Metropolitan Region",
           "Alberta",
           "12"
         ],
         [
-          "3735601",
+          "1983-01-01",
           "Baie-Comeau",
           "Côte-Nord",
           "Quebec",
           "218"
         ],
         [
-          "3735601",
+          "1982-01-01",
           "Châteauguay",
           "Montérégie",
           "Quebec",
           "194"
         ],
         [
-          "3735601",
+          "1980-09-02",
           "Melfort",
           "Star City No. 428",
           "Saskatchewan",
           "276"
         ],
         [
-          "3735601",
+          "1980-01-01",
           "Dawson",
           "Klondike",
           "Yukon",
           "287"
         ],
         [
-          "3735601",
+          "1978-01-01",
           "Sainte-Marie",
           "Chaudière-Appalaches",
           "Quebec",
           "252"
         ],
         [
-          "3735601",
+          "1977-01-01",
           "St. Albert",
           "Edmonton Metropolitan Region",
           "Alberta",
           "18"
         ],
         [
-          "3735601",
+          "1976-01-01",
           "Roberval",
           "Saguenay–Lac-Saint-Jean",
           "Quebec",
           "258"
         ],
         [
-          "3735601",
+          "1975-01-01",
           "Thorold",
           "Niagara",
           "Ontario",
           "162"
         ],
         [
-          "3735601",
+          "1975-01-01",
           "Whistler",
           "Sea to Sky Country",
           "British Columbia",
           "300"
         ],
         [
-          "3735601",
+          "1974-01-01",
           "Burlington",
           "Halton",
           "Ontario",
           "125"
         ],
         [
-          "3735601",
+          "1974-01-01",
           "Mississauga",
           "Peel",
           "Ontario",
           "141"
         ],
         [
-          "3735601",
+          "1974-01-01",
           "Castlegar",
           "Central Kootenay",
           "British Columbia",
           "24"
         ],
         [
-          "3735601",
+          "1974-01-01",
           "Brampton",
           "Peel Region",
           "Ontario",
           "121"
         ],
         [
-          "3735601",
+          "1973-01-20",
           "Prévost",
           "Laurentides",
           "Quebec",
           "261"
         ],
         [
-          "3735601",
+          "1973-01-01",
           "Conception Bay South",
           "1",
           "Newfoundland and Labrador",
           "289"
         ],
         [
-          "3735601",
+          "1973-01-01",
           "Cambridge",
           "Waterloo",
           "Ontario",
           "126"
         ],
         [
-          "3735601",
+          "1973-01-01",
           "Sainte-Catherine",
           "Montérégie",
           "Quebec",
           "235"
         ],
         [
-          "3735601",
+          "1973-01-01",
           "Saint-Constant",
           "Montérégie",
           "Quebec",
           "215"
         ],
         [
-          "3735601",
+          "1973-01-01",
           "Happy Valley-Goose Bay",
           "10",
           "Newfoundland and Labrador",
           "293"
         ],
         [
-          "3735601",
+          "1972-08-26",
           "Varennes",
           "Montérégie",
           "Quebec",
           "221"
         ],
         [
-          "3735601",
+          "1972-01-15",
           "Saint-Eustache",
           "Laurentides",
           "Quebec",
           "195"
         ],
         [
-          "3735601",
+          "1971-01-01",
           "Pembroke",
           "Renfrew",
           "Ontario",
           "149"
         ],
         [
-          "3735601",
+          "1971-01-01",
           "Sainte-Julie",
           "Montérégie",
           "Quebec",
           "208"
         ],
         [
-          "3735601",
+          "1971-01-01",
           "Gaspé",
           "Gaspésie–Îles-de-la-Madeleine",
           "Quebec",
           "239"
         ],
         [
-          "3735601",
+          "1970-12-09",
           "Mascouche",
           "Lanaudière",
           "Quebec",
           "202"
         ],
         [
-          "3735601",
+          "1970-01-01",
           "Thompson",
           "Northern Region",
           "Manitoba",
           "79"
         ],
         [
-          "3735601",
+          "1970-01-01",
           "Yellowknife",
           "North Slave Region",
           "Northwest Territories",
           "117"
         ],
         [
-          "3735601",
+          "1970-01-01",
           "Port Colborne",
           "Niagara",
           "Ontario",
           "152"
         ],
         [
-          "3735601",
+          "1970-01-01",
           "Thunder Bay",
           "Thunder Bay",
           "Ontario",
           "163"
         ],
         [
-          "3735601",
+          "1969-01-01",
           "Orillia",
           "Simcoe",
           "Ontario",
           "145"
         ],
         [
-          "3735601",
+          "1968-06-14",
           "Blainville",
           "Laurentides",
           "Quebec",
           "192"
         ],
         [
-          "3735601",
+          "1967-10-28",
           "Port Alberni",
           "Alberni-Clayoquot",
           "British Columbia",
           "52"
         ],
         [
-          "3735601",
+          "1967-10-17",
           "Kamloops",
           "Thompson-Nicola",
           "British Columbia",
           "38"
         ],
         [
-          "3735601",
+          "1966-11-12",
           "Joliette",
           "Lanaudière",
           "Quebec",
           "225"
         ],
         [
-          "3735601",
+          "1966-04-02",
           "Montmagny",
           "Chaudière-Appalaches",
           "Quebec",
           "253"
         ],
         [
-          "3735601",
+          "1966-03-12",
           "Mont-Saint-Hilaire",
           "Montérégie",
           "Quebec",
           "237"
         ],
         [
-          "3735601",
+          "1966-01-01",
           "Bathurst",
           "Gloucester",
           "New Brunswick",
           "82"
         ],
         [
-          "3735601",
+          "1965-10-17",
           "Bécancour",
           "Centre-du-Québec",
           "Quebec",
           "256"
         ],
         [
-          "3735601",
+          "1965-09-18",
           "Chambly",
           "Montérégie",
           "Quebec",
           "217"
         ],
         [
-          "3735601",
+          "1965-08-06",
           "Laval",
           "Laval",
           "Quebec",
           "175"
         ],
         [
-          "3735601",
+          "1963-01-01",
           "Deux-Montagnes",
           "Laurentides",
           "Quebec",
           "230"
         ],
         [
-          "3735601",
+          "1960-08-01",
           "Melville",
           "Cana No. 214",
           "Saskatchewan",
           "277"
         ],
         [
-          "3735601",
+          "1960-02-04",
           "Lorraine",
           "Laurentides",
           "Quebec",
           "266"
         ],
         [
-          "3735601",
+          "1960-01-01",
           "Sainte-Marthe-sur-le-Lac",
           "Laurentides",
           "Quebec",
           "254"
         ],
         [
-          "3735601",
+          "1960-01-01",
           "Labrador City",
           "19",
           "Newfoundland and Labrador",
           "295"
         ],
         [
-          "3735601",
+          "1959-01-01",
           "Barrie",
           "Simcoe",
           "Ontario",
           "119"
         ],
         [
-          "3735601",
+          "1958-01-01",
           "Gander",
           "6",
           "Newfoundland and Labrador",
           "292"
         ],
         [
-          "3735601",
+          "1958-01-01",
           "Lloydminster",
           "Britannia No. 502",
           "Saskatchewan",
           "273"
         ],
         [
-          "3735601",
+          "1958-01-01",
           "Lloydminster",
           "Central Alberta",
           "Alberta",
           "14"
         ],
         [
-          "3735601",
+          "1958-01-01",
           "Grande Prairie",
           "Northern Alberta",
           "Alberta",
           "10"
         ],
         [
-          "3735601",
+          "1958-01-01",
           "Campbellton",
           "Restigouche",
           "New Brunswick",
           "83"
         ],
         [
-          "3735601",
+          "1957-04-15",
           "White Rock",
           "Metro Vancouver",
           "British Columbia",
           "70"
         ],
         [
-          "3735601",
+          "1957-03-01",
           "Estevan",
           "Estevan No. 5",
           "Saskatchewan",
           "270"
         ],
         [
-          "3735601",
+          "1957-01-31",
           "Candiac",
           "Montérégie",
           "Quebec",
           "236"
         ],
         [
-          "3735601",
+          "1956-01-01",
           "Corner Brook",
           "5",
           "Newfoundland and Labrador",
           "90"
         ],
         [
-          "3735601",
+          "1955-10-15",
           "Powell River",
           "Powell River",
           "British Columbia",
           "55"
         ],
         [
-          "3735601",
+          "1955-03-15",
           "Langley",
           "Metro Vancouver",
           "British Columbia",
           "42"
         ],
         [
-          "3735601",
+          "1955-01-01",
           "Camrose",
           "Central Alberta",
           "Alberta",
           "5"
         ],
         [
-          "3735601",
+          "1955-01-01",
           "Elliot Lake",
           "Algoma",
           "Ontario",
           "130"
         ],
         [
-          "3735601",
+          "1952-04-01",
           "Edmundston",
           "Madawaska",
           "New Brunswick",
           "85"
         ],
         [
-          "3735601",
+          "1950-06-01",
           "Whitehorse",
           "Whitehorse",
           "Yukon",
           "288"
         ],
         [
-          "3735601",
+          "1950-01-01",
           "Pincourt",
           "Montérégie",
           "Quebec",
           "255"
         ],
         [
-          "3735601",
+          "1948-01-01",
           "Waterloo",
           "Waterloo",
           "Ontario",
           "167"
         ],
         [
-          "3735601",
+          "1947-12-31",
           "Fort St. John",
           "Peace River",
           "British Columbia",
           "35"
         ],
         [
-          "3735601",
+          "1947-06-24",
           "Campbell River",
           "Strathcona",
           "British Columbia",
           "23"
         ],
         [
-          "3735601",
+          "1947-01-01",
           "Rosemère",
           "Laurentides",
           "Quebec",
           "242"
         ],
         [
-          "3735601",
+          "1946-12-31",
           "Steinbach",
           "Eastman",
           "Manitoba",
           "78"
         ],
         [
-          "3735601",
+          "1946-01-01",
           "Boisbriand",
           "Laurentides",
           "Quebec",
           "209"
         ],
         [
-          "3735601",
+          "1945-06-19",
           "Parksville",
           "Nanaimo",
           "British Columbia",
           "49"
         ],
         [
-          "3735601",
+          "1944-03-29",
           "Kimberley",
           "East Kootenay",
           "British Columbia",
           "40"
         ],
         [
-          "3735601",
+          "1936-05-26",
           "Dawson Creek",
           "Peace River",
           "British Columbia",
           "30"
         ],
         [
-          "3735601",
+          "1929-03-15",
           "Williams Lake",
           "Cariboo",
           "British Columbia",
           "71"
         ],
         [
-          "3735601",
+          "1928-03-21",
           "Quesnel",
           "Cariboo",
           "British Columbia",
           "58"
         ],
         [
-          "3735601",
+          "1928-02-01",
           "Yorkton",
           "Orkney No. 244",
           "Saskatchewan",
           "286"
         ],
         [
-          "3735601",
+          "1927-12-31",
           "Terrace",
           "Kitimat-Stikine",
           "British Columbia",
           "64"
         ],
         [
-          "3735601",
+          "1927-01-01",
           "Flin Flon",
           "Manitoba / Saskatchewan",
           "Manitoba",
           "74"
         ],
         [
-          "3735601",
+          "1927-01-01",
           "Flin Flon",
           "Saskatchewan / Manitoba",
           "Saskatchewan",
           "271"
         ],
         [
-          "3735601",
+          "1917-01-01",
           "Welland",
           "Niagara",
           "Ontario",
           "168"
         ],
         [
-          "3735601",
+          "1916-01-01",
           "Kitchener",
           "Waterloo",
           "Ontario",
           "138"
         ],
         [
-          "3735601",
+          "1915-03-06",
           "Prince George",
           "Fraser-Fort George",
           "British Columbia",
           "56"
         ],
         [
-          "3735601",
+          "1915-01-01",
           "Courtenay",
           "Comox Valley",
           "British Columbia",
           "28"
         ],
         [
-          "3735601",
+          "1914-04-25",
           "Pitt Meadows",
           "Metro Vancouver",
           "British Columbia",
           "51"
         ],
         [
-          "3735601",
+          "1914-01-15",
           "Swift Current",
           "Swift Current No. 137",
           "Saskatchewan",
           "283"
         ],
         [
-          "3735601",
+          "1914-01-01",
           "Beloeil",
           "Montérégie",
           "Quebec",
           "227"
         ],
         [
-          "3735601",
+          "1913-09-01",
           "Weyburn",
           "Weyburn No. 67",
           "Saskatchewan",
           "285"
         ],
         [
-          "3735601",
+          "1913-05-01",
           "North Battleford",
           "North Battleford No. 437",
           "Saskatchewan",
           "279"
         ],
         [
-          "3735601",
+          "1913-03-31",
           "Armstrong",
           "North Okanagan",
           "British Columbia",
           "21"
         ],
         [
-          "3735601",
+          "1913-03-25",
           "Red Deer",
           "Central Alberta",
           "Alberta",
           "16"
         ],
         [
-          "3735601",
+          "1913-03-11",
           "Port Moody",
           "Metro Vancouver",
           "British Columbia",
           "54"
         ],
         [
-          "3735601",
+          "1913-03-07",
           "Port Coquitlam",
           "Metro Vancouver",
           "British Columbia",
           "53"
         ],
         [
-          "3735601",
+          "1912-03-04",
           "Duncan",
           "Cowichan Valley",
           "British Columbia",
           "32"
         ],
         [
-          "3735601",
+          "1912-01-01",
           "Timmins",
           "Cochrane",
           "Ontario",
           "164"
         ],
         [
-          "3735601",
+          "1912-01-01",
           "Sault Ste. Marie",
           "Algoma",
           "Ontario",
           "157"
         ],
         [
-          "3735601",
+          "1911-04-01",
           "Merritt",
           "Thompson-Nicola",
           "British Columbia",
           "44"
         ],
         [
-          "3735601",
+          "1910-03-10",
           "Prince Rupert",
           "Skeena-Queen Charlotte",
           "British Columbia",
           "57"
         ],
         [
-          "3735601",
+          "1909-01-01",
           "Penticton",
           "Okanagan-Similkameen",
           "British Columbia",
           "50"
         ],
         [
-          "3735601",
+          "1909-01-01",
           "La Prairie",
           "Montérégie",
           "Quebec",
           "219"
         ],
         [
-          "3735601",
+          "1907-01-01",
           "Portage la Prairie",
           "Central Plains",
           "Manitoba",
           "76"
         ],
         [
-          "3735601",
+          "1906-05-26",
           "Saskatoon",
           "Corman Park No. 344",
           "Saskatchewan",
           "282"
         ],
         [
-          "3735601",
+          "1906-05-09",
           "Wetaskiwin",
           "Central Alberta",
           "Alberta",
           "19"
         ],
         [
-          "3735601",
+          "1906-05-09",
           "Medicine Hat",
           "Southern Alberta",
           "Alberta",
           "15"
         ],
         [
-          "3735601",
+          "1906-05-09",
           "Lethbridge",
           "Southern Alberta",
           "Alberta",
           "13"
         ],
         [
-          "3735601",
+          "1905-11-01",
           "Cranbrook",
           "East Kootenay",
           "British Columbia",
           "29"
         ],
         [
-          "3735601",
+          "1905-07-01",
           "Peterborough",
           "Peterborough",
           "Ontario",
           "150"
         ],
         [
-          "3735601",
+          "1905-05-15",
           "Salmon Arm",
           "Columbia Shuswap",
           "British Columbia",
           "62"
         ],
         [
-          "3735601",
+          "1905-05-04",
           "Kelowna",
           "Central Okanagan",
           "British Columbia",
           "39"
         ],
         [
-          "3735601",
+          "1905-03-01",
           "Enderby",
           "North Okanagan",
           "British Columbia",
           "33"
         ],
         [
-          "3735601",
+          "1904-10-08",
           "Prince Albert",
           "Prince Albert No. 461",
           "Saskatchewan",
           "280"
         ],
         [
-          "3735601",
+          "1904-10-08",
           "Edmonton",
           "Edmonton Metropolitan Region",
           "Alberta",
           "8"
         ],
         [
-          "3735601",
+          "1904-07-28",
           "Fernie",
           "East Kootenay",
           "British Columbia",
           "34"
         ],
         [
-          "3735601",
+          "1903-11-20",
           "Moose Jaw",
           "Moose Jaw No. 161",
           "Saskatchewan",
           "278"
         ],
         [
-          "3735601",
+          "1903-06-19",
           "Regina",
           "Sherwood No. 159",
           "Saskatchewan",
           "281"
         ],
         [
-          "3735601",
+          "1903-06-12",
           "Niagara Falls",
           "Niagara",
           "Ontario",
           "142"
         ],
         [
-          "3735601",
+          "1901-06-14",
           "Trail",
           "Kootenay Boundary",
           "British Columbia",
           "65"
         ],
         [
-          "3735601",
+          "1901-01-01",
           "Dauphin",
           "Parkland",
           "Manitoba",
           "73"
         ],
         [
-          "3670065",
+          "1899-03-01",
           "Revelstoke",
           "Columbia Shuswap",
           "British Columbia",
           "59"
         ],
         [
-          "3670065",
+          "1897-07-12",
           "Greenwood",
           "Kootenay Boundary",
           "British Columbia",
           "37"
         ],
         [
-          "3670065",
+          "1897-04-15",
           "Grand Forks",
           "Kootenay Boundary",
           "British Columbia",
           "36"
         ],
         [
-          "3670065",
+          "1897-03-18",
           "Rossland",
           "Kootenay Boundary",
           "British Columbia",
           "61"
         ],
         [
-          "3670065",
+          "1897-03-18",
           "Nelson",
           "Central Kootenay",
           "British Columbia",
           "46"
         ],
         [
-          "3670065",
+          "1894-01-01",
           "Calgary",
           "Calgary Metropolitan Region",
           "Alberta",
           "4"
         ],
         [
-          "3670065",
+          "1892-12-30",
           "Vernon",
           "North Okanagan",
           "British Columbia",
           "67"
         ],
         [
-          "3670065",
+          "1892-09-22",
           "Burnaby",
           "Metro Vancouver",
           "British Columbia",
           "22"
         ],
         [
-          "3670065",
+          "1892-01-01",
           "Windsor",
           "Essex",
           "Ontario",
           "169"
         ],
         [
-          "3670065",
+          "1891-08-10",
           "North Vancouver",
           "Metro Vancouver",
           "British Columbia",
           "48"
         ],
         [
-          "3670065",
+          "1891-07-25",
           "Coquitlam",
           "Metro Vancouver",
           "British Columbia",
           "27"
         ],
         [
-          "3670065",
+          "1891-01-01",
           "North Bay",
           "Nipissing",
           "Ontario",
           "144"
         ],
         [
-          "3670065",
+          "1891-01-01",
           "Woodstock",
           "Oxford",
           "Ontario",
           "170"
         ],
         [
-          "3670065",
+          "1888-05-01",
           "St. John's",
           "1",
           "Newfoundland and Labrador",
           "92"
         ],
         [
-          "3670065",
+          "1886-04-06",
           "Vancouver",
           "Metro Vancouver",
           "British Columbia",
           "66"
         ],
         [
-          "3670065",
+          "1886-01-01",
           "Stratford",
           "Perth",
           "Ontario",
           "160"
         ],
         [
-          "3670065",
+          "1882-01-01",
           "Brandon",
           "Westman",
           "Manitoba",
           "72"
         ],
         [
-          "3670065",
+          "1882-01-01",
           "Selkirk",
           "Interlake",
           "Manitoba",
           "77"
         ],
         [
-          "3670065",
+          "1881-01-01",
           "St. Thomas",
           "Elgin",
           "Ontario",
           "159"
         ],
         [
-          "3670065",
+          "1879-11-10",
           "Richmond",
           "Metro Vancouver",
           "British Columbia",
           "60"
         ],
         [
-          "3670065",
+          "1879-11-10",
           "Surrey",
           "Metro Vancouver",
           "British Columbia",
           "63"
         ],
         [
-          "3670065",
+          "1879-04-23",
           "Guelph",
           "Wellington",
           "Ontario",
           "132"
         ],
         [
-          "3670065",
+          "1879-04-17",
           "Victoria",
           "Victoria",
           "Nova Scotia",
           "104"
         ],
         [
-          "3670065",
+          "1879-04-17",
           "Barrington",
           "Barrington",
           "Nova Scotia",
           "106"
         ],
         [
-          "3670065",
+          "1879-04-17",
           "Chester",
           "Chester",
           "Nova Scotia",
           "107"
         ],
         [
-          "3670065",
+          "1879-04-17",
           "Clare",
           "Clare",
           "Nova Scotia",
           "108"
         ],
         [
-          "3670065",
+          "1879-04-17",
           "Digby",
           "Digby",
           "Nova Scotia",
           "109"
         ],
         [
-          "3670065",
+          "1879-04-17",
           "Lunenburg",
           "Lunenburg",
           "Nova Scotia",
           "112"
         ],
         [
-          "3670065",
+          "1879-04-17",
           "Guysborough",
           "Guysborough",
           "Nova Scotia",
           "111"
         ],
         [
-          "3670065",
+          "1879-04-17",
           "Pictou",
           "Pictou",
           "Nova Scotia",
           "102"
         ],
         [
-          "3670065",
+          "1879-04-17",
           "Richmond",
           "Richmond",
           "Nova Scotia",
           "103"
         ],
         [
-          "3670065",
+          "1879-04-17",
           "Shelburne",
           "Shelburne",
           "Nova Scotia",
           "113"
         ],
         [
-          "3670065",
+          "1879-04-17",
           "St. Mary's",
           "St. Mary's",
           "Nova Scotia",
           "114"
         ],
         [
-          "3670065",
+          "1879-04-17",
           "West Hants",
           "West Hants",
           "Nova Scotia",
           "115"
         ],
         [
-          "3670065",
+          "1879-04-17",
           "Yarmouth",
           "Yarmouth",
           "Nova Scotia",
           "116"
         ],
         [
-          "3670065",
+          "1879-04-17",
           "East Hants",
           "East Hants",
           "Nova Scotia",
           "110"
         ],
         [
-          "3670065",
+          "1879-04-17",
           "Inverness",
           "Inverness",
           "Nova Scotia",
           "100"
         ],
         [
-          "3670065",
+          "1879-04-17",
           "Cumberland",
           "Cumberland",
           "Nova Scotia",
           "99"
         ],
         [
-          "3670065",
+          "1879-04-17",
           "Colchester",
           "Colchester",
           "Nova Scotia",
           "98"
         ],
         [
-          "3670065",
+          "1879-04-17",
           "Antigonish",
           "Antigonish",
           "Nova Scotia",
           "97"
         ],
         [
-          "3670065",
+          "1879-04-17",
           "Annapolis",
           "Annapolis",
           "Nova Scotia",
           "96"
         ],
         [
-          "3670065",
+          "1879-04-17",
           "Kings",
           "Kings",
           "Nova Scotia",
           "101"
         ],
         [
-          "3670065",
+          "1879-04-17",
           "Argyle",
           "Argyle",
           "Nova Scotia",
           "105"
         ],
         [
-          "3670065",
+          "1878-01-01",
           "Belleville",
           "Hastings",
           "Ontario",
           "120"
         ],
         [
-          "3670065",
+          "1877-05-31",
           "Brantford",
           "Brant",
           "Ontario",
           "123"
         ],
         [
-          "3670065",
+          "1876-01-01",
           "St. Catharines",
           "Niagara",
           "Ontario",
           "158"
         ],
         [
-          "3670065",
+          "1876-01-01",
           "Cowansville",
           "Montérégie",
           "Quebec",
           "247"
         ],
         [
-          "3670065",
+          "1875-12-29",
           "Saint-Lazare",
           "Montérégie",
           "Quebec",
           "232"
         ],
         [
-          "3670065",
+          "1875-01-01",
           "Moncton",
           "Westmorland",
           "New Brunswick",
           "88"
         ],
         [
-          "3670065",
+          "1874-12-24",
           "Nanaimo",
           "Nanaimo",
           "British Columbia",
           "45"
         ],
         [
-          "3670065",
+          "1873-11-08",
           "Winnipeg",
           "Winnipeg Capital",
           "Manitoba",
           "81"
         ],
         [
-          "3670065",
+          "1873-04-26",
           "Chilliwack",
           "Fraser Valley",
           "British Columbia",
           "25"
         ],
         [
-          "3670065",
+          "1871-06-15",
           "Saint-Basile-le-Grand",
           "Montérégie",
           "Quebec",
           "238"
         ],
         [
-          "3670065",
+          "1862-08-02",
           "Victoria",
           "Capital",
           "British Columbia",
           "68"
         ],
         [
-          "3670065",
+          "1860-07-16",
           "New Westminster",
           "Metro Vancouver",
           "British Columbia",
           "47"
         ],
         [
-          "3670065",
+          "1858-01-01",
           "Collingwood",
           "Simcoe",
           "Ontario",
           "299"
         ],
         [
-          "3670065",
+          "1857-01-01",
           "Owen Sound",
           "Grey",
           "Ontario",
           "148"
         ],
         [
-          "3670065",
+          "1855-07-01",
           "L'Île-Perrot",
           "Montérégie",
           "Quebec",
           "263"
         ],
         [
-          "3670065",
+          "1855-07-01",
           "Sainte-Anne-des-Plaines",
           "Laurentides",
           "Quebec",
           "245"
         ],
         [
-          "3670065",
+          "1855-07-01",
           "Saint-Colomban",
           "Laurentides",
           "Quebec",
           "260"
         ],
         [
-          "3670065",
+          "1855-07-01",
           "Mercier",
           "Montérégie",
           "Quebec",
           "262"
         ],
         [
-          "3670065",
+          "1855-04-17",
           "Charlottetown",
           "Queens",
           "Prince Edward Island",
           "171"
         ],
         [
-          "3670065",
+          "1855-01-01",
           "London",
           "Middlesex",
           "Ontario",
           "139"
         ],
         [
-          "3670065",
+          "1850-01-01",
           "Oshawa",
           "Durham",
           "Ontario",
           "146"
         ],
         [
-          "3670065",
+          "1849-06-01",
           "Sainte-Thérèse",
           "Laurentides",
           "Quebec",
           "213"
         ],
         [
-          "3670065",
+          "1846-06-09",
           "Hamilton",
           "Hamilton",
           "Ontario",
           "134"
         ],
         [
-          "3670065",
+          "1832-01-28",
           "Brockville",
           "Leeds and Grenville",
           "Ontario",
           "124"
         ],
         [
-          "3604529",
+          "1785-05-18",
           "Saint John",
           "Saint John County",
           "New Brunswick",
           "89"
         ],
         [
-          "3604529",
+          "1785-04-25",
           "Fredericton",
           "Greater Fredericton",
           "New Brunswick",
           "86"
         ],
         [
-          "3604529",
+          "1784-01-01",
           "Cornwall",
           "Stormont, Dundas and Glengarry",
           "Ontario",
           "128"
         ],
         [
-          "3604529",
+          "1762-01-01",
           "Torbay",
           "1",
           "Newfoundland and Labrador",
@@ -5233,7 +5367,10 @@
     "summary_info": {
       "author": "",
       "comments": "",
+      "created": 132545154289680000,
       "keywords": "",
+      "last_printed": null,
+      "last_saved": 132547702494180000,
       "last_saved_by": "",
       "revision_number": "36",
       "save_with_preview": true,

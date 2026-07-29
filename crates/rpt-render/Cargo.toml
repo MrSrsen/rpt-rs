@@ -12,34 +12,26 @@ categories.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-rpt = { workspace = true, features = ["serde"] }
-crystal-formula = { workspace = true }
+rpt-reader = { workspace = true, features = ["serde"] }
+rpt-formula = { workspace = true }
 rpt-data = { workspace = true }
 rpt-layout = { workspace = true }
 rpt-pages = { workspace = true }
-rpt-render-svg = { workspace = true }
-rpt-render-raster = { workspace = true }
 rpt-render-pdf = { workspace = true }
-rpt-render-html = { workspace = true }
-rpt-text = { workspace = true, optional = true, features = ["cosmic"] }
+rpt-text = { workspace = true, features = ["cosmic"] }
+thiserror = { workspace = true }
 
 [dev-dependencies]
 # Full-stack data-driven render tests: seed a committed portable SQL fixture into PostgreSQL, feed the
-# rows through the pipeline, and check the HTML against a committed baseline. PostgreSQL is the single
-# DB technology for the render-parity corpus — the SAME database the native Crystal engine reads out-of-
-# band — so the only variable under test is rendering, not the datasource. The test skips when no
+# rows through the pipeline, and check the Page IR against a committed baseline. PostgreSQL is the single
+# DB technology for the render-test corpus, so the only variable under test is rendering, not the
+# datasource. The test skips when no
 # `RPT_DB_URL`/`DATABASE_URL` is set, so a DB-less `cargo test` stays green (CI provides a service).
 rpt-db-postgres = { workspace = true }
 rpt-test-support = { workspace = true }
+# Serializes the document-scoped half of the Page IR into the page-ir baselines.
+serde_json = { workspace = true }
 similar = { workspace = true }
-
-[features]
-# `cosmic` swaps the default text layout to the font-accurate cosmic-text stack (real hmtx advances
-# + Unicode/CJK line-breaking). On by default for native builds; disable it (`--no-default-features`)
-# for wasm32, where cosmic-text's system-font scan (std::fs) is unavailable — a WASM host injects a
-# font-loaded `CosmicLayout` via `render_dataset_with` instead.
-default = ["cosmic"]
-cosmic = ["dep:rpt-text"]
 
 [lints]
 workspace = true

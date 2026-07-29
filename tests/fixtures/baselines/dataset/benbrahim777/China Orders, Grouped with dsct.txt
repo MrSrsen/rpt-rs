@@ -1,0 +1,49 @@
+# L2 dataset snapshot: benbrahim777/China Orders, Grouped with dsct
+row_count: 9
+
+columns (4):
+    0 Customer.Customer Name : String
+    1 Customer.Region : String
+    2 Orders.Order Amount : Currency
+    3 Customer.Country : String
+
+params (0):
+
+formulas (1):
+  @Discount WhileReadingRecords
+
+diagnostics (0):
+
+grand_total (1):
+  Sum(Orders.Order Amount) = Cur 12526.5
+
+groups (5):
+  level 0 field=Customer.Region key=Str "Guangdong"
+    summaries (1):
+      Sum(Orders.Order Amount) = Cur 2939.85
+    details (1):
+      ri=0 | Str "Yue Xiu Bicycles" | Str "Guangdong" | Cur 2939.85 | Str "China" || @Discount=Str "No discount."
+  level 0 field=Customer.Region key=Str "Hong Kong SAR"
+    summaries (1):
+      Sum(Orders.Order Amount) = Cur 3513.45
+    details (5):
+      ri=1 | Str "AIC Childrens" | Str "Hong Kong SAR" | Cur 101.7 | Str "China" || @Discount=Str "No discount."
+      ri=2 | Str "C&C Sports People" | Str "Hong Kong SAR" | Cur 1529.7 | Str "China" || @Discount=Str "No discount."
+      ri=3 | Str "Newpeople Biking Ltd." | Str "Hong Kong SAR" | Cur 101.7 | Str "China" || @Discount=Str "No discount."
+      ri=4 | Str "Globe Bike" | Str "Hong Kong SAR" | Cur 1739.85 | Str "China" || @Discount=Str "No discount."
+      ri=5 | Str "Galaxy Outdoors" | Str "Hong Kong SAR" | Cur 40.5 | Str "China" || @Discount=Str "No discount."
+  level 0 field=Customer.Region key=Str "Shanghai"
+    summaries (1):
+      Sum(Orders.Order Amount) = Cur 125.7
+    details (1):
+      ri=6 | Str "Min Dong Toy Store" | Str "Shanghai" | Cur 125.7 | Str "China" || @Discount=Str "No discount."
+  level 0 field=Customer.Region key=Str "Sichuan"
+    summaries (1):
+      Sum(Orders.Order Amount) = Cur 67.8
+    details (1):
+      ri=7 | Str "Hao Nannu Outdoors" | Str "Sichuan" | Cur 67.8 | Str "China" || @Discount=Str "No discount."
+  level 0 field=Customer.Region key=Str "Tianjin"
+    summaries (1):
+      Sum(Orders.Order Amount) = Cur 5879.7
+    details (1):
+      ri=8 | Str "JinJing Sports" | Str "Tianjin" | Cur 5879.7 | Str "China" || @Discount=Str "Apply 5% discount."

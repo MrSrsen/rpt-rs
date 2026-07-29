@@ -1,10 +1,10 @@
 //! Row sources: the typed rows a report's pipeline consumes.
 //!
-//! [`RowSource`] is the seam the native query-engine / saved-data feed sits behind.
-//! [`SavedDataSource`] reads the stored rows `rpt` already decodes; a live SQL source is
-//! a future native-only impl behind the same trait.
+//! [`RowSource`] is the seam a report's rows are fetched behind — the report's saved data, or a
+//! live database query. [`SavedDataSource`] reads the stored rows `rpt-reader` decodes; the
+//! live-DB backends (`rpt-db-postgres`, `rpt-db-sqlite`) implement the same trait natively.
 
-use crystal_formula::eval::{Date, Time, Value};
+use rpt_formula::eval::{Date, Time, Value};
 use rpt_model::{FieldValueType, Report, SavedData};
 use std::collections::BTreeMap;
 use std::sync::Arc;
@@ -116,7 +116,7 @@ fn short_name(name: &str) -> String {
 /// ```
 /// use rpt_data::{build_dataset, Column, Row, RowSource};
 /// use rpt_model::{DataDefinition, FieldValueType};
-/// use crystal_formula::eval::Value;
+/// use rpt_formula::eval::Value;
 ///
 /// struct InMemory {
 ///     columns: Vec<Column>,
@@ -169,6 +169,23 @@ pub trait RowSource {
     /// that does no conversion (or does not track it) needs no change.
     fn coercions(&self) -> Vec<ColumnCoercion> {
         Vec::new()
+    }
+
+    /// Whether these rows have **already passed** the report's record selection.
+    ///
+    /// A saved batch is the result set as it stood *after* selection ran, so re-evaluating
+    /// [`record_selection`](rpt_model::DataDefinition::record_selection) over it is at best a no-op
+    /// and at worst drops rows the report is meant to show — whenever a parameter, a date-relative
+    /// term, or a string comparison the database resolved under its own collation evaluates
+    /// differently now than it did then. A source that reports `true` is filtered instead by the
+    /// report's [`saved_data_filter`](rpt_model::DataDefinition::saved_data_filter), the formula the
+    /// engine applies to an already-fetched rowset.
+    ///
+    /// `false` (the default) is the live-fetch answer: `rpt-query` pushes only the translatable
+    /// subset of the selection into the SQL `WHERE`, so the pipeline must still evaluate the whole
+    /// formula itself.
+    fn already_selected(&self) -> bool {
+        false
     }
 }
 
@@ -355,6 +372,10 @@ impl RowSource for SavedDataSource {
     fn coercions(&self) -> Vec<ColumnCoercion> {
         self.coercions.clone()
     }
+    /// A stored batch is what the engine had after selection ran, so the pipeline must not re-run it.
+    fn already_selected(&self) -> bool {
+        true
+    }
 }
 
 /// Convert a raw fetched cell (a [`Cell`] + its declared type) to a runtime [`Value`].
@@ -446,16 +467,17 @@ fn convert(value_type: FieldValueType, cell: Option<&Cell>) -> Value {
             None => Value::Null,
         },
         // Date/time fields arrive one of two ways: ISO text (`2024-01-03`, `09:12:00`,
-        // `2024-01-03 09:12:00`) from the live-DB `::text` cast, or an integer Julian-day serial
-        // (`2460312`) from a saved-data batch, which stores dates as integers. Type them either way
-        // so the pipeline can group/sort/format them as dates (date-group bucketing, comparison, and
-        // locale display all depend on this). An unparseable value falls back to a plain string.
+        // `2024-01-03 09:12:00`) from the live-DB `::text` cast, or an integer serial from a
+        // saved-data batch, which stores them as integers — a Julian day (`2460312`), a
+        // seconds-since-midnight count, or the two packed into one datetime serial. Type them either
+        // way so the pipeline can group/sort/format them as dates (date-group bucketing, comparison,
+        // and locale display all depend on this). An unparseable value falls back to a plain string.
         T::Date => cell
             .and_then(|t| parse_date_cell(t))
             .map(Value::Date)
             .unwrap_or_else(|| str_or_null(cell)),
         T::Time => cell
-            .and_then(|t| parse_iso_time(t))
+            .and_then(|t| parse_time_cell(t))
             .map(Value::Time)
             .unwrap_or_else(|| str_or_null(cell)),
         T::DateTime => cell
@@ -789,16 +811,47 @@ fn str_or_null(cell: Option<&String>) -> Value {
     }
 }
 
-/// A date cell is either ISO text (live-DB cast) or an integer Julian-day serial (saved batch).
+/// A date cell is either ISO text (live-DB cast) or an integer Julian-day serial (saved batch). A
+/// saved `Date` is a 4-byte day count, so it has no time half to carry.
 fn parse_date_cell(s: &str) -> Option<Date> {
     parse_iso_date(s).or_else(|| parse_serial(s).map(Date::from_julian_serial))
 }
 
-/// A datetime cell is either ISO text or an integer Julian-day serial. A saved-batch serial carries
-/// only the date part (an `i32` day serial), so its time defaults to midnight.
+/// A time cell is either ISO text (live-DB cast) or an integer seconds-since-midnight serial, the
+/// 4-byte form a saved batch stores a `Time` field in.
+fn parse_time_cell(s: &str) -> Option<Time> {
+    parse_iso_time(s).or_else(|| {
+        parse_serial(s)
+            .filter(|&n| day_seconds(n))
+            .map(Time::from_seconds)
+    })
+}
+
+/// A datetime cell is either ISO text or an integer serial. A saved batch stores a `DateTime` as an
+/// 8-byte scalar packing two `u32` halves — the Julian day number low, the seconds since midnight
+/// high, i.e. `raw = jdn + seconds * 2^32` — the same `(julian_day, time_fraction)` pair the format
+/// uses for a stored timestamp. A midnight value leaves the high half zero and so reads as a bare
+/// day serial, which is what a whole-day column looks like.
 fn parse_datetime_cell(s: &str) -> Option<(Date, Time)> {
-    parse_iso_datetime(s)
-        .or_else(|| parse_serial(s).map(|n| (Date::from_julian_serial(n), Time::new(0, 0, 0))))
+    parse_iso_datetime(s).or_else(|| parse_serial(s).and_then(unpack_datetime_serial))
+}
+
+/// Split a packed saved-batch `DateTime` serial into its day and time halves. A serial whose time
+/// half is not a valid seconds-since-midnight count is not this encoding and is rejected, so the
+/// cell keeps its text rather than becoming a fabricated date.
+fn unpack_datetime_serial(n: i64) -> Option<(Date, Time)> {
+    let seconds = n >> 32;
+    day_seconds(seconds).then(|| {
+        (
+            Date::from_julian_serial(n & 0xFFFF_FFFF),
+            Time::from_seconds(seconds),
+        )
+    })
+}
+
+/// Whether a serial is a whole number of seconds within one day.
+fn day_seconds(n: i64) -> bool {
+    (0..86_400).contains(&n)
 }
 
 /// Parse an integer date serial, tolerating a trailing `.0` fraction from a numeric text cast.
@@ -973,10 +1026,46 @@ mod tests {
             cell_to_value(T::Date, Some(&text("not-a-date"))),
             Value::Str("not-a-date".to_string())
         );
+        // Saved-batch path: a bare seconds-since-midnight serial for a Time field.
+        assert_eq!(
+            cell_to_value(T::Time, Some(&text("33300"))),
+            Value::Time(Time::new(9, 15, 0))
+        );
+        // A serial that is no valid time of day is not this encoding — keep the text.
+        assert_eq!(
+            cell_to_value(T::Time, Some(&text("86400"))),
+            Value::Str("86400".to_string())
+        );
         // A binary column keeps its raw bytes as `Value::Bytes`.
         assert_eq!(
             cell_to_value(T::Blob, Some(&Cell::Bytes(vec![1, 2, 3]))),
             Value::Bytes(vec![1, 2, 3])
+        );
+    }
+
+    #[test]
+    fn a_packed_datetime_serial_keeps_its_time_of_day() {
+        use FieldValueType as T;
+        let text = |s: &str| Cell::Text(s.to_string());
+        // `raw = jdn + seconds * 2^32`, so both halves must survive. Midnight is the degenerate
+        // case with an all-zero time half; a nonzero one must not decode to midnight.
+        for (raw, y, m, d, hh, mm, ss) in [
+            (143_022_413_417_913_i64, 2026, 3, 14, 9, 15, 0),
+            (325_988_020_227_513, 2026, 3, 14, 21, 5, 0),
+            (79_628_696_128_954, 2026, 3, 15, 5, 9, 0),
+            (2_461_114, 2026, 3, 15, 0, 0, 0),
+        ] {
+            assert_eq!(
+                cell_to_value(T::DateTime, Some(&text(&raw.to_string()))),
+                Value::DateTime(Date::new(y, m, d), Time::new(hh, mm, ss)),
+                "packed serial {raw}"
+            );
+        }
+        // A serial whose time half is no valid time of day is not this encoding — keep the text.
+        let impossible = (86_400_i64 << 32) + 2_461_114;
+        assert_eq!(
+            cell_to_value(T::DateTime, Some(&text(&impossible.to_string()))),
+            Value::Str(impossible.to_string())
         );
     }
 

@@ -2,20 +2,14 @@
 #
 # Licenses are intentionally NOT configured or checked here — license policy is owned by a separate
 # effort. The CI job runs `cargo deny check advisories bans sources`, so the missing [licenses]
-# section is never evaluated. Keep it that way until the license gate lands.
+# section is never evaluated.
 
 [advisories]
 # Fail on any RUSTSEC vulnerability. Add advisory IDs here to record a reviewed, time-boxed waiver.
 ignore = [
-  # `rustybuzz` is unmaintained (no vulnerability). It is a transitive dependency of krilla's
-  # `simple-text` feature, which is how the PDF backend shapes text; there is no version of krilla
-  # that drops it. Upstream's replacement is harfrust, which krilla has not migrated to. Nothing we
-  # can fix from here — waived until krilla switches shapers.
-  "RUSTSEC-2026-0206",
-  # `ttf-parser` is unmaintained (no vulnerability). Reached twice and only transitively: fontdb /
-  # rustybuzz pull 0.25, fontdue pulls 0.21. Both are font parsing in dependencies we do not
-  # control, and the replacement (skrifa) is an upstream migration, not ours. Waived until the font
-  # stack's dependencies move.
+  # `ttf-parser` is unmaintained (no vulnerability). Reached as 0.25 through fontdb, and used
+  # directly by rpt-text for cmap coverage lookups at the version fontdb already pins. Moving off it
+  # means fontdb moving to its replacement (skrifa) first, which is an upstream decision.
   "RUSTSEC-2026-0192",
 ]
 # A dependency pinned to a yanked crates.io release is a warning, not a hard failure.
@@ -23,7 +17,7 @@ yanked = "warn"
 
 [bans]
 # Duplicate versions and wildcard version requirements are surfaced (drift signal) but do not fail
-# the build — the dependency tree legitimately carries a few duplicates today.
+# the build — the dependency tree legitimately carries a few duplicates.
 multiple-versions = "warn"
 wildcards = "warn"
 

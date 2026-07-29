@@ -1,0 +1,164 @@
+# L2 dataset snapshot: synthetic/nested_group3
+row_count: 34
+
+columns (5):
+    0 probe_nested_group3.region : String
+    1 probe_nested_group3.team : String
+    2 probe_nested_group3.rep : String
+    3 probe_nested_group3.sale_amount : Number
+    4 probe_nested_group3.id : Int32s
+
+params (0):
+
+formulas (6):
+  @LblColHeadRep BeforeReadingRecords
+  @LblColHeadAmt BeforeReadingRecords
+  @LblRepTotal BeforeReadingRecords
+  @LblTeamTotal BeforeReadingRecords
+  @LblRegionTotal BeforeReadingRecords
+  @LblGrandTotal BeforeReadingRecords
+
+diagnostics (0):
+
+grand_total (1):
+  Sum(probe_nested_group3.sale_amount) = Num 4221.6
+
+groups (3):
+  level 0 field=probe_nested_group3.region key=Str "North"
+    summaries (1):
+      Sum(probe_nested_group3.sale_amount) = Num 2031.6
+    subgroups (3):
+      level 1 field=probe_nested_group3.team key=Str "Team A"
+        summaries (1):
+          Sum(probe_nested_group3.sale_amount) = Num 640.85
+        subgroups (2):
+          level 2 field=probe_nested_group3.rep key=Str "R01"
+            summaries (1):
+              Sum(probe_nested_group3.sale_amount) = Num 215.5
+            details (2):
+              ri=0 | Str "North" | Str "Team A" | Str "R01" | Num 120 | Num 1 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+              ri=1 | Str "North" | Str "Team A" | Str "R01" | Num 95.5 | Num 2 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+          level 2 field=probe_nested_group3.rep key=Str "R02"
+            summaries (1):
+              Sum(probe_nested_group3.sale_amount) = Num 425.35
+            details (3):
+              ri=2 | Str "North" | Str "Team A" | Str "R02" | Num 200 | Num 3 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+              ri=3 | Str "North" | Str "Team A" | Str "R02" | Num 150.25 | Num 4 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+              ri=4 | Str "North" | Str "Team A" | Str "R02" | Num 75.1 | Num 5 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+      level 1 field=probe_nested_group3.team key=Str "Team B"
+        summaries (1):
+          Sum(probe_nested_group3.sale_amount) = Num 605.75
+        subgroups (2):
+          level 2 field=probe_nested_group3.rep key=Str "R03"
+            summaries (1):
+              Sum(probe_nested_group3.sale_amount) = Num 400
+            details (2):
+              ri=5 | Str "North" | Str "Team B" | Str "R03" | Num 310 | Num 6 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+              ri=6 | Str "North" | Str "Team B" | Str "R03" | Num 90 | Num 7 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+          level 2 field=probe_nested_group3.rep key=Str "R04"
+            summaries (1):
+              Sum(probe_nested_group3.sale_amount) = Num 205.75
+            details (2):
+              ri=7 | Str "North" | Str "Team B" | Str "R04" | Num 60 | Num 8 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+              ri=8 | Str "North" | Str "Team B" | Str "R04" | Num 145.75 | Num 9 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+      level 1 field=probe_nested_group3.team key=Str "Team C"
+        summaries (1):
+          Sum(probe_nested_group3.sale_amount) = Num 785
+        subgroups (3):
+          level 2 field=probe_nested_group3.rep key=Str "R05"
+            summaries (1):
+              Sum(probe_nested_group3.sale_amount) = Num 300
+            details (2):
+              ri=9 | Str "North" | Str "Team C" | Str "R05" | Num 220 | Num 10 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+              ri=10 | Str "North" | Str "Team C" | Str "R05" | Num 80 | Num 11 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+          level 2 field=probe_nested_group3.rep key=Str "R06"
+            summaries (1):
+              Sum(probe_nested_group3.sale_amount) = Num 255
+            details (2):
+              ri=11 | Str "North" | Str "Team C" | Str "R06" | Num 65 | Num 12 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+              ri=12 | Str "North" | Str "Team C" | Str "R06" | Num 190 | Num 13 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+          level 2 field=probe_nested_group3.rep key=Str "R07"
+            summaries (1):
+              Sum(probe_nested_group3.sale_amount) = Num 230
+            details (2):
+              ri=13 | Str "North" | Str "Team C" | Str "R07" | Num 100 | Num 14 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+              ri=14 | Str "North" | Str "Team C" | Str "R07" | Num 130 | Num 15 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+  level 0 field=probe_nested_group3.region key=Str "South"
+    summaries (1):
+      Sum(probe_nested_group3.sale_amount) = Num 1280
+    subgroups (2):
+      level 1 field=probe_nested_group3.team key=Str "Team D"
+        summaries (1):
+          Sum(probe_nested_group3.sale_amount) = Num 585
+        subgroups (2):
+          level 2 field=probe_nested_group3.rep key=Str "R08"
+            summaries (1):
+              Sum(probe_nested_group3.sale_amount) = Num 280
+            details (3):
+              ri=15 | Str "South" | Str "Team D" | Str "R08" | Num 175 | Num 16 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+              ri=16 | Str "South" | Str "Team D" | Str "R08" | Num 60 | Num 17 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+              ri=17 | Str "South" | Str "Team D" | Str "R08" | Num 45 | Num 18 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+          level 2 field=probe_nested_group3.rep key=Str "R09"
+            summaries (1):
+              Sum(probe_nested_group3.sale_amount) = Num 305
+            details (2):
+              ri=18 | Str "South" | Str "Team D" | Str "R09" | Num 210 | Num 19 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+              ri=19 | Str "South" | Str "Team D" | Str "R09" | Num 95 | Num 20 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+      level 1 field=probe_nested_group3.team key=Str "Team E"
+        summaries (1):
+          Sum(probe_nested_group3.sale_amount) = Num 695
+        subgroups (3):
+          level 2 field=probe_nested_group3.rep key=Str "R10"
+            summaries (1):
+              Sum(probe_nested_group3.sale_amount) = Num 200
+            details (2):
+              ri=20 | Str "South" | Str "Team E" | Str "R10" | Num 130 | Num 21 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+              ri=21 | Str "South" | Str "Team E" | Str "R10" | Num 70 | Num 22 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+          level 2 field=probe_nested_group3.rep key=Str "R11"
+            summaries (1):
+              Sum(probe_nested_group3.sale_amount) = Num 295
+            details (2):
+              ri=22 | Str "South" | Str "Team E" | Str "R11" | Num 55 | Num 23 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+              ri=23 | Str "South" | Str "Team E" | Str "R11" | Num 240 | Num 24 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+          level 2 field=probe_nested_group3.rep key=Str "R12"
+            summaries (1):
+              Sum(probe_nested_group3.sale_amount) = Num 200
+            details (2):
+              ri=24 | Str "South" | Str "Team E" | Str "R12" | Num 85 | Num 25 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+              ri=25 | Str "South" | Str "Team E" | Str "R12" | Num 115 | Num 26 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+  level 0 field=probe_nested_group3.region key=Str "West"
+    summaries (1):
+      Sum(probe_nested_group3.sale_amount) = Num 910
+    subgroups (2):
+      level 1 field=probe_nested_group3.team key=Str "Team F"
+        summaries (1):
+          Sum(probe_nested_group3.sale_amount) = Num 495
+        subgroups (2):
+          level 2 field=probe_nested_group3.rep key=Str "R13"
+            summaries (1):
+              Sum(probe_nested_group3.sale_amount) = Num 200
+            details (2):
+              ri=26 | Str "West" | Str "Team F" | Str "R13" | Num 140 | Num 27 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+              ri=27 | Str "West" | Str "Team F" | Str "R13" | Num 60 | Num 28 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+          level 2 field=probe_nested_group3.rep key=Str "R14"
+            summaries (1):
+              Sum(probe_nested_group3.sale_amount) = Num 295
+            details (2):
+              ri=28 | Str "West" | Str "Team F" | Str "R14" | Num 95 | Num 29 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+              ri=29 | Str "West" | Str "Team F" | Str "R14" | Num 200 | Num 30 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+      level 1 field=probe_nested_group3.team key=Str "Team G"
+        summaries (1):
+          Sum(probe_nested_group3.sale_amount) = Num 415
+        subgroups (2):
+          level 2 field=probe_nested_group3.rep key=Str "R15"
+            summaries (1):
+              Sum(probe_nested_group3.sale_amount) = Num 255
+            details (2):
+              ri=30 | Str "West" | Str "Team G" | Str "R15" | Num 75 | Num 31 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+              ri=31 | Str "West" | Str "Team G" | Str "R15" | Num 180 | Num 32 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+          level 2 field=probe_nested_group3.rep key=Str "R16"
+            summaries (1):
+              Sum(probe_nested_group3.sale_amount) = Num 160
+            details (2):
+              ri=32 | Str "West" | Str "Team G" | Str "R16" | Num 110 | Num 33 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"
+              ri=33 | Str "West" | Str "Team G" | Str "R16" | Num 50 | Num 34 || @LblColHeadRep=Str "Rep" || @LblColHeadAmt=Str "Sale amount" || @LblRepTotal=Str "Rep total:" || @LblTeamTotal=Str "Team total:" || @LblRegionTotal=Str "REGION TOTAL:" || @LblGrandTotal=Str "GRAND TOTAL"

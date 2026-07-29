@@ -1,5 +1,10 @@
 {
   "model": {
+    "authoring_version": {
+      "letter": 0,
+      "major": 12,
+      "minor": 0
+    },
     "data_definition": {
       "condition_formula_bodies": [],
       "custom_functions": [],
@@ -78,6 +83,7 @@
               "is_percentage_summary": false,
               "operation": "Sum",
               "operation_parameter": 0,
+              "second_group_for_percentage": null,
               "secondary_summarized_field": "",
               "summarized_field": "Orders.Order Amount"
             }
@@ -835,12 +841,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -860,12 +861,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -904,7 +900,7 @@
                   },
                   "kind": {
                     "CrossTab": {
-                      "column_axis_options": 0,
+                      "column_level_count": 0,
                       "columns": [
                         {
                           "field_ref": "",
@@ -950,6 +946,7 @@
                         "Customer.Region"
                       ],
                       "grid_format": {
+                        "cell_count": 20,
                         "cells": [
                           {
                             "background_color": null,
@@ -1052,7 +1049,6 @@
                             "flags": 0
                           }
                         ],
-                        "raw": 20,
                         "style": {
                           "column_grand_total_color": {
                             "a": 255,
@@ -1076,12 +1072,6 @@
                           "suppress_row_grand_totals": false
                         }
                       },
-                      "measures": [
-                        {
-                          "field": "Orders.Order Amount",
-                          "operation": "Sum"
-                        }
-                      ],
                       "options": {
                         "column_grand_total_color": null,
                         "keep_columns_together": true,
@@ -1094,7 +1084,7 @@
                         "suppress_empty_rows": false,
                         "suppress_row_grand_totals": false
                       },
-                      "row_axis_options": 0,
+                      "row_level_count": 0,
                       "rows": [
                         {
                           "field_ref": "",
@@ -1114,17 +1104,11 @@
                   "name": "CrossTab1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1198,6 +1182,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -1221,17 +1206,11 @@
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1298,11 +1277,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -1316,11 +1320,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1338,30 +1346,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "GroupName",
                       "summary_code": null,
-                      "value_type": "String"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1435,6 +1443,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -1458,17 +1467,11 @@
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1542,6 +1545,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -1565,17 +1569,11 @@
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1642,11 +1640,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -1660,11 +1683,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1682,30 +1709,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "GroupName",
                       "summary_code": null,
-                      "value_type": "String"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1779,6 +1806,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": false,
@@ -1802,17 +1830,11 @@
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1879,11 +1901,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": false
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "YearMonthDay",
                           "day": "LeadingZeroNumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
                           "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "ShortYear"
                         },
@@ -1892,16 +1939,20 @@
                           "separator": "  "
                         },
                         "numeric": {
-                          "currency_position": "LeadingCurrencyOutsideNegative",
-                          "currency_symbol": "FloatingSymbol",
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
                           "currency_symbol_text": "$",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
-                          "negative": "Bracketed",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1919,9 +1970,15 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Summary",
@@ -1932,17 +1989,11 @@
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2009,11 +2060,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": false
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "YearMonthDay",
                           "day": "LeadingZeroNumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
                           "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "ShortYear"
                         },
@@ -2022,16 +2098,20 @@
                           "separator": "  "
                         },
                         "numeric": {
-                          "currency_position": "LeadingCurrencyOutsideNegative",
-                          "currency_symbol": "FloatingSymbol",
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
                           "currency_symbol_text": "$",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
-                          "negative": "Bracketed",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2049,9 +2129,15 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Summary",
@@ -2062,17 +2148,11 @@
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2139,11 +2219,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": false
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "YearMonthDay",
                           "day": "LeadingZeroNumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
                           "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "ShortYear"
                         },
@@ -2152,16 +2257,20 @@
                           "separator": "  "
                         },
                         "numeric": {
-                          "currency_position": "LeadingCurrencyOutsideNegative",
-                          "currency_symbol": "FloatingSymbol",
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
                           "currency_symbol_text": "$",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
-                          "negative": "Bracketed",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2179,9 +2288,15 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Summary",
@@ -2192,17 +2307,11 @@
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2269,11 +2378,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": false
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "YearMonthDay",
                           "day": "LeadingZeroNumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
                           "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "ShortYear"
                         },
@@ -2282,16 +2416,20 @@
                           "separator": "  "
                         },
                         "numeric": {
-                          "currency_position": "LeadingCurrencyOutsideNegative",
-                          "currency_symbol": "FloatingSymbol",
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
                           "currency_symbol_text": "$",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
-                          "negative": "Bracketed",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2309,9 +2447,15 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Summary",
@@ -2322,17 +2466,11 @@
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2374,44 +2512,76 @@
                       "category_refs": [],
                       "data_refs": [],
                       "definition": {
+                        "bar_size": "Large",
                         "category_period": null,
                         "category_refs": [],
+                        "chart_color": "Color",
                         "data_axis_title": "Sum of Order Amount",
                         "data_label": "",
                         "data_labels_show_value": false,
+                        "data_point": "None",
                         "data_refs": [],
+                        "data_value_number_format": "NoDecimal",
                         "element_fonts": [
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 700
                           },
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 400
                           },
                           {
+                            "is_default": true,
+                            "italic": true,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 700
                           },
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 700
                           },
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 700
                           },
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 700
                           },
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 400
                           },
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 400
+                          },
+                          {
+                            "is_default": true,
+                            "italic": false,
+                            "name": "Arial",
+                            "weight": 0
+                          },
+                          {
+                            "is_default": true,
+                            "italic": false,
+                            "name": "Arial",
+                            "weight": 400
                           }
                         ],
                         "footnote": "",
@@ -2419,13 +2589,42 @@
                         "graph_type": "Bar",
                         "group_axis_gridlines": "None",
                         "group_axis_title": "Product Type Name",
+                        "is_vertical_bar": true,
                         "layout_type": "CrossTab",
+                        "legend_layout": "Percentage",
                         "legend_position": "Right",
                         "legend_visible": true,
+                        "marker_shape": "Rectangle",
+                        "marker_size": "Medium",
+                        "pie_size": "Large",
+                        "series_axis_auto_range": true,
+                        "series_axis_auto_scale": false,
+                        "series_axis_division_method": "Automatic",
+                        "series_axis_divisions": 1,
+                        "series_axis_gridlines": "None",
+                        "series_axis_max": 0.0,
+                        "series_axis_min": 0.0,
+                        "series_axis_number_format": "NoDecimal",
                         "series_colors": [],
+                        "slice_detachment": "NoDetachment",
                         "subtitle": "",
                         "title": "Sales by Product Type and Province",
+                        "value_axis2_auto_range": true,
+                        "value_axis2_auto_scale": false,
+                        "value_axis2_division_method": "Automatic",
+                        "value_axis2_divisions": 1,
+                        "value_axis2_gridlines": "None",
+                        "value_axis2_max": 0.0,
+                        "value_axis2_min": 0.0,
+                        "value_axis2_number_format": "NoDecimal",
+                        "value_axis_auto_range": true,
+                        "value_axis_auto_scale": false,
+                        "value_axis_division_method": "Automatic",
+                        "value_axis_divisions": 1,
                         "value_axis_gridlines": "Major",
+                        "value_axis_max": 0.0,
+                        "value_axis_min": 0.0,
+                        "value_axis_number_format": "NoDecimal",
                         "view_angle": "Standard"
                       }
                     }
@@ -2433,11 +2632,9 @@
                   "name": "Graph1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 }
               ],
-              "section_code": 6000,
               "width": 0
             }
           ]
@@ -2464,12 +2661,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -2489,12 +2681,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2561,11 +2748,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -2579,11 +2791,15 @@
                           "currency_symbol_text": "$",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2601,24 +2817,28 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Special",
                       "summary_code": null,
-                      "value_type": "Date"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "PrintDate1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 }
               ],
-              "section_code": 12000,
               "width": 0
             }
           ]
@@ -2645,12 +2865,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -2668,7 +2883,6 @@
               "kind": "Detail",
               "name": "DetailSection1",
               "objects": [],
-              "section_code": 24000,
               "width": 0
             }
           ]
@@ -2695,12 +2909,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -2718,7 +2927,6 @@
               "kind": "ReportFooter",
               "name": "ReportFooterSection1",
               "objects": [],
-              "section_code": 48000,
               "width": 0
             }
           ]
@@ -2745,12 +2953,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -2770,12 +2973,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2842,11 +3040,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "YearMonthDay",
                           "day": "LeadingZeroNumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
                           "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "ShortYear"
                         },
@@ -2860,11 +3083,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 0,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToUnit",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2882,29 +3109,35 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Special",
                       "summary_code": null,
-                      "value_type": "Int32u"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "PageNumber1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 42000
+                  }
                 }
               ],
-              "section_code": 42000,
               "width": 0
             }
           ]
         }
-      ]
+      ],
+      "kind": "ColumnarReport",
+      "style": "Standard"
     },
     "report_options": {
       "convert_null_field_to_default": false,
@@ -2963,1249 +3196,1249 @@
         [
           "BC",
           "Helmets",
-          "581196",
+          "5811.96",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "581196",
+          "5811.96",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "581196",
+          "5811.96",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "1088679",
+          "10886.79",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "1088679",
+          "10886.79",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "1088679",
+          "10886.79",
           "Canada"
         ],
         [
           "BC",
           "Locks",
-          "3570",
+          "35.7",
           "Canada"
         ],
         [
           "BC",
           "Saddles",
-          "273555",
+          "2735.55",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "273555",
+          "2735.55",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "5390",
+          "53.9",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "248940",
+          "2489.4",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "248940",
+          "2489.4",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "47985",
+          "479.85",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "10170",
+          "101.7",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "21560",
+          "215.6",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "21560",
+          "215.6",
           "Canada"
         ],
         [
           "BC",
           "Locks",
-          "614899",
+          "6148.99",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "614899",
+          "6148.99",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "614899",
+          "6148.99",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "10780",
+          "107.8",
           "Canada"
         ],
         [
           "BC",
           "Locks",
-          "4380",
+          "43.8",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "881955",
+          "8819.55",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "2700",
+          "27",
           "Canada"
         ],
         [
           "BC",
           "Locks",
-          "11370",
+          "113.7",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "95970",
+          "959.7",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "297085",
+          "2970.85",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "297085",
+          "2970.85",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "8330",
+          "83.3",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "8330",
+          "83.3",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "881955",
+          "8819.55",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "883746",
+          "8837.46",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "883746",
+          "8837.46",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "8611",
+          "86.11",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "8611",
+          "86.11",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "531204",
+          "5312.04",
           "Canada"
         ],
         [
           "BC",
           "Hybrid",
-          "531204",
+          "5312.04",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "4050",
+          "40.5",
           "Canada"
         ],
         [
           "BC",
           "Kids",
-          "54870",
+          "548.7",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "112742",
+          "1127.42",
           "Canada"
         ],
         [
           "BC",
           "Hybrid",
-          "112742",
+          "1127.42",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "6780",
+          "67.8",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "337125",
+          "3371.25",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "337125",
+          "3371.25",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "337125",
+          "3371.25",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "241885",
+          "2418.85",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "241885",
+          "2418.85",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "241885",
+          "2418.85",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "76485",
+          "764.85",
           "Canada"
         ],
         [
           "BC",
           "Locks",
-          "296175",
+          "2961.75",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "296175",
+          "2961.75",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "754440",
+          "7544.4",
           "Canada"
         ],
         [
           "BC",
           "Hybrid",
-          "754440",
+          "7544.4",
           "Canada"
         ],
         [
           "BC",
           "Hybrid",
-          "754440",
+          "7544.4",
           "Canada"
         ],
         [
           "BC",
           "Locks",
-          "273525",
+          "2735.25",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "273525",
+          "2735.25",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "349365",
+          "3493.65",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "349365",
+          "3493.65",
           "Canada"
         ],
         [
           "BC",
           "Kids",
-          "84555",
+          "845.55",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "4050",
+          "40.5",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "229455",
+          "2294.55",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "94008",
+          "940.08",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "37175",
+          "371.75",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "37175",
+          "371.75",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "323942",
+          "3239.42",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "323942",
+          "3239.42",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "165055",
+          "1650.55",
           "Canada"
         ],
         [
           "BC",
           "Hybrid",
-          "165055",
+          "1650.55",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "339690",
+          "3396.9",
           "Canada"
         ],
         [
           "BC",
           "Hybrid",
-          "339690",
+          "3396.9",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "70120",
+          "701.2",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "70120",
+          "701.2",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "70120",
+          "701.2",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "46995",
+          "469.95",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "46995",
+          "469.95",
           "Canada"
         ],
         [
           "BC",
           "Kids",
-          "46995",
+          "469.95",
           "Canada"
         ],
         [
           "BC",
           "Saddles",
-          "890771",
+          "8907.71",
           "Canada"
         ],
         [
           "BC",
           "Saddles",
-          "890771",
+          "8907.71",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "890771",
+          "8907.71",
           "Canada"
         ],
         [
           "BC",
           "Kids",
-          "56370",
+          "563.7",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "3273",
+          "32.73",
           "Canada"
         ],
         [
           "BC",
           "Saddles",
-          "3273",
+          "32.73",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "16170",
+          "161.7",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "7962",
+          "79.62",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "107106",
+          "1071.06",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "107106",
+          "1071.06",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "107106",
+          "1071.06",
           "Canada"
         ],
         [
           "BC",
           "Locks",
-          "2994",
+          "29.94",
           "Canada"
         ],
         [
           "BC",
           "Hybrid",
-          "74912",
+          "749.12",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "34475",
+          "344.75",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "34475",
+          "344.75",
           "Canada"
         ],
         [
           "BC",
           "Kids",
-          "34475",
+          "344.75",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "152970",
+          "1529.7",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "306555",
+          "3065.55",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "306555",
+          "3065.55",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "12570",
+          "125.7",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "87945",
+          "879.45",
           "Canada"
         ],
         [
           "BC",
           "Kids",
-          "87945",
+          "879.45",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "27730",
+          "277.3",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "27730",
+          "277.3",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "27730",
+          "277.3",
           "Canada"
         ],
         [
           "BC",
           "Locks",
-          "87133",
+          "871.33",
           "Canada"
         ],
         [
           "BC",
           "Saddles",
-          "87133",
+          "871.33",
           "Canada"
         ],
         [
           "BC",
           "Hybrid",
-          "87133",
+          "871.33",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "347970",
+          "3479.7",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "170236",
+          "1702.36",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "170236",
+          "1702.36",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "170236",
+          "1702.36",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "8931",
+          "89.31",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "8931",
+          "89.31",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "359790",
+          "3597.9",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "359790",
+          "3597.9",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "359790",
+          "3597.9",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "143955",
+          "1439.55",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "1085917",
+          "10859.17",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "1085917",
+          "10859.17",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "1085917",
+          "10859.17",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "5531",
+          "55.31",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "5531",
+          "55.31",
           "Canada"
         ],
         [
           "BC",
           "Locks",
-          "2994",
+          "29.94",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "10170",
+          "101.7",
           "Canada"
         ],
         [
           "BC",
           "Locks",
-          "7580",
+          "75.8",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "156525",
+          "1565.25",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "156525",
+          "1565.25",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "347970",
+          "3479.7",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "589320",
+          "5893.2",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "589320",
+          "5893.2",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "395955",
+          "3959.55",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "395955",
+          "3959.55",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "4350",
+          "43.5",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "16170",
+          "161.7",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "3300",
+          "33",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "92361",
+          "923.61",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "92361",
+          "923.61",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "8380",
+          "83.8",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "229455",
+          "2294.55",
           "Canada"
         ],
         [
           "BC",
           "Saddles",
-          "139108",
+          "1391.08",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "139108",
+          "1391.08",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "229455",
+          "2294.55",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "641955",
+          "6419.55",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "641955",
+          "6419.55",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "801501",
+          "8015.01",
           "Canada"
         ],
         [
           "BC",
           "Saddles",
-          "801501",
+          "8015.01",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "801501",
+          "8015.01",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "2900",
+          "29",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "98955",
+          "989.55",
           "Canada"
         ],
         [
           "BC",
           "Kids",
-          "82305",
+          "823.05",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "293985",
+          "2939.85",
           "Canada"
         ],
         [
           "BC",
           "Saddles",
-          "621810",
+          "6218.1",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "621810",
+          "6218.1",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "621810",
+          "6218.1",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "8380",
+          "83.8",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "92655",
+          "926.55",
           "Canada"
         ],
         [
           "BC",
           "Saddles",
-          "92655",
+          "926.55",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "92655",
+          "926.55",
           "Canada"
         ],
         [
           "BC",
           "Kids",
-          "52126",
+          "521.26",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "587970",
+          "5879.7",
           "Canada"
         ],
         [
           "BC",
           "Locks",
-          "3500",
+          "35",
           "Canada"
         ],
         [
           "BC",
           "Saddles",
-          "13160",
+          "131.6",
           "Canada"
         ],
         [
           "BC",
           "Saddles",
-          "13160",
+          "131.6",
           "Canada"
         ],
         [
           "BC",
           "Saddles",
-          "7050",
+          "70.5",
           "Canada"
         ],
         [
           "BC",
           "Hybrid",
-          "145761",
+          "1457.61",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "98955",
+          "989.55",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "1650",
+          "16.5",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "587970",
+          "5879.7",
           "Canada"
         ],
         [
           "BC",
           "Locks",
-          "11370",
+          "113.7",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "269955",
+          "2699.55",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "29662",
+          "296.62",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "29662",
+          "296.62",
           "Canada"
         ],
         [
           "BC",
           "Saddles",
-          "29662",
+          "296.62",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "153042",
+          "1530.42",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "153042",
+          "1530.42",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "153042",
+          "1530.42",
           "Canada"
         ],
         [
           "BC",
           "Hybrid",
-          "398259",
+          "3982.59",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "398259",
+          "3982.59",
           "Canada"
         ],
         [
           "BC",
           "Kids",
-          "398259",
+          "3982.59",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "98955",
+          "989.55",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "65970",
+          "659.7",
           "Canada"
         ],
         [
           "BC",
           "Hybrid",
-          "323691",
+          "3236.91",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "323691",
+          "3236.91",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "152970",
+          "1529.7",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "1155300",
+          "11553",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "1155300",
+          "11553",
           "Canada"
         ],
         [
           "BC",
           "Competition",
-          "1155300",
+          "11553",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "4650",
+          "46.5",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "1650",
+          "16.5",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "229455",
+          "2294.55",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "162514",
+          "1625.14",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "162514",
+          "1625.14",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "162514",
+          "1625.14",
           "Canada"
         ],
         [
           "BC",
           "Hybrid",
-          "257925",
+          "2579.25",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "257925",
+          "2579.25",
           "Canada"
         ],
         [
           "BC",
           "Hybrid",
-          "161955",
+          "1619.55",
           "Canada"
         ],
         [
           "BC",
           "Gloves",
-          "13470",
+          "134.7",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "13470",
+          "134.7",
           "Canada"
         ],
         [
           "BC",
           "Saddles",
-          "7200",
+          "72",
           "Canada"
         ],
         [
           "BC",
           "Saddles",
-          "900",
+          "9",
           "Canada"
         ],
         [
           "BC",
           "Saddles",
-          "2400",
+          "24",
           "Canada"
         ],
         [
           "BC",
           "Hybrid",
-          "265425",
+          "2654.25",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "265425",
+          "2654.25",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "12570",
+          "125.7",
           "Canada"
         ],
         [
           "BC",
           "Locks",
-          "900",
+          "9",
           "Canada"
         ],
         [
           "BC",
           "Helmets",
-          "112140",
+          "1121.4",
           "Canada"
         ],
         [
           "BC",
           "Mountain",
-          "112140",
+          "1121.4",
           "Canada"
         ],
         [
           "ON",
           "Competition",
-          "881955",
+          "8819.55",
           "Canada"
         ],
         [
           "PQ",
           "Competition",
-          "179970",
+          "1799.7",
           "Canada"
         ],
         [
           "NS",
           "Mountain",
-          "95970",
+          "959.7",
           "Canada"
         ],
         [
           "MB",
           "Mountain",
-          "86374",
+          "863.74",
           "Canada"
         ],
         [
           "ON",
           "Kids",
-          "27435",
+          "274.35",
           "Canada"
         ]
       ]
@@ -4214,7 +4447,10 @@
     "summary_info": {
       "author": "",
       "comments": "",
+      "created": 129943933701430000,
       "keywords": "",
+      "last_printed": null,
+      "last_saved": 129943938362430000,
       "last_saved_by": "",
       "revision_number": "1",
       "save_with_preview": true,

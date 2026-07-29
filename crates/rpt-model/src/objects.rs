@@ -2,8 +2,7 @@
 
 use super::data_def::GroupCondition;
 use super::enums::{
-    FieldValueType, ImageFormat, LineSpacingType, LineStyle, PictureType, ReadingOrder,
-    SummaryOperation,
+    FieldValueType, ImageFormat, LineSpacingType, PictureType, ReadingOrder, SummaryOperation,
 };
 use super::format::{Border, FieldFormat, Font, FontColor, ObjectFormat};
 use super::primitives::{Color, Formula, RecordRef, Rect, Twips};
@@ -11,8 +10,10 @@ use super::primitives::{Color, Formula, RecordRef, Rect, Twips};
 mod chart;
 
 pub use chart::{
-    ChartArrangement, ChartCategoryPeriod, ChartDefinition, ChartElementFont, ChartGraphType,
-    ChartGridType, ChartLegendPosition, ChartViewAngle,
+    ChartArrangement, ChartBarSize, ChartCategoryPeriod, ChartColorMode, ChartDataPoint,
+    ChartDefinition, ChartDivisionMethod, ChartElementFont, ChartGraphType, ChartGridType,
+    ChartLegendLayout, ChartLegendPosition, ChartMarkerShape, ChartMarkerSize, ChartNumberFormat,
+    ChartPieSize, ChartSliceDetachment, ChartViewAngle,
 };
 
 /// SDK: `IReportObject` — the base every object shares; `kind` carries the per-type data.
@@ -23,15 +24,13 @@ pub struct ReportObject {
     pub name: String,
     /// The object's bounding box on the section, in twips.
     pub bounds: Rect,
-    /// The object's border (line styles, colour, tightness).
+    /// The object's border (line styles, color, tightness).
     pub border: Border,
-    /// The object's shared formatting (suppress, keep-together, colours, …).
+    /// The object's shared formatting (suppress, keep-together, colors, …).
     pub format: ObjectFormat,
-    /// Parent section id this object lives in (SDK: SectionCode).
-    pub section_code: i32,
     /// The concrete object subtype and its per-type data.
     pub kind: ReportObjectKind,
-    /// Back-reference to the substrate record this object was raised from.
+    /// Back-reference to the record this object was decoded from.
     pub origin: RecordRef,
 }
 
@@ -126,9 +125,14 @@ pub struct FieldObject {
     pub data_source: String,
     /// Which kind of reference `data_source` is (database field, formula, parameter, …).
     pub ref_kind: FieldRefKind,
-    /// The value type the field resolves to.
+    /// The **summary definition's** stored result type, for a summary object (`ref_kind ==
+    /// Summary`) — nothing else in the model records it. [`FieldValueType::Unknown`] for every other
+    /// kind: a database / formula / parameter / running-total / SQL-expression / group-name /
+    /// special object declares its type on the definition (or database column) its `data_source`
+    /// names, and resolving that reference is the consumer's job
+    /// ([`field_object_value_type`](crate::analysis::field_object_value_type)).
     pub value_type: FieldValueType,
-    /// The object's font and colour.
+    /// The object's font and color.
     pub font_color: FontColor,
     /// The field's display format leaf, when it overrides the value-type defaults.
     pub format: Option<FieldFormat>,
@@ -155,6 +159,15 @@ pub struct TextRun {
     pub field_ref: Option<String>,
     /// The run's own font, when one was streamed for it. `None` inherits the object font.
     pub font: Option<Font>,
+    /// SDK: `ParagraphTextElement.CharacterSpacing` — a rigid extra advance added after **every**
+    /// character of this run, in twips (the designer's Format Editor exposes it as "Character
+    /// Spacing Exactly", in points; 20 twips = 1 pt). `0` (the overwhelming default) means natural
+    /// advances only.
+    ///
+    /// It is a property of a **literal-text** run: an embedded-field run is a
+    /// `ParagraphFieldElement`, which has no such member, and always reads `0` here — a field run's
+    /// letter spacing comes from its own string format instead.
+    pub character_spacing: Twips,
 }
 
 /// One paragraph (line) of a text object — the engine's `ISCRParagraph`. Its `runs` are the
@@ -238,7 +251,7 @@ pub struct TextObject {
     pub text: String,
     /// Maximum lines the object may grow to (0 = unlimited).
     pub max_lines: i32,
-    /// The object's default font and colour (runs may override it).
+    /// The object's default font and color (runs may override it).
     pub font_color: FontColor,
     /// The text's reading order (left-to-right or right-to-left).
     pub reading_order: ReadingOrder,
@@ -286,7 +299,7 @@ pub struct FieldHeadingObject {
     pub text: String,
     /// Maximum lines the heading may grow to (0 = unlimited).
     pub max_lines: i32,
-    /// The heading's font and colour.
+    /// The heading's font and color.
     pub font_color: FontColor,
     /// The heading text's reading order (left-to-right or right-to-left).
     pub reading_order: ReadingOrder,
@@ -300,48 +313,43 @@ pub struct DrawingShape {
     pub right: Twips,
     /// The shape's bottom edge, in twips.
     pub bottom: Twips,
-    /// The line style (solid / dashed / dotted / …). A **mirror** of the authoritative value in the
-    /// object's [`Border`](crate::format::Border) (a line stores its style on the edge matching its
-    /// orientation; a box's edges are uniform): the decoder redirects it from the border after decode,
-    /// so read [`Border`] when both are available.
-    pub line_style: LineStyle,
-    /// The line thickness, in twips. Decoded directly from the border record (`0xec` byte 21); this
-    /// is the one drawing-shape stroke field that is authoritative rather than a border mirror.
+    /// The line thickness, in twips (border record `0x00ec` byte 21). The shape's only stroke
+    /// property: the style and colour it draws with live in the object's
+    /// [`Border`](crate::format::Border).
     pub line_thickness: Twips,
-    /// The line colour. A **mirror** of [`Border::border_color`](crate::format::Border::border_color);
-    /// the decoder redirects it from the border after decode. Read the border when both are available.
-    pub line_color: Color,
     /// Whether the shape stretches to the bottom of its section as the section grows.
     pub extend_to_bottom_of_section: bool,
+    /// The 0-based index of the section holding the shape's **second corner** — the corner
+    /// [`right`](Self::right)/[`bottom`](Self::bottom) describe — counted over the report's sections
+    /// in layout order (`report_definition.areas` flattened through their `sections`). Stored in the
+    /// `0x00a9` leaf's first two bytes, big-endian.
+    ///
+    /// It equals the shape's own section unless the shape spans: a box drawn down past its section
+    /// ends *later*, and a line drawn upward (negative height) ends *earlier*. Naming that section
+    /// gives the SDK's `EndSectionName`.
+    pub end_section_index: u16,
 }
 
 /// SDK: `ILineObject`.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct LineShape {
-    /// The line's geometry and stroke.
+    /// The line's geometry and stroke — including
+    /// [`end_section_index`](DrawingShape::end_section_index), the section its far end lies in.
     pub shape: DrawingShape,
-    /// The name of the section the line ends in (for lines that extend across sections).
-    pub end_section_name: String,
 }
 
 /// SDK: `IBoxObject`.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct BoxShape {
-    /// The box's geometry and stroke.
+    /// The box's geometry and stroke — including
+    /// [`end_section_index`](DrawingShape::end_section_index), the section its bottom edge lies in.
     pub shape: DrawingShape,
-    /// The name of the section the box ends in (for boxes that extend across sections).
-    pub end_section_name: String,
     /// The rounded-corner ellipse width, in twips (0 = square corners).
     pub corner_ellipse_width: Twips,
     /// The rounded-corner ellipse height, in twips (0 = square corners).
     pub corner_ellipse_height: Twips,
-    /// The fill colour, or `None` for a transparent (unfilled) box. A **mirror** of
-    /// [`Border::background_color`](crate::format::Border::background_color); the decoder redirects it
-    /// from the border after decode, so a consumer that reads this field gets the real fill rather
-    /// than a dead `None`. [`Border`](crate::format::Border) remains authoritative.
-    pub fill_color: Option<Color>,
 }
 
 /// SDK: `IBlobFieldObject` — a database blob/image field shown as a picture. The object carries no
@@ -364,29 +372,16 @@ pub struct PictureObject {
     /// picture file — normally a full `BM` bitmap). Empty when the picture has
     /// no OLE embedding (e.g. a chart drawn *through* a picture object, or a blob-field picture).
     /// Use [`Self::image_format`] to identify the wire format of these bytes.
+    ///
+    /// Serializes as a lowercase hex string rather than an array of integers — every byte is kept,
+    /// two characters each.
+    #[cfg_attr(feature = "serde", serde(with = "crate::hex_bytes"))]
     pub data: Vec<u8>,
     /// The 1-based `Embedding N` storage ordinal this picture's [`Self::data`] was loaded from.
     /// `None` for pictures with no OLE embedding.
     pub ole_ordinal: Option<u32>,
     /// The "graphic location" formula that conditionally swaps the picture at runtime, when set.
     pub location_formula: Option<Formula>,
-    /// The picture's natural width, in twips (SDK `OriginalWidth`). *Not stored in the report* — a
-    /// derived value the engine recomputes at load from the embedded image's OLE extent. A producer
-    /// fills it from the image bytes via [`natural_extent`](crate::natural_extent); `0` is the
-    /// honest default when the natural size is unknown (no OLE embedding, or a format whose header
-    /// that derivation does not parse — e.g. a metafile).
-    pub original_width: Twips,
-    /// The picture's natural height, in twips (SDK `OriginalHeight`). Derived like
-    /// [`Self::original_width`].
-    pub original_height: Twips,
-    /// The horizontal scale factor the object is drawn at (SDK `XScaling`) — the placed width
-    /// divided by [`Self::original_width`]. Derived alongside [`Self::original_width`]; `1.0` when
-    /// the picture is drawn at natural size or the natural size is unknown.
-    pub x_scaling: f64,
-    /// The vertical scale factor the object is drawn at (SDK `YScaling`) — the placed height
-    /// divided by [`Self::original_height`]. Derived alongside [`Self::original_height`]; `1.0` when
-    /// the picture is drawn at natural size or the natural size is unknown.
-    pub y_scaling: f64,
     /// Cropping applied to each edge of the source image (SDK `PictureFormat.*Cropping`), in twips.
     /// Unobserved — no stored picture has been seen cropped; latent for the renderer.
     pub crop_top: Twips,
@@ -417,7 +412,7 @@ impl PictureObject {
             return Some(Cow::Borrowed(&self.data));
         }
         // Prepend a BITMAPFILEHEADER: "BM", u32 total file size, 2×u16 reserved, u32 pixel offset.
-        // The DIB header size is the leading u32; the colour table (if any) follows it. Assume a
+        // The DIB header size is the leading u32; the color table (if any) follows it. Assume a
         // packed DIB (pixels immediately after header + palette) — true for engine-produced DIBs.
         let dib = &self.data;
         let header_size = u32::from_le_bytes([dib[0], dib[1], dib[2], dib[3]]) as usize;
@@ -488,7 +483,7 @@ pub struct SubreportObject {
 ///
 /// The render pipeline aggregates the dataset over these to build the chart's series (see
 /// `rpt_layout::aggregate`).
-#[derive(Debug, Clone, PartialEq, Eq, Default)]
+#[derive(Debug, Clone, PartialEq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct ChartObject {
     /// Field references bound to the chart's data (value) axis, each a raw engine reference
@@ -532,35 +527,28 @@ pub struct CrossTabObject {
     /// [`field_ref`](CrossTabDimension::field_ref)); the remaining levels are the ordered
     /// row-grouping fields. STRUCTURAL (not exported).
     pub rows: Vec<CrossTabDimension>,
-    /// The cross-tab's **measures** (data-cell summaries) — the aggregation applied to each
-    /// row×column intersection, in stacking order (see [`CrossTabMeasure`]). STRUCTURAL (not exported
-    /// surface).
-    pub measures: Vec<CrossTabMeasure>,
-    /// The grid's cell/region formatting — the grid-level format word plus one format per fixed
-    /// formattable grid region (see [`CrossTabGridFormat`]). Decoded from the `0x0143`/`0x0145`
-    /// records inside the `0xb9` wrapper. STRUCTURAL (not exported).
+    /// The grid's cell/region formatting — one format per fixed formattable grid region (see
+    /// [`CrossTabGridFormat`]). Decoded from the `0x0143`/`0x0145` records inside the `0xb9`
+    /// wrapper. STRUCTURAL (not exported).
     pub grid_format: CrossTabGridFormat,
-    /// The column-axis option word (the `0x00ce` level record's 2-byte leaf, big-endian; shared by
-    /// every column level). Raw — its bit meanings are unknown; every observed cross-tab stores
-    /// `0x0000`, and the cross-tab dimension/group structure is exposed on no reader surface (RAS
-    /// `cubeDefinition` comes back null).
-    pub column_axis_options: u16,
-    /// The row-axis option word (the `0x00d2` level record's 2-byte leaf, big-endian; shared by every
-    /// row level). Raw — `0x0000` for a plain-field row group; the one observed non-zero value,
-    /// `0x0003`, accompanies a row dimension that is a code+name *formula*. A single distinct data
-    /// point, so the value stays unmapped. Likely lives in the group
-    /// sort/condition option space the cross-tab axes reuse (see [`Self::column_axis_options`]).
-    pub row_axis_options: u16,
-    /// The cross-tab's grid **display options** and grand-total background colours — the RAS
+    /// How many **empty** column levels the axis carries beyond the ones decoded into
+    /// [`columns`](Self::columns) — the count word past the nested level record on `0x00ce`, which
+    /// the axis appends as blank slots.
+    pub column_level_count: u16,
+    /// How many **empty** row levels the axis carries beyond the ones decoded into
+    /// [`rows`](Self::rows) — the count word past the nested level record on `0x00d2`, which the
+    /// axis appends as blank slots.
+    pub row_level_count: u16,
+    /// The cross-tab's grid **display options** and grand-total background colors — the RAS
     /// `ISCRCrossTabStyle` view. Decoded from the `0xb8`/`0xb9` cross-tab records and the grand-total
     /// `0x00cb` dimension levels (see [`CrossTabGridOptions`]). STRUCTURAL.
     pub options: CrossTabGridOptions,
 }
 
-/// SDK: `ISCRCrossTabStyle` — a cross-tab's grid display options and grand-total background colours.
+/// SDK: `ISCRCrossTabStyle` — a cross-tab's grid display options and grand-total background colors.
 ///
-/// The colour axes are **cross-wired** as the SDK exposes them: RAS `RowGrandTotalColor` is the
-/// colour of the first *column*-axis grand-total level, and `ColumnGrandTotalColor` the first
+/// The color axes are **cross-wired** as the SDK exposes them: RAS `RowGrandTotalColor` is the
+/// color of the first *column*-axis grand-total level, and `ColumnGrandTotalColor` the first
 /// *row*-axis level. STRUCTURAL (no output surface).
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -588,20 +576,20 @@ pub struct CrossTabGridOptions {
     pub column_grand_total_color: Option<Color>,
 }
 
-/// SDK: `ICrossTabObject` grid formatting — the grid-level format word plus one format per fixed
-/// formattable grid region. Decoded from the `0x0143 CrossTabGridFormat` word and the following
-/// `0x0145 CrossTabGridCellFormat` records inside the cross-tab's `0xb9` wrapper. STRUCTURAL (no
-/// output surface; a stored-fact decode for the model and future rendering).
+/// SDK: `ICrossTabObject` grid formatting — one format per fixed formattable grid region. Decoded
+/// from the `0x0143 CrossTabGridFormat` count and the run of `0x0145 CrossTabGridCellFormat`
+/// records it opens inside the cross-tab's `0xb9` wrapper. STRUCTURAL (no output surface; a
+/// stored-fact decode for the model and future rendering).
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct CrossTabGridFormat {
-    /// The grid-level format word (`0x0143`, u16 big-endian). Invariant at `0x0014` (equal to the
-    /// [`cells`](Self::cells) count); its individual bit meanings are unknown, so it is preserved raw.
-    pub raw: u16,
+    /// How many `0x0145` cell formats the `0x0143` opener states follow it — the length of the run
+    /// that produced [`cells`](Self::cells).
+    pub cell_count: u16,
     /// The RAS `CrossTabFormat.CrossTabStyle` view — the grid display flags and grand-total
-    /// background colours in the shape RAS reflects them. It mirrors the object-level
+    /// background colors in the shape RAS reflects them. It mirrors the object-level
     /// [`CrossTabObject::options`](CrossTabObject::options), with one difference: the grand-total
-    /// colours here are the concrete engine `COLORREF` colours, so the engine's "auto" default
+    /// colors here are the concrete engine `COLORREF` colors, so the engine's "auto" default
     /// (`0xFFFFFFFF`) surfaces as white rather than the `None` sentinel `options` carries. RAS nests
     /// this style block under the cross-tab's format object, so it is exposed here on the grid
     /// format.
@@ -611,7 +599,7 @@ pub struct CrossTabGridFormat {
     pub cells: Vec<CrossTabCellFormat>,
 }
 
-/// One cross-tab grid-region cell format. Carries the region's background colour and its
+/// One cross-tab grid-region cell format. Carries the region's background color and its
 /// format-override flags. STRUCTURAL.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -619,7 +607,7 @@ pub struct CrossTabCellFormat {
     /// Format-override flags. `0` = the region uses the grid defaults; a non-zero value marks a
     /// region carrying explicit cell formatting.
     pub flags: u32,
-    /// The region background colour, or `None` when unset. The grid-region template is
+    /// The region background color, or `None` when unset. The grid-region template is
     /// engine-internal (not exposed by RAS or the HTML render).
     pub background_color: Option<Color>,
     /// The region's enabled/visible flag.
@@ -628,7 +616,11 @@ pub struct CrossTabCellFormat {
 
 /// One measure of a cross-tab grid — the summary (aggregation + summarized field) shown in every
 /// row×column data cell. [`operation`] is the aggregation and [`field`] the summarized field
-/// reference (`Table.field` or a `@formula`). STRUCTURAL.
+/// reference (`Table.field` or a `@formula`), empty when the summary names no field.
+///
+/// No cross-tab carries a list of these: the file records no link from a summary definition to the
+/// cross-tab that uses it, so a consumer attributes them with
+/// [`crosstab_measures`](crate::crosstab_measures).
 ///
 /// [`operation`]: Self::operation
 /// [`field`]: Self::field
@@ -675,6 +667,7 @@ mod tests {
             text: s.to_string(),
             field_ref: None,
             font: None,
+            character_spacing: Twips(0),
         }
     }
 
@@ -683,6 +676,7 @@ mod tests {
             text: rendered.to_string(),
             field_ref: Some(raw.to_string()),
             font: None,
+            character_spacing: Twips(0),
         }
     }
 

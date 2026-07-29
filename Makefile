@@ -1,6 +1,6 @@
 # Convenience targets for the render-parity test corpus. The data-driven render tests
 # (crates/rpt-render/tests/postgres_fixtures.rs) seed committed SQL fixtures into a PostgreSQL server
-# and diff the rendered HTML against committed baselines. PostgreSQL is the single DB technology for
+# and diff the rendered Page IR against committed baselines. PostgreSQL is the single DB technology for
 # render testing (see docker-compose.yml). The database is provisioned by docker compose.
 
 RPT_DB_PORT ?= 55432
@@ -21,7 +21,7 @@ db-down:
 test-fixtures:
 	cargo test -p rpt-render --test postgres_fixtures
 
-## Regenerate the committed HTML baselines from the current render.
+## Regenerate the committed Page IR baselines from the current render.
 bless-fixtures:
 	RPT_BLESS=1 cargo test -p rpt-render --test postgres_fixtures
 

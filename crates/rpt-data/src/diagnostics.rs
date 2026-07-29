@@ -47,7 +47,7 @@ pub enum DiagnosticKind {
 pub struct EvalDiagnostic {
     /// Which fail-open site produced it.
     pub kind: DiagnosticKind,
-    /// The underlying failure: an [`EvalError`](crystal_formula::eval::EvalError) message, or a note
+    /// The underlying failure: an [`EvalError`](rpt_formula::eval::EvalError) message, or a note
     /// that the result was a non-boolean value.
     pub detail: String,
     /// The formula/selection involved: a formula field's name for [`DiagnosticKind::Formula`], or
@@ -149,7 +149,7 @@ pub fn report_parse_diagnostics(
     sink: Option<&dyn DiagnosticSink>,
     label: &str,
     src: &str,
-    diagnostics: &[crystal_formula::Diagnostic],
+    diagnostics: &[rpt_formula::Diagnostic],
 ) {
     let Some(sink) = sink else { return };
     for d in diagnostics {

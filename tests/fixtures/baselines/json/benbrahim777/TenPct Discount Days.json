@@ -1,5 +1,10 @@
 {
   "model": {
+    "authoring_version": {
+      "letter": 0,
+      "major": 12,
+      "minor": 0
+    },
     "data_definition": {
       "condition_formula_bodies": [],
       "custom_functions": [],
@@ -658,12 +663,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -683,12 +683,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -762,6 +757,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": true,
@@ -785,11 +781,9 @@
                   "name": "Text4",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 }
               ],
-              "section_code": 6000,
               "width": 0
             }
           ]
@@ -816,12 +810,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -841,12 +830,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -913,17 +897,11 @@
                   "name": "Text1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -990,17 +968,11 @@
                   "name": "Text2",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1067,17 +1039,11 @@
                   "name": "Text3",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1144,11 +1110,9 @@
                   "name": "Text5",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 }
               ],
-              "section_code": 12000,
               "width": 0
             }
           ]
@@ -1175,12 +1139,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -1200,12 +1159,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1272,11 +1226,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -1290,11 +1269,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1312,30 +1295,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "DatabaseField",
                       "summary_code": null,
-                      "value_type": "String"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "ProductName1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1402,11 +1385,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -1420,11 +1428,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1442,30 +1454,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "DatabaseField",
                       "summary_code": null,
-                      "value_type": "String"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "Size1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1532,11 +1544,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": false
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "YearMonthDay",
                           "day": "LeadingZeroNumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
                           "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "ShortYear"
                         },
@@ -1545,16 +1582,20 @@
                           "separator": "  "
                         },
                         "numeric": {
-                          "currency_position": "LeadingCurrencyOutsideNegative",
-                          "currency_symbol": "FloatingSymbol",
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
                           "currency_symbol_text": "$",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
-                          "negative": "Bracketed",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1572,30 +1613,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "DatabaseField",
                       "summary_code": null,
-                      "value_type": "Currency"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "PriceSRP1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1662,11 +1703,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": false
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "YearMonthDay",
                           "day": "LeadingZeroNumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
                           "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "ShortYear"
                         },
@@ -1675,16 +1741,20 @@
                           "separator": "  "
                         },
                         "numeric": {
-                          "currency_position": "LeadingCurrencyOutsideNegative",
-                          "currency_symbol": "FloatingSymbol",
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
                           "currency_symbol_text": "$",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
-                          "negative": "Bracketed",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1702,24 +1772,28 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Formula",
                       "summary_code": null,
-                      "value_type": "Currency"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "TenPct1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 24000
+                  }
                 }
               ],
-              "section_code": 24000,
               "width": 0
             }
           ]
@@ -1746,12 +1820,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -1769,7 +1838,6 @@
               "kind": "ReportFooter",
               "name": "ReportFooterSection1",
               "objects": [],
-              "section_code": 48000,
               "width": 0
             }
           ]
@@ -1796,12 +1864,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -1819,12 +1882,13 @@
               "kind": "PageFooter",
               "name": "PageFooterSection1",
               "objects": [],
-              "section_code": 42000,
               "width": 0
             }
           ]
         }
-      ]
+      ],
+      "kind": "ColumnarReport",
+      "style": "Standard"
     },
     "report_options": {
       "convert_null_field_to_default": false,
@@ -1879,577 +1943,577 @@
         [
           "Active Outdoors Crochet Glove",
           "xsm",
-          "1450"
+          "14.5"
         ],
         [
           "Active Outdoors Crochet Glove",
           "sm",
-          "1450"
+          "14.5"
         ],
         [
           "Active Outdoors Crochet Glove",
           "med",
-          "1450"
+          "14.5"
         ],
         [
           "Active Outdoors Crochet Glove",
           "lrg",
-          "1450"
+          "14.5"
         ],
         [
           "Active Outdoors Crochet Glove",
           "xlrg",
-          "1450"
+          "14.5"
         ],
         [
           "Active Outdoors Lycra Glove",
           "xxsm",
-          "1650"
+          "16.5"
         ],
         [
           "Active Outdoors Lycra Glove",
           "xsm",
-          "1650"
+          "16.5"
         ],
         [
           "Active Outdoors Lycra Glove",
           "sm",
-          "1650"
+          "16.5"
         ],
         [
           "Active Outdoors Lycra Glove",
           "med",
-          "1650"
+          "16.5"
         ],
         [
           "Active Outdoors Lycra Glove",
           "lrg",
-          "1650"
+          "16.5"
         ],
         [
           "Active Outdoors Lycra Glove",
           "xlrg",
-          "1650"
+          "16.5"
         ],
         [
           "Triumph Pro Helmet",
           "sm",
-          "4190"
+          "41.9"
         ],
         [
           "Triumph Pro Helmet",
           "sm",
-          "4190"
+          "41.9"
         ],
         [
           "Triumph Pro Helmet",
           "med",
-          "4190"
+          "41.9"
         ],
         [
           "Triumph Pro Helmet",
           "med",
-          "4190"
+          "41.9"
         ],
         [
           "Triumph Pro Helmet",
           "lrg",
-          "4190"
+          "41.9"
         ],
         [
           "Triumph Pro Helmet",
           "lrg",
-          "4190"
+          "41.9"
         ],
         [
           "Triumph Vertigo Helmet",
           "sm",
-          "5390"
+          "53.9"
         ],
         [
           "Triumph Vertigo Helmet",
           "sm",
-          "5390"
+          "53.9"
         ],
         [
           "Triumph Vertigo Helmet",
           "sm",
-          "5390"
+          "53.9"
         ],
         [
           "Triumph Vertigo Helmet",
           "med",
-          "5390"
+          "53.9"
         ],
         [
           "Triumph Vertigo Helmet",
           "med",
-          "5390"
+          "53.9"
         ],
         [
           "Triumph Vertigo Helmet",
           "med",
-          "5390"
+          "53.9"
         ],
         [
           "Triumph Vertigo Helmet",
           "lrg",
-          "5390"
+          "53.9"
         ],
         [
           "Triumph Vertigo Helmet",
           "lrg",
-          "5390"
+          "53.9"
         ],
         [
           "Triumph Vertigo Helmet",
           "lrg",
-          "5390"
+          "53.9"
         ],
         [
           "Guardian Chain Lock",
           null,
-          "450"
+          "4.5"
         ],
         [
           "Guardian \"U\" Lock",
           null,
-          "1750"
+          "17.5"
         ],
         [
           "Guardian XL \"U\" Lock",
           null,
-          "1990"
+          "19.9"
         ],
         [
           "Guardian ATB Lock",
           null,
-          "2190"
+          "21.9"
         ],
         [
           "Guardian Mini Lock",
           null,
-          "2190"
+          "21.9"
         ],
         [
           "InFlux Crochet Glove",
           "sm",
-          "1350"
+          "13.5"
         ],
         [
           "InFlux Crochet Glove",
           "med",
-          "1350"
+          "13.5"
         ],
         [
           "InFlux Crochet Glove",
           "lrg",
-          "1350"
+          "13.5"
         ],
         [
           "InFlux Lycra Glove",
           "sm",
-          "1550"
+          "15.5"
         ],
         [
           "InFlux Lycra Glove",
           "med",
-          "1550"
+          "15.5"
         ],
         [
           "InFlux Lycra Glove",
           "lrg",
-          "1550"
+          "15.5"
         ],
         [
           "Xtreme Adult Helmet",
           "sm/med",
-          "3390"
+          "33.9"
         ],
         [
           "Xtreme Adult Helmet",
           "sm/med",
-          "3390"
+          "33.9"
         ],
         [
           "Xtreme Adult Helmet",
           "sm/med",
-          "3390"
+          "33.9"
         ],
         [
           "Xtreme Adult Helmet",
           "med/lrg",
-          "3390"
+          "33.9"
         ],
         [
           "Xtreme Adult Helmet",
           "med/lrg",
-          "3390"
+          "33.9"
         ],
         [
           "Xtreme Adult Helmet",
           "med/lrg",
-          "3390"
+          "33.9"
         ],
         [
           "Xtreme Youth Helmet",
           null,
-          "3390"
+          "33.9"
         ],
         [
           "Xtreme Youth Helmet",
           null,
-          "3390"
+          "33.9"
         ],
         [
           "Xtreme Mtn Lock",
           null,
-          "1190"
+          "11.9"
         ],
         [
           "Xtreme Rhino Lock",
           null,
-          "998"
+          "9.98"
         ],
         [
           "Xtreme Titan Lock",
           null,
-          "3790"
+          "37.9"
         ],
         [
           "Xtreme Anatomic Mens Saddle",
           null,
-          "1450"
+          "14.5"
         ],
         [
           "Xtreme Anatomic Ladies Saddle",
           null,
-          "1450"
+          "14.5"
         ],
         [
           "Xtreme Wide MTB Saddle",
           null,
-          "1450"
+          "14.5"
         ],
         [
           "Xtreme Gellite Mens Saddle",
           null,
-          "2350"
+          "23.5"
         ],
         [
           "Xtreme Gellite  Ladies Saddle",
           null,
-          "2350"
+          "23.5"
         ],
         [
           "Roadster Jr BMX Saddle",
           null,
-          "1200"
+          "12"
         ],
         [
           "Roadster Micro Mtn Saddle",
           null,
-          "900"
+          "9"
         ],
         [
           "Roadster Mini Mtn Saddle",
           null,
-          "1500"
+          "15"
         ],
         [
           "Vesper Comfort ATB Saddle",
           null,
-          "2350"
+          "23.5"
         ],
         [
           "Vesper Comfort Ladies Saddle",
           null,
-          "2350"
+          "23.5"
         ],
         [
           "Vesper Gelflex ATB Saddle",
           null,
-          "3600"
+          "36"
         ],
         [
           "Vesper Gelflex Ladies Saddle",
           null,
-          "3600"
+          "36"
         ],
         [
           "Descent",
           "15",
-          "293985"
+          "2939.85"
         ],
         [
           "Descent",
           "15",
-          "293985"
+          "2939.85"
         ],
         [
           "Descent",
           "17",
-          "293985"
+          "2939.85"
         ],
         [
           "Descent",
           "17",
-          "293985"
+          "2939.85"
         ],
         [
           "Descent",
           "18.5",
-          "293985"
+          "2939.85"
         ],
         [
           "Descent",
           "18.5",
-          "293985"
+          "2939.85"
         ],
         [
           "Descent",
           "20",
-          "293985"
+          "2939.85"
         ],
         [
           "Descent",
           "20",
-          "293985"
+          "2939.85"
         ],
         [
           "Descent",
           "22",
-          "293985"
+          "2939.85"
         ],
         [
           "Descent",
           "22",
-          "293985"
+          "2939.85"
         ],
         [
           "Mozzie",
           "15",
-          "173985"
+          "1739.85"
         ],
         [
           "Mozzie",
           "17",
-          "173985"
+          "1739.85"
         ],
         [
           "Mozzie",
           "18.5",
-          "173985"
+          "1739.85"
         ],
         [
           "Mozzie",
           "20",
-          "173985"
+          "1739.85"
         ],
         [
           "Mozzie",
           "22",
-          "173985"
+          "1739.85"
         ],
         [
           "Endorphin",
           "15",
-          "89985"
+          "899.85"
         ],
         [
           "Endorphin",
           "17",
-          "89985"
+          "899.85"
         ],
         [
           "Endorphin",
           "18.5",
-          "89985"
+          "899.85"
         ],
         [
           "Endorphin",
           "20",
-          "89985"
+          "899.85"
         ],
         [
           "Endorphin",
           "22",
-          "89985"
+          "899.85"
         ],
         [
           "Romeo",
           "16",
-          "83235"
+          "832.35"
         ],
         [
           "Romeo",
           "18",
-          "83235"
+          "832.35"
         ],
         [
           "Romeo",
           "20",
-          "83235"
+          "832.35"
         ],
         [
           "Romeo",
           "22",
-          "83235"
+          "832.35"
         ],
         [
           "Wheeler",
           "16",
-          "53985"
+          "539.85"
         ],
         [
           "Wheeler",
           "18",
-          "53985"
+          "539.85"
         ],
         [
           "Wheeler",
           "20",
-          "53985"
+          "539.85"
         ],
         [
           "Wheeler",
           "22",
-          "53985"
+          "539.85"
         ],
         [
           "SlickRock",
           "15",
-          "76485"
+          "764.85"
         ],
         [
           "SlickRock",
           "16",
-          "76485"
+          "764.85"
         ],
         [
           "SlickRock",
           "18",
-          "76485"
+          "764.85"
         ],
         [
           "SlickRock",
           "20",
-          "76485"
+          "764.85"
         ],
         [
           "SlickRock",
           "22",
-          "76485"
+          "764.85"
         ],
         [
           "Rapel",
           "16",
-          "47985"
+          "479.85"
         ],
         [
           "Rapel",
           "16",
-          "47985"
+          "479.85"
         ],
         [
           "Rapel",
           "18",
-          "47985"
+          "479.85"
         ],
         [
           "Rapel",
           "18",
-          "47985"
+          "479.85"
         ],
         [
           "Rapel",
           "20",
-          "47985"
+          "479.85"
         ],
         [
           "Rapel",
           "20",
-          "47985"
+          "479.85"
         ],
         [
           "Rapel",
           "22",
-          "47985"
+          "479.85"
         ],
         [
           "Rapel",
           "22",
-          "47985"
+          "479.85"
         ],
         [
           "Nicros",
           "15",
-          "32985"
+          "329.85"
         ],
         [
           "Nicros",
           "15",
-          "32985"
+          "329.85"
         ],
         [
           "Nicros",
           "16",
-          "32985"
+          "329.85"
         ],
         [
           "Nicros",
           "16",
-          "32985"
+          "329.85"
         ],
         [
           "Nicros",
           "18",
-          "32985"
+          "329.85"
         ],
         [
           "Nicros",
           "18",
-          "32985"
+          "329.85"
         ],
         [
           "Nicros",
           "20",
-          "32985"
+          "329.85"
         ],
         [
           "Nicros",
           "20",
-          "32985"
+          "329.85"
         ],
         [
           "Nicros",
           "22",
-          "32985"
+          "329.85"
         ],
         [
           "Nicros",
           "22",
-          "32985"
+          "329.85"
         ],
         [
           "Mini Nicros",
           "24",
-          "28185"
+          "281.85"
         ],
         [
           "Mini Nicros",
           "24",
-          "28185"
+          "281.85"
         ],
         [
           "Micro Nicros",
           "20",
-          "27435"
+          "274.35"
         ],
         [
           "Micro Nicros",
           "20",
-          "27435"
+          "274.35"
         ]
       ]
     },
@@ -2457,7 +2521,10 @@
     "summary_info": {
       "author": "",
       "comments": "",
+      "created": 129951690568280000,
       "keywords": "",
+      "last_printed": null,
+      "last_saved": 129952132758200000,
       "last_saved_by": "",
       "revision_number": "2",
       "save_with_preview": true,

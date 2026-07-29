@@ -1,0 +1,47 @@
+# L2 dataset snapshot: benbrahim777/Orders10k
+row_count: 27
+
+columns (5):
+    0 Customer.Customer Name : String
+    1 Employee.Last Name : String
+    2 Orders.Order ID : Int32s
+    3 Orders.Order Amount : Currency
+    4 Orders.Order Date : DateTime
+
+params (1):
+  order_amt_range = Cur 10259.1
+
+formulas (0):
+
+diagnostics (0):
+
+grand_total (0):
+
+details (27):
+  ri=0 | Str "Piccolo" | Str "Davolio" | Num 1012 | Cur 10259.1 | DateTime 2000-12-03 00:00:00
+  ri=1 | Str "Bikes for Tykes" | Str "Davolio" | Num 1646 | Cur 11553 | DateTime 2001-05-23 00:00:00
+  ri=2 | Str "Trail Blazer's Place" | Str "Davolio" | Num 1032 | Cur 12323.1 | DateTime 2000-12-08 00:00:00
+  ri=3 | Str "Tek Bikes" | Str "Davolio" | Num 2627 | Cur 10384.96 | DateTime 2002-01-22 00:00:00
+  ri=4 | Str "The Biker's Path" | Str "Davolio" | Num 2575 | Cur 11465.42 | DateTime 2002-01-06 00:00:00
+  ri=5 | Str "Cyclopath" | Str "Davolio" | Num 1010 | Cur 14872.3 | DateTime 2000-12-03 00:00:00
+  ri=6 | Str "Wheels and Stuff" | Str "Davolio" | Num 1541 | Cur 11867.2 | DateTime 2001-04-18 00:00:00
+  ri=7 | Str "Pedal Pusher Bikes Inc." | Str "Leverling" | Num 1177 | Cur 10886.79 | DateTime 2001-01-15 00:00:00
+  ri=8 | Str "Crank Components" | Str "Leverling" | Num 1659 | Cur 10605.18 | DateTime 2001-05-29 00:00:00
+  ri=9 | Str "Rockshocks for Jocks" | Str "Peacock" | Num 1652 | Cur 14039.1 | DateTime 2001-05-26 00:00:00
+  ri=10 | Str "The Great Bike Shop" | Str "Peacock" | Num 1666 | Cur 10662.75 | DateTime 2001-06-01 00:00:00
+  ri=11 | Str "Feel Great Bikes Inc." | Str "Peacock" | Num 2134 | Cur 11316.6 | DateTime 2001-09-23 00:00:00
+  ri=12 | Str "Crank Components" | Str "Peacock" | Num 1718 | Cur 15492.32 | DateTime 2001-06-15 00:00:00
+  ri=13 | Str "Backpedal Cycle Shop" | Str "Peacock" | Num 2358 | Cur 10798.95 | DateTime 2001-11-16 00:00:00
+  ri=14 | Str "Canal City Cycle" | Str "Peacock" | Num 2536 | Cur 10629.23 | DateTime 2001-12-25 00:00:00
+  ri=15 | Str "Rowdy Rims Company" | Str "Peacock" | Num 2726 | Cur 11099.25 | DateTime 2002-02-15 00:00:00
+  ri=16 | Str "Road Runners Paradise" | Str "Suyama" | Num 1341 | Cur 11621.52 | DateTime 2001-02-23 00:00:00
+  ri=17 | Str "The Great Bike Shop" | Str "Suyama" | Num 2638 | Cur 12913.8 | DateTime 2002-01-26 00:00:00
+  ri=18 | Str "Rocky Roadsters" | Str "Suyama" | Num 1892 | Cur 17305.93 | DateTime 2001-07-24 00:00:00
+  ri=19 | Str "Folk och fä HB" | Str "King" | Num 1391 | Cur 14741.15 | DateTime 2001-03-02 00:00:00
+  ri=20 | Str "C-Gate Cycle Shoppe" | Str "King" | Num 1878 | Cur 11759.4 | DateTime 2001-07-21 00:00:00
+  ri=21 | Str "Psycho-Cycle" | Str "King" | Num 2951 | Cur 11081.41 | DateTime 2002-04-19 00:00:00
+  ri=22 | Str "Hooked on Helmets" | Str "King" | Num 2665 | Cur 11156 | DateTime 2002-02-01 00:00:00
+  ri=23 | Str "Blazing Bikes" | Str "King" | Num 2802 | Cur 10877.46 | DateTime 2002-03-08 00:00:00
+  ri=24 | Str "Extreme Cycling" | Str "Dodsworth" | Num 1406 | Cur 10472.41 | DateTime 2001-03-07 00:00:00
+  ri=25 | Str "Crazy Wheels" | Str "Dodsworth" | Num 1912 | Cur 10859.17 | DateTime 2001-07-29 00:00:00
+  ri=26 | Str "Insane Cycle" | Str "Dodsworth" | Num 1833 | Cur 17658.81 | DateTime 2001-07-07 00:00:00

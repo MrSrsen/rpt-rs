@@ -223,7 +223,7 @@ fn open(url: &str) -> rusqlite::Result<Connection> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crystal_formula::eval::Value;
+    use rpt_formula::eval::Value;
     use rpt_model::{Database, DbFieldDef, FieldValueType, Table};
     use rpt_query::build_query_in;
 

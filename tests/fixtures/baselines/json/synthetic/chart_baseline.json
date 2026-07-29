@@ -1,5 +1,10 @@
 {
   "model": {
+    "authoring_version": {
+      "letter": 0,
+      "major": 14,
+      "minor": 0
+    },
     "data_definition": {
       "condition_formula_bodies": [],
       "custom_functions": [],
@@ -208,12 +213,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -233,12 +233,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -284,48 +279,80 @@
                         "Sales.Amount"
                       ],
                       "definition": {
+                        "bar_size": "Large",
                         "category_period": null,
                         "category_refs": [
                           "{Sales.Country}"
                         ],
+                        "chart_color": "Color",
                         "data_axis_title": "Sum of Amount",
                         "data_label": "",
                         "data_labels_show_value": false,
+                        "data_point": "None",
                         "data_refs": [
                           "Sum ({Sales.Amount}, {Sales.Country})"
                         ],
+                        "data_value_number_format": "NoDecimal",
                         "element_fonts": [
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 700
                           },
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 400
                           },
                           {
+                            "is_default": true,
+                            "italic": true,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 700
                           },
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 700
                           },
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 700
                           },
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 700
                           },
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 400
                           },
                           {
+                            "is_default": true,
+                            "italic": false,
                             "name": "Arial",
-                            "size_pt": null
+                            "weight": 400
+                          },
+                          {
+                            "is_default": true,
+                            "italic": false,
+                            "name": "Arial",
+                            "weight": 0
+                          },
+                          {
+                            "is_default": true,
+                            "italic": false,
+                            "name": "Arial",
+                            "weight": 400
                           }
                         ],
                         "footnote": "",
@@ -333,13 +360,42 @@
                         "graph_type": "Bar",
                         "group_axis_gridlines": "None",
                         "group_axis_title": "Country",
+                        "is_vertical_bar": true,
                         "layout_type": "Detail",
+                        "legend_layout": "Percentage",
                         "legend_position": "Right",
                         "legend_visible": true,
+                        "marker_shape": "Rectangle",
+                        "marker_size": "Medium",
+                        "pie_size": "Large",
+                        "series_axis_auto_range": true,
+                        "series_axis_auto_scale": false,
+                        "series_axis_division_method": "Automatic",
+                        "series_axis_divisions": 1,
+                        "series_axis_gridlines": "None",
+                        "series_axis_max": 0.0,
+                        "series_axis_min": 0.0,
+                        "series_axis_number_format": "NoDecimal",
                         "series_colors": [],
+                        "slice_detachment": "NoDetachment",
                         "subtitle": "",
                         "title": "Sum of Amount / Country",
+                        "value_axis2_auto_range": true,
+                        "value_axis2_auto_scale": false,
+                        "value_axis2_division_method": "Automatic",
+                        "value_axis2_divisions": 1,
+                        "value_axis2_gridlines": "None",
+                        "value_axis2_max": 0.0,
+                        "value_axis2_min": 0.0,
+                        "value_axis2_number_format": "NoDecimal",
+                        "value_axis_auto_range": true,
+                        "value_axis_auto_scale": false,
+                        "value_axis_division_method": "Automatic",
+                        "value_axis_divisions": 1,
                         "value_axis_gridlines": "Major",
+                        "value_axis_max": 0.0,
+                        "value_axis_min": 0.0,
+                        "value_axis_number_format": "NoDecimal",
                         "view_angle": "Standard"
                       }
                     }
@@ -347,11 +403,9 @@
                   "name": "Graph1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 }
               ],
-              "section_code": 6000,
               "width": 0
             }
           ]
@@ -378,12 +432,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -401,7 +450,6 @@
               "kind": "PageHeader",
               "name": "Section2",
               "objects": [],
-              "section_code": 12000,
               "width": 0
             }
           ]
@@ -428,12 +476,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -451,7 +494,6 @@
               "kind": "Detail",
               "name": "Section3",
               "objects": [],
-              "section_code": 24000,
               "width": 0
             }
           ]
@@ -478,12 +520,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -501,7 +538,6 @@
               "kind": "ReportFooter",
               "name": "Section4",
               "objects": [],
-              "section_code": 48000,
               "width": 0
             }
           ]
@@ -528,12 +564,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -551,12 +582,13 @@
               "kind": "PageFooter",
               "name": "Section5",
               "objects": [],
-              "section_code": 42000,
               "width": 0
             }
           ]
         }
-      ]
+      ],
+      "kind": "ColumnarReport",
+      "style": "Standard"
     },
     "report_options": {
       "convert_null_field_to_default": false,
@@ -636,7 +668,10 @@
     "summary_info": {
       "author": "",
       "comments": "",
+      "created": 126569431875510000,
       "keywords": "",
+      "last_printed": null,
+      "last_saved": 134277622613385743,
       "last_saved_by": "",
       "revision_number": "9",
       "save_with_preview": false,

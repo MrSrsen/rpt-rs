@@ -22,9 +22,13 @@ use crate::objects::object_node;
 
 /// The root `report` node for a whole report (recursive: subreports embed their own `report` node).
 pub(crate) fn report_node(report: &Report) -> Node {
-    Node::new("report")
-        .prop("version", int(report.version))
-        .flag("saved-data", report.has_saved_data)
+    let mut node = Node::new("report").prop("version", int(report.version));
+    // Only when the file states one — a report that records no authoring version says nothing here
+    // rather than "0.0".
+    if report.authoring_version != Default::default() {
+        node = node.prop("authored-by", report.authoring_version.to_string());
+    }
+    node.flag("saved-data", report.has_saved_data)
         .children(report_children(report))
 }
 
@@ -34,11 +38,13 @@ fn report_children(report: &Report) -> Vec<Node> {
     let Report {
         // `version`/`has_saved_data` are emitted on the report node itself.
         version: _,
+        // The authoring version is emitted on the report node too.
+        authoring_version: _,
         has_saved_data: _,
         summary_info,
         print_options,
         report_options,
-        report_definition: ReportDefinition { areas },
+        report_definition: ReportDefinition { kind, style, areas },
         data_definition,
         database,
         subreports,
@@ -63,7 +69,7 @@ fn report_children(report: &Report) -> Vec<Node> {
         out.push(n);
     }
     out.extend(data_definition_nodes(data_definition));
-    out.push(layout_node(areas));
+    out.push(layout_node(*kind, *style, areas));
     out.extend(subreports.iter().map(subreport_node));
     if let Some(n) = embeds_node(embeds) {
         out.push(n);
@@ -100,9 +106,13 @@ fn info_node(info: &SummaryInfo) -> Option<Node> {
         author,
         comments,
         keywords,
-        // Authoring provenance (OLE property set); not projected to KDL.
+        // Authoring provenance (OLE property set); not projected to KDL. The timestamps join the
+        // same group: they say when the file was written, not what the report is.
         revision_number: _,
         last_saved_by: _,
+        created: _,
+        last_saved: _,
+        last_printed: _,
         save_with_preview,
     } = info;
     Some(
@@ -481,7 +491,6 @@ fn parameter_node(n: Node, pf: &ParameterField) -> Node {
         initial_values,
         default_value_display_type,
         default_value_sort_order,
-        discrete_or_range_kind,
         prompt_group,
         part_of_group,
         mutually_exclusive_group,
@@ -514,11 +523,6 @@ fn parameter_node(n: Node, pf: &ParameterField) -> Node {
             *default_value_sort_order != rpt_model::ParameterSortOrder::default(),
             "sort",
             enums::parameter_sort_order(*default_value_sort_order),
-        )
-        .prop_if(
-            *discrete_or_range_kind != rpt_model::DiscreteOrRangeKind::default(),
-            "discrete-or-range",
-            enums::discrete_or_range_kind(*discrete_or_range_kind),
         )
         .opt_str("prompt-group", prompt_group.as_deref())
         .flag("part-of-group", *part_of_group)
@@ -598,6 +602,7 @@ fn summary_node(n: Node, sf: &SummaryField) -> Node {
         operation_parameter,
         group_index,
         is_percentage_summary,
+        second_group_for_percentage,
     } = sf;
     n.prop("op", enums::summary_operation(*operation))
         .prop("of", summarized_field.as_str())
@@ -609,6 +614,11 @@ fn summary_node(n: Node, sf: &SummaryField) -> Node {
         )
         .prop_if(*operation_parameter != 0, "n", int(*operation_parameter))
         .flag("percentage", *is_percentage_summary)
+        .prop_if(
+            second_group_for_percentage.is_some(),
+            "percentage-of-group",
+            int(second_group_for_percentage.unwrap_or(0)),
+        )
 }
 
 fn running_total_node(n: Node, rt: &RunningTotalField) -> Node {
@@ -783,8 +793,19 @@ fn record_sort_nodes(sorts: &[Sort]) -> Vec<Node> {
         .collect()
 }
 
-fn layout_node(areas: &[Area]) -> Node {
-    Node::new("layout").children(areas.iter().map(area_node))
+fn layout_node(kind: rpt_model::ReportKind, style: rpt_model::ReportStyle, areas: &[Area]) -> Node {
+    Node::new("layout")
+        .prop_if(
+            kind != rpt_model::ReportKind::default(),
+            "kind",
+            enums::report_kind(kind),
+        )
+        .prop_if(
+            style != rpt_model::ReportStyle::default(),
+            "style",
+            enums::report_style(style),
+        )
+        .children(areas.iter().map(area_node))
 }
 
 /// Append the [`SectionAreaFormatBase`] flags shared by areas and sections.
@@ -851,7 +872,6 @@ fn section_node(s: &Section) -> Node {
         name,
         height,
         width,
-        section_code,
         format,
         objects,
         condition_formulas,
@@ -866,7 +886,6 @@ fn section_node(s: &Section) -> Node {
     } = format;
     let mut n = Node::new("section")
         .arg(name.as_str())
-        .prop_if(*section_code != 0, "code", int(*section_code))
         .prop_if(height.0 != 0, "height", twips(*height))
         .prop_if(width.0 != 0, "width", twips(*width));
     n = base_format_flags(n, base)

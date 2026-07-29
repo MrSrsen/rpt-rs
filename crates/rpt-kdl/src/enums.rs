@@ -6,16 +6,17 @@
 
 use kdl::KdlValue;
 use rpt_model::{
-    Alignment, AreaSectionKind, BooleanOutputType, ChartCategoryPeriod, ChartGraphType,
-    ChartGridType, ChartLayoutType, ChartLegendPosition, ChartViewAngle, ConnectionInfoKind,
-    CurrencyPosition, CurrencySymbolFormat, DateOrder, DateSystemDefaultType, DateTimeOrder,
-    DayFormat, DayOfWeekFormat, DiscreteOrRangeKind, EvaluationConditionType, FieldRefKind,
-    FieldValueType, FormulaSyntax, FormulaVariableScope, HourFormat, HyperlinkType, LineStyle,
-    LovSourceKind, MinuteFormat, MonthFormat, NegativeFormat, PaperOrientation, PaperSize,
-    PaperSource, ParameterDisplayType, ParameterSortOrder, ParameterType, ParameterValueKind,
-    PictureType, PrinterDuplex, RangeBoundType, ReadingOrder, ResetConditionType, RoundingFormat,
-    SecondFormat, SortDirection, SpecialFieldType, SummaryOperation, TableJoinKind,
-    TableLinkOperator, TextFormat, VerticalAlignment, YearFormat,
+    AMPMFormat, Alignment, AreaSectionKind, BooleanOutputType, CalendarType, ChartCategoryPeriod,
+    ChartGraphType, ChartGridType, ChartLayoutType, ChartLegendPosition, ChartViewAngle,
+    ConnectionInfoKind, CurrencyPosition, CurrencySymbolFormat, DateOrder, DateSystemDefaultType,
+    DateTimeOrder, DayFormat, DayOfWeekEnclosure, DayOfWeekFormat, DayOfWeekPosition, EraFormat,
+    EvaluationConditionType, FieldRefKind, FieldValueType, FormulaSyntax, FormulaVariableScope,
+    HourFormat, HyperlinkType, LineStyle, LovSourceKind, MinuteFormat, MonthFormat, NegativeFormat,
+    PaperOrientation, PaperSize, PaperSource, ParameterDisplayType, ParameterSortOrder,
+    ParameterType, ParameterValueKind, PictureType, PrinterDuplex, RangeBoundType, ReadingOrder,
+    ReportKind, ReportStyle, ResetConditionType, RoundingFormat, SecondFormat, SortDirection,
+    SpecialFieldType, SummaryOperation, TableJoinKind, TableLinkOperator, TextFormat, TimeBase,
+    VerticalAlignment, YearFormat,
 };
 
 /// A kebab token as a KDL string value.
@@ -252,6 +253,33 @@ pub(crate) fn special_field_type(v: SpecialFieldType) -> KdlValue {
     }
 }
 
+/// SDK `CRReportKind`.
+pub(crate) fn report_kind(v: ReportKind) -> KdlValue {
+    match v {
+        ReportKind::ColumnarReport => tok("columnar"),
+        ReportKind::LabelReport => tok("label"),
+        ReportKind::MultiColumnReport => tok("multi-column"),
+        ReportKind::Other(c) => raw(c),
+    }
+}
+
+/// SDK `ReportStyle`.
+pub(crate) fn report_style(v: ReportStyle) -> KdlValue {
+    match v {
+        ReportStyle::Standard => tok("standard"),
+        ReportStyle::LeadingBreak => tok("leading-break"),
+        ReportStyle::TrailingBreak => tok("trailing-break"),
+        ReportStyle::Table => tok("table"),
+        ReportStyle::DropTable => tok("drop-table"),
+        ReportStyle::ExecutiveLeadingBreak => tok("executive-leading-break"),
+        ReportStyle::ExecutiveTrailingBreak => tok("executive-trailing-break"),
+        ReportStyle::Shade => tok("shade"),
+        ReportStyle::RedBlueBorder => tok("red-blue-border"),
+        ReportStyle::MaroonTealBox => tok("maroon-teal-box"),
+        ReportStyle::Other(c) => raw(c),
+    }
+}
+
 /// SDK `PaperOrientation`.
 pub(crate) fn paper_orientation(v: PaperOrientation) -> KdlValue {
     match v {
@@ -454,6 +482,24 @@ pub(crate) fn date_order(v: DateOrder) -> KdlValue {
     }
 }
 
+/// SDK `TimeBase`.
+pub(crate) fn time_base(v: TimeBase) -> KdlValue {
+    match v {
+        TimeBase::TwelveHour => tok("12-hour"),
+        TimeBase::TwentyFourHour => tok("24-hour"),
+        TimeBase::Other(c) => raw(c),
+    }
+}
+
+/// SDK `AMPMFormat`.
+pub(crate) fn am_pm_format(v: AMPMFormat) -> KdlValue {
+    match v {
+        AMPMFormat::AMPMBefore => tok("before"),
+        AMPMFormat::AMPMAfter => tok("after"),
+        AMPMFormat::Other(c) => raw(c),
+    }
+}
+
 /// SDK `HourFormat`.
 pub(crate) fn hour_format(v: HourFormat) -> KdlValue {
     match v {
@@ -629,7 +675,57 @@ pub(crate) fn day_of_week_format(v: DayOfWeekFormat) -> KdlValue {
     }
 }
 
-/// SDK `FLScope` — a persisted formula variable's declared scope.
+/// SDK `EraType` — the date's era/period designator.
+pub(crate) fn era_format(v: EraFormat) -> KdlValue {
+    match v {
+        EraFormat::ShortEra => tok("short"),
+        EraFormat::LongEra => tok("long"),
+        EraFormat::NoEra => tok("none"),
+        EraFormat::Other(c) => raw(c),
+    }
+}
+
+/// SDK `CalendarType` — the calendar a date field is rendered in.
+pub(crate) fn calendar_type(v: CalendarType) -> KdlValue {
+    match v {
+        CalendarType::GregorianCalendar => tok("gregorian"),
+        CalendarType::GregorianUSCalendar => tok("gregorian-us"),
+        CalendarType::JapaneseCalendar => tok("japanese"),
+        CalendarType::TaiwaneseCalendar => tok("taiwanese"),
+        CalendarType::KoreanCalendar => tok("korean"),
+        CalendarType::HijriCalendar => tok("hijri"),
+        CalendarType::ThaiCalendar => tok("thai"),
+        CalendarType::HebrewCalendar => tok("hebrew"),
+        CalendarType::GregorianMEFrenchCalendar => tok("gregorian-me-french"),
+        CalendarType::GregorianArabicCalendar => tok("gregorian-arabic"),
+        CalendarType::GregorianXlitEnglishCalendar => tok("gregorian-xlit-english"),
+        CalendarType::GregorianXlitFrenchCalendar => tok("gregorian-xlit-french"),
+        CalendarType::Other(c) => raw(c),
+    }
+}
+
+/// SDK `DayOfWeekPosition` — which side of the date the weekday element sits on.
+pub(crate) fn day_of_week_position(v: DayOfWeekPosition) -> KdlValue {
+    match v {
+        DayOfWeekPosition::LeadingPosition => tok("leading"),
+        DayOfWeekPosition::TrailingPosition => tok("trailing"),
+        DayOfWeekPosition::Other(c) => raw(c),
+    }
+}
+
+/// SDK `DayOfWeekEnclosure` — the bracket pair wrapped around the weekday element.
+pub(crate) fn day_of_week_enclosure(v: DayOfWeekEnclosure) -> KdlValue {
+    match v {
+        DayOfWeekEnclosure::NotEnclosed => tok("none"),
+        DayOfWeekEnclosure::InParentheses => tok("parentheses"),
+        DayOfWeekEnclosure::InFWParentheses => tok("fw-parentheses"),
+        DayOfWeekEnclosure::InSquareBrackets => tok("square-brackets"),
+        DayOfWeekEnclosure::InFWSquareBrackets => tok("fw-square-brackets"),
+        DayOfWeekEnclosure::Other(c) => raw(c),
+    }
+}
+
+/// A persisted formula variable's declared scope.
 pub(crate) fn formula_variable_scope(v: FormulaVariableScope) -> KdlValue {
     match v {
         FormulaVariableScope::Shared => tok("shared"),
@@ -656,16 +752,6 @@ pub(crate) fn parameter_sort_order(v: ParameterSortOrder) -> KdlValue {
         ParameterSortOrder::AlphabeticalAscending => tok("alphabetical-ascending"),
         ParameterSortOrder::AlphabeticalDescending => tok("alphabetical-descending"),
         ParameterSortOrder::Other(c) => raw(c),
-    }
-}
-
-/// SDK `CrDiscreteOrRangeKindEnum` — whether a parameter accepts discrete, range, or both.
-pub(crate) fn discrete_or_range_kind(v: DiscreteOrRangeKind) -> KdlValue {
-    match v {
-        DiscreteOrRangeKind::DiscreteValue => tok("discrete"),
-        DiscreteOrRangeKind::RangeValue => tok("range"),
-        DiscreteOrRangeKind::DiscreteAndRangeValue => tok("discrete-and-range"),
-        DiscreteOrRangeKind::Other(c) => raw(c),
     }
 }
 

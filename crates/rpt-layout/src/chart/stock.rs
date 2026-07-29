@@ -6,7 +6,7 @@
 
 #[cfg(test)]
 use super::common::AxisTitles;
-use super::common::{category_label, category_stride, chart_frame, value_frac, ChartCtx, PALETTE};
+use super::common::{category_label, chart_frame, value_frac, ChartCtx, PALETTE};
 use rpt_model::{Rect, Twips};
 use rpt_pages::{DrawOp, LineOp, Point, RectOp, Stroke};
 
@@ -32,7 +32,7 @@ pub(crate) fn stock_chart(cx: &ChartCtx, points: &[StockPoint]) -> Vec<DrawOp> {
         return Vec::new();
     }
     let &ChartCtx {
-        def,
+        style,
         rect,
         title,
         axis_titles,
@@ -43,7 +43,7 @@ pub(crate) fn stock_chart(cx: &ChartCtx, points: &[StockPoint]) -> Vec<DrawOp> {
 
     // The value scale reserves `points.len()` category slots and scales to the tallest high.
     let series: Vec<(String, f64)> = points.iter().map(|p| (p.label.clone(), p.high)).collect();
-    let f = chart_frame(def, &mut ops, rect, title, axis_titles, &series, &src);
+    let f = chart_frame(style, &mut ops, rect, title, axis_titles, &series, &src);
     let y_at = |v: f64| f.plot_bottom - (value_frac(v, f.max_val) * f.plot_h as f64) as i32;
 
     let bar_w = (f.slot / 6).clamp(30, 120);
@@ -54,7 +54,7 @@ pub(crate) fn stock_chart(cx: &ChartCtx, points: &[StockPoint]) -> Vec<DrawOp> {
         width: Twips(15),
         style: rpt_pages::LineStyle::Single,
     };
-    let stride = category_stride(&f, points.len());
+    let stride = f.cats.stride;
     for (i, p) in points.iter().enumerate() {
         let cx = f.plot_left + i as i32 * f.slot + f.slot / 2;
         let hy = y_at(p.high);
@@ -104,7 +104,7 @@ pub(crate) fn stock_chart(cx: &ChartCtx, points: &[StockPoint]) -> Vec<DrawOp> {
             }));
         }
         if i % stride == 0 {
-            ops.push(category_label(&f, i as i32, &p.label, &src));
+            ops.push(category_label(style, &f, i as i32, &p.label, &src));
         }
     }
 

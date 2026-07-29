@@ -1,9 +1,10 @@
-//! Minimal BMP decoder shared by the raster and PDF backends. Crystal stores embedded OLE bitmaps as
-//! uncompressed Windows BMPs, which neither backend's image library handles, so both decode them here.
+//! Minimal BMP decoder for the render backend. Crystal stores embedded OLE bitmaps as uncompressed
+//! Windows BMPs, which the backend's image library does not handle, so they decode here.
 
 /// Decode an uncompressed (BI_RGB) 24- or 32-bit Windows BMP to top-down straight RGBA8 +
 /// dimensions. Handles the common `BITMAPINFOHEADER` (or larger) layout Crystal emits for embedded
-/// bitmaps; paletted, RLE, and bitfield BMPs return `None` (the caller then skips the image). A
+/// bitmaps; paletted, RLE, and bitfield BMPs return `None` (the caller then skips the image) rather
+/// than being decoded approximately — a refused image is a visible gap, a mis-decoded one is not. A
 /// 32-bit BI_RGB BMP's fourth byte is undefined (not alpha), so every pixel is forced opaque.
 pub fn decode_bmp_rgba(data: &[u8]) -> Option<(Vec<u8>, u32, u32)> {
     // BITMAPFILEHEADER (14) + at least a BITMAPINFOHEADER (40).
@@ -86,12 +87,12 @@ mod tests {
 
     #[test]
     fn decodes_24bit_bottom_up_bmp_to_rgba() {
-        // 2x2 with a distinct colour per pixel so orientation + channel order are both checked.
-        let colours = [[(255, 0, 0), (0, 255, 0)], [(0, 0, 255), (10, 20, 30)]];
-        let bmp = bmp_24(2, 2, |x, y| colours[y][x]);
+        // 2x2 with a distinct color per pixel so orientation + channel order are both checked.
+        let colors = [[(255, 0, 0), (0, 255, 0)], [(0, 0, 255), (10, 20, 30)]];
+        let bmp = bmp_24(2, 2, |x, y| colors[y][x]);
         let (rgba, w, h) = decode_bmp_rgba(&bmp).expect("valid BMP decodes");
         assert_eq!((w, h), (2, 2));
-        for (y, row) in colours.iter().enumerate() {
+        for (y, row) in colors.iter().enumerate() {
             for (x, &(r, g, b)) in row.iter().enumerate() {
                 let d = (y * 2 + x) * 4;
                 assert_eq!(
@@ -104,11 +105,49 @@ mod tests {
     }
 
     #[test]
+    fn decodes_top_down_bmp() {
+        // A negative biHeight stores the first row first; the destination is top-down either way.
+        let colors = [[(255, 0, 0), (0, 255, 0)], [(0, 0, 255), (10, 20, 30)]];
+        let mut bmp = bmp_24(2, 2, |x, y| colors[1 - y][x]);
+        bmp[22..26].copy_from_slice(&(-2i32).to_le_bytes());
+        let (rgba, w, h) = decode_bmp_rgba(&bmp).expect("valid BMP decodes");
+        assert_eq!((w, h), (2, 2));
+        for (y, row) in colors.iter().enumerate() {
+            for (x, &(r, g, b)) in row.iter().enumerate() {
+                let d = (y * 2 + x) * 4;
+                assert_eq!(
+                    (rgba[d], rgba[d + 1], rgba[d + 2]),
+                    (r, g, b),
+                    "pixel ({x},{y})"
+                );
+            }
+        }
+    }
+
+    #[test]
     fn rejects_non_bmp_and_compressed() {
         assert!(decode_bmp_rgba(b"not a bmp at all, definitely too short").is_none());
         // A well-formed header but with an RLE compression code is unsupported.
         let mut bmp = bmp_24(1, 1, |_, _| (1, 2, 3));
         bmp[30] = 1; // BI_RLE8 compression
+        assert!(decode_bmp_rgba(&bmp).is_none());
+    }
+
+    #[test]
+    fn rejects_unsupported_bit_depths() {
+        // Paletted and 16-bit BMPs are refused outright: the pixel bytes are indices or packed
+        // channels, so reading them as BGR(A) would produce a plausible-looking wrong image.
+        for bpp in [1u16, 4, 8, 16] {
+            let mut bmp = bmp_24(4, 4, |_, _| (1, 2, 3));
+            bmp[28..30].copy_from_slice(&bpp.to_le_bytes());
+            assert!(decode_bmp_rgba(&bmp).is_none(), "{bpp}bpp must be refused");
+        }
+    }
+
+    #[test]
+    fn rejects_truncated_pixel_data() {
+        let mut bmp = bmp_24(8, 8, |_, _| (1, 2, 3));
+        bmp.truncate(bmp.len() - 1);
         assert!(decode_bmp_rgba(&bmp).is_none());
     }
 }

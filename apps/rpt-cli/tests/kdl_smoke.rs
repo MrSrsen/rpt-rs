@@ -1,8 +1,9 @@
 //! Smoke test for `rpt kdl`: export each report fixture and assert the output is valid KDL.
 //!
-//! Fixture-gated in the same way as the baseline suite — it passes (skips) when no `.rpt` fixtures
-//! are present under `tests/fixtures/reports/`, so a checkout without the private/local report
-//! corpus still builds and tests cleanly.
+//! The corpus lives at the workspace root, reached through [`rpt_test_support::fixture`] rather than
+//! this crate's own `CARGO_MANIFEST_DIR`. Every `.rpt` under `tests/` is committed, so an empty walk
+//! means the walk is looking in the wrong place — [`corpus`] fails on it instead of skipping, or a
+//! misresolved path would report `ok` having exported nothing.
 #![allow(missing_docs)]
 
 use std::path::{Path, PathBuf};
@@ -11,9 +12,14 @@ use std::process::Command;
 /// The compiled `rpt` binary under test.
 const RPT: &str = env!("CARGO_BIN_EXE_rpt");
 
-fn reports_dir() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/reports")
-}
+/// The smallest corpus this suite accepts as real, below the committed count so adding or retiring
+/// a fixture does not move it, and far above what a wrong directory could yield.
+const MIN_REPORTS: usize = 100;
+
+/// How many corpus reports carry a record-level sort, and so exercise the backstop below. Pinned to
+/// the count rather than to "at least one", so retiring the fixtures that cover this path is a
+/// failure rather than a quiet loss of coverage.
+const MIN_RECORD_SORTS: usize = 5;
 
 /// Every `.rpt` under `dir`, recursively.
 fn collect_reports(dir: &Path) -> Vec<PathBuf> {
@@ -30,6 +36,21 @@ fn collect_reports(dir: &Path) -> Vec<PathBuf> {
         }
     }
     out
+}
+
+/// The committed report corpus, sorted, asserting the walk found it.
+fn corpus() -> Vec<PathBuf> {
+    let dir = rpt_test_support::fixture("tests/fixtures/reports");
+    let mut reports = collect_reports(&dir);
+    assert!(
+        reports.len() >= MIN_REPORTS,
+        "the corpus walk found only {} report(s) under {} — it is looking in the wrong place, and a \
+         smoke test that exports nothing passes",
+        reports.len(),
+        dir.display()
+    );
+    reports.sort();
+    reports
 }
 
 /// Run `rpt <subcommand> <report>` and return its stdout as text (asserting success).
@@ -50,11 +71,7 @@ fn run(subcommand: &str, report: &Path) -> String {
 
 #[test]
 fn kdl_export_is_valid_kdl() {
-    let reports = collect_reports(&reports_dir());
-    if reports.is_empty() {
-        eprintln!("[skip] no fixtures at {}", reports_dir().display());
-        return;
-    }
+    let reports = corpus();
     for report in &reports {
         let text = run("kdl", report);
         kdl::KdlDocument::parse(&text)
@@ -65,14 +82,9 @@ fn kdl_export_is_valid_kdl() {
 /// Losslessness backstop: every report the decoder gives a record-level sort must also carry a
 /// `record-sort` node in its KDL export, so the sparse KDL surface never silently drops one. The
 /// reference is the exhaustive JSON dump — the decoded model itself, not another projection of it.
-/// Fixture-gated like the smoke test above.
 #[test]
 fn kdl_emits_record_sort_when_the_model_has_one() {
-    let reports = collect_reports(&reports_dir());
-    if reports.is_empty() {
-        eprintln!("[skip] no fixtures at {}", reports_dir().display());
-        return;
-    }
+    let reports = corpus();
     let mut checked = 0usize;
     for report in &reports {
         let dump: serde_json::Value = serde_json::from_str(&run("json-dump", report))
@@ -90,5 +102,11 @@ fn kdl_emits_record_sort_when_the_model_has_one() {
             report.display()
         );
     }
-    eprintln!("[record-sort backstop] checked {checked} report(s) with a record sort");
+    // The backstop is only a backstop while some fixture still carries a record sort; a corpus that
+    // lost them all would leave the assertion above unexecuted and still report `ok`.
+    assert!(
+        checked >= MIN_RECORD_SORTS,
+        "only {checked} report(s) in the corpus carry a RecordSortField, expected at least \
+         {MIN_RECORD_SORTS} — the backstop is no longer covering the KDL record-sort path"
+    );
 }

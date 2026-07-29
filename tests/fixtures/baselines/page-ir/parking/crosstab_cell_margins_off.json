@@ -1,0 +1,1939 @@
+// document
+{
+  "sections": {
+    "Section1": {
+      "band": "ReportHeader"
+    },
+    "Section2": {
+      "band": "PageHeader"
+    },
+    "Section3": {
+      "band": "Detail"
+    },
+    "Section4": {
+      "band": "ReportFooter"
+    },
+    "Section5": {
+      "band": "PageFooter"
+    }
+  }
+}
+// page 1
+{
+  "number": 1,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": [
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 135,
+        "top": 135,
+        "width": 564,
+        "height": 114
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 232,
+          "g": 232,
+          "b": 232
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 699,
+        "top": 135,
+        "width": 564,
+        "height": 114
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 232,
+          "g": 232,
+          "b": 232
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 1263,
+        "top": 135,
+        "width": 564,
+        "height": 114
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 232,
+          "g": 232,
+          "b": 232
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 1827,
+        "top": 135,
+        "width": 564,
+        "height": 114
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 232,
+          "g": 232,
+          "b": 232
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 2391,
+        "top": 135,
+        "width": 564,
+        "height": 114
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 232,
+          "g": 232,
+          "b": 232
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 2955,
+        "top": 135,
+        "width": 564,
+        "height": 114
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 232,
+          "g": 232,
+          "b": 232
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 135,
+        "top": 249,
+        "width": 564,
+        "height": 114
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 232,
+          "g": 232,
+          "b": 232
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 135,
+        "top": 363,
+        "width": 564,
+        "height": 114
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 232,
+          "g": 232,
+          "b": 232
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 135,
+        "top": 477,
+        "width": 564,
+        "height": 114
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 232,
+          "g": 232,
+          "b": 232
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 135,
+        "top": 591,
+        "width": 564,
+        "height": 114
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 232,
+          "g": 232,
+          "b": 232
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 135,
+        "top": 705,
+        "width": 564,
+        "height": 114
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 232,
+          "g": 232,
+          "b": 232
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 135,
+        "y": 135
+      },
+      "to": {
+        "x": 3519,
+        "y": 135
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 135,
+        "y": 249
+      },
+      "to": {
+        "x": 3519,
+        "y": 249
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 135,
+        "y": 363
+      },
+      "to": {
+        "x": 3519,
+        "y": 363
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 135,
+        "y": 477
+      },
+      "to": {
+        "x": 3519,
+        "y": 477
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 135,
+        "y": 591
+      },
+      "to": {
+        "x": 3519,
+        "y": 591
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 135,
+        "y": 705
+      },
+      "to": {
+        "x": 3519,
+        "y": 705
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 135,
+        "y": 819
+      },
+      "to": {
+        "x": 3519,
+        "y": 819
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 135,
+        "y": 135
+      },
+      "to": {
+        "x": 135,
+        "y": 819
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 699,
+        "y": 135
+      },
+      "to": {
+        "x": 699,
+        "y": 819
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 1263,
+        "y": 135
+      },
+      "to": {
+        "x": 1263,
+        "y": 819
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 1827,
+        "y": 135
+      },
+      "to": {
+        "x": 1827,
+        "y": 819
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 2391,
+        "y": 135
+      },
+      "to": {
+        "x": 2391,
+        "y": 819
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 2955,
+        "y": 135
+      },
+      "to": {
+        "x": 2955,
+        "y": 819
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 3519,
+        "y": 135
+      },
+      "to": {
+        "x": 3519,
+        "y": 819
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 739,
+        "top": 175,
+        "width": 484,
+        "height": 34
+      },
+      "text": "Total",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 1
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1303,
+        "top": 175,
+        "width": 484,
+        "height": 34
+      },
+      "text": "completed",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 2
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1867,
+        "top": 175,
+        "width": 484,
+        "height": 34
+      },
+      "text": "cancelled",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 3
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2431,
+        "top": 175,
+        "width": 484,
+        "height": 34
+      },
+      "text": "paid",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 4
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2995,
+        "top": 175,
+        "width": 484,
+        "height": 34
+      },
+      "text": "cart",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 5
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 175,
+        "top": 289,
+        "width": 484,
+        "height": 34
+      },
+      "text": "Total",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 6
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 739,
+        "top": 289,
+        "width": 484,
+        "height": 34
+      },
+      "text": "2,620.86",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 7
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1303,
+        "top": 289,
+        "width": 484,
+        "height": 34
+      },
+      "text": "2,359.50",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 8
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1867,
+        "top": 289,
+        "width": 484,
+        "height": 34
+      },
+      "text": "72.60",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 9
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2431,
+        "top": 289,
+        "width": 484,
+        "height": 34
+      },
+      "text": "87.12",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 10
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2995,
+        "top": 289,
+        "width": 484,
+        "height": 34
+      },
+      "text": "101.64",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 11
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 175,
+        "top": 403,
+        "width": 484,
+        "height": 34
+      },
+      "text": "1.00",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 12
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 739,
+        "top": 403,
+        "width": 484,
+        "height": 34
+      },
+      "text": "1,052.70",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 13
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1303,
+        "top": 403,
+        "width": 484,
+        "height": 34
+      },
+      "text": "1,052.70",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 14
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1867,
+        "top": 403,
+        "width": 484,
+        "height": 34
+      },
+      "text": "0.00",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 15
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2431,
+        "top": 403,
+        "width": 484,
+        "height": 34
+      },
+      "text": "0.00",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 16
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2995,
+        "top": 403,
+        "width": 484,
+        "height": 34
+      },
+      "text": "0.00",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 17
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 739,
+        "top": 517,
+        "width": 484,
+        "height": 34
+      },
+      "text": "508.20",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 18
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1303,
+        "top": 517,
+        "width": 484,
+        "height": 34
+      },
+      "text": "333.96",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 19
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1867,
+        "top": 517,
+        "width": 484,
+        "height": 34
+      },
+      "text": "72.60",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 20
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2431,
+        "top": 517,
+        "width": 484,
+        "height": 34
+      },
+      "text": "0.00",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 21
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2995,
+        "top": 517,
+        "width": 484,
+        "height": 34
+      },
+      "text": "101.64",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 22
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 175,
+        "top": 631,
+        "width": 484,
+        "height": 34
+      },
+      "text": "2.00",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 23
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 739,
+        "top": 631,
+        "width": 484,
+        "height": 34
+      },
+      "text": "624.36",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 24
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1303,
+        "top": 631,
+        "width": 484,
+        "height": 34
+      },
+      "text": "537.24",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 25
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1867,
+        "top": 631,
+        "width": 484,
+        "height": 34
+      },
+      "text": "0.00",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 26
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2431,
+        "top": 631,
+        "width": 484,
+        "height": 34
+      },
+      "text": "87.12",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 27
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2995,
+        "top": 631,
+        "width": 484,
+        "height": 34
+      },
+      "text": "0.00",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 28
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 175,
+        "top": 745,
+        "width": 484,
+        "height": 34
+      },
+      "text": "3.00",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 29
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 739,
+        "top": 745,
+        "width": 484,
+        "height": 34
+      },
+      "text": "435.60",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 30
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1303,
+        "top": 745,
+        "width": 484,
+        "height": 34
+      },
+      "text": "435.60",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 31
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1867,
+        "top": 745,
+        "width": 484,
+        "height": 34
+      },
+      "text": "0.00",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 32
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2431,
+        "top": 745,
+        "width": 484,
+        "height": 34
+      },
+      "text": "0.00",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 33
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2995,
+        "top": 745,
+        "width": 484,
+        "height": 34
+      },
+      "text": "0.00",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "Section1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 34
+      }
+    }
+  ]
+}
+// page 2
+{
+  "number": 2,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 3
+{
+  "number": 3,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 4
+{
+  "number": 4,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 5
+{
+  "number": 5,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 6
+{
+  "number": 6,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 7
+{
+  "number": 7,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 8
+{
+  "number": 8,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 9
+{
+  "number": 9,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 10
+{
+  "number": 10,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 11
+{
+  "number": 11,
+  "size": {
+    "width": 12240,
+    "height": 15840
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}

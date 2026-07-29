@@ -4,8 +4,7 @@
 #[cfg(test)]
 use super::common::AxisTitles;
 use super::common::{
-    category_label, category_stride, chart_frame, fmt_val, value_frac, value_label, ChartCtx,
-    LABEL, PALETTE,
+    category_label, chart_frame, fmt_val, value_frac, value_label, ChartCtx, LABEL, PALETTE,
 };
 use rpt_model::{ChartArrangement, Rect, Twips};
 use rpt_pages::{DrawOp, ObjectRef, RectOp};
@@ -19,7 +18,7 @@ pub(crate) fn bar_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp> 
         return Vec::new();
     }
     let &ChartCtx {
-        def,
+        style,
         rect,
         title,
         axis_titles,
@@ -28,11 +27,11 @@ pub(crate) fn bar_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp> 
     } = cx;
     let src = || cx.src();
     let mut ops: Vec<DrawOp> = Vec::new();
-    let f = chart_frame(def, &mut ops, rect, title, axis_titles, series, &src);
+    let f = chart_frame(style, &mut ops, rect, title, axis_titles, series, &src);
 
     // Bars: one riser per category, from the baseline up to the value.
     let bar_w = (f.slot * 3 / 5).max(15);
-    let stride = category_stride(&f, series.len());
+    let stride = f.cats.stride;
     for (i, (label, val)) in series.iter().enumerate() {
         let i = i as i32;
         let h = (value_frac(*val, f.max_val) * f.plot_h as f64) as i32;
@@ -53,6 +52,7 @@ pub(crate) fn bar_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp> 
         // Value label just above the bar top, gated on "show value".
         if show_labels {
             ops.push(value_label(
+                style,
                 bx + bar_w / 2,
                 (by - 230).max(f.plot_top()),
                 &fmt_val(*val),
@@ -61,7 +61,7 @@ pub(crate) fn bar_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp> 
             ));
         }
         if (i as usize).is_multiple_of(stride) {
-            ops.push(category_label(&f, i, label, &src));
+            ops.push(category_label(style, &f, i, label, &src));
         }
     }
 
@@ -77,7 +77,7 @@ pub(crate) fn bar_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp> 
 ///   spans `0..max(Σ series)`.
 /// - [`Percent`](ChartArrangement::Percent): stacked then normalized so every category fills 0..100%.
 ///
-/// Each series is coloured by its index in the shared palette (so the legend the caller composes from
+/// Each series is colored by its index in the shared palette (so the legend the caller composes from
 /// `series_names` matches). `show_labels` gates the per-riser data-value labels. Returns an empty vec
 /// if there are no categories or no series.
 pub(crate) fn bar_chart_multi(
@@ -92,7 +92,7 @@ pub(crate) fn bar_chart_multi(
         return Vec::new();
     }
     let &ChartCtx {
-        def,
+        style,
         rect,
         title,
         axis_titles,
@@ -119,7 +119,15 @@ pub(crate) fn bar_chart_multi(
             (c.clone(), v)
         })
         .collect();
-    let f = chart_frame(def, &mut ops, rect, title, axis_titles, &frame_series, &src);
+    let f = chart_frame(
+        style,
+        &mut ops,
+        rect,
+        title,
+        axis_titles,
+        &frame_series,
+        &src,
+    );
 
     let n = n_series as i32;
     for (ci, cat) in categories.iter().enumerate() {
@@ -138,6 +146,7 @@ pub(crate) fn bar_chart_multi(
                     ops.push(riser(bx, by, sub_w, h, s, &src));
                     if show_labels {
                         ops.push(value_label(
+                            style,
                             bx + sub_w / 2,
                             (by - 230).max(f.plot_top()),
                             &fmt_val(*val),
@@ -164,6 +173,7 @@ pub(crate) fn bar_chart_multi(
                     ops.push(riser(bx, by, bar_w, h, s, &src));
                     if show_labels && h > 200 {
                         ops.push(value_label(
+                            style,
                             bx + bar_w / 2,
                             by + (h - 200) / 2,
                             &fmt_val(*val),
@@ -175,14 +185,16 @@ pub(crate) fn bar_chart_multi(
                 }
             }
         }
-        ops.push(category_label(&f, i, cat, &src));
+        if ci.is_multiple_of(f.cats.stride) {
+            ops.push(category_label(style, &f, i, cat, &src));
+        }
     }
 
     ops
 }
 
 /// A single riser rectangle at `(x, y)` of width `w` and height `h` (clamped ≥ 1), filled with the
-/// palette colour for series index `s`.
+/// palette color for series index `s`.
 fn riser(x: i32, y: i32, w: i32, h: i32, s: usize, src: &dyn Fn() -> Option<ObjectRef>) -> DrawOp {
     DrawOp::Rect(RectOp {
         bounds: Rect {
@@ -319,10 +331,11 @@ mod tests {
             width: Twips(6000),
             height: Twips(4000),
         };
+        // Fractional values so a data label could never be mistaken for a whole-number tick label.
         let series = vec![
-            ("Canada".into(), 12.0),
-            ("USA".into(), 27.0),
-            ("Mexico".into(), 6.0),
+            ("Canada".into(), 12.5),
+            ("USA".into(), 27.5),
+            ("Mexico".into(), 6.5),
         ];
         let ops = bar_chart(
             &ChartCtx::test(r, "Cities", AxisTitles::default(), false),
@@ -339,11 +352,11 @@ mod tests {
             .collect();
         assert_eq!(bars, 3, "bars still drawn without labels");
         assert!(lines > 2, "axes + gridlines still drawn, got {lines}");
-        // Category labels remain; the off-tick data values (12/27/6) are gone.
+        // Category labels remain; the off-tick data values (12.5/27.5/6.5) are gone.
         for c in ["Canada", "USA", "Mexico"] {
             assert!(texts.contains(&c.to_string()), "category {c} in {texts:?}");
         }
-        for v in ["12", "27", "6"] {
+        for v in ["12.5", "27.5", "6.5"] {
             assert!(
                 !texts.contains(&v.to_string()),
                 "value label {v} must be omitted: {texts:?}"

@@ -1,13 +1,13 @@
 //! The neutral, device-independent drawing vocabulary handed to a [`MetafileSink`](crate::MetafileSink).
 //!
-//! These types deliberately know nothing about any target scene: colours are RGBA bytes, coordinates
+//! These types deliberately know nothing about any target scene: colors are RGBA bytes, coordinates
 //! are `f64` in the metafile's own device space (bounded by [`MetafileHeader::bounds`]), and lengths
 //! are logical units. A consumer maps [`MetafileHeader::bounds`] onto its own output box and scales
 //! every coordinate through that one mapping.
 
-/// An opaque or translucent RGBA colour, one byte per channel.
+/// An opaque or translucent RGBA color, one byte per channel.
 ///
-/// Metafile `COLORREF`s are opaque, so [`Color::a`] is `255` for every colour a parser produces; the
+/// Metafile `COLORREF`s are opaque, so [`Color::a`] is `255` for every color a parser produces; the
 /// field exists so consumers can carry through their own alpha.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct Color {
@@ -27,14 +27,14 @@ impl Color {
     /// Opaque white.
     pub const WHITE: Color = Color::rgb(255, 255, 255);
 
-    /// An opaque colour from red/green/blue bytes.
+    /// An opaque color from red/green/blue bytes.
     #[must_use]
     pub const fn rgb(r: u8, g: u8, b: u8) -> Color {
         Color { r, g, b, a: 255 }
     }
 
     /// Decode a Win32 `COLORREF` (`0x00BBGGRR`, little-endian byte order R, G, B) into an opaque
-    /// colour. The high byte (flags/alpha) is ignored.
+    /// color. The high byte (flags/alpha) is ignored.
     #[must_use]
     pub const fn from_colorref(v: u32) -> Color {
         Color {
@@ -126,7 +126,7 @@ pub enum PenStyle {
 /// represented by the absence of a pen (`Option::None`) at the point of use, never by this struct.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Pen {
-    /// Stroke colour.
+    /// Stroke color.
     pub color: Color,
     /// Pen width in logical units. `0` denotes a cosmetic (one-device-pixel) pen; consumers floor it
     /// to a visible minimum after scaling.
@@ -139,7 +139,7 @@ pub struct Pen {
 /// brush (`Option::None`) at the point of use, never by this struct.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Brush {
-    /// Solid fill colour. Hatched and pattern brushes are approximated by their foreground colour.
+    /// Solid fill color. Hatched and pattern brushes are approximated by their foreground color.
     pub color: Color,
 }
 

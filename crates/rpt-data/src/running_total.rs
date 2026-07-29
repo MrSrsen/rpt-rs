@@ -20,9 +20,9 @@
 
 use crate::value_order::value_key;
 use crate::SummaryAccumulator;
-use crystal_formula::eval::{EvalContext, Value};
-use crystal_formula::token::{split_reference, strip_braces};
-use crystal_formula::RefKind;
+use rpt_formula::eval::{EvalContext, Value};
+use rpt_formula::token::{split_reference, strip_braces};
+use rpt_formula::RefKind;
 use rpt_model::{
     DataDefinition, EvaluationConditionType, FieldKindData, ResetConditionType, RunningTotalField,
     SummaryOperation,
@@ -251,7 +251,7 @@ mod tests {
 
     #[test]
     fn running_max_min_over_dates_orders_chronologically() {
-        use crystal_formula::eval::Date;
+        use rpt_formula::eval::Date;
         let formulas = FormulaRegistry::new();
         let rts = RunningTotals {
             entries: RefCell::new(vec![
@@ -269,8 +269,8 @@ mod tests {
                 ),
             ]),
         };
-        // Dates within one year, folded out of order. The old Debug-string key ranked "month: 12"
-        // below "month: 2", so a running Max wrongly picked Feb over Dec.
+        // Dates within one year, folded out of order: a string-keyed comparison would rank "month:
+        // 12" below "month: 2", wrongly picking Feb over Dec for a running Max.
         for d in [
             Date::new(2024, 2, 1),
             Date::new(2024, 12, 1),

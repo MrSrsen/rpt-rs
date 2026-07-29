@@ -1,11 +1,10 @@
 //! [`FontDb`] — the shared face-resolution policy for the physical render backends.
 //!
-//! The PDF and raster backends both need the same thing: locate an OS face for a [`FontSpec`]'s
-//! family (with bold/italic), then hand its bytes to a parser (krilla's `Font`, fontdue's `Font`).
-//! They differ only in that parse step. This type owns the [`fontdb`] database and the resolution
-//! policy — the [`fontdb::Query`] built from a `FontSpec` (named family, generic sans-serif fallback;
-//! weight from `bold`, style from `italic`) — so the policy lives in one place instead of being
-//! re-implemented per backend.
+//! A physical backend needs to locate an OS face for a [`FontSpec`]'s family (with bold/italic), then
+//! hand its bytes to its own font parser (krilla's `Font` for the PDF backend). This type owns the
+//! [`fontdb`] database and the resolution policy — the [`fontdb::Query`] built from a `FontSpec`
+//! (named family, generic sans-serif fallback; weight from `bold`, style from `italic`) — so the
+//! policy lives in one place instead of being re-implemented per backend.
 //!
 //! This module is dependency-light (just `fontdb`) and always compiled, independent of the
 //! cosmic-text feature — so a backend depends on `rpt-text` with `default-features = false` and pulls
@@ -31,6 +30,38 @@ pub struct FaceRun {
     pub substituted: bool,
 }
 
+/// Which face library a [`FontDb`] is built from — the choice a render backend hands to
+/// [`FontSource::load`] instead of picking a constructor itself.
+///
+/// The variants differ in reproducibility, not quality: [`System`](FontSource::System) renders with
+/// the host's real faces (an installed Arial embeds Arial), so its output is a property of the
+/// machine; [`Bundled`](FontSource::Bundled) renders from the crate's own faces alone, so the same
+/// input yields the same bytes on every host — what a committed baseline and a fontless host (WASM,
+/// a minimal container) need.
+///
+/// [`Bundled`](FontSource::Bundled) is the default: the bundled Liberation set is metric-compatible
+/// with Arial, Times New Roman and Courier New and nothing else, so a host-scanned render of any
+/// other family changes geometry from machine to machine. A reproducible render is the useful
+/// default; reading the host's library is the deliberate choice.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum FontSource {
+    /// OS-installed fonts plus the bundled fallback ([`FontDb::with_system_fonts`]).
+    System,
+    /// The bundled faces alone, no OS scan ([`FontDb::bundled`]) — the default.
+    #[default]
+    Bundled,
+}
+
+impl FontSource {
+    /// Build the [`FontDb`] this source names.
+    pub fn load(self) -> FontDb {
+        match self {
+            FontSource::System => FontDb::with_system_fonts(),
+            FontSource::Bundled => FontDb::bundled(),
+        }
+    }
+}
+
 /// An OS font database plus the shared [`FontSpec`] → face resolution policy. Load it once
 /// ([`FontDb::with_system_fonts`]) and resolve many specs; a backend keeps only its own parse+cache
 /// of the resolved face bytes.
@@ -51,6 +82,169 @@ impl std::fmt::Debug for FontDb {
             .field("faces", &self.db.len())
             .finish()
     }
+}
+
+/// The generic class a font family belongs to, independent of any font library's own `Family` type.
+/// Both halves of the font stack — the layout metrics and the PDF's face resolution — must classify a
+/// family the same way, or one measures with a face the other does not embed.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub(crate) enum GenericFamily {
+    SansSerif,
+    Serif,
+    Monospace,
+}
+
+/// Families that are serif or monospace despite not being installed, so an absent one falls back to
+/// the matching metric-compatible Liberation face instead of collapsing to sans.
+///
+/// Sending every unknown family to sans-serif is what this table exists to stop: Liberation Serif is
+/// metric-compatible with Times New Roman and Liberation Mono with Courier New, exactly as Liberation
+/// Sans is with Arial, so the wrong generic gives a Times report Arial advances — a geometry change,
+/// and therefore a pagination change.
+///
+/// It is a list of NAMES, not an inference from metrics: these are the Windows families Crystal
+/// reports actually name. Widening it is expected and cheap; deriving the class from the font would
+/// require the font, which is precisely what is missing when this runs.
+const SERIF_FAMILIES: &[&str] = &[
+    "times new roman",
+    "times",
+    "georgia",
+    "cambria",
+    "garamond",
+    "book antiqua",
+    "palatino linotype",
+    "palatino",
+    "century schoolbook",
+    "constantia",
+    "rockwell",
+    "bookman old style",
+    "bodoni mt",
+    "bodoni mt black",
+];
+
+/// The monospace counterpart of [`SERIF_FAMILIES`].
+const MONOSPACE_FAMILIES: &[&str] = &[
+    "courier new",
+    "courier",
+    "consolas",
+    "lucida console",
+    "lucida sans typewriter",
+    "monaco",
+    "menlo",
+    "dejavu sans mono",
+];
+
+/// The generic an unknown family should resolve through, from its name.
+///
+/// Checks the explicit tables first, then falls back to the name itself: a family containing `mono`
+/// or `courier` is monospace, and one containing `serif` is serif unless it says `sans serif`. That
+/// backstop is what keeps a family the tables have never heard of — a foundry variant, a localized
+/// name — from silently becoming sans.
+pub(crate) fn generic_for(family: &str) -> GenericFamily {
+    let f = family.trim().to_lowercase();
+    if MONOSPACE_FAMILIES.contains(&f.as_str()) {
+        return GenericFamily::Monospace;
+    }
+    if SERIF_FAMILIES.contains(&f.as_str()) {
+        return GenericFamily::Serif;
+    }
+    if f.contains("mono") || f.contains("courier") {
+        return GenericFamily::Monospace;
+    }
+    let sans = f.contains("sans serif") || f.contains("sans-serif") || f.contains("sansserif");
+    if f.contains("serif") && !sans {
+        return GenericFamily::Serif;
+    }
+    GenericFamily::SansSerif
+}
+
+/// One face in a [`FontDb`], flattened for reporting: what it is and where it came from.
+#[derive(Clone, Debug)]
+pub struct FaceReport {
+    /// The family name a report would ask for.
+    pub family: String,
+    /// PostScript name, which identifies the face rather than the family.
+    pub post_script_name: String,
+    /// `Normal`, `Italic` or `Oblique`.
+    pub style: String,
+    /// OpenType weight class (400 = regular, 700 = bold).
+    pub weight: u16,
+    /// Width class, as fontdb names it.
+    pub stretch: String,
+    /// Whether the face declares itself monospaced.
+    pub monospaced: bool,
+    /// Where the bytes came from: a filesystem path, or `None` for a face compiled into the binary.
+    pub path: Option<std::path::PathBuf>,
+    /// Face index within its file — non-zero only for a collection (`.ttc`).
+    pub index: u32,
+}
+
+/// What a [`FontDb`] actually contains, for `--list-fonts` and for answering "which face did it pick".
+#[derive(Clone, Debug)]
+pub struct FontInventory {
+    /// Every loaded face.
+    pub faces: Vec<FaceReport>,
+    /// The families the three generics resolve to. Every fallback goes through one of these, so a
+    /// wrong mapping here misroutes an entire class of family and is otherwise invisible.
+    pub sans_serif: String,
+    /// The family the serif generic resolves to.
+    pub serif: String,
+    /// The family the monospace generic resolves to.
+    pub monospace: String,
+}
+
+impl FontInventory {
+    /// Faces compiled into the binary rather than read from disk.
+    pub fn bundled_count(&self) -> usize {
+        self.faces.iter().filter(|f| f.path.is_none()).count()
+    }
+
+    /// Faces loaded from the filesystem.
+    pub fn system_count(&self) -> usize {
+        self.faces.iter().filter(|f| f.path.is_some()).count()
+    }
+}
+
+/// The directories a system-font scan looks in, whether or not they exist.
+///
+/// Reported rather than inferred from what was found: a directory that was searched and turned out
+/// empty explains an absent font far better than the font simply not appearing in a list. This mirrors
+/// the platform list [`fontdb`] itself walks — it does not expose one, so keeping the two in step is a
+/// maintenance obligation, and the listing says so rather than implying authority it does not have.
+pub fn system_font_dirs() -> Vec<std::path::PathBuf> {
+    #[allow(unused_mut)] // every push below is behind a target cfg; on wasm there are none.
+    let mut dirs: Vec<std::path::PathBuf> = Vec::new();
+    #[cfg(target_os = "linux")]
+    {
+        dirs.push("/usr/share/fonts".into());
+        dirs.push("/usr/local/share/fonts".into());
+        if let Ok(home) = std::env::var("HOME") {
+            dirs.push(std::path::Path::new(&home).join(".fonts"));
+            dirs.push(std::path::Path::new(&home).join(".local/share/fonts"));
+        }
+        if let Ok(xdg) = std::env::var("XDG_DATA_HOME") {
+            dirs.push(std::path::Path::new(&xdg).join("fonts"));
+        }
+    }
+    #[cfg(target_os = "macos")]
+    {
+        dirs.push("/Library/Fonts".into());
+        dirs.push("/System/Library/Fonts".into());
+        dirs.push("/Network/Library/Fonts".into());
+        if let Ok(home) = std::env::var("HOME") {
+            dirs.push(std::path::Path::new(&home).join("Library/Fonts"));
+        }
+    }
+    #[cfg(target_os = "windows")]
+    {
+        if let Ok(win) = std::env::var("SystemRoot") {
+            dirs.push(std::path::Path::new(&win).join("Fonts"));
+        }
+        if let Ok(local) = std::env::var("LOCALAPPDATA") {
+            dirs.push(std::path::Path::new(&local).join("Microsoft/Windows/Fonts"));
+        }
+    }
+    dirs
 }
 
 impl FontDb {
@@ -88,6 +282,39 @@ impl FontDb {
         }
     }
 
+    /// Everything this database holds, for reporting. Built from the same `FontDb` a render would
+    /// use, so the listing cannot disagree with what the renderer actually resolves.
+    pub fn inventory(&self) -> FontInventory {
+        let mut faces: Vec<FaceReport> = self
+            .db
+            .faces()
+            .map(|f| FaceReport {
+                family: f
+                    .families
+                    .first()
+                    .map(|(n, _)| n.clone())
+                    .unwrap_or_default(),
+                post_script_name: f.post_script_name.clone(),
+                style: format!("{:?}", f.style),
+                weight: f.weight.0,
+                stretch: format!("{:?}", f.stretch),
+                monospaced: f.monospaced,
+                path: match &f.source {
+                    fontdb::Source::File(p) => Some(p.clone()),
+                    _ => None,
+                },
+                index: f.index,
+            })
+            .collect();
+        faces.sort_by(|a, b| (&a.family, a.weight, &a.style).cmp(&(&b.family, b.weight, &b.style)));
+        FontInventory {
+            faces,
+            sans_serif: self.db.family_name(&Family::SansSerif).to_string(),
+            serif: self.db.family_name(&Family::Serif).to_string(),
+            monospace: self.db.family_name(&Family::Monospace).to_string(),
+        }
+    }
+
     /// The resolved primary face for `spec`, memoized by `(family, bold, italic)` so the fontdb
     /// family scan runs once per distinct spec rather than once per text op. Same result as
     /// [`query`](FontDb::query).
@@ -117,7 +344,7 @@ impl FontDb {
     /// when nothing matches at all.
     pub fn query(&self, spec: &FontSpec) -> Option<ID> {
         let query = Query {
-            families: &[Family::Name(&spec.family), Family::SansSerif],
+            families: &[Family::Name(&spec.family), generic_fallback(&spec.family)],
             weight: if spec.bold {
                 Weight::BOLD
             } else {
@@ -250,6 +477,16 @@ impl FontDb {
                 .unwrap_or_else(|| with_symbol(None)),
             None => with_symbol(None),
         }
+    }
+}
+
+/// The fontdb generic an absent family falls back to, from [`generic_for`]. Keeping this in step with
+/// the layout side is what stops the writer embedding one face while the metrics came from another.
+fn generic_fallback(family: &str) -> Family<'static> {
+    match generic_for(family) {
+        GenericFamily::Serif => Family::Serif,
+        GenericFamily::Monospace => Family::Monospace,
+        GenericFamily::SansSerif => Family::SansSerif,
     }
 }
 

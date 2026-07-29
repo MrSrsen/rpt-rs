@@ -11,7 +11,7 @@ use std::fmt::Write as _;
 /// Target SQL dialect.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum Dialect {
-    /// PostgreSQL (perf / oracle path).
+    /// PostgreSQL (perf path).
     Postgres,
     /// SQLite (zero-process CI / localhost path).
     Sqlite,

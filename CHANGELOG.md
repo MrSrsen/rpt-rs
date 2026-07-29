@@ -6,7 +6,477 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-WIP.
+More than 340 tracked issues went into this release.
+
+Its focus is the **`rpt-reader` rewrite**: every record type now decodes through a declarative field table — a stated
+sequence of typed reads — in place of the byte-offset arithmetic, string scans and landmark probes that came before. A
+positional reading is right about the corpus by construction; a transcribed one is right about the format, and the
+difference only shows on a report the corpus does not contain. The rewrite corrected a long tail of such readings, and
+seven computed values came off the semantic model with it, so the decode surface is now stored facts and nothing else.
+
+The other half is subtraction. The **raster, SVG and HTML backends are gone**, each having earned little practical use
+beside the PDF one, and each a second-class view of the same pages — painting from metrics the layout engine never
+measured with, or rounding twips away. **PDF is now the only output, and the one the project will build on.** It gains
+tagged output, PDF/UA-1 and PDF/A, real gradient and hatch fills, hierarchical grouping, per-section paging limits, and
+a large body of chart, date/time and numeric parity work measured against the native engine. Four test layers — decode,
+`Dataset`, Page IR, PDF content stream — now pin the pipeline, so a failure names the stage that broke.
+
+### Breaking changes
+
+**Toolchain and features**
+
+- **The minimum supported Rust version is 1.92** (was 1.89).
+- Three Cargo features are gone, each having become unconditional: `rpt-pages`'s `json`, `rpt-reader`'s `std`, and
+  `rpt-render` / `rpt-render-cli`'s `cosmic`. `--no-default-features` no longer yields an `ApproxLayout`-only render.
+- **`crystal-formula` is renamed `rpt-formula`.** Change the dependency key and every `crystal_formula::` path, or add a
+  Cargo rename. Nothing inside the crate moved.
+- **`rpt_formula::func_id` is replaced by `is_builtin`.** The formula type system no longer keys its return-type,
+  string-width and arity rules through a numeric id: each builtin now carries all three in one name-keyed table, so
+  there is no id to hand out. Callers only ever asked whether a name was known, which `is_builtin(&str) -> bool`
+  answers directly.
+
+**Seven derived values leave the semantic model, the JSON dump and the KDL export.** Each was computed rather than read,
+so a change to the derivation moved decode baselines with the bytes untouched. A consumer that needs one derives it:
+
+- `Section::section_code` and `ReportObject::section_code` — nothing consumed them.
+- `PictureObject::{original_width, original_height, x_scaling, y_scaling}` — call `rpt_model::natural_extent`.
+- `FieldObject::value_type` is populated for summary objects only; the rest resolve through
+  `rpt_model::analysis::field_object_value_type`.
+- `LineShape` / `BoxShape`'s `end_section_name` → `DrawingShape::end_section_index`, which is stored rather than
+  rediscovered by walking heights.
+- `DrawingShape::{line_style, line_color}` and `BoxShape::fill_color` mirrored `ReportObject::border` — read that.
+- `ParameterField::discrete_or_range_kind`; and `prompt_text` is `None` rather than a synthesised `"Enter {name}:"`.
+- `CrossTabObject::measures` — call `rpt_model::crosstab_measures(&Report)`.
+
+**Reader API**
+
+- `FieldFormat::currency_numeric` is serialized and `numeric` is no longer swapped: a field stores **two** numeric
+  slots, both decoded verbatim. Read `currency_numeric` for a Currency field.
+- A field heading left at `Alignment::DefaultAlign` keeps its stored byte; the rules that rewrote it moved to
+  `rpt-layout`. No rendered output changes.
+- Cross-tab count words are named for what they count: `CrossTabGridFormat::raw` → `cell_count`, and
+  `CrossTabObject::{column,row}_axis_options` → `{column,row}_level_count`. Values unchanged, so every cross-tab
+  baseline moves as a pure key rename.
+- `StreamCoverage::records` → `outermost_records`, plus a new `tree_records`; `unknown_records` / `unknown_types` now
+  count over the whole tree. `rpt streams --json` follows.
+- `RecordNode::leaf_bytes` → `joined_runs` and `raw::Part::Leaf` → `Part::Run` (likewise `FieldRead::leaf` → `joined`,
+  `leaf_segments` → `run_spans`): the buffer splices nested records out, so a fixed offset into it can address bytes
+  that are not adjacent on disk. `RecordNode::runs` / `first_run` are what a positional read wants.
+- Renamed without change of meaning: `Rpt::record_dom` → `typed_record_tree`, `subreport_record_doms` →
+  `subreport_typed_record_trees`, `RecordStream::tile_logical` → `from_logical_bytes`, `patch_record_leaf[_resize]` →
+  `patch_record_bytes[_resize]`, `SavedBatchInspection::dir_leaf` → `dir_entry`, `Error::Project` → `Error::Edit`,
+  `ProjectErrorKind` → `EditErrorKind`.
+- `raw::Dialect`, `fields::FieldKind` and `fields::FieldValue` are `#[non_exhaustive]`; `annotate::summarize`,
+  `raw::Unknown::type_name`, `RecordTag::name` and `RecordTag::is_known` take a `Dialect`, since a type number is per
+  stream.
+- `Report` gains `authoring_version`; `Rpt::record_fields` returns `Result`, not `Option`.
+- Decode errors can no longer be constructed outside the crate: `ContainerError`, `CryptoError`, `CodecError` and
+  `NotAReportError` are `#[non_exhaustive]` with crate-private builders. Inspecting and matching are untouched.
+- Removed: `rpt_reader::prelude`, `raw::Value::Int`, `FieldKind::Custom`, `RecordFields::ranges_verified`, `Serialize`
+  on `DecodeCoverage` / `StreamCoverage`, `Rpt::{save, write, saved_index}`, `install_panic_hook` and the `diagnostics`
+  module, and `RecordStream::qe_record_tree`'s visibility. The lossless guarantee sits on `Rpt::original_bytes`;
+  `EditPolicy` moved to `io::edit` with its root re-export unchanged.
+
+**CLI**
+
+- **The JSON dump encodes a picture's bytes as a lowercase hex string**, not an array of integers — decode `data` from
+  hex. It round-trips exactly, and the committed L1 baselines drop from 327 MB to 42 MB.
+- **`rpt patch` edits by field name, not byte offset**: `rpt patch <in.rpt> <tag> <nth> <target> <value> <out.rpt>`,
+  `<target>` being the field table's name (`group_indent`, `element_styles[3].weight`). Such an edit may change width,
+  and the clearance gate is now a property the file demonstrates rather than a hand-maintained list. `@<offset>` still
+  takes a raw same-size overwrite on a table-less type.
+- `rpt dump`'s field-kind column names its byte order (`u16be`, `varu32`, …); decoding is byte-identical.
+- `rpt streams`' `top types:` histogram names each type in its stream's vocabulary and counts over the tree — anything
+  scraping it for a hex word breaks.
+- `rpt inputs` prints a `current:` line per parameter, and both `default:` and `current:` render a range in interval
+  notation (`[1..100]`, `[1..)`).
+
+**Render pipeline**
+
+- **PNG, HTML and SVG output are gone**, with the `rpt-render-raster` / `-html` / `-svg` crates and every facade entry
+  point that named them. Render to PDF.
+- `-f` / `--format` and extension inference go with them: `-o` names a path and any name is accepted, though an
+  `.html` / `.svg` / `.png` path is refused by name. Default output is PDF (was HTML on a bare stdout run); `--force` is
+  now an unknown option.
+- `PdfWriter`, `PdfOptions::writer` and `render_pages_basic` are gone — krilla is the only writer. `PdfOptions` gains
+  `producer` and is no longer `Copy`.
+- `rpt-render-util`'s markup-era surface goes with the markup backends: `base64_encode`, `escape_xml_text`,
+  `escape_xml_attr`, `dash_pattern`, `TWIPS_PER_PX`, `TWIPS_PER_INCH` and `POINTS_PER_INCH`, plus `JustifyUnit`'s `f32`
+  instantiation. `rpt-layout` drops the dependency.
+- **Renders use the bundled faces by default, not the host's installed fonts** — both the metrics layout measures with
+  (`RenderOptions::fonts`, new) and the faces the backend embeds (`PdfOptions::fonts`). A report naming an installed
+  font can shift its wrap points, can-grow heights and therefore **page count**, and embeds `LiberationSans` where it
+  embedded `ArialMT`. Scanning the host made the output a property of the machine; `rpt-render --system-fonts` asks for
+  it back. This moved no committed baseline.
+- New fields needing an exhaustive literal, all defaulting to previous behaviour: `TextRun::character_spacing`,
+  `PagedDocument::sections`, `GroupInstance::{date_condition, hierarchy_children}`, `NumberFormat::{reserve_sign,
+  reverse_sign, zero_value}`, `TimeFormat::am_pm`. Every stored Page IR dump still deserializes.
+- `FormatSpec::DateTime` is a struct variant `{ date, time, separator, time_first }`.
+- `ReportDocument::export_pdf_to_disk` returns `Result<(), rpt_render::ExportError>`; writing a PDF never touches the
+  reader. The message is unchanged.
+
+### Added
+
+**Reader**
+
+- `rpt_model::AuthoringVersion` / `Report::authoring_version` — which Crystal Reports wrote the file.
+- **The saved-data path says why it decoded nothing**, where every failure used to produce `saved_data: null`.
+  `Rpt::saved_data_status` names the reason — no catalog, no stored field, a missing row stream, an undecryptable batch,
+  a short rowset. It rides on `DecodeCoverage`, so a lost batch fires `warning()` and `rpt json-dump --strict` refuses.
+  Nothing enters the model or the dump.
+- **`rpt_reader::fields`** — the field-table reading as a public accessor (`read`, `table_name`, `tabled_types`), with
+  the table machinery still private, plus `RecordStream::fields` / `field` as the primary reading.
+- **`raw::RecordSearch`** — the record-finding primitive the format uses: ask by type, bounded by the container's end
+  marker, stepping over anything else. That is what tells an optional record never written from running off the end, and
+  why a file written by a newer engine opens in an older one.
+- `Dialect::ALL` and a `Catalog` variant, `RecordTag::{from_name, label}`, `SummaryOperation::{token, full_name}`.
+- **The chart definition's styling block decodes** — bar/pie/marker sizing, marker shape, colour mode, legend layout,
+  data point, data-value number format, two more gridline modes, and a per-axis run (min, max, number format, auto range
+  and scale, division method and count) for the value, secondary value and series axes. Nine new enums carry an
+  `Other(u8)` arm so an unknown code is kept rather than folded into a neighbour. `ChartElementFont` gains `weight`,
+  `italic` and `is_default`, and `element_fonts` carries all ten elements.
+- **The `0x00f6` time leaf is fully decoded** — `time_base`, `am_pm_format`, `am_string`, `pm_string` and both
+  separators, all six previously documented as absent.
+- `DateFieldFormat` decodes `era`, `calendar`, `day_of_week_position`, `day_of_week_enclosure` and the five literal
+  separators, so a date format can be reproduced from the model.
+- `NumericFieldFormat` decodes `use_lead_zero`, `display_reverse_sign`, `one_currency_symbol_per_page` and
+  `zero_value_string`.
+- `ReportDefinition::kind` as a stored fact rather than a restatement of the multi-column geometry, and
+  `AreaFormat::visible_records_per_page`, which had no decode path at all.
+- **The report's creation, last-saved and last-printed timestamps are decoded** — the `\x05SummaryInformation` parser
+  read string properties only, so each `VT_FILETIME` fell through.
+- **`rpt dump` shows a record type's field-table reading** where a table exists — name, wire type, value and byte range
+  per field, then whether the table consumed the record exactly and where it stopped. `--grid` forces the old probe
+  grid; `--json` carries the same under `fieldTable`, with a new `int` key for signed fields.
+
+**Render**
+
+- **Tagged PDF, PDF/UA-1 and the accessible PDF/A levels.** `PdfOptions::tagged` emits the structure tree assistive
+  technology needs, with reading order recovered per band by row; draws stay in paint order, so appearance is unchanged.
+  The levels are **earned, not selected**: what the report genuinely lacks — language, title, alternate text per figure
+  — comes from `PdfOptions::semantics`, and the render is **refused**, naming what is missing, when it does not.
+  Verified with veraPDF 1.30.2 against ISO 14289-1: 56 corpus reports pass, none fail, 48 are refused for undescribed
+  figures. `rpt_render::semantics_of(&Report)` fills in what the file states; the CLI adds `--tagged`, `--pdfua`,
+  `--pdfa 1a|2a|3a`, `--lang`, `--title` and `--alt <Object>=<text>`.
+- **PDF/A archival output — `rpt-render --pdfa 1b|2b|3b`, or `PdfOptions::conformance`** — as a checked claim: a
+  document that does not meet the level fails with `PdfError::Conformance` naming each unmet requirement rather than
+  being written with a claim it does not honour. `PdfOptions::created` sets the required date; without one a conforming
+  render falls back to the Unix epoch so its bytes stay reproducible.
+- **Every rendered PDF names the engine that produced it** in `/Producer`, `/Creator` and the XMP equivalents. It costs
+  no reproducibility — the identity is a build constant, never a clock, host or path. `PdfOptions::producer` rebrands or
+  opts out.
+- **Hierarchical grouping renders as the tree it describes** rather than flat in raw key order: a depth-first walk from
+  the roots, siblings in the group's own sort order, each subtree bracketed by its own header and footer, every object
+  shifted right by `depth × GroupIndent`. Malformed hierarchies lay out rather than hang or vanish — an orphan and a
+  self-parenting instance are roots, a cycle terminates, every instance prints once.
+- **The per-section paging limits paginate.** "Records per page" and "Groups per page" were decoded but read by nothing.
+  A stored `0` still means no limit; the record cap breaks before the next group's header, so it is not orphaned.
+- **`OneCurrencySymbolPerPage` is applied.** It cannot live in the value formatter — a band's text resolves before the
+  page-break decision that follows it — so it is a post-pagination pass over the same fixup list `TotalPageCount` uses.
+  The Page IR is unchanged.
+- **Real gradient and hatch fills in the PDF backend**, as a PDF axial shading and a real tiling pattern; both
+  previously degraded silently to a representative solid. Nothing in the pipeline constructs either fill yet.
+- **The Page IR carries the report's section structure and paragraph character spacing.** `PagedDocument::sections` lets
+  a consumer tell a running page header from document content. A backend that re-shapes must add `character_spacing` per
+  *scalar in each shaped cluster*, never per glyph, or a ligature desynchronizes the drawn width from the measured one.
+- **A font seam over both halves of the stack** — `RenderOptions::fonts` and `PdfOptions::fonts`, plus
+  `FontProvider::from_source` so one value configures both and they cannot drift. **`rpt-render --list-fonts`** prints
+  the library a render would use: face count, origins, directories searched, `--verbose` adding a line per face.
+- **`try_render_pages` / `try_render_pages_with_assets`** (with the new `PdfError`): entry points that *report* a
+  serialization failure instead of absorbing it. The infallible signatures are unchanged.
+- **`rpt --version` and `rpt-render --version`**, taken from `[workspace.package]` so the printed version is the one the
+  binary was built from.
+
+**Tests**
+
+- **Committed `Dataset` snapshot baselines (L2)** — eight fixtures diff columns and value types, surviving `row_count`,
+  parameter values, each formula field with its classified evaluation time, the fail-open diagnostics, the grand total,
+  and the indented group tree. Values are **typed, never formatted**, so the host locale cannot enter the baseline.
+- **Committed PDF content-stream baselines (L4a)** — eight fixtures diff a normalized operator listing, so with the Page
+  IR green a diff here means the *writer* changed. Both harnesses read their own saved data with fonts pinned to the
+  bundled faces, so neither needs a database or host fonts.
+- `rpt_test_support::pdf` — read-only inspection of rendered PDF bytes (`inflated_content`, `operator_listing`).
+- The HTML backend's 73 committed baselines are replaced one-for-one by **Page IR** baselines blessed from the same
+  renders — strictly stronger, since HTML rounded twips to CSS px and so could not see a sub-15-twip shift.
+- The field-table harness fails a table whose two fields share a name, and a version-gate census measures the spread of
+  schema words the corpus stores per record type.
+- **`THIRD-PARTY-NOTICES.md`**, generated from the lock file by `scripts/gen-third-party-notices.sh` and shipped in
+  every release archive and in the Docker image. The binaries are statically linked and embed the bundled fonts, so an
+  archive redistributes its whole dependency tree; it previously carried only this project's own `LICENSE`, and the
+  image carried no licence text at all. `metafile` also ships the `LICENSE-MIT` / `LICENSE-APACHE` texts its declared
+  dual licence needs.
+
+### Changed
+
+The decoder's readings are now **declarative**: a record type states its field sequence once, and the reader walks it. A
+positional reading is right about the corpus by construction; a transcribed one is right about the format, and the
+difference only shows on a report the corpus does not contain. Every table accounts for its corpus records exactly and
+re-emits them byte for byte; no decode baseline moves unless an entry says so.
+
+**Framing**
+
+- **A record's schema word is an opaque version number**, read whole and compared numerically, so a reader accepts
+  anything up to the newest layout it knows and adapts to anything older. Its high byte identifies nothing.
+- **A record type with a field table declares its children**, so a tabled type stops being scanned. The tree is
+  byte-identical. The two scan filters underneath stay until the last untabled type retires.
+- **A record says which of the two string wire formats its content uses**, honoured per record instead of assumed. All
+  374,539 corpus records declare the enhanced form, so nothing decodes differently — but a writer must set it.
+- **An empty record must state its version to be recognised as one**; admitting the narrowest header wherever a table
+  declared the type turned bytes of a save timestamp into two child records.
+- **A version ceiling belongs to a record, not to its number**, keyed by dialect and type the way the registry routes.
+- **The typed record tree carries a record's content in wire order** — `parts: Vec<Part>`, alternating runs of field
+  bytes and the records nested between them, replacing the separate `values` / `children` lists.
+- **The wire-type vocabulary names its byte order** (`U16Be`, `VarU32`, …), since the format is not uniformly
+  big-endian; a table can state "a string" independently of how it is spelled, and a field reference as one composite.
+
+**Record readings**
+
+- **Two of twenty record types read the wrong field width or flag**: `0x006c MultiColumn`'s four `i32` dimensions were
+  read as 16-bit slices, and `0x00b8 CrossTabObject` has no cell-margin flag — the byte read as one is the third byte
+  of the grid width, so `ShowCellMargins` comes from the `0x00d6` grid cells.
+- **Six `Skip` runs were variable-length structures** and are decoded as such. Each was the right length only because
+  every corpus report stores the variable parts empty.
+- **Thirteen more types moved to field tables**, led by the chart definition and the whole cross-tab family. The chart's
+  pie and 3-D families become conditional *fields*, the chart subtype is read as the narrowing integer it is (so a
+  subtype at or above 256 keeps its high bits), and a cross-tab level's bound field reference is read at its stated
+  position.
+- **The last positional readings retire**, including the font (`0x0008`) — the one type read with no table at all — and
+  the object position, format wrappers, cross-tab measure binding and chart data field. Two were rules, not addresses: a
+  wrapper's slots are the references the record states in slot order rather than whatever parsed as an `@`-name, and a
+  chart's data field is the summarized field at its stated position rather than the first plausible string.
+- **A parameter's detail record (`0x007a`)** was read by hunting for landmarks — a `0xFF` run, an `ff ff` pair, the
+  literal `crobj` — and every landmark turns out to be a field. Two were not where they read.
+- **The report root record (`0x0064`)** carries a length-prefixed document name, so every field after it moves by that
+  name's length. `EnableSaveDataWithReport` was read at the empty form's offset, landing inside the name, so the flag
+  was the low bit of a letter of the subreport's file name. Nine subreport records were affected, in both directions.
+- **A running total (`0x0080`) contains its summary rather than preceding it**, so it is told from a summary definition
+  by containment rather than adjacency; each of its two conditions is a kind followed by what that kind names.
+- **The saved-data catalog, and one report's stored rows come back.** A header-shaped run of field data was framed as a
+  nested record, cutting real field bytes; on one report it cut the very first field, so the record width read as `0`,
+  the batch cipher IV keyed on it, and the report claimed no saved data while its own descriptor said otherwise.
+- **A parameter's saved current value (`0x0031`)** was read at computed offsets, one of them wrong, so every record
+  failed its own entry decode and fell through to the prompting-form document. The saved values now read in a record
+  vocabulary of their own (`Dialect::ReportParameters`), and a stored date default is written as `Date(YYYY,MM,DD)`.
+- **Text objects read as sequences**: the opener names its paragraph count and field-heading flag, a literal run is text
+  plus character spacing (so an empty run reads as the stored value it is), and a field run states its embedded
+  reference as one composite, closing three latent defects in the scan it replaces.
+- Likewise the field object, blob-field wrapper, picture object, chart object, formula, designer connection, guideline,
+  the seven band markers, the saved-data descriptor, the field-heading link, the subreport re-import descriptor, the
+  cross-tab custom-member collection, specified-order group values, font colour and font conditional formats, the group
+  and sort records, the field-pool census, persisted formula variables, and a new `CrossTabGridCell` table.
+- **The database and print-options records** read declaratively too, so a table's alias, qualified name and SQL command
+  text, a connection's driver DLL and a logon property's value are read at their stated positions rather than found by
+  scanning. The page DEVMODE is read as the `dmFields` mask says.
+- **Two records are renamed for what they are**: `0x0081` is a SQL Expression field (it was named after the engine
+  translation unit hosting its reader) and `0x0160` is the document's option bag (it defines no field).
+- **A formula field's stored value type and width are no longer discarded** when its body references a dropped column.
+  The decoder was reproducing the engine's load-time recompute, which is gated on live datasource binding and so not
+  reproducible from the file; that model stays in `rpt_formula::string_max_bytes`.
+- **A chart with no axes reports the gridline modes its record stores** — discarding them for Pie, Doughnut, Gauge,
+  Gantt, Funnel and Histogram was a derivation in the reader. Ten of forty-seven corpus chart records move.
+  `ChartElementFont::size_pt` is gone: a chart's per-element point size is not a `Contents` fact.
+
+**Elsewhere**
+
+- **The reader's internal layers are named for what they do.** The invented vocabulary — "project/raise", "substrate",
+  "DOM", "tiling" — is gone from module paths, identifiers and prose, while names that come from the format or the SDK
+  are unchanged. Decode baselines, Page IR baselines and PDF output are byte-identical.
+- **A chart category label that does not fit its slot is rotated 45° instead of thinned away**, the axis thinning only
+  once the rotated labels collide. Our old rule thinned horizontally against a fixed width, which both over-thinned and
+  never rotated. Moves seven fixtures' Page IR.
+- **Chart subtitles and footnotes draw on every chart family** — the caption bands were reserved only on the shared 2-D
+  dispatch, so eight families silently dropped a stored subtitle and footnote.
+- **The PDF backend shapes every text run itself**, with `harfrust`, rather than calling krilla's single-face, BIDI-less
+  `draw_text` wrapper that returns no advance and made a justified line shape each word twice. It retires the
+  `RUSTSEC-2026-0206` waiver rather than renewing it, and **krilla moves 0.6.0 → 0.8.2** with no source changes. Output
+  is byte-identical across all eight PDF baselines and all 64 Page IR baselines.
+- **Release archives ship stripped binaries with debug symbols as a separate asset**; dropping the sidecar beside the
+  binary restores names and source lines. `rpt` 18.45 MB → 3.12 MB, `rpt-render` 72.77 MB → 16.06 MB.
+- Test-harness hardening: `json_dump_is_the_model_and_only_the_model` checks a named `DERIVED_KEYS` list, the `rpt-cli`
+  fixture-gated suites no longer skip on an empty corpus, `rpt dump --glob` accepts a directory and sweeps recursively,
+  and the PDF-artifact suite documents that `RPT_REQUIRE_QPDF` is set nowhere, so its "opens in a real reader" layer
+  runs only where `qpdf` happens to be present.
+- `rpt-render --db` against a `sqlite://` URL hands the record-selection formula to the query builder as the PostgreSQL
+  path does; the SQL is unchanged, but the run now warns that selection is applied after the fetch.
+- `rpt_text::FaceRun` and `rpt_model::first_brace_ref` are public — the first was the unnameable return type of a public
+  method, the second was copied in two crates.
+
+### Fixed
+
+**Decode.** Most were invisible on the committed corpus — a fixed offset and a stated field sequence coincide until a
+string, a repeat or a schema version moves — so unless an entry says otherwise, no decoded value changes today and what
+is fixed is a reading that would have been wrong on a report we do not have.
+
+- **All ten format-record wrappers and five of the format records themselves read from field tables.** Transcribing the
+  five corrected a string field's swapped reading order and line-spacing type, a border's line width (a whole word, not
+  the byte its low half looks like) and its corner ellipse.
+- **Fourteen more types read from field tables.** `0x0071 NamedValue` has **one shape, not two** — a definition with no
+  name stores an *empty* name — and two were filed under a wrong premise, `0x0078` being a special-variable field
+  definition rather than an object-format record.
+- **The six query-engine session types read as their reader writes them**, and every field gained at a version is read
+  only from that version on, so a report written by an older engine no longer decodes at shifted offsets.
+- **The record tree reads a record whose header states no schema word** — a never-revised type is written four bytes
+  narrower — recovering 393 query-engine index records that used to read as opaque blobs.
+- **A `QESession` stream no longer frames its own field data as nested records**: requiring the observed schema prefix
+  removes all 1,029 header-shaped runs that had become child records. Two compensations that had grown around the damage
+  go with them, so an `nvarchar(max)` column reports the stored `-1`, not a fabricated 131070.
+- **Empty records are read as records** — the framing layer omits the length field entirely for a record with no
+  content, and the engine uses that form as an end marker and inside area pairs, sections, page setup and object names.
+- **The two bytes after a record type are the `schema` word, big-endian**, not a little-endian "subtype".
+- **Emitting a record at a version reproduces that version's layout.** The write path resolved a schema-selected field's
+  *width* against the version but its *presence* from the row, so an older-version record still carried every field a
+  later version added. All 37 version-gated declarations are now exercised at each version they name.
+- **Three decoded values were wrong** in the last two format records to be tabled: `visible_records_per_page` was read
+  as the single byte its low half occupies (a limit of 300 read as 44); an area's `suppress` came from the underlay flag
+  eleven values later, a word only a *section* sets; and `0x00fc`'s values were addressed past a "fixed 15-byte header"
+  that does not exist, so a non-empty tool-tip moved the hyperlink target, rotation, CSS class and link type with it.
+- **`ObjectFormat::text_rotation` no longer reads a fixed offset inside a variable-length region** — the angle follows
+  the leaf's `HyperlinkText`, so every object with a real hyperlink decoded its rotation out of the URL's own
+  characters; three corpus objects reported the ASCII of `"tt"` and `"nt"`.
+- **Four more are now read as stored**: a string summary reported its length in characters and saturated at 255; a blob
+  column reported `65535` instead of `-1`; a save-time metadata value failing a clean-text check was reported empty
+  though it is framed by its own length; and the string after a date-time order enum was read at a fixed offset.
+- **The summary record's percentage fields are read after its second operand**, not a fixed distance from its first.
+- **The chart / cross-tab binding collector no longer finds an object's name by scanning its record** — a scan picks a
+  different string on 274 of 6058 records.
+- **Hierarchical grouping is decoded again**: its block sits inside the group record's fixed trailer, not past it.
+- **A line drawn upward across a section boundary keeps its stored second-corner Y and end section**; three corpus lines
+  previously decoded as ending at `0`, in their own section.
+- Also read as stored: a subreport link's second field handle; one labeled value per riser in a chart's data-value
+  record, and the group-axis title's slant; the report's canned formatting style and `ReportKind`; and a pie or doughnut
+  chart's `SliceDetachment`.
+- **The saved-data batch directory is walked by byte position, not by record width** — `saved_record_count` returned
+  1000 for a report storing 2645, because a packed record is compacted per batch to that batch's own per-column maxima,
+  so `item_size` is not constant. A truncated decode is now visible too, the count coming from the directory so
+  `rows.len() < record_count` is the signal.
+- **`rpt dump` names and reads every record in the vocabulary of the stream it came from** — it resolved every name from
+  the report definition's registry, so a `QESession` record was labelled after whatever `Contents` record shares its
+  number. It also stops blaming the field table for a record it never read.
+- **`rpt saved` and `rpt dump --saved` no longer blame a batch class the reader never reached** for a report whose rows
+  live in a subreport.
+
+**Tests.**
+
+- **Sixteen tests and two CI gates could pass without executing their checks**, each repair proved by breaking the thing
+  it guards. Twelve resolved a committed fixture with `if absent { skip }`, so a renamed directory turned the file into
+  a green no-op — including `patch_gate`, the clearance gate on the only write path that can corrupt a `.rpt`, which had
+  never run at all. Five corpus sweeps carried no floor or one far below reach; the font-source tests passed on a PDF
+  embedding no font; and `public_rpts()` returned an empty vector when rooted wrongly, which every caller read as
+  "nothing to check".
+- **The L1 decode net covers every committed report, not just the fixture tree.** The synthetic Meridian corpus had
+  page-IR baselines only, though it is the sole carrier of hierarchical grouping, formula variables, subreport links and
+  Basic-syntax formulas. `json_baseline` also walks each baseline back to its report, so an orphan fails. The
+  field-table parity sweep now decodes a subreport's own stream before walking it.
+- **Two decode assertions could pass on a coincidence** — the chart data-labels test asserted only the negative case,
+  and no corpus report declared a `Time` column. Both now have purpose-built fixtures.
+
+**Render.**
+
+- **A report rendered from saved data is no longer re-filtered by its record-selection formula.** A saved batch is the
+  rowset as it stood *after* selection ran, so re-evaluating could only lose rows the engine displays; what does apply
+  is the separate saved-data selection formula. `RowSource` gains `already_selected()`. Two corpus reports rendered
+  mostly-empty pages and now reproduce the engine's own export to within 1% of its placed text.
+- **An offline render of a saved `DateTime` keeps its time of day.** The batch packs two `u32` halves into one 8-byte
+  scalar and the pipeline read the whole serial as a bare Julian day, so a `9:15` row rendered as `12:00`. The gap hid
+  behind 8515 of 8542 saved cells sitting at midnight.
+- **A half-open range parameter no longer drops every row** — a `Null` bound is now an **open** end, where the evaluator
+  had no representation for one and `rpt-render` built a range only when both ends coerced.
+- **Special fields render their value instead of their own name.** A text object carries its references as runs, each
+  holding the engine's placeholder rendering, and the renderer substituted on the flattened string — so a special
+  printed `Printed Date: PrintDate`. Text objects now resolve run by run, and an embedded `Page N of M` is patched with
+  the final count without re-evaluating the object's formulas, so their `WhilePrintingRecords` side effects fire once.
+- **A parameter embedded in a text object renders its value** — `{?Param}` resolved to null on the reasoning that a
+  higher layer would supply it, and none did.
+- **`GroupName` resolves the group level it names**, both as a placed field and inside a formula body, where it had
+  reached the evaluator as an argument-less print-state special that no context answered, failing the whole formula.
+- **The 103 `cr*` format constants evaluate to the number their property stores** (`crBold` = `1`, `crLandscape` = `2`,
+  `crOnePointLine` = `20` twips), where each previously carried a per-name code of its own that matched nothing. The
+  point of these constants is that `if … then crBold else crRegular` on a conditional format agrees with picking the
+  option statically, which requires the value to be the property's own ordinal — so every comparison or `ToText` against
+  one was wrong before. Three names whose enumeration is still unidentified — `crNoLeadingDay`, `crShortLeadingDay`,
+  `crLongLeadingDay` — now report as unimplemented rather than evaluate to a number nothing backs.
+- **A percentage summary renders as a percentage, not its raw aggregate** — `PercentOf<Op>` fell back to a field-only
+  match, so the group's subtotal printed where the engine prints its share (`106,235.83` instead of `3.68%`).
+- **Date/time special fields resolve from the render's as-of instant**, having been deferred to an orchestrator that
+  never ran the step, so a `CurrentDate` formula worked while the `PrintDate` beside it did not. A render with no as-of
+  renders them blank rather than reading the host clock. `ModificationDate`, `ModificationTime` and `FileCreationDate`
+  render the file's timestamps, split **in UTC** so a rendered date is never an artifact of the rendering machine.
+- **An explicit date/time field renders what it stores rather than what the locale says.** The renderer ignored all five
+  stored separators and ordered the tokens by the render locale, so a field authored `dd-MMM-yyyy` rendered
+  `14/Nov/2023` on an en-US host and `14.Nov.2023` on a German one, and a month-day-year field rendered `26/05/2001`
+  under a day-month-year locale — not a rearrangement but a different day. The stored time format is honoured too
+  (clock base, element styles, designator text and placement, both separators), and a `DateOnly` field stops appending
+  `12:00:00AM` to every date on the page. Two rules the bytes do not carry are reproduced: the "no leading zero" hour
+  still occupies two cells, and a dropped element takes the separator after it. A system-default field still takes
+  order and separator from the locale.
+- **A numeric field stored as `DefaultAlign` renders right-aligned** — the engine resolves that default at paint time
+  from the value type, and applies it to field objects only, where we rendered every such field flush left.
+- **A positive number reserves the character cells its negative form would occupy** — a leading cell for the minus
+  (` 1,012`), a trailing cell for the closing bracket (`$53.90 `). A cell a currency symbol already fills is not padded.
+  `NumberFormat::reserve_sign` is off by default, so `ToText` is unaffected. Verified token-for-token over ~15,000
+  numeric tokens.
+- **A tab in a text object advances the pen instead of drawing a `.notdef` box.** Tabs resolve before the Page IR — a
+  tabbed line is split and each segment placed at the stop its tab advanced to, every **0.25 inch (360 twips)** from the
+  line's left edge — so no control character reaches a shaper.
+- **An "Underlay Following Sections" band ends at its companion section**, so a footer no longer prints on top of the
+  watermark it should sit below. The engine never closed the span, so on a report with a 7781-twip watermark the group
+  footer, its aging table and the report footer all landed 7781 twips too high.
+- **A date group's name and chart category label print at the group's own granularity** — both were derived from the
+  bucketed key alone, which cannot say which period produced it, so a monthly group printed `1/1/2024` where the engine
+  prints `1/2024`.
+- **Chart and cross-tab labels are no longer elided with an ellipsis** — the engine draws over-long text in full and
+  lets the box clip it.
+- **A chart's value axis picks the engine's ticks.** The auto scale divided the data max by 8 on a 1/2/5×10ⁿ ladder
+  where the engine divides by **9** on a ladder including **4**, and labels were abbreviated (`1000.0k`) where the
+  engine never abbreviates.
+- **Area, line, stock and radar charts reserve the legend band the engine reserves** — these families draw every mark in
+  one colour, so the engine legends the *series*, not the categories. Drawing none gave the plot the whole width, which
+  is not cosmetic: the category axis thins by fit, so the wider plot kept 25 labels where the engine keeps 13.
+- **Chart text renders in its authored weight and slant**, at the size the chart's height implies rather than a
+  hardcoded table. Element faces were also read one element out of step, and the byte read as the title's point size is
+  not one — it reads 17 for a 14 pt, a 20 pt and a 24 pt title alike, which made four fixtures draw their title at
+  27.75–33.75 pt against the engine's 13.5 pt.
+- **3-D charts draw the engine's room** — three **slabs** rather than three flat planes in invented greys over a floor
+  grid, filled by face orientation, hairline-outlined, with the value gridlines carried around each wall's near end-cap.
+  The two wall greys were swapped, and the room now takes its size from the chart box rather than the label frame, so it
+  no longer shrinks and drifts as the label bands grow.
+- **3-D chart cameras are measured against the engine, not reconstructed from preset names**, for eleven of the sixteen
+  `ChartViewAngle` presets — including `Standard`, now known to be a flat wide box seen from 19.3°/47.4° rather than a
+  cube from 36.1°/42.1°. The remaining five keep their name-based reconstruction. The engine **stretches** the room per
+  axis rather than scaling it uniformly.
+- **The 3-D room belongs to `Riser3D` and `Surface3D` alone.** A depth-effect Area chart was routed through it and now
+  draws the flat frame plus one cast face per crest segment; and a 3-D chart draws **no legend**, where we drew a swatch
+  per category — its series are its depth axis, already labelled on the floor.
+- **A page-total run keeps its character spacing in its reported advance**, so rigid spacing re-anchors a centre- or
+  right-aligned footer to the width it is actually drawn at.
+- `ObjectFormat::vertical_alignment` is now known to be right for all three values — bottom stores as `8`, which no
+  report in any corpus used, so only top and centre had ever been exercised.
+- Smaller repairs: the `rpt-render` binary's `db-postgres` / `db-sqlite` features compile cleanly again;
+  `special_value_type` and `SpecialFieldType::value_type` no longer disagree; and the JSON dump carries both stored
+  numeric-format slots and the stored heading alignment, which the decoder had previously destroyed.
+
+**Documentation.**
+
+- **The format documentation describes a record's content as a sequence rather than a layout** — a straight-line run of
+  typed reads whose positions move with a string's length, a repeat's count and the schema version. The old fixed-layout
+  description is what invited positional decoders, and would have invited the same mistake in the writer.
+- **The documentation is re-read against the tree**, and record coverage re-measured on the committed corpus alone:
+  **154 reports, 55,829 outermost records, 106,950 across the record trees, 2 still `Unknown`**. Nine claims were wrong
+  rather than stale. Maps, alone among the undecoded families, do occur — one corpus report carries all six map records,
+  so decoding them wants the work rather than a report to author.
+- **The support matrix says what its three partial streams exclude.** The substantive find: `PromptManager` inflates to
+  a *sequence* of `<CRMetaObjects>` documents and only the first is decrypted, so the prompt-group documents behind
+  cascading prompts, edit masks, the discrete-vs-range flags and the pick-list mirror are entirely unread.
+- **The README no longer claims clean-room development, and it names the mark's owner.** *Clean-room* is a term of art
+  meaning the implementer never examines the original, which is not how this project was built; the accurate
+  description is an independent implementation, reverse-engineered from the file format. The licence section states the
+  two licences that are not MPL-2.0, which closes the `NOTICE` question: MPL-2.0 has no equivalent of Apache-2.0 §4(d).
+- **The two test-layer descriptions in `docs/` are reconciled** — `building.md` owns the L1–L4b layer map and
+  `09-testing-parity.md` owns what each corpus is, and the testing page gained the L4b section it was missing.
+- **The `rpt_reader::provenance` module is gone** — six empty public modules holding a hand-maintained reverse index
+  from a model type to the record it decodes from, a relation already stated forward in the block catalog and at each
+  decoder. Going through it claim by claim showed the module's own warning — that a copy this far from the parsing code
+  has nothing to keep it honest — applied to its record numbers too.
 
 ## [0.3.0]
 
@@ -20,14 +490,14 @@ including the ones the pipeline used to swallow silently.
 
 The upgrade checklist; each item is expanded in the sections below.
 
-- `From<std::io::Error> for rpt::Error` removed — a bare `?` on an I/O call no longer compiles. Use
-  `rpt::IoError::at(op, path, source)`, or `::new` where there genuinely is no path.
-- `rpt::Error::Record`, `rpt::RecordError`, and `ProjectErrorKind::UnknownRecord` deleted (zero construction sites) —
-  use `Rpt::decode_coverage()` to detect an incomplete decode.
+- `From<std::io::Error> for rpt_reader::Error` removed — a bare `?` on an I/O call no longer compiles. Use
+  `rpt_reader::IoError::at(op, path, source)`, or `::new` where there genuinely is no path.
+- `rpt_reader::Error::Record`, `rpt_reader::RecordError`, and `ProjectErrorKind::UnknownRecord` deleted (zero
+  construction sites) — use `Rpt::decode_coverage()` to detect an incomplete decode.
 - `rpt_query::build_query{,_in,_full,_for_report}` return `Result<_, QueryError>`, not `Option`.
 - `rpt_json::export_json` returns `DecodeCoverage`, not `()`; its `Error::Io` split into `Write { path }` /
   `Serialize { input }`.
-- `ReportDocument::export_{pdf,html}_to_disk` return `rpt::Result<()>`, not `std::io::Result<()>`.
+- `ReportDocument::export_{pdf,html}_to_disk` return `rpt_reader::Result<()>`, not `std::io::Result<()>`.
 - `rpt_render::render_with` is infallible (`-> PagedDocument`); `RenderError` moved to the CLI; the `db-postgres` /
   `db-sqlite` features are gone.
 - `rpt_pages::DiagnosticKind` is now `#[non_exhaustive]` — an exhaustive `match` needs a wildcard arm.
@@ -72,8 +542,8 @@ The upgrade checklist; each item is expanded in the sections below.
   untouched and only its characters are overwritten, then NUL-padded to the original width — so no record length, no
   enclosing record length, no property offset and no section size moves, and the decoded model is unchanged apart from
   those fields. A report with nothing to remove round-trips byte-identically. `--dry-run` reports what would go without
-  writing; `--json` machine-reads the removals. Exposed as `Rpt::anonymize` / `rpt::io::AnonymizeReport`; this is what
-  keeps the committed fixture corpus publishable.
+  writing; `--json` machine-reads the removals. Exposed as `Rpt::anonymize` / `rpt_reader::io::AnonymizeReport`; this is
+  what keeps the committed fixture corpus publishable.
 - **`rpt dump --stream DataSourceManager`.** The `DataSourceManager` saved-data catalog stream's logical payload
   (decrypted + inflated) is now exposed through the reader's `streams()` / `logical_bytes()` surface, so `rpt dump`
   can read its QE-dialect record tree and dump its records (structure `0x2d`, field header `0x41`, batch entry `0x6d`).
@@ -82,7 +552,7 @@ The upgrade checklist; each item is expanded in the sections below.
   (numeric/string/date/time/date-time/boolean/common), group-area options (`0x88`), and summary/running-total
   definitions (`0x7e`) — each node shows a concise decoded summary (`DecimalPlaces=2 Negative=Bracketed …`) in place of
   the raw byte preview; `--json` carries the same as a `decoded` object. Backed by the new public
-  `rpt::annotate::summarize` API.
+  `rpt_reader::annotate::summarize` API.
 - **SQL tracking comments on every generated query.** A query the render path issues is prefixed with a sanitized
   single-line block comment identifying the report and scope (`/* rpt-rs report="orders.rpt" scope=main */ SELECT …`),
   so a statement surfacing in the database's own logs is traceable back to the report that issued it. Built by
@@ -185,8 +655,8 @@ The upgrade checklist; each item is expanded in the sections below.
       (revision number, last-saved-by, saved printer name).
 - **`rpt formulas <file.rpt>` — list and check every formula, without rendering.** Prints one line per formula marked
   `ok` / `warn` / `ERROR` with findings indented beneath, so you can see what was covered rather than only how many.
-  Covers formula fields, record- and group-selection formulas, and conditional-format formulas wherever they hang — on
-  a section, an object's format, its border, or a field/text object's font colour — through every subreport. Reads the
+  Covers formula fields, record- and group-selection formulas, and conditional-format formulas wherever they hang — on a
+  section, an object's format, its border, or a field/text object's font colour — through every subreport. Reads the
   `.rpt` alone; exits 1 on any error, so it works as a CI gate. `--source` quotes each formula's body under its line,
   and a formula field the report declares but left blank is listed as `empty` rather than silently omitted. `--json`
   always carries the source, kind, syntax, and size.
@@ -208,17 +678,20 @@ The upgrade checklist; each item is expanded in the sections below.
   sub-expression's byte range and per-row failures the record index. `rpt_data::DatasetOptions` / `build_dataset_opts`
   is the general pipeline entry point and the only way to attach a `DiagnosticSink` alongside parameters, link filters,
   and an as-of instant. See [Rendering › Diagnostics](docs/12-rendering.md#diagnostics).
-- **Errors say which file, and print their cause once.** `rpt::IoError` carries the operation and path, so the commonest
-  failure names itself (``cannot read `/nope/missing.rpt`: No such file or directory``); `rpt::error_chain` renders a
-  full `source()` chain and is shared by both binaries. `Error::NotAReport` diagnoses an input that is not a report at
-  all — no OLE2 signature (with a sniff of what it actually is), a compound file with no `Contents` stream (listing what
-  it does carry), a truncated container, or a `Contents` that will not decrypt — in place of `Invalid CFB file (wrong
+- **Errors say which file, and print their cause once.** `rpt_reader::IoError` carries the operation and path, so the
+  commonest failure names itself (``cannot read `/nope/missing.rpt`: No such file or directory``);
+  `rpt_reader::error_chain` renders a full `source()` chain and is shared by both binaries. `Error::NotAReport`
+  diagnoses an input that is not a report at all — no OLE2 signature (with a sniff of what it actually is), a compound
+  file with no `Contents` stream (listing what it does carry), a truncated container, or a `Contents` that will not
+  decrypt — in place of `Invalid CFB file (wrong
   magic number)`.
-- **Database failures name the source, the statement, and the next step.** `DbError::hint()` returns the failing SQL and,
-  for a missing table or column, a pointer at `rpt sql <file>`; the error names the data source, which is what tells a
-  multi-`RPT_DB_URL_<SERVER>` report which connection is wrong. `rpt_query::QueryError` replaces a reasonless `None`, and
+- **Database failures name the source, the statement, and the next step.** `DbError::hint()` returns the failing SQL
+  and, for a missing table or column, a pointer at `rpt sql <file>`; the error names the data source, which is what
+  tells a multi-`RPT_DB_URL_<SERVER>` report which connection is wrong. `rpt_query::QueryError` replaces a reasonless
+  `None`, and
   `SqlQuery::not_pushed` reports the selection conjuncts that could not be pushed into `WHERE` and so run locally after
-  the fetch — the query reads more rows than the report shows, now warned at normal verbosity rather than only under `-v`.
+  the fetch — the query reads more rows than the report shows, now warned at normal verbosity rather than only under
+  `-v`.
 - **Silent type coercions are reported.** A cell that will not parse as its column's declared type still falls back to
   text or null, but `RowSource::coercions()` now reports it once per column with the affected row count and an example —
   values kept as text sort, group, and summarize as text, which is otherwise invisible.
@@ -229,8 +702,8 @@ The upgrade checklist; each item is expanded in the sections below.
 
 ### Changed
 
-- **The export surface is JSON + KDL, and it is stored-facts-only.** The XML exporter and the derived analytics are
-  gone (see *Removed*); the exhaustive `rpt-json` dump and the sparse `rpt-kdl` projection replace them.
+- **The export surface is JSON + KDL, and it is stored-facts-only.** The XML exporter and the derived analytics are gone
+  (see *Removed*); the exhaustive `rpt-json` dump and the sparse `rpt-kdl` projection replace them.
 - **Workspace restructured into `crates/` + `apps/` (24 members).** The three binaries moved out of the library tree
   into `apps/` — `apps/rpt-cli` (the `rpt` binary), `apps/rpt-render-cli` (`rpt-render`), and the dev-only
   `apps/meridian-seed`. No `[[bin]]` remains under `crates/` and no library logic remains under `apps/`: an app parses
@@ -262,7 +735,8 @@ The upgrade checklist; each item is expanded in the sections below.
 - **The raw record substrate left the format-neutral model.** `rpt_model::Report` no longer carries `records` (a full
   second copy of the record tree, every leaf byte cloned into the model on each open) or `record_inventory`, and the raw
   `Node`/`Unknown`/`Value`/`RecordTag`/`RecordTypeCount` types moved out of `rpt-model` into the `rpt` reader
-  (`rpt::raw`). The reader now projects them **on demand** from the substrate it already owns: `Rpt::record_dom()`,
+  (`rpt_reader::raw`). The reader now projects them **on demand** from the substrate it already owns:
+  `Rpt::record_dom()`,
   `Rpt::inventory()`, and `Rpt::subreport_record_doms()`. This makes the neutral model actually neutral — the whole
   render/data/db pipeline (which links `rpt-model`, not `rpt`) no longer drags in the `.rpt` record-type registry, and
   no report pays the per-open cost of duplicating its record tree. `rpt tree` output is unchanged.
@@ -294,7 +768,7 @@ The upgrade checklist; each item is expanded in the sections below.
   plain usage message and exits with code `2`, instead of being laundered through an I/O error that printed an `io:`
   prefix and exited `1`. Reader and output errors are unchanged (still exit `1`).
 - **A stream encrypted under a foreign key is diagnosed as a key problem.** Crystal never emits one, but an application
-  embedding CSLib300 can round-trip reports under its own key, and such a payload simply will not decrypt with the
+  embedding its own copy of the encryption library can round-trip reports under its own key, and such a payload simply will not decrypt with the
   built-in key. That case is now reported as an encryption-key failure rather than as a bogus zlib error. The
   `Contents` header's `useFixed` flag is confirmed inert — clearing it changes nothing about how the stream decodes, and
   the reader deliberately does not branch on it, matching the engine.
@@ -325,8 +799,8 @@ The upgrade checklist; each item is expanded in the sections below.
 - **Chart/cross-tab temporal category labels are driven per period by an intentional style** rather than a
   monthly-vs-everything catch-all: each `ChartCategoryPeriod` maps to an explicit label style — annual reads `YYYY`,
   monthly `M/YYYY`, quarterly/semi-annually roll to their start month `M/YYYY`, and the day-granular periods
-  (daily/weekly/semi-monthly) `M/d/YYYY`. Monthly (`M/YYYY`) and weekly (`M/d/YYYY`) are unchanged (oracle-confirmed);
-  the previously catch-all annual/quarterly/semi-annual labels now read in their own style. A raw (un-grouped) date
+  (daily/weekly/semi-monthly) `M/d/YYYY`. Monthly (`M/YYYY`) and weekly (`M/d/YYYY`) are unchanged (confirmed); the
+  previously catch-all annual/quarterly/semi-annual labels now read in their own style. A raw (un-grouped) date
   cross-tab column now shows the field's default date format instead of the compact style.
 - **Two-field summaries compute** — WeightedAverage / Correlation / Covariance now resolve from the decoded secondary
   field instead of an empty value.
@@ -358,9 +832,9 @@ The upgrade checklist; each item is expanded in the sections below.
 - **The render CLI reports the data pipeline's diagnostics.** Previously only layout/render diagnostics reached the
   warning channel. Data-pipeline failures now arrive too, errors print through a channel `-q` cannot suppress, and
   identical repeats collapse (`… [record 0] — and 606 more like it`) so a per-row failure cannot bury the summary.
-- **Supplying a parameter the report does not declare is an error, not a warning.** The value cannot reach the render, so
-  the output is for different criteria than asked for. It survives `-q` (which previously hid it from scripted runs) and
-  suggests the nearest declared name: `parameter "order_amt_rang" is not declared by the report … did you mean
+- **Supplying a parameter the report does not declare is an error, not a warning.** The value cannot reach the render,
+  so the output is for different criteria than asked for. It survives `-q` (which previously hid it from scripted runs)
+  and suggests the nearest declared name: `parameter "order_amt_rang" is not declared by the report … did you mean
   "Order_Amt_Range"?`. The render still proceeds on the report's own defaults.
 
 ### Fixed
@@ -549,28 +1023,30 @@ The upgrade checklist; each item is expanded in the sections below.
   real reason no query could be built, in place of a synthesized "report has no database table".
 - **Cause chains printed the same cause twice.** `connection failed: error connecting to server: error connecting to
   server: Connection refused`, and the same for a missing table. A variant that carries a `source` no longer
-  interpolates it — applied to `rpt::Error::Io`, `DbError::{Connect,Query}`, and `rpt_json::Error`, and documented as a
-  convention in `rpt::error`.
+  interpolates it — applied to `rpt_reader::Error::Io`, `DbError::{Connect,Query}`, and `rpt_json::Error`, and
+  documented as a convention in `rpt_reader::error`.
 - **Panic sites in the formula engine and HTML backend hardened.** Formula text comes from an arbitrary `.rpt` and the
   engine is meant to be embeddable in an LSP, validator, or WASM sandbox, where a panic crashes the host. Seven internal
-  invariants became `debug_assert!` plus a graceful release path — the new `EvalError::Internal` where a `Result` exists,
-  a skipped op or object where none does.
+  invariants became `debug_assert!` plus a graceful release path — the new `EvalError::Internal` where a `Result`
+  exists, a skipped op or object where none does.
 
 ### Removed
 
-- **The dead error surface.** `rpt::Error::Record`, `rpt::RecordError`, and `ProjectErrorKind::UnknownRecord` are gone —
-  publicly exported and documented, but with zero construction sites, because the `raise` layer is infallible by design
-  and returns defaults for anything it cannot interpret. `Rpt::decode_coverage()` is how a decode gap is reported now.
+- **The dead error surface.** `rpt_reader::Error::Record`, `rpt_reader::RecordError`, and
+  `ProjectErrorKind::UnknownRecord` are gone — publicly exported and documented, but with zero construction sites,
+  because the `raise` layer is infallible by design and returns defaults for anything it cannot interpret.
+  `Rpt::decode_coverage()` is how a decode gap is reported now.
   `Error::Project` survives behind the write-path clearance gate, with `UnclearedRecordEdit` as its remaining kind.
-- **The blanket `From<std::io::Error> for rpt::Error`.** A contextless `?` on an I/O call no longer compiles, which is
-  the point: it made losing the path the path of least resistance. Use `rpt::IoError::at(op, path, source)`.
+- **The blanket `From<std::io::Error> for rpt_reader::Error`.** A contextless `?` on an I/O call no longer compiles,
+  which is the point: it made losing the path the path of least resistance. Use
+  `rpt_reader::IoError::at(op, path, source)`.
 - **The XML export surface.** `rpt xml-dump` (and its `--full` record-tree mode), the `rpt-xml` crate, the
   RptToXml-compatible serializers, and the committed XML baselines are gone; `rpt json-dump` and the JSON baselines
   replace them as the decode regression surface, and `rpt tree` remains for the record DOM. The XML shape existed to be
-  diffed against the RptToXml oracle — an oracle that could not reach large parts of the model (charts, cross-tabs,
-  maps, OLAP) and whose element/attribute vocabulary forced the exporter to reshape, rename, and re-serialize decoded
-  values. A plain serde dump of the model is a strictly better regression surface and costs nothing to keep exhaustive.
-  With it go the XML-only behaviours: the RptToXml-shaped `RecordSelectionFormula` re-serializer, the
+  diffed against RptToXml's XML — which could not reach large parts of the model (charts, cross-tabs, maps, OLAP) and
+  whose element/attribute vocabulary forced the exporter to reshape, rename, and re-serialize decoded values. A plain
+  serde dump of the model is a strictly better regression surface and costs nothing to keep exhaustive. With it go the
+  XML-only behaviours: the RptToXml-shaped `RecordSelectionFormula` re-serializer, the
   `SavedData/@RecordCount` element (the count is still available as `Rpt::saved_record_count`, and `rpt saved` prints
   it), and the `--locale` flag that selected a host locale for the export's runtime-resolved display formats.
 - **The derived analytics, and with them the last derived values in any export.** `Field.UseCount`, parameter usage,
@@ -684,9 +1160,10 @@ writer, and the test corpus to validate it all against the native Crystal engine
 
 - **Workspace restructured into a 20-crate, two-layer workspace** with compiler-enforced boundaries:
     - The semantic model moved out of `rpt` into the standalone, pure-data **`rpt-model`** crate (no I/O, WASM-safe,
-      optional `serde`); `rpt` re-exports it as `rpt::model`. The whole render/data pipeline depends on `rpt-model`, not
-      the decoder, so the render stack links no CFB/inflate. Byte-level provenance notes live in the documentation-only
-      `rpt::provenance` module.
+      optional `serde`); `rpt` re-exports it as `rpt_reader::model`. The whole render/data pipeline depends on
+      `rpt-model`, not the decoder, so the render stack links no CFB/inflate. Byte-level provenance notes live in the
+      documentation-only
+      `rpt_reader::provenance` module.
     - The formula language moved into the standalone **`crystal-formula`** crate (depends only on
       `rpt-format-value`), reusable without the binary reader (LSP, WASM sandbox, validator).
     - The `rpt-engine` crate was dissolved (its derived analytics now live in `rpt-cli`'s private

@@ -225,8 +225,7 @@ fn first_line_indent_offsets_only_first_line_of_paragraph() {
 #[test]
 fn first_line_indent_narrows_the_first_line_wrap() {
     // A large first-line indent must break the first line earlier (fewer words) than the
-    // continuation lines, which keep the paragraph's full width. Latent in the corpus
-    // (first_line_indent is all-zero), so this is exercised synthetically.
+    // continuation lines, which keep the paragraph's full width.
     let long = "the quick brown fox jumps over the lazy dog again";
 
     let mut base = indented_text("Base", long, 0, 0, 0);
@@ -283,7 +282,7 @@ fn rtl_default_align_reads_right() {
         rpt_pages::TextAlign::Right,
         "RTL default-align reads flush right"
     );
-    // An LTR object at the default alignment stays left (the corpus default, unchanged).
+    // An LTR object at the default alignment stays left.
     let ltr = runs_for_object(text_object("L", "abc", 0));
     assert_eq!(ltr[0].align, rpt_pages::TextAlign::Left);
 }
@@ -562,4 +561,129 @@ fn text_rotation_angle_emitted_and_columns_anchored() {
     assert_eq!(r270[0].bounds.left.0, 100 + 3000);
 
     assert_eq!(runs_for_object(text_object("U", "abc", 0))[0].rotation, 0.0);
+}
+
+/// A horizontal tab is a layout advance, not a glyph: the run splits at the tab and the text after it
+/// starts at the next quarter-inch stop from the object's left edge, so no control character reaches
+/// a backend's shaper (which would paint it as `.notdef`).
+#[test]
+fn a_tab_advances_to_the_next_stop_instead_of_reaching_a_shaper() {
+    let runs = runs_for_object(text_object("T", "ab\tcd", 0));
+    assert_eq!(runs.len(), 2, "the tab splits the line into two runs");
+    assert!(
+        runs.iter().all(|r| !r.text.contains('\t')),
+        "no tab survives into the Page IR"
+    );
+    assert_eq!(runs[0].text, "ab");
+    assert_eq!(runs[1].text, "cd");
+    // The object is at left 100: the second run sits one 360-twip stop past it.
+    assert_eq!(runs[0].bounds.left.0, 100);
+    assert_eq!(runs[1].bounds.left.0, 100 + 360);
+    // A trailing tab advances the pen and draws nothing.
+    let trailing = runs_for_object(text_object("T2", "ab\t", 0));
+    assert_eq!(trailing.len(), 1);
+    assert_eq!(trailing[0].text, "ab");
+}
+
+/// A text object whose single paragraph carries `spacing` twips of rigid character spacing.
+fn spaced_object(name: &str, text: &str, spacing: i32) -> ReportObject {
+    use rpt_model::Paragraph;
+    let mut o = text_object(name, text, 0);
+    if let ReportObjectKind::Text(t) = &mut o.kind {
+        t.display = text.to_string();
+        t.paragraphs = vec![Paragraph {
+            runs: vec![rpt_model::TextRun {
+                text: text.to_string(),
+                character_spacing: Twips(spacing),
+                ..Default::default()
+            }],
+            ..Default::default()
+        }];
+    }
+    o
+}
+
+/// A paragraph's character spacing travels onto the emitted run and is already counted in the
+/// advance the run reports — extra after **every** Unicode scalar, the trailing one included.
+#[test]
+fn character_spacing_travels_with_the_run_and_is_in_its_advance() {
+    use rpt_pages::{ApproxLayout, TextLayout};
+    let text = "abcdef";
+    let spaced = runs_for_object(spaced_object("S", text, 40));
+    assert_eq!(spaced.len(), 1);
+    assert_eq!(spaced[0].character_spacing, Twips(40));
+
+    let natural = ApproxLayout.width_twips(text, &spaced[0].font);
+    let expected = natural as i32 + 40 * text.chars().count() as i32;
+    assert_eq!(spaced[0].metrics.unwrap().advance, Twips(expected));
+
+    // Zero spacing is inert: the field is absent from the run and the advance is the natural width.
+    let plain = runs_for_object(spaced_object("P", text, 0));
+    assert_eq!(plain[0].character_spacing, Twips(0));
+    assert_eq!(plain[0].metrics.unwrap().advance, Twips(natural as i32));
+}
+
+/// THE CONTRACT between the producer's advance model and any backend that re-shapes the run: summing
+/// the backend's rule — natural cluster advance plus `character_spacing × the scalars in that
+/// cluster` — over the run's clusters must reproduce `metrics.advance`, or measurement and drawing
+/// disagree and the visible symptom is a wrong wrap on an earlier page.
+///
+/// The unit is the Unicode scalar, never the glyph: a cluster that shapes several scalars into one
+/// ligature glyph still owes spacing for each of them. The per-glyph reading is asserted *not* to
+/// reconcile, so this test fails if a backend ever adopts it.
+#[test]
+fn a_backends_per_cluster_spacing_sums_to_the_measured_advance() {
+    use rpt_pages::{ApproxLayout, TextLayout};
+    const SPACING: i32 = 40;
+    let text = "off ice";
+    let run = &runs_for_object(spaced_object("L", text, SPACING))[0];
+    let advance = run.metrics.unwrap().advance.0;
+
+    // A plausible shaping of the run: "ff" is one ligature glyph covering two scalars, the rest map
+    // one glyph per scalar. Byte ranges into `text`, exactly as a shaper reports cluster indices.
+    let clusters: Vec<&str> = vec!["o", "ff", " ", "i", "c", "e"];
+    assert_eq!(clusters.concat(), text);
+
+    let natural = |s: &str| ApproxLayout.width_twips(s, &run.font);
+    let per_scalar: f64 = clusters
+        .iter()
+        .map(|c| natural(c) + f64::from(SPACING) * c.chars().count() as f64)
+        .sum();
+    assert!(
+        (per_scalar - f64::from(advance)).abs() <= 1.0,
+        "drawn {per_scalar} vs measured {advance}"
+    );
+
+    // Charging the spacing once per glyph loses it for every extra scalar the ligature covers.
+    let per_glyph: f64 = clusters
+        .iter()
+        .map(|c| natural(c) + f64::from(SPACING))
+        .sum();
+    assert_eq!(
+        (f64::from(advance) - per_glyph).round() as i32,
+        SPACING,
+        "the per-glyph rule must not reconcile — that is the bug this field prevents"
+    );
+}
+
+/// Spacing widens the text, so it must also decide where the text breaks. Wrapping against the
+/// unspaced width would break in the wrong place — the failure shows up as wrong text on the page
+/// before the spaced one, not as visibly wrong spacing.
+#[test]
+fn character_spacing_moves_the_wrap_point() {
+    let text = "the quick brown fox jumps over the lazy dog";
+    let mut plain = spaced_object("W0", text, 0);
+    plain.format.can_grow = true;
+    plain.bounds.width = Twips(2400);
+    let mut spaced = spaced_object("W1", text, 60);
+    spaced.format.can_grow = true;
+    spaced.bounds.width = Twips(2400);
+
+    let plain_lines = runs_for_object(plain).len();
+    let spaced_lines = runs_for_object(spaced).len();
+    assert!(plain_lines > 1, "the box must already wrap unspaced");
+    assert!(
+        spaced_lines > plain_lines,
+        "spacing must break earlier: {spaced_lines} vs {plain_lines} lines"
+    );
 }

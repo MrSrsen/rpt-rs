@@ -49,7 +49,7 @@ pub(crate) fn font_node(fc: &FontColor) -> Option<Node> {
 }
 
 /// The object border as a `border` child node, or `None` when it is the default (no lines, no
-/// colours, no shadow).
+/// colors, no shadow).
 pub(crate) fn border_node(b: &Border) -> Option<Node> {
     if b == &Border::default() {
         return None;
@@ -105,8 +105,7 @@ pub(crate) fn field_format_nodes(f: &FieldFormat) -> Vec<Node> {
         // The common format (suppress-if-duplicated / use-system-defaults) is emitted on the field node.
         common: _,
         numeric,
-        // The currency-format slot is a decode-staging fact resolved into `numeric`; not exported.
-        currency_numeric: _,
+        currency_numeric,
         boolean,
         string,
         date,
@@ -114,7 +113,12 @@ pub(crate) fn field_format_nodes(f: &FieldFormat) -> Vec<Node> {
         date_time,
     } = f;
     let mut out = Vec::new();
-    if let Some(n) = numeric_node(numeric) {
+    // Both stored numeric slots: the number-format slot the engine applies to a non-currency field,
+    // and the currency-format slot it applies to a Currency-valued one.
+    if let Some(n) = numeric_node("numeric", numeric) {
+        out.push(n);
+    }
+    if let Some(n) = numeric_node("currency-numeric", currency_numeric) {
         out.push(n);
     }
     if let Some(n) = date_node(date) {
@@ -141,15 +145,35 @@ fn time_node(tf: &TimeFieldFormat) -> Option<Node> {
     }
     let d = TimeFieldFormat::default();
     let TimeFieldFormat {
+        time_base,
+        am_pm_format,
         hour,
         minute,
         second,
+        am_string,
+        pm_string,
+        hour_minute_separator,
+        minute_second_separator,
     } = tf;
     Some(
         Node::new("time")
+            .prop_if(
+                *time_base != d.time_base,
+                "base",
+                enums::time_base(*time_base),
+            )
+            .prop_if(
+                *am_pm_format != d.am_pm_format,
+                "am-pm",
+                enums::am_pm_format(*am_pm_format),
+            )
             .prop_if(*hour != d.hour, "hour", enums::hour_format(*hour))
             .prop_if(*minute != d.minute, "minute", enums::minute_format(*minute))
-            .prop_if(*second != d.second, "second", enums::second_format(*second)),
+            .prop_if(*second != d.second, "second", enums::second_format(*second))
+            .str_if("am", am_string)
+            .str_if("pm", pm_string)
+            .str_if("hour-minute-separator", hour_minute_separator)
+            .str_if("minute-second-separator", minute_second_separator),
     )
 }
 
@@ -217,7 +241,7 @@ fn string_node(sf: &StringFieldFormat) -> Option<Node> {
     )
 }
 
-fn numeric_node(nf: &NumericFieldFormat) -> Option<Node> {
+fn numeric_node(name: &str, nf: &NumericFieldFormat) -> Option<Node> {
     if nf == &NumericFieldFormat::default() {
         return None;
     }
@@ -230,12 +254,16 @@ fn numeric_node(nf: &NumericFieldFormat) -> Option<Node> {
         currency_position,
         thousands_separator,
         suppress_if_zero,
+        use_lead_zero,
+        display_reverse_sign,
+        one_currency_symbol_per_page,
+        zero_value_string,
         decimal_symbol,
         thousand_symbol,
         currency_symbol_text,
     } = nf;
     Some(
-        Node::new("numeric")
+        Node::new(name)
             .prop_if(
                 *decimal_places != d.decimal_places,
                 "decimals",
@@ -264,6 +292,14 @@ fn numeric_node(nf: &NumericFieldFormat) -> Option<Node> {
             // Thousands separator defaults on, so record only when it is turned off.
             .flag("no-thousands-separator", !*thousands_separator)
             .flag("suppress-if-zero", *suppress_if_zero)
+            // The leading zero defaults on, so record only when it is turned off.
+            .flag("no-lead-zero", !*use_lead_zero)
+            .flag("reverse-sign", *display_reverse_sign)
+            .flag(
+                "one-currency-symbol-per-page",
+                *one_currency_symbol_per_page,
+            )
+            .str_if("zero-value", zero_value_string)
             .str_if("decimal-symbol", decimal_symbol)
             .str_if("thousand-symbol", thousand_symbol)
             .str_if("currency-text", currency_symbol_text),
@@ -282,6 +318,15 @@ fn date_node(df: &DateFieldFormat) -> Option<Node> {
         year,
         system_default,
         day_of_week,
+        era,
+        calendar,
+        day_of_week_position,
+        day_of_week_enclosure,
+        prefix_separator,
+        first_separator,
+        second_separator,
+        suffix_separator,
+        day_of_week_separator,
     } = df;
     Some(
         Node::new("date")
@@ -302,7 +347,28 @@ fn date_node(df: &DateFieldFormat) -> Option<Node> {
                 *day_of_week != d.day_of_week,
                 "day-of-week",
                 enums::day_of_week_format(*day_of_week),
-            ),
+            )
+            .prop_if(*era != d.era, "era", enums::era_format(*era))
+            .prop_if(
+                *calendar != d.calendar,
+                "calendar",
+                enums::calendar_type(*calendar),
+            )
+            .prop_if(
+                *day_of_week_position != d.day_of_week_position,
+                "day-of-week-position",
+                enums::day_of_week_position(*day_of_week_position),
+            )
+            .prop_if(
+                *day_of_week_enclosure != d.day_of_week_enclosure,
+                "day-of-week-enclosure",
+                enums::day_of_week_enclosure(*day_of_week_enclosure),
+            )
+            .str_if("prefix-separator", prefix_separator)
+            .str_if("first-separator", first_separator)
+            .str_if("second-separator", second_separator)
+            .str_if("suffix-separator", suffix_separator)
+            .str_if("day-of-week-separator", day_of_week_separator),
     )
 }
 

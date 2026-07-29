@@ -1,0 +1,28 @@
+# Without this, nothing surfaces a new advisory until cargo-deny turns red, and a failing build is
+# the only signal, after the fact.
+#
+# The `github-actions` half is what keeps SHA pinning sustainable rather than a one-off that rots: it
+# bumps the pin *and* the trailing version comment, so `# v4` never drifts from the SHA beside it.
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: weekly
+    # The font/text stack is pinned deliberately (rpt-render-pdf shapes with the same rustybuzz
+    # version krilla uses internally — two shapers make justified text drift word by word), and it is
+    # the noisiest part of the tree. Group it into one PR so that churn stays reviewable instead of
+    # arriving as six separate bumps. Deliberately NOT ignored: advisory-driven bumps are the point of
+    # having this file, and an ignore would suppress exactly the signal we are here for.
+    groups:
+      font-stack:
+        patterns:
+          - "fontdb"
+          - "ttf-parser"
+          - "cosmic-text"
+          - "rustybuzz"
+          - "krilla"
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

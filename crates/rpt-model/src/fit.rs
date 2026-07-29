@@ -1,5 +1,5 @@
-//! Fitting enums: `from_code` constructors that map low-level engine codes (as read from a record
-//! substrate) onto the model enum variants — pure integer→variant conversions with no I/O,
+//! Fitting enums: `from_code` constructors that map low-level engine codes (as read from a record's
+//! bytes) onto the model enum variants — pure integer→variant conversions with no I/O,
 //! exposed as inherent constructors so call sites stay ergonomic (`FieldValueType::from_code(..)`).
 //!
 //! This module holds the `from_code` impls for the general enums (summary/reset/evaluation
@@ -152,10 +152,49 @@ impl SummaryOperation {
             other => SummaryOperation::Other(other),
         }
     }
+
+    /// The engine's abbreviated name for this operation, as it appears in a field object's stored
+    /// reference string (`Max of {…}`). Only `Maximum`/`Minimum` abbreviate; every other operation
+    /// is spelled in full. An unmapped operation reports `Sum`, the engine's default aggregation.
+    pub fn token(self) -> &'static str {
+        match self {
+            SummaryOperation::Maximum => "Max",
+            SummaryOperation::Minimum => "Min",
+            other => other.full_name(),
+        }
+    }
+
+    /// The engine's full name for this operation, as it appears in a rendered summary expression
+    /// (`Maximum ({…})`) — the same spelling as the variant. An unmapped operation reports `Sum`,
+    /// the engine's default aggregation.
+    pub fn full_name(self) -> &'static str {
+        match self {
+            SummaryOperation::Sum => "Sum",
+            SummaryOperation::Average => "Average",
+            SummaryOperation::SampleVariance => "SampleVariance",
+            SummaryOperation::SampleStandardDeviation => "SampleStandardDeviation",
+            SummaryOperation::Maximum => "Maximum",
+            SummaryOperation::Minimum => "Minimum",
+            SummaryOperation::Count => "Count",
+            SummaryOperation::PopVariance => "PopVariance",
+            SummaryOperation::PopStandardDeviation => "PopStandardDeviation",
+            SummaryOperation::DistinctCount => "DistinctCount",
+            SummaryOperation::Correlation => "Correlation",
+            SummaryOperation::Covariance => "Covariance",
+            SummaryOperation::WeightedAvg => "WeightedAvg",
+            SummaryOperation::Median => "Median",
+            SummaryOperation::Percentile => "Percentile",
+            SummaryOperation::NthLargest => "NthLargest",
+            SummaryOperation::NthSmallest => "NthSmallest",
+            SummaryOperation::Mode => "Mode",
+            SummaryOperation::NthMostFrequent => "NthMostFrequent",
+            SummaryOperation::Other(_) => "Sum",
+        }
+    }
 }
 
 impl ResetConditionType {
-    /// Map the running-total reset-condition code (`0x80` byte 0) to the variant.
+    /// Map the running total's reset-condition kind to the variant.
     pub fn from_code(code: i32) -> ResetConditionType {
         match code {
             0 => ResetConditionType::NoCondition,
@@ -168,8 +207,8 @@ impl ResetConditionType {
 }
 
 impl crate::EvaluationConditionType {
-    /// Map the running-total evaluation-condition code (`0x80` byte 3) to the variant. Same numeric
-    /// coding as the reset condition.
+    /// Map the running total's evaluation-condition kind to the variant. Same numeric coding as the
+    /// reset condition.
     pub fn from_code(code: i32) -> Self {
         match code {
             0 => Self::NoCondition,
@@ -230,7 +269,7 @@ impl Alignment {
 }
 
 impl FormulaVariableScope {
-    /// Map a formula-variable `0x0118` scope byte (`FLScope`) to the variant.
+    /// Map a formula-variable `0x0118` scope byte to the variant.
     pub fn from_code(code: i32) -> FormulaVariableScope {
         match code {
             0 => FormulaVariableScope::Shared,
@@ -242,7 +281,7 @@ impl FormulaVariableScope {
 }
 
 impl FieldValueType {
-    /// Map a formula **result-kind** code (the FL type enum, distinct from
+    /// Map a formula **result-kind** code (the formula engine's own type code, distinct from
     /// the `CrFieldValueTypeEnum` used by [`from_code`](Self::from_code)) to a [`FieldValueType`]. This
     /// is the type byte a formula variable (`0x0118`) declares: `1`=Number, `2`=Currency, `3`=Boolean,
     /// `4`=Date, `5`=Time, `6`=DateTime, `7`=String. Non-scalar result kinds (function-ref `8`, ranges
@@ -493,6 +532,23 @@ mod tests {
         assert_eq!(SummaryOperation::from_code(19), Other(19));
         assert_eq!(SummaryOperation::from_code(-1), Other(-1));
         assert_eq!(SummaryOperation::default(), Sum);
+    }
+
+    /// The two spellings differ only for Maximum/Minimum: the stored reference abbreviates them,
+    /// the rendered expression spells them out. An unmapped operation reports the default `Sum`
+    /// either way.
+    #[test]
+    fn summary_operation_token_abbreviates_only_min_max() {
+        use SummaryOperation::*;
+        assert_eq!(Maximum.token(), "Max");
+        assert_eq!(Maximum.full_name(), "Maximum");
+        assert_eq!(Minimum.token(), "Min");
+        assert_eq!(Minimum.full_name(), "Minimum");
+        for op in [Sum, Average, Count, DistinctCount, NthMostFrequent] {
+            assert_eq!(op.token(), op.full_name(), "{op:?}");
+        }
+        assert_eq!(Other(999).token(), "Sum");
+        assert_eq!(Other(999).full_name(), "Sum");
     }
 
     /// `ResetConditionType::from_code`: `0..=3` map in order, else `Other`.

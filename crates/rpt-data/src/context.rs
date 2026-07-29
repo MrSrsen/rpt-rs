@@ -8,10 +8,10 @@
 use crate::diagnostics::{DiagnosticKind, DiagnosticSink, EvalDiagnostic};
 use crate::running_total::RunningTotals;
 use crate::source::Row;
-use crystal_formula::eval::vm::{self, Chunk};
-use crystal_formula::eval::{Date, EvalContext, NullTreatment, Time, Value};
-use crystal_formula::token::{split_reference, strip_braces};
-use crystal_formula::{RefKind, VarScope};
+use rpt_formula::eval::vm::{self, Chunk};
+use rpt_formula::eval::{Date, EvalContext, NullTreatment, Time, Value};
+use rpt_formula::token::{split_reference, strip_braces};
+use rpt_formula::{RefKind, VarScope};
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
@@ -54,7 +54,7 @@ impl DateTimeSpecials {
     }
 
     /// Resolve a data-time special by its lowercase name, or `None` if `name` is not one of them.
-    /// `Today` aliases `CurrentDate` (both funcID 154), matching the engine.
+    /// `Today` aliases `CurrentDate`, matching the engine.
     pub(crate) fn resolve(&self, name: &str) -> Option<Value> {
         match name {
             "currentdate" | "today" => Some(Value::Date(self.date)),
@@ -242,6 +242,16 @@ pub trait SummaryScope: std::fmt::Debug {
     fn resolve_summary(&self, op: &str, field: &str, group: Option<&str>) -> Value;
 }
 
+/// Resolves a group-name reference (`GroupName({condition field})` inside a formula body) to the
+/// named group's key. Injected by the layout for the same reason as [`SummaryScope`]: the record
+/// pipeline builds the group tree, but *which* group is in scope at a print position is layout state,
+/// so a formula's `GroupName` resolves to the value a placed Group Name field would print beside it.
+pub trait GroupNameScope: std::fmt::Debug {
+    /// The key of the group whose condition is `field`, or `Value::Null` when no group in scope has
+    /// that condition (the facility exists, so this is never `None`).
+    fn group_name(&self, field: &str) -> Value;
+}
+
 /// Normalize a parameter name for matching: drop surrounding `{}`, a leading `?`, and lowercase — so
 /// `{?DocKey@}`, `?DocKey@`, and `dockey@` all key the same value.
 pub fn normalize_param_name(name: &str) -> String {
@@ -284,6 +294,10 @@ pub struct DataContext<'a> {
     /// (`Count({f}, {g})`) resolves to the report's computed summary; when absent, the record-set
     /// summary form is reported as unsupported (a bare evaluation with no summaries).
     summaries: Option<&'a dyn SummaryScope>,
+    /// Optional in-scope group resolver. When present, `GroupName({cond})` in a formula body resolves
+    /// to the named group's key; when absent, the reference is reported as unsupported (a bare
+    /// evaluation with no report grouping).
+    group_names: Option<&'a dyn GroupNameScope>,
     /// Reusable lower-casing buffer for name-keyed lookups. A formula/parameter reference lower-cases
     /// its name into this buffer and probes the caches with a borrowed key, so a cache **hit** on the
     /// record-eval hot path allocates nothing; only a miss clones an owned key for the caches.
@@ -306,6 +320,7 @@ impl<'a> DataContext<'a> {
             cache: RefCell::new(HashMap::new()),
             sink: None,
             summaries: None,
+            group_names: None,
             scratch: RefCell::new(String::new()),
         }
     }
@@ -327,6 +342,13 @@ impl<'a> DataContext<'a> {
     /// (`Count({f}, {g})`) resolves against the report's computed summaries (chainable).
     pub fn with_summaries(mut self, summaries: &'a dyn SummaryScope) -> Self {
         self.summaries = Some(summaries);
+        self
+    }
+
+    /// Attach the in-scope group resolver so `GroupName({cond})` in a formula body resolves to the
+    /// named group's key (chainable).
+    pub fn with_group_names(mut self, group_names: &'a dyn GroupNameScope) -> Self {
+        self.group_names = Some(group_names);
         self
     }
 
@@ -485,5 +507,11 @@ impl EvalContext for DataContext<'_> {
         // With an attached scope, a missing summary resolves to Null (the scope answers `Some`); with
         // no scope, `None` lets the evaluator report the record-set form as unsupported.
         self.summaries.map(|s| s.resolve_summary(op, field, group))
+    }
+
+    fn group_name(&self, field: &str) -> Option<Value> {
+        // Same contract as `resolve_summary`: an attached scope always answers, and its absence is
+        // what tells the evaluator the reference is unresolvable here.
+        self.group_names.map(|g| g.group_name(field))
     }
 }

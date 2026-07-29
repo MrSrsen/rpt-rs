@@ -32,7 +32,7 @@ let header = parse_emf(&bytes, &mut MySink)?;
 ```
 
 Every callback receives geometry already transformed into the metafile's device space plus a
-resolved `GraphicsState` (pen, brush, font, text colour). The `MetafileHeader` reported first carries
+resolved `GraphicsState` (pen, brush, font, text color). The `MetafileHeader` reported first carries
 the device-space `bounds` you map onto your target box, so the crate stays device- and
 backend-independent.
 
@@ -72,4 +72,6 @@ yet interpreted. Clipping, GDI path brackets, native arcs, and gradient fills ar
 
 ## License
 
-Licensed under either of Apache License 2.0 or MIT license at your option.
+Licensed under either of [Apache License 2.0](LICENSE-APACHE) or [MIT license](LICENSE-MIT) at your
+option. Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion
+in this crate shall be dual licensed as above, without any additional terms or conditions.

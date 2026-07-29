@@ -3,26 +3,26 @@
 
 use crate::diagnostics::{DiagnosticKind, DiagnosticSink, EvalDiagnostic};
 use crate::{GroupInstance, Summary};
-use crystal_formula::eval::{vm, Value};
-use crystal_formula::token::{short_name, strip_braces};
-use crystal_formula::{parse, Syntax};
+use rpt_formula::eval::{vm, Value};
+use rpt_formula::token::{short_name, strip_braces};
+use rpt_formula::{parse, Syntax};
 use rpt_model::{DataDefinition, SummaryOperation};
 
 /// Describe why a selection formula's result was not a clean boolean, for a diagnostic: an
 /// evaluation error, or a non-boolean value where a boolean was expected.
-pub(super) fn selection_detail(result: &Result<Value, crystal_formula::eval::EvalError>) -> String {
+pub(super) fn selection_detail(result: &Result<Value, rpt_formula::eval::EvalError>) -> String {
     match result {
         Ok(value) => format!("selection formula returned a non-boolean value: {value:?}"),
         Err(err) => err.to_string(),
     }
 }
 
-/// Apply the `group_selection` formula as a HAVING-like filter on the group tree:
-/// evaluate it per leaf group against that group's summaries and drop the groups it rejects, pruning
-/// ancestors that become empty. **Fail-open** — the grammar is not fully established, so we only
-/// filter when the selection references values we resolve reliably at the group level (running-total
-/// `{#name}` summaries and group condition fields); any other reference, or a non-boolean / erroring
-/// result, keeps the group. A running total or field summary can never wrongly drop data this way.
+/// Apply the `group_selection` formula as a HAVING-like filter on the group tree: evaluate it per
+/// leaf group against that group's summaries and drop the groups it rejects, pruning ancestors that
+/// become empty. **Fail-open**: filtering applies only when every reference in the selection resolves
+/// reliably at the group level (running-total `{#name}` summaries and group condition fields); any
+/// other reference, or a non-boolean / erroring result, keeps the group — so a running total or field
+/// summary can never wrongly drop data this way.
 pub(super) fn apply_group_selection(
     tree: &mut Vec<GroupInstance>,
     data_def: &DataDefinition,
@@ -38,8 +38,8 @@ pub(super) fn apply_group_selection(
     // Only filter when every reference resolves group-constantly — a running total, a group
     // condition field, or a field consumed by a group-scoped summary function (`Sum({x}, {g})`,
     // whose value is a computed group summary). Any other reference fails open (keep every group).
-    use crystal_formula::refs::is_aggregation_function;
-    use crystal_formula::{references, RefKind};
+    use rpt_formula::refs::is_aggregation_function;
+    use rpt_formula::{references, RefKind};
     let cond_fields: std::collections::HashSet<String> = data_def
         .groups
         .iter()
@@ -135,9 +135,9 @@ struct GroupFilterContext<'a> {
     group: &'a GroupInstance,
 }
 
-impl crystal_formula::eval::EvalContext for GroupFilterContext<'_> {
-    fn resolve(&self, kind: crystal_formula::RefKind, name: &str) -> Option<Value> {
-        use crystal_formula::RefKind;
+impl rpt_formula::eval::EvalContext for GroupFilterContext<'_> {
+    fn resolve(&self, kind: rpt_formula::RefKind, name: &str) -> Option<Value> {
+        use rpt_formula::RefKind;
         match kind {
             RefKind::Field => {
                 // This group's own key when the reference names its condition field; otherwise the

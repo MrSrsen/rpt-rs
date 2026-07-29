@@ -2,7 +2,7 @@
 # Drift guard: every dependency declared in the root [workspace.dependencies] must be inherited by
 # member crates via `{ workspace = true }`, never re-declared with a bare version. A bare per-crate
 # version can silently drift into a second compiled copy (the classic case being `fontdb`, shared by
-# the pdf/raster/text crates). Run from the workspace root; exits non-zero on any violation.
+# the pdf and text crates). Run from the workspace root; exits non-zero on any violation.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -13,6 +13,14 @@ names=$(awk '
   /^\[/                          { in_table = 0 }
   in_table && /^[A-Za-z0-9_-]+[[:space:]]*=/ { print $1 }
 ' Cargo.toml)
+
+# An empty name list makes every check below a no-op, so the guard would report OK on a workspace
+# that violates it — the failure mode is silent and total. Absent or renamed, the table is a
+# structural change this script must not paper over.
+if [ -z "$names" ]; then
+    echo "check-workspace-deps: [workspace.dependencies] is empty or unreadable; nothing was checked." >&2
+    exit 2
+fi
 
 fail=0
 for manifest in crates/*/Cargo.toml apps/*/Cargo.toml; do

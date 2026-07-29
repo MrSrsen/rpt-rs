@@ -4,9 +4,9 @@
 //! table schema.
 
 use super::enums::{
-    DiscreteOrRangeKind, EvaluationConditionType, FieldValueType, FormulaVariableScope,
-    LovSourceKind, ParameterType, ParameterValueKind, RangeBoundType, ResetConditionType,
-    SortDirection, SortKind, SummaryOperation,
+    EvaluationConditionType, FieldValueType, FormulaVariableScope, LovSourceKind, ParameterType,
+    ParameterValueKind, RangeBoundType, ResetConditionType, SortDirection, SortKind,
+    SummaryOperation,
 };
 use super::primitives::{Formula, Twips};
 
@@ -46,7 +46,7 @@ pub struct DataDefinition {
     /// its formulas. STRUCTURAL: the Crystal
     /// SDK exposes no typed accessor for these (only each formula's raw `Text`/`Syntax`, already
     /// emitted), so they are not exported. Decoded as a stored fact for completeness and
-    /// for the `crystal-formula` VM, which can pre-register a formula's shared/global variables.
+    /// for the `rpt-formula` VM, which can pre-register a formula's shared/global variables.
     pub formula_variables: Vec<FormulaVariable>,
     /// The field-pool census — the engine's own tally of the report's field manager. Redundant with
     /// the decoded [`field_definitions`](Self::field_definitions) (it is a cross-check), and
@@ -363,10 +363,6 @@ pub struct ParameterField {
     /// SDK `@DefaultValueSortOrder`: the sort applied to the default-value pick list
     /// (`NoSort` / `AlphabeticalAscending`).
     pub default_value_sort_order: super::enums::ParameterSortOrder,
-    /// SDK `@DiscreteOrRangeKind` — whether the parameter accepts discrete values, a range value,
-    /// or both. Recovered from the decoded value structure (a parameter carrying a range value is a
-    /// `RangeValue`), as its stored `0x007a` byte is unlocated.
-    pub discrete_or_range_kind: DiscreteOrRangeKind,
     /// SDK `PromptGroupRef` (PromptManager XML) — the GUID of the prompt group this parameter
     /// belongs to. A **cascading** (parent→child, e.g. country→state→city) prompt group shares one
     /// group GUID across its ordered levels; an ordinary parameter has its own auto-generated
@@ -390,11 +386,15 @@ pub struct ParameterField {
 /// SDK: `IParameterFieldValue`. A parameter value is either **discrete** (`range == None`, the
 /// scalar in `value`) or a **range** (`range == Some`, with `value` holding the range's lower/start
 /// bound and [`ParameterRange`] the upper bound + each end's inclusivity).
+///
+/// A bound is written as a **literal**, not as display text: a number as the shortest decimal that
+/// reads back as the same double, a date as `Date(YYYY,MM,DD)`. The literal states the stored value
+/// and leaves every locale decision — separators, date order, digit count — to whoever displays it.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct ParameterValue {
     /// The discrete value, or — when [`range`](Self::range) is `Some` — the range's lower (start)
-    /// bound, formatted like a discrete value (empty for an open lower end).
+    /// bound, written like a discrete value (empty for an open lower end).
     pub value: String,
     /// The value's display description in the pick list, when distinct from the raw value.
     pub description: Option<String>,
@@ -409,7 +409,7 @@ pub struct ParameterValue {
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct ParameterRange {
-    /// The range's upper (end) bound, formatted like a discrete value; empty for an open upper end.
+    /// The range's upper (end) bound, written like a discrete value; empty for an open upper end.
     pub end_value: String,
     /// SDK `LowerBoundType` — inclusivity of the lower (start) bound.
     pub lower_bound: RangeBoundType,
@@ -448,19 +448,31 @@ pub struct SummaryField {
     /// a report that carries no two-field summary. Stored as the raw field reference (`Table.field`
     /// or `@formula`), like [`summarized_field`](Self::summarized_field).
     ///
-    /// UNVERIFIED: two-field summaries are unobserved, so the `0x7e` leaf byte offset this decodes
-    /// from is provisional (see the decoder).
+    /// The `0x7e` leaf byte offset this decodes from is provisional.
     pub secondary_summarized_field: String,
     /// The operation's extra numeric parameter (e.g. the N in NthLargest/NthSmallest/Percentile).
     pub operation_parameter: i32,
     /// The index of the group this summary is scoped to; `None` for a grand-total (report-level)
     /// summary.
+    ///
+    /// Always `None` from the `.rpt` reader: a summary's own scope is not part of its definition —
+    /// two definitions differing only in scope are byte-identical — so it is recovered from the
+    /// placement (the group owning the section the summary object sits in).
     pub group_index: Option<i32>,
     /// SDK `ISummaryField.IsPercentageSummary` — the summary is shown as a percentage of a group
     /// total (`PercentOf<Op>`) rather than the raw aggregate. The base [`operation`](Self::operation)
     /// still reports the underlying aggregate (`Sum`); the percentage is a display mode, not a
     /// distinct operation.
     pub is_percentage_summary: bool,
+    /// SDK `ISummaryField.SecondGroupForPercentage` (RAS `ISCRSummaryField.SecondGroup`) — the scope
+    /// of a percentage summary's **denominator**, as the 1-based number of the enclosing group whose
+    /// total the percentage is taken of (group 1 = outermost).
+    ///
+    /// `None` means the report grand total, which is both the stored `0` and the only possibility for
+    /// a summary that is not a percentage ([`is_percentage_summary`](Self::is_percentage_summary)
+    /// false), whose record carries no such field at all. The numerator's own scope is *not* stored
+    /// here — see [`group_index`](Self::group_index).
+    pub second_group_for_percentage: Option<i32>,
 }
 
 /// SDK: `IRunningTotalField`.
@@ -474,7 +486,6 @@ pub struct RunningTotalField {
     /// SDK `IRunningTotalField.SecondarySummarizedField` — the second operand of a *two-field*
     /// running-total operation (`Correlation`/`Covariance`/`WeightedAvg`), analogous to
     /// [`SummaryField::secondary_summarized_field`]. Empty for every single-field running total.
-    /// UNVERIFIED — two-field running totals are unobserved.
     pub secondary_summarized_field: String,
     /// The operation's extra numeric parameter (e.g. the N in NthLargest/NthSmallest/Percentile).
     pub operation_parameter: i32,
@@ -594,9 +605,9 @@ pub struct GroupOptions {}
 ///
 /// The calendar and time-of-day variants are the group analogue of the chart-side
 /// [`ChartCategoryPeriod`](crate::ChartCategoryPeriod); `Daily`/`Weekly`/`Monthly` are established,
-/// the other calendar/time periods follow the SDK ordering. The six boolean conditions are modeled
-/// from the SDK enum and the native designer's own option strings and are **provisional**; they are
-/// decoded only for a Boolean group field, so they cannot misfire on the date path.
+/// the other calendar/time periods follow the SDK ordering. The six boolean conditions follow the
+/// SDK enum and are **provisional**; they are decoded only for a Boolean group field, so they cannot
+/// misfire on the date path.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum GroupCondition {
@@ -681,8 +692,8 @@ impl GroupCondition {
 
     /// Decode a `CrBooleanConditionEnum` ordinal for a Boolean group field. The boolean enum starts at
     /// `1`; ordinal `0` is a discrete boolean group → `None`. Ordinals `1..=6` map to the six
-    /// conditions; anything else surfaces as [`Other`](Self::Other). UNVERIFIED — boolean groups are
-    /// unobserved; gated on Boolean field type so it never touches the date path.
+    /// conditions; anything else surfaces as [`Other`](Self::Other). Conjectural, and gated on Boolean
+    /// field type so it never touches the date path.
     pub fn from_boolean_ordinal(ordinal: u8) -> Option<Self> {
         Some(match ordinal {
             0 => return None,
@@ -804,21 +815,19 @@ pub struct Sort {
 
 /// SDK: `TopBottomNSortField` — the Top N / Bottom N options carried by a summary-based group sort.
 /// `number_of_groups` is the group's Top N limit (`0` = no limit), `not_in_topn_name` is the
-/// "Others"-bucket name (default `"Others"`). The two option flags follow that name in the `0xe5`
-/// record as `[u8 WithTies][u8 DiscardOthers]`.
+/// "Others"-bucket name (default `"Others"`).
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct TopBottomNSort {
     /// SDK `NumberOfNGroups` — the Top N / Bottom N group limit (`0` = no limit).
     pub number_of_groups: u16,
     /// SDK `EnableDiscardOtherGroups` — omit the "Others" bucket for groups outside the Top/Bottom N.
-    /// Decoded from the option byte at the Top N name-end + 3 (`1` = set).
     pub discard_others: bool,
     /// SDK `TextForOther` — the display name of the "Others" bucket (default `"Others"`).
     pub not_in_topn_name: String,
-    /// SDK `EnableWithTies` — include groups tied with the Nth for the last Top/Bottom slot. Decoded
-    /// from the option byte at the Top N name-end + 2 (`1` = set). Unobserved: no stored Top N group
-    /// has been seen to set it.
+    /// SDK `EnableWithTies` — include groups tied with the Nth for the last Top/Bottom slot. Not
+    /// decoded: nothing in the stored group sort names it, so a reader leaves it `false` and this
+    /// field never reports the report's own setting.
     pub with_ties: bool,
 }
 

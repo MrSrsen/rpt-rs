@@ -2,6 +2,8 @@
 //! length-prefixed string decoding, the hex/scalar formatting helpers, and the `--cols` column
 //! grammar (`Width`/`Col`).
 
+use rpt_reader::raw::{Dialect, LpScan, LpString};
+
 /// Parse a number written as hex (`0x1a`) or decimal — used for `--offset` / `--len`.
 pub(super) fn parse_num(s: &str) -> Option<usize> {
     let s = s.trim();
@@ -14,6 +16,11 @@ pub(super) fn parse_num(s: &str) -> Option<usize> {
 
 /// Resolve a `--type` selector to a record-type word: `0xNN` / bare hex, or a registry name
 /// (case-insensitive, e.g. `Formula` → `0x0076`). Returns `None` if it matches nothing.
+///
+/// A name is resolved by the reader's own registry lookup rather than against a list of
+/// vocabularies kept here: the name identifies its own vocabulary — `QeIndex` names `0x0008`
+/// wherever it is asked for — and a list kept here is one a vocabulary added later drops out of,
+/// which once made every parameter-values record name unreachable.
 pub(super) fn parse_type_selector(s: &str) -> Option<u16> {
     let s = s.trim();
     if let Some(hex) = s.strip_prefix("0x").or_else(|| s.strip_prefix("0X")) {
@@ -25,60 +32,22 @@ pub(super) fn parse_type_selector(s: &str) -> Option<u16> {
             return Some(v);
         }
     }
-    // Match a registry name (`RecordTag::name`) case-insensitively by scanning the type space.
-    (0u16..=0xffff).find(|&t| {
-        rpt::raw::RecordTag(t)
-            .name()
-            .is_some_and(|n| n.eq_ignore_ascii_case(s))
-    })
+    rpt_reader::raw::RecordTag::from_name(s).map(|(tag, _)| tag.value())
 }
 
-/// A record type's `Name(0x00nn)` label (or bare hex for unnamed types).
-pub(super) fn type_label(rtype: u16) -> String {
-    match rpt::raw::RecordTag(rtype).name() {
-        Some(n) => format!("{n}(0x{rtype:04x})"),
-        None => format!("0x{rtype:04x}"),
-    }
+/// A record type's `Name(0x00nn)` label in `dialect` (or bare hex where it has no name there).
+pub(super) fn type_label(rtype: u16, dialect: Dialect) -> String {
+    rpt_reader::raw::RecordTag(rtype).label(dialect)
 }
 
-/// Every length-prefixed string in `bytes` (4-byte big-endian length + that many bytes, trailing
-/// NUL dropped), scanning each offset and stepping past a match — the same framing the reader's
-/// `read_lp_string` accepts. Yields `(offset, text, bytes_consumed)`.
-pub(super) fn lp_strings(bytes: &[u8]) -> Vec<(usize, String, usize)> {
-    let mut out = Vec::new();
-    let mut i = 0;
-    while i + 4 <= bytes.len() {
-        if let Some((s, consumed)) = read_lp_at(&bytes[i..]) {
-            out.push((i, s, consumed));
-            i += consumed;
-        } else {
-            i += 1;
-        }
-    }
-    out
-}
-
-/// Decode a length-prefixed string at the start of `b`: 4-byte BE length, then that many bytes,
-/// NUL-truncated. Rejects empty/absurd lengths and any run with control bytes (bar tab/CR/LF) or
-/// invalid UTF-8 — the mis-read guard the reader uses.
-fn read_lp_at(b: &[u8]) -> Option<(String, usize)> {
-    let len = u32::from_be_bytes(b.get(0..4)?.try_into().ok()?) as usize;
-    if len == 0 || len > 0x40000 {
-        return None;
-    }
-    let raw = b.get(4..4 + len)?;
-    let end = raw.iter().position(|&c| c == 0).unwrap_or(raw.len());
-    let text = raw.get(..end)?;
-    if text.is_empty() {
-        return None;
-    }
-    let s = std::str::from_utf8(text).ok()?;
-    if s.chars()
-        .any(|c| c.is_control() && !matches!(c, '\t' | '\r' | '\n'))
-    {
-        return None;
-    }
-    Some((s.to_owned(), 4 + len))
+/// The length-prefixed strings in a record's shown bytes, read under the reader's own rule.
+///
+/// The dump is the instrument a record layout is read with, so what it calls a string must be what
+/// the reader calls one: a second copy of the rule here would go on showing the old answer after the
+/// reader tightened or loosened it, and a byte run the reader does not read as text would still
+/// appear as a string in the annotation.
+pub(super) fn lp_strings(bytes: &[u8]) -> Vec<LpString> {
+    rpt_reader::raw::lp_strings(bytes, LpScan::Consume)
 }
 
 /// A `hexdump -C`-style rendering of `bytes`: `OFFSET  hex×16  |ascii|`, offsets relative to the
@@ -104,13 +73,13 @@ pub(super) fn hexdump_lines(bytes: &[u8]) -> Vec<String> {
         .collect()
 }
 
-/// Resolve the scalar-probe cap: default 64 bytes, `all` = the whole leaf, a number = that many,
+/// Resolve the scalar-probe cap: default 64 bytes, `all` = every byte shown, a number = that many,
 /// 0 = off.
-pub(super) fn probe_cap(opt: Option<&str>, leaf_len: usize) -> usize {
+pub(super) fn probe_cap(opt: Option<&str>, shown_len: usize) -> usize {
     match opt {
-        None => 64.min(leaf_len),
-        Some(s) if s.eq_ignore_ascii_case("all") => leaf_len,
-        Some(s) => parse_num(s).unwrap_or(64).min(leaf_len),
+        None => 64.min(shown_len),
+        Some(s) if s.eq_ignore_ascii_case("all") => shown_len,
+        Some(s) => parse_num(s).unwrap_or(64).min(shown_len),
     }
 }
 
@@ -119,8 +88,8 @@ pub(super) fn probe_cap(opt: Option<&str>, leaf_len: usize) -> usize {
 // The single-record dump is per-file; separating a confound needs the *same* derived value
 // pulled from a record type across a whole corpus into one table (e.g. `used+2`/`used+3`/`@4` over
 // every chart report). `--glob` sweeps a directory into that table; `--cols` says which bytes, and
-// `used`/`--anchor-string` anchor an offset at a decoded LP-string's end rather than an absolute
-// leaf offset (a field's trailing tail moves when the field name's length changes).
+// `used`/`--anchor-string` anchor an offset at a decoded LP-string's end rather than at an absolute
+// position (a field's trailing tail moves when the field name's length changes).
 
 /// Width + endianness of a scalar-probe column.
 #[derive(Clone, Copy)]
@@ -173,9 +142,9 @@ impl Width {
 
 /// One sweep-table column: what to extract from each matched record's dumped bytes.
 pub(super) enum Col {
-    /// The anchor's byte offset within the leaf (where the anchoring LP-string ends).
+    /// The anchor's byte offset within the bytes shown (where the anchoring LP-string ends).
     Anchor,
-    /// A scalar at a leaf offset — absolute (`anchored = false`) or relative to the anchor.
+    /// A scalar at a byte offset — absolute (`anchored = false`) or relative to the anchor.
     Scalar {
         anchored: bool,
         off: isize,
@@ -264,18 +233,15 @@ pub(super) fn parse_cols(spec: &str) -> Option<Vec<(String, Col)>> {
 }
 
 /// Index of the LP-string the `used` anchor sits at the end of: the first string containing
-/// `needle` (case-insensitive) when given, else the last string in the leaf. `None` if no string
+/// `needle` (case-insensitive) when given, else the last string shown. `None` if no string
 /// qualifies.
-pub(super) fn anchor_string_index(
-    strings: &[(usize, String, usize)],
-    needle: Option<&str>,
-) -> Option<usize> {
+pub(super) fn anchor_string_index(strings: &[LpString], needle: Option<&str>) -> Option<usize> {
     match needle {
         Some(n) => {
             let nl = n.to_lowercase();
             strings
                 .iter()
-                .position(|(_, t, _)| t.to_lowercase().contains(&nl))
+                .position(|s| s.text.to_lowercase().contains(&nl))
         }
         None => strings.len().checked_sub(1),
     }
@@ -293,6 +259,38 @@ mod tests {
         assert_eq!(parse_ioffset("0x1c"), Some(28));
         assert_eq!(parse_ioffset("-0x10"), Some(-16));
         assert_eq!(parse_ioffset("zz"), None);
+    }
+
+    /// A record's label names it in the vocabulary of the stream it came from. Labelling a session
+    /// record from the report definition's registry describes an unrelated record — a font for the
+    /// query engine's index, a printer for its table.
+    #[test]
+    fn a_type_is_labelled_in_its_own_dialect() {
+        assert_eq!(type_label(0x0008, Dialect::Contents), "Font(0x0008)");
+        assert_eq!(type_label(0x0008, Dialect::QeSession), "QeIndex(0x0008)");
+        assert_eq!(type_label(0x0003, Dialect::QeSession), "QeTable(0x0003)");
+        // The saved-data catalog names only what its decoder reads; the rest stays hex.
+        assert_eq!(
+            type_label(0x0041, Dialect::Catalog),
+            "SavedFieldHeader(0x0041)"
+        );
+        assert_eq!(type_label(0x0008, Dialect::Catalog), "0x0008");
+    }
+
+    /// `--type` takes a name from any stream's vocabulary, since the name identifies its own. Each
+    /// name below is exclusive to one vocabulary, so every one of them resolving is what says the
+    /// selector reaches them all — a vocabulary left out of the search refuses its own record names.
+    #[test]
+    fn a_type_selector_resolves_a_name_from_any_dialect() {
+        assert_eq!(parse_type_selector("Font"), Some(0x0008));
+        assert_eq!(parse_type_selector("QeIndex"), Some(0x0008));
+        assert_eq!(parse_type_selector("qetable"), Some(0x0003));
+        assert_eq!(parse_type_selector("SavedBatchEntry"), Some(0x006d));
+        assert_eq!(parse_type_selector("CurrentValueRecord"), Some(0x0031));
+        assert_eq!(
+            parse_type_selector("datasourceparameterentry"),
+            Some(0x003b)
+        );
     }
 
     #[test]
@@ -367,10 +365,14 @@ mod tests {
 
     #[test]
     fn anchor_index_marker_vs_last() {
-        let strings = vec![
-            (0usize, "field_name".to_string(), 14usize),
-            (14, "note".to_string(), 8),
-        ];
+        let strings = lp_strings(&[
+            0, 0, 0, 11, b'f', b'i', b'e', b'l', b'd', b'_', b'n', b'a', b'm', b'e', 0, //
+            0, 0, 0, 5, b'n', b'o', b't', b'e', 0,
+        ]);
+        assert_eq!(
+            strings.iter().map(|s| s.text.as_str()).collect::<Vec<_>>(),
+            ["field_name", "note"]
+        );
         // default = last string
         assert_eq!(anchor_string_index(&strings, None), Some(1));
         // marker match (case-insensitive substring)

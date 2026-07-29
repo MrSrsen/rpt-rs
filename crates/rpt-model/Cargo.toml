@@ -17,5 +17,9 @@ serde = ["dep:serde"]
 [dependencies]
 serde = { workspace = true, optional = true }
 
+[dev-dependencies]
+# Round-trips the serde projection in tests; the crate itself stays serde-only.
+serde_json.workspace = true
+
 [lints]
 workspace = true

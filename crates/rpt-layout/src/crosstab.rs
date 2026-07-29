@@ -2,7 +2,8 @@
 //!
 //! A cross-tab pivots the data by one or more **row** dimensions (down the left) × **column**
 //! dimensions (across the top), with a **measure** (an aggregate — e.g. `Sum of {amount}`) in each
-//! cell. The decode exposes `CrossTabObject::{rows, columns, measures}`; the layout
+//! cell. The decode exposes `CrossTabObject::{rows, columns}` and the measures are attributed from
+//! the report's summary definitions ([`rpt_model::crosstab_measures`]); the layout
 //! engine computes the pivot from the dataset and this module draws it as ordinary [`DrawOp`]s
 //! (cell rects + grid lines + text), so it renders identically through every backend with no new
 //! dependency (the same approach as the chart renderer).
@@ -36,8 +37,6 @@ const TEXT: Color = Color {
 const CELL_PAD: i32 = 40;
 /// Cross-tab cell font size, in points.
 const CELL_FONT_PT: f32 = 8.0;
-/// Maximum characters kept in a cell label before eliding.
-const LABEL_MAX: usize = 24;
 
 /// The computed pivot to draw: the corner label, the column headers (across the top), the row
 /// headers (down the left), and `cells[r][c]` = the formatted measure for (row r, column c). The
@@ -71,12 +70,12 @@ struct Cell {
 /// [`show_grid`](CrossTabGridOptions::show_grid) is set.
 ///
 /// The grand totals sit first — the grand-total column right after the row labels, the grand-total
-/// row right below the column labels — matching the engine's layout. Their colours are supplied on
+/// row right below the column labels — matching the engine's layout. Their colors are supplied on
 /// the axis RAS names them by, which is the opposite axis to where they draw: `RowGrandTotalColor`
 /// ([`row_grand_total_color`](CrossTabGridOptions::row_grand_total_color)) fills the grand-total
 /// *column* (the per-row totals), `ColumnGrandTotalColor` the grand-total *row*. Each grand total is
 /// dropped when its suppress flag is set — `EnableSuppressRowGrandTotals` drops the column,
-/// `EnableSuppressColumnGrandTotals` the row (same axis convention as the colours).
+/// `EnableSuppressColumnGrandTotals` the row (same axis convention as the colors).
 pub(crate) fn grid_ops(
     rect: Rect,
     grid: &Grid,
@@ -159,8 +158,8 @@ pub(crate) fn grid_ops(
         }
     }
 
-    // Fills: header shading, then the grand-total colours (which override the header grey on their
-    // own band). The grand-total colours are cross-wired to the drawn axis — see the fn doc.
+    // Fills: header shading, then the grand-total colors (which override the header grey on their
+    // own band). The grand-total colors are cross-wired to the drawn axis — see the fn doc.
     for (r, row) in m.iter_mut().enumerate() {
         for (c, cell) in row.iter_mut().enumerate() {
             let mut fill = (r == 0 || c == 0).then_some(HEADER_FILL);
@@ -230,7 +229,7 @@ pub(crate) fn grid_ops(
 
     // Text: each cell's content, aligned, clipped to its box (a small inset). A cell may stack
     // several measures (`\n`-joined), each drawn on its own line, splitting the cell height evenly.
-    // Each drawn line gets its own per-placement instance id so the HTML backend keeps it a separate
+    // Each drawn line gets its own per-placement instance id so a backend keeps it a separate
     // positioned element (like the engine) rather than merging a cell's stacked measures into one
     // multi-line paragraph.
     let mut inst = base_instance;
@@ -259,7 +258,7 @@ pub(crate) fn grid_ops(
                         width: Twips(col_w - 2 * CELL_PAD),
                         height: Twips(line_h),
                     },
-                    text: truncate(line, LABEL_MAX),
+                    text: line.to_string(),
                     font: FontSpec {
                         family: "Arial".into(),
                         size_pt: CELL_FONT_PT,
@@ -270,6 +269,7 @@ pub(crate) fn grid_ops(
                     align: cell.align,
                     rotation: 0.0,
                     metrics: None,
+                    character_spacing: Twips(0),
                     source,
                 }));
             }
@@ -277,16 +277,6 @@ pub(crate) fn grid_ops(
     }
 
     ops
-}
-
-/// Truncate a label to `max` chars with an ellipsis (char-safe).
-fn truncate(s: &str, max: usize) -> String {
-    if s.chars().count() <= max {
-        return s.to_string();
-    }
-    let mut out: String = s.chars().take(max.saturating_sub(1)).collect();
-    out.push('…');
-    out
 }
 
 impl crate::Formatter<'_> {
@@ -314,7 +304,10 @@ impl crate::Formatter<'_> {
             self.placeholder_box(rect, section_name, obj, ObjectKind::CrossTab);
             return;
         };
-        if ct.measures.is_empty() {
+        // The measures are the report's summary definitions, attributed to the cross-tab: the file
+        // records no link from a summary back to the grid that aggregates it.
+        let measures = rpt_model::crosstab_measures(self.report);
+        if measures.is_empty() {
             crate::push_diag(
                 &self.diagnostics,
                 rpt_pages::Diagnostic::warn(
@@ -333,7 +326,7 @@ impl crate::Formatter<'_> {
             &self.locale,
             row_field,
             col_field,
-            &ct.measures,
+            &measures,
             Some((&self.diagnostics, &obj.name)),
         );
         if grid.col_headers.is_empty() || grid.row_headers.is_empty() {
@@ -361,7 +354,7 @@ impl crate::Formatter<'_> {
         );
         self.next_instance_id += ops.iter().filter(|o| matches!(o, DrawOp::Text(_))).count() as u32;
         for op in ops {
-            self.cur.push(op);
+            self.push_op(op);
         }
     }
 }
@@ -476,7 +469,7 @@ mod tests {
 
     #[test]
     fn row_grand_total_color_fills_the_grand_total_column() {
-        // RAS `RowGrandTotalColor` is cross-wired: it colours the grand-total COLUMN (per-row
+        // RAS `RowGrandTotalColor` is cross-wired: it colors the grand-total COLUMN (per-row
         // totals), which sits at grid column index 1 (right after the row labels).
         let opts = CrossTabGridOptions {
             show_grid: true,
@@ -490,7 +483,7 @@ mod tests {
             .filter(|(c, ..)| *c == RED)
             .collect();
         // Every cell of the grand-total column is red — all four rows, none elsewhere.
-        assert_eq!(red.len(), 4, "grand-total column fully coloured");
+        assert_eq!(red.len(), 4, "grand-total column fully colored");
         assert!(
             red.iter().all(|(_, left, _)| *left == col_w),
             "red fills land only on the grand-total column (index 1)"
@@ -499,7 +492,7 @@ mod tests {
 
     #[test]
     fn column_grand_total_color_fills_the_grand_total_row() {
-        // RAS `ColumnGrandTotalColor` colours the grand-total ROW (per-column totals) at row index 1.
+        // RAS `ColumnGrandTotalColor` colors the grand-total ROW (per-column totals) at row index 1.
         let opts = CrossTabGridOptions {
             show_grid: true,
             column_grand_total_color: Some(BLUE),
@@ -511,7 +504,7 @@ mod tests {
             .into_iter()
             .filter(|(c, ..)| *c == BLUE)
             .collect();
-        assert_eq!(blue.len(), 4, "grand-total row fully coloured");
+        assert_eq!(blue.len(), 4, "grand-total row fully colored");
         assert!(
             blue.iter().all(|(_, _, top)| *top == row_h),
             "blue fills land only on the grand-total row (index 1)"

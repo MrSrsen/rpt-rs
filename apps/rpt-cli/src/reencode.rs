@@ -1,12 +1,13 @@
-//! `reencode` / `patch` — the write path of the `rpt` library, exposed for tooling.
+//! `reencode` / `patch` — the write path of the `rpt-reader` library, exposed for tooling.
 //!
 //! `reencode` runs the no-op writer (decode → re-encode the `Contents` stream, byte-identical
-//! inflated) and writes the result to an explicit output path. `patch` overwrites a same-size
-//! region of a decoded record's demasked leaf ([`rpt::Rpt::patch_record_leaf`]) and writes the
-//! result out. Both only ever write the single output path passed on the command line.
+//! inflated) and writes the result to an explicit output path. `patch` changes one field of one
+//! record, addressed by the name its record type's field table gives it, and writes the result out.
+//! Both only ever write the single output path passed on the command line.
 
-use rpt::raw::RecordTag;
-use rpt::{EditPolicy, Rpt};
+use rpt_reader::fields::FieldEdit;
+use rpt_reader::raw::RecordTag;
+use rpt_reader::{EditPolicy, Rpt};
 
 use crate::util::CliError;
 
@@ -23,26 +24,34 @@ USAGE:
 ";
 
 pub(crate) const PATCH_HELP: &str = "\
-rpt patch — overwrite a same-size region of one record's demasked leaf
+rpt patch — change one field of one record
 
-Locates the <nth> (0-based, pre-order) record of type <tag> in the Contents record tree and
-overwrites len(<hexbytes>) bytes of its demasked leaf starting at <offset>, then re-encodes and
-writes a fresh .rpt to <out.rpt>. Same-size only.
+Locates the <nth> (0-based, pre-order) record of type <tag> in the Contents record tree, stores
+<value> in the field <target> names, then re-encodes and writes a fresh .rpt to <out.rpt>.
 
-An edit to a record type that is not cleared for safe editing is REFUSED and nothing is written: a
-record whose leaf carries an internal offset table, count, or checksum can be overwritten into a
-file that re-opens perfectly but is semantically corrupt, with nothing to point back at the edit.
---force writes it anyway. That is the right flag when writing a deliberately invalid record is the
-point — probing what a field means — and the wrong one for editing a report you intend to keep.
+A field is addressed by the name its record type's field table gives it, and the table decides
+where its bytes are and how wide they are. A value that does not fit the width it had is written
+anyway: the record's length prefix and every enclosing record's are recomputed.
+
+The edit is refused, and nothing is written, unless the record type's field table reproduces the
+record byte for byte and the written record reads back with that field at its new value and every
+other field unchanged. --force skips both. That is the right flag when writing a deliberately
+invalid record is the point — probing what a field means — and the wrong one for editing a report
+you intend to keep.
 
 USAGE:
-    rpt patch [--force] <in.rpt> <tag> <nth> <offset> <hexbytes> <out.rpt>
+    rpt patch [--force] <in.rpt> <tag> <nth> <target> <value> <out.rpt>
 
     <tag>       record type, hex (e.g. 0x64) or decimal
     <nth>       0-based occurrence of that record type in pre-order
-    <offset>    byte offset into the demasked leaf
-    <hexbytes>  replacement bytes as hex (e.g. 01ff2a); its length is the region size
-    --force     edit a record type that is not cleared for safe editing (risks silent corruption)
+    <target>    the field to change, by name (`group_indent`, `element_styles[3].weight`), or
+                @<offset> to overwrite raw bytes at an offset into the record's field bytes
+    <value>     the new value at the field's declared wire type: a decimal or 0x number, a float,
+                a string, true/false, or hex bytes for an undecoded run. For @<offset>, hex bytes,
+                whose length is the region size — a raw edit is same-size only.
+    --force     write without the round-trip and read-back checks (risks silent corruption)
+
+`rpt dump <in.rpt> --type <tag> --nth <nth>` lists the field names that record offers.
 ";
 
 /// Re-encode `input`'s Contents stream and write the resulting `.rpt` to `output`.
@@ -55,41 +64,58 @@ pub(crate) fn reencode(input: &str, output: &str) -> Result<(), CliError> {
     Ok(())
 }
 
-/// Patch a same-size leaf region of `input`'s Contents and write the result to `output`.
+/// Change one field of one record in `input`'s Contents and write the result to `output`.
 ///
-/// `force` edits a record type that is not cleared for safe editing. Without it an uncleared edit is
-/// refused by the library before any bytes exist, so `output` is never touched.
+/// `target` is a field name, or `@<offset>` for the raw byte form kept for record types that have
+/// no field table. `force` skips the write path's safety checks; without it a refused edit is
+/// refused before any bytes exist, so `output` is never touched.
 pub(crate) fn patch(
     input: &str,
     tag: &str,
     nth: &str,
-    offset: &str,
-    hexbytes: &str,
+    target: &str,
+    value: &str,
     output: &str,
     force: bool,
 ) -> Result<(), CliError> {
-    let tag = parse_u16(tag).ok_or_else(|| CliError::usage(format!("bad <tag>: {tag}")))?;
+    let tag_num = parse_u16(tag).ok_or_else(|| CliError::usage(format!("bad <tag>: {tag}")))?;
     let nth: usize = nth
         .parse()
         .map_err(|_| CliError::usage(format!("bad <nth>: {nth}")))?;
-    let offset: usize = offset
-        .parse()
-        .map_err(|_| CliError::usage(format!("bad <offset>: {offset}")))?;
-    let new_bytes = parse_hex(hexbytes)
-        .ok_or_else(|| CliError::usage(format!("bad <hexbytes>: {hexbytes}")))?;
-
     let policy = if force {
         EditPolicy::Forced
     } else {
         EditPolicy::Checked
     };
     let rpt = Rpt::open(input)?;
-    let bytes = rpt.patch_record_leaf_with(RecordTag(tag), nth, offset, &new_bytes, policy)?;
+    let tag = RecordTag(tag_num);
+
+    let (bytes, what) = match target.strip_prefix('@') {
+        Some(offset) => {
+            let offset: usize = offset
+                .parse()
+                .map_err(|_| CliError::usage(format!("bad <target> offset: @{offset}")))?;
+            let new_bytes = parse_hex(value)
+                .ok_or_else(|| CliError::usage(format!("bad hex value: {value}")))?;
+            let bytes = rpt.patch_record_bytes_with(tag, nth, offset, &new_bytes, policy)?;
+            (bytes, format!("@{offset} = {} byte(s)", new_bytes.len()))
+        }
+        None => {
+            let field = rpt.record_field(tag, nth, target)?;
+            let edit = FieldEdit::parse(value, field.kind).ok_or_else(|| {
+                CliError::usage(format!(
+                    "`{target}` is a {}, which reads no value from `{value}`",
+                    field.kind.label()
+                ))
+            })?;
+            let bytes = rpt.patch_record_field_with(tag, nth, target, &edit, policy)?;
+            (bytes, format!("{target}: {:?} -> {value}", field.value))
+        }
+    };
     std::fs::write(output, &bytes)
         .map_err(|e| CliError::io(format!("cannot write `{output}`"), e))?;
     eprintln!(
-        "patch: {input} tag={tag:#06x} nth={nth} offset={offset} len={} -> {output} ({} bytes)",
-        new_bytes.len(),
+        "patch: {input} tag={tag_num:#06x} nth={nth} {what} -> {output} ({} bytes)",
         bytes.len()
     );
     Ok(())

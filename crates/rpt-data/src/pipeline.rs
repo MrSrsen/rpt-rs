@@ -10,8 +10,8 @@ use crate::context::{CompiledFormula, DataContext, DateTimeSpecials, FormulaRegi
 use crate::diagnostics::{DiagnosticKind, DiagnosticSink, EvalDiagnostic};
 use crate::source::{Row, RowSource};
 use crate::Dataset;
-use crystal_formula::eval::{vm, Date, Time, Value};
-use crystal_formula::{parse, Syntax};
+use rpt_formula::eval::{vm, Date, Time, Value};
+use rpt_formula::{parse, Syntax};
 use rpt_model::{DataDefinition, FieldKindData, SortDirection};
 
 use self::aggregate::{apply_cumulative, collect_summaries, summarize};
@@ -170,18 +170,33 @@ fn build_dataset_inner(
     }
 
     // Structural link filter (subreport per-instance): keep only rows matching every parent link
-    // value. ANDed with the record-selection formula below; applied by value, not re-parsed per row.
+    // value. ANDed with the selection formula below, and applied whatever the source: it identifies
+    // the parent instance, not the report's criteria. Applied by value, not re-parsed per row.
     if !extra.is_empty() {
         rows.retain(|row| extra.iter().all(|f| row.get(&f.field) == Some(&f.value)));
     }
 
     // 1. Record selection — keep rows whose selection formula evaluates true (absent = keep all).
-    if let Some(sel) = &data_def.record_selection {
+    //
+    // Which formula that is depends on the source. A live fetch is filtered by the record-selection
+    // formula here, because only its translatable subset reached the SQL `WHERE`. A source that
+    // reports itself already selected (a saved batch) is filtered only by the report's saved-data
+    // selection formula — the engine's local filter over an already-fetched rowset — since the
+    // record selection was discharged when those rows were produced.
+    let (selection, selection_name) = if source.already_selected() {
+        (
+            &data_def.saved_data_filter,
+            "the saved-data selection formula",
+        )
+    } else {
+        (&data_def.record_selection, "the record-selection formula")
+    };
+    if let Some(sel) = selection {
         if !sel.0.trim().is_empty() {
             let (ast, diagnostics) = parse(&sel.0, Syntax::Crystal);
             crate::diagnostics::report_parse_diagnostics(
                 sink,
-                "the record-selection formula",
+                selection_name,
                 &sel.0,
                 &diagnostics,
             );
@@ -233,7 +248,7 @@ fn build_dataset_inner(
                     EvalDiagnostic::new(
                         DiagnosticKind::RecordSelection,
                         format!(
-                            "0 of {offered} row(s) kept: the record-selection formula FAILED on \
+                            "0 of {offered} row(s) kept: {selection_name} FAILED on \
                              {failed} of them, first as {detail}. Check that every field and \
                              parameter it references exists — compare `rpt saved <file>` (or `rpt \
                              sql <file>`) and `rpt inputs <file>` against the formula"
@@ -245,7 +260,7 @@ fn build_dataset_inner(
                     EvalDiagnostic::new(
                         DiagnosticKind::AllRowsExcluded,
                         format!(
-                            "0 of {offered} row(s) kept: the record-selection formula excluded \
+                            "0 of {offered} row(s) kept: {selection_name} excluded \
                              every row. If the report expects parameters, check their values (`rpt \
                              inputs <file>` lists them) — a defaulted parameter often selects nothing"
                         ),
@@ -263,7 +278,7 @@ fn build_dataset_inner(
 
     // 2. Record sort — one stable sort across all record-sort fields via a precomputed composite
     // key, so each comparison reads the decorated keys instead of cloning both Values on every
-    // comparison (the previous per-field sort passes cloned O(n log n) times per field).
+    // comparison.
     if !data_def.record_sorts.is_empty() {
         let dirs: Vec<SortDirection> = data_def.record_sorts.iter().map(|s| s.direction).collect();
         let mut decorated: Vec<(Vec<Value>, Row)> = rows
@@ -310,7 +325,10 @@ fn build_dataset_inner(
         details: if groups.is_empty() { rows } else { Vec::new() },
         groups: tree,
         grand_total: grand,
-        params: Default::default(),
+        // The parameters the pipeline was given, carried onto the dataset it returns — otherwise a
+        // caller's `{?Param}` would resolve to null at layout time, silently and indistinguishably
+        // from a genuinely unresolved parameter.
+        params: params.clone(),
     }
 }
 
@@ -370,14 +388,12 @@ pub fn compile_formulas_reporting(
 }
 
 /// Map the stored [`FormulaNullTreatment`](rpt_model::FormulaNullTreatment) onto the evaluator's
-/// [`NullTreatment`](crystal_formula::NullTreatment). Any unrecognized value keeps the engine
+/// [`NullTreatment`](rpt_formula::NullTreatment). Any unrecognized value keeps the engine
 /// default (exception on null).
-fn null_treatment(t: rpt_model::FormulaNullTreatment) -> crystal_formula::NullTreatment {
+fn null_treatment(t: rpt_model::FormulaNullTreatment) -> rpt_formula::NullTreatment {
     match t {
-        rpt_model::FormulaNullTreatment::DefaultValue => {
-            crystal_formula::NullTreatment::DefaultValue
-        }
-        _ => crystal_formula::NullTreatment::Exception,
+        rpt_model::FormulaNullTreatment::DefaultValue => rpt_formula::NullTreatment::DefaultValue,
+        _ => rpt_formula::NullTreatment::Exception,
     }
 }
 
@@ -442,10 +458,10 @@ mod agg_tests {
     }
 
     #[test]
-    fn sql_expression_field_is_never_compiled_as_a_crystal_formula() {
+    fn sql_expression_field_is_never_compiled_as_a_rpt_formula() {
         use rpt_model::{FieldDef, FieldKindData, FormulaField, SqlExpressionField};
         // A SQL Expression field carries a SQL body (server-evaluated), NOT a Crystal formula. Its
-        // text must never reach the crystal-formula parser/VM; the DB computes it and it arrives as a
+        // text must never reach the rpt-formula parser/VM; the DB computes it and it arrives as a
         // fetched column. `compile_formulas` proves this: it registers only Formula fields.
         // A body that is valid SQL but not valid Crystal — if it were parsed as Crystal it would be
         // mangled; it must be passed through opaquely instead.
@@ -472,7 +488,7 @@ mod agg_tests {
 
         let reg = compile_formulas(&data_def);
         // The Crystal formula is compiled; the SQL Expression field is not present in the registry,
-        // so it is never handed to crystal-formula.
+        // so it is never handed to rpt-formula.
         assert!(reg.contains_key("formula1"));
         assert!(!reg.contains_key("sqlexpr1"));
         assert_eq!(reg.len(), 1);
@@ -480,7 +496,7 @@ mod agg_tests {
 
     #[test]
     fn date_group_buckets_a_datetime_key_by_period() {
-        use crystal_formula::eval::Time;
+        use rpt_formula::eval::Time;
         use GroupCondition::*;
         let noon = Time::new(12, 0, 0);
         let dt = |y, m, d| Value::DateTime(Date::new(y, m, d), noon);
@@ -635,7 +651,7 @@ mod agg_tests {
     #[test]
     fn monthly_group_buckets_thirty_timestamps_into_six_groups() {
         use crate::source::RowData;
-        use crystal_formula::eval::Time;
+        use rpt_formula::eval::Time;
         use rpt_model::{Group, Sort};
         // Thirty distinct timestamps across six calendar months (five per month), like the parking
         // `orders.created_at` seed. A monthly group must collapse them into six buckets, not thirty.

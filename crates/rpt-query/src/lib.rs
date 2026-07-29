@@ -29,8 +29,8 @@ pub use selection::{push_down_selection_with_params, PushDown};
 pub use used_fields::{prune_database, used_database_fields};
 
 /// Re-exported so callers can name the parameter-value type used by [`build_query_full`] /
-/// [`push_down_selection_with_params`] without depending on `crystal-formula` directly.
-pub use crystal_formula::eval::Value;
+/// [`push_down_selection_with_params`] without depending on `rpt-formula` directly.
+pub use rpt_formula::eval::Value;
 
 use rpt_model::{Database, FieldValueType, Report, Table, TableJoinKind, TableLinkOperator};
 use sea_query::{
@@ -182,8 +182,7 @@ impl Dialect {
 /// `rpt-db-postgres` path); SQLite/MySQL use `CAST(x AS TEXT|CHAR)`. sea-query renders the qualified
 /// `"alias"."field"` reference (quoted per dialect) via the `$1` placeholder / column ref.
 // The per-dialect cast forms here, in `cast_raw_expr`, and in `Dialect::cast_text` duplicate the
-// same per-dialect logic; consolidating them into one dialect-cast abstraction is out of scope for
-// the join-mapping dedup this function is part of.
+// same per-dialect logic.
 fn cast_expr(dialect: Dialect, alias: &str, field: &str) -> SimpleExpr {
     let colref = Expr::col((Alias::new(alias), Alias::new(field)));
     match dialect {
@@ -207,9 +206,8 @@ fn cast_raw_expr(dialect: Dialect, raw: &str) -> SimpleExpr {
 
 /// Why no query could be built.
 ///
-/// Typed rather than a bare `None` so a caller reports the actual cause instead of inventing one:
-/// every caller used to synthesize "report has no database table to query", which was a guess that
-/// happened to be right for the only case that existed and would silently become wrong for the next.
+/// Typed rather than a bare `None` so a caller reports the actual cause instead of guessing one: a
+/// hardcoded guess is only right while [`NoTables`](Self::NoTables) is the only variant.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[non_exhaustive]
 pub enum QueryError {

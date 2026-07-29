@@ -1,7 +1,7 @@
-//! `rpt` — a read-only CLI over the `rpt` library for inspecting `.rpt` files.
+//! `rpt` — a read-only CLI over the `rpt-reader` library for inspecting `.rpt` files.
 //!
 //! Subcommands: `inspect` (report + per-stream summary), `inputs` (the report's parameters),
-//! `tree` (a structural tree of the decoded record DOM), `streams` (raw record-substrate coverage
+//! `tree` (a structural tree of the decoded records), `streams` (record coverage
 //! per stream), `dump` (the byte-layout workbench for a record's raw bytes), `saved`
 //! (the report's decoded saved-data rows), `sql` (the SQL the report can run against its database),
 //! `json-dump` (the exhaustive JSON export), and the write-path commands `anonymize` (strip
@@ -10,8 +10,8 @@
 //!
 //! Each command lives in its own module (`inspect`/`inputs`/`tree`/`streams`/`dump`/`saved`/`reencode`);
 //! the `json-dump` and `kdl` export surfaces live in the `rpt-json` and `rpt-kdl` libraries. Shared
-//! exit, JSON, and coloring helpers live in `util`. `main` only parses arguments, routes `--help`,
-//! and dispatches.
+//! exit, JSON, and coloring helpers live in `util`. `main` only parses arguments, routes
+//! `--help`/`--version`, and dispatches.
 
 mod anonymize;
 mod args;
@@ -32,11 +32,18 @@ use std::process::ExitCode;
 use args::{parse, ArgsError, Command};
 use util::{run, CliError};
 
-const USAGE: &str = "\
-rpt — inspect Crystal Reports (.rpt) files
+/// The `-V`/`--version` line. The version comes from `[workspace.package] version` in the root
+/// manifest, which every crate inherits and Cargo exposes to the build as `CARGO_PKG_VERSION`, so
+/// the binary reports the version it was compiled from and nothing has to be kept in step by hand.
+const VERSION: &str = concat!("rpt ", env!("CARGO_PKG_VERSION"));
+
+const USAGE: &str = concat!(
+    "rpt ",
+    env!("CARGO_PKG_VERSION"),
+    " — inspect Crystal Reports (.rpt) files
 
 A read-only inspector for the .rpt binary format. It opens the OLE/CFB compound file, decrypts and
-decodes its streams (Contents, QESession, PromptManager, …) into the record substrate, and reports
+decodes its streams (Contents, QESession, PromptManager, …) into records, and reports
 what is inside. Reads the file alone; no database connection is made.
 
 USAGE:
@@ -47,9 +54,9 @@ USAGE:
 COMMANDS:
     inspect    one-screen report + per-stream summary
     inputs     the report's parameters and their types
-    tree       structural tree of the decoded record DOM
-    streams    raw record-substrate coverage per stream (decode-coverage meter)
-    dump       byte-layout workbench: annotated hex dump of a record's leaf bytes
+    tree       structural tree of the decoded records
+    streams    record coverage per stream (decode-coverage meter)
+    dump       byte-layout workbench: annotated hex dump of a record's field bytes
     saved      the report's decoded saved-data rows (schema + cached rowset)
     sql        the SQL the report can run against its database (generated + stored commands)
     formulas   check every formula in the report for syntax and semantic errors (no render)
@@ -57,20 +64,22 @@ COMMANDS:
     kdl        export the report as a KDL document (human-readable authoring surface)
     anonymize  remove authoring metadata (author, last saver, import paths) to a new .rpt
     reencode   re-encode Contents via the writer (no-op round-trip) to a new .rpt
-    patch      overwrite a same-size region of one record's leaf, writing a new .rpt
+    patch      change one field of one record, writing a new .rpt
 
 GLOBAL OPTIONS:
     --json         machine-readable JSON output
     -h, --help     show help (per command: `rpt <COMMAND> --help`)
+    -V, --version  show the version and exit
 
     All commands are read-only. To export the whole decoded report, use `rpt json-dump <file.rpt>`;
-    to render it to HTML / PDF / SVG, use `rpt-render <file.rpt> -o <output>`.
+    to render it to PDF, use `rpt-render <file.rpt> -o <output>`.
 
 ABOUT:
     Part of the rpt-rs project — a pure-Rust reader for the Crystal Reports (.rpt) format.
     Homepage:     https://github.com/MrSrsen/rpt-rs
     Report bugs:  https://github.com/MrSrsen/rpt-rs/issues
-";
+"
+);
 
 /// The scoped `--help` text for a command, or `None` if the token is not a command.
 fn help_for(cmd: &str) -> Option<&'static str> {
@@ -95,7 +104,7 @@ fn help_for(cmd: &str) -> Option<&'static str> {
 fn main() -> ExitCode {
     // Always emit a full backtrace on panic, regardless of RUST_BACKTRACE. The hook also exits
     // quietly on a closed output pipe (`… | head`, or `… | less` then `q`).
-    rpt::install_panic_hook();
+    util::install_panic_hook();
     let argv: Vec<String> = std::env::args().skip(1).collect();
 
     // `-h`/`--help` anywhere requests help. The subcommand is the first token naming a known
@@ -110,6 +119,12 @@ fn main() -> ExitCode {
             Some(scoped) => print!("{scoped}"),
             None => print!("{USAGE}"),
         }
+        return ExitCode::SUCCESS;
+    }
+
+    // `-V`/`--version` anywhere prints the version and exits; help wins if both are given.
+    if argv.iter().any(|a| a == "-V" || a == "--version") {
+        println!("{VERSION}");
         return ExitCode::SUCCESS;
     }
 
@@ -200,12 +215,12 @@ fn dispatch(command: Command) -> ExitCode {
             input,
             tag,
             nth,
-            offset,
-            hexbytes,
+            target,
+            value,
             output,
             force,
         } => run(reencode::patch(
-            &input, &tag, &nth, &offset, &hexbytes, &output, force,
+            &input, &tag, &nth, &target, &value, &output, force,
         )),
     }
 }

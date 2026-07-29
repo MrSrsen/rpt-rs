@@ -361,6 +361,97 @@ fn tall_subreport_in_report_header_flows_across_pages() {
 }
 
 #[test]
+fn page_header_waits_out_a_flowing_report_header() {
+    // The page header sits BELOW the report header, so it prints on none of the pages a report
+    // header occupies — including the continuation pages a tall subreport inside it flows onto. It
+    // first appears on the page the body reaches, and repeats from there (native behavior). The
+    // subreport is deliberately several pages tall, so pages exist that carry header content alone.
+    let sr = subreport_rows("Sub", 60, 300);
+    let mut sub_obj = ReportObject::default();
+    sub_obj.name = "SubObj".into();
+    sub_obj.bounds = Rect {
+        left: Twips(0),
+        top: Twips(0),
+        width: Twips(6000),
+        height: Twips(300),
+    };
+    let mut so = rpt_model::SubreportObject::default();
+    so.subreport_name = "Sub".into();
+    sub_obj.kind = ReportObjectKind::Subreport(so);
+
+    let mut main = Report::default();
+    main.print_options.content_width = Twips(12240);
+    main.print_options.content_height = Twips(3000); // 3000-twip body; subreport is 6000 twips
+    main.report_definition.areas = vec![
+        area(
+            AreaSectionKind::ReportHeader,
+            vec![section(
+                AreaSectionKind::ReportHeader,
+                "RH",
+                300,
+                vec![sub_obj],
+            )],
+        ),
+        area(
+            AreaSectionKind::PageHeader,
+            vec![section(
+                AreaSectionKind::PageHeader,
+                "PH",
+                300,
+                vec![text_object("Hdr", "COLHEAD", 0)],
+            )],
+        ),
+        area(
+            AreaSectionKind::Detail,
+            vec![section(
+                AreaSectionKind::Detail,
+                "MainDetail",
+                200,
+                vec![db_field_object("Main", "t.x", 0)],
+            )],
+        ),
+    ];
+    main.subreports = vec![sr];
+
+    let saved = saved_data(&[("t.x", FieldValueType::String)], &[&["M1"], &["M2"]]);
+    let ds = build_dataset(&SavedDataSource::new(&saved), &main.data_definition);
+    let formulas = rpt_data::compile_formulas(&main.data_definition);
+    let doc = layout(&main, &ds, &formulas);
+
+    let pages_with = |text: &str| -> Vec<usize> {
+        doc.pages
+            .iter()
+            .enumerate()
+            .filter(|(_, p)| {
+                p.ops
+                    .iter()
+                    .any(|op| matches!(op, DrawOp::Text(t) if t.text == text))
+            })
+            .map(|(i, _)| i + 1)
+            .collect()
+    };
+    let header_pages = pages_with("COLHEAD");
+    assert!(
+        doc.pages.len() > 1 && !pages_with("M1").is_empty(),
+        "the subreport must flow and the body must still render, got {} page(s)",
+        doc.pages.len()
+    );
+    // The report header ends on the page carrying the subreport's last row; the page header prints
+    // below it there, and repeats to the end of the report.
+    let rh_end = *pages_with("R59").last().expect("last subreport row placed");
+    assert!(
+        rh_end > 2,
+        "this geometry must leave pages carrying header content alone"
+    );
+    assert_eq!(
+        header_pages,
+        (rh_end..=doc.pages.len()).collect::<Vec<_>>(),
+        "page header must first print where the flowing report header ends (page {rh_end}) and \
+         repeat from there, never on the pages the header alone occupies"
+    );
+}
+
+#[test]
 fn oversized_single_row_force_advances_without_spinning() {
     // A subreport whose single object is taller than a whole page must still terminate: the flow
     // splitter force-advances past a row taller than the available height rather than looping forever.
@@ -506,7 +597,7 @@ fn flowed_subreport_shared_total_runs_once() {
         })
         .collect();
     assert!(
-        texts.iter().any(|t| t == "100.00"),
+        texts.iter().any(|t| t == " 100.00"),
         "main reads the single-pass Shared total (100.00), got {texts:?}"
     );
     assert!(

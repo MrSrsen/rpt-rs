@@ -4,7 +4,7 @@
 //! ([`super::projection`]). Background walls/floor are drawn first; all data faces
 //! are then globally painter-sorted back-to-front so nearer boxes overlap farther ones.
 
-use super::projection::{face, p3, shade, ViewAngle, FRONT_SHADE, SIDE_SHADE};
+use super::projection::{face, face_edge, p3, shade, ViewAngle, FRONT_SHADE, SIDE_SHADE};
 use super::scene::{compose, setup_3d};
 #[cfg(test)]
 use crate::chart::common::AxisTitles;
@@ -20,8 +20,8 @@ const MAX_CELL_FILL: f64 = 0.85;
 
 /// Build the draw-ops for a 3-D riser chart. `categories` are the X-axis slots; `series` is one row
 /// per data binding (`name`, value-per-category), receding along Z. A single-series chart is just
-/// `series.len() == 1`. Colours are per-category for a single series and per-series for several. Draws
-/// the three background planes first, then every box's three shaded faces globally painter-sorted
+/// `series.len() == 1`. Colors are per-category for a single series and per-series for several. Draws
+/// the background room first, then every box's three shaded faces globally painter-sorted
 /// back-to-front, then the labels. Returns an empty vec if there is nothing to plot. `show_labels`
 /// gates the per-box data-value label.
 pub(crate) fn riser_3d(
@@ -35,6 +35,7 @@ pub(crate) fn riser_3d(
         return Vec::new();
     }
     let &ChartCtx {
+        style,
         rect,
         title,
         show_labels,
@@ -42,15 +43,9 @@ pub(crate) fn riser_3d(
     } = cx;
     let src = || cx.src();
 
-    // Series-depth floor-grid divisions: one band per series (clustered), empty for a single series.
-    let z_div: Vec<f64> = if s_count > 1 {
-        (1..s_count).map(|s| s as f64 / s_count as f64).collect()
-    } else {
-        Vec::new()
-    };
     // Frame, projection, and background scenery from the shared 3-D scene setup.
     let (f, max_val, proj, background, axis_labels) =
-        setup_3d(rect, title, categories, series, view_angle, &z_div, &src);
+        setup_3d(style, rect, title, categories, series, view_angle, &src);
 
     let bar_w = (f.slot * 3 / 5).max(15);
     let plot_left = f.plot_left;
@@ -107,13 +102,13 @@ pub(crate) fn riser_3d(
                         p3(x0, ybottom, zf),
                     ],
                     shade(color, FRONT_SHADE),
-                    None,
+                    Some(face_edge()),
                     &src,
                 )
                 .0,
                 box_key,
             ));
-            // Top (y = ytop), the lit face: the base colour unshaded.
+            // Top (y = ytop), the lit face: the base color unshaded.
             data_faces.push((
                 face(
                     &proj,
@@ -124,7 +119,7 @@ pub(crate) fn riser_3d(
                         p3(x0, ytop, zb),
                     ],
                     color,
-                    None,
+                    Some(face_edge()),
                     &src,
                 )
                 .0,
@@ -142,7 +137,7 @@ pub(crate) fn riser_3d(
                         p3(x0, ybottom, zf),
                     ],
                     shade(color, SIDE_SHADE),
-                    None,
+                    Some(face_edge()),
                     &src,
                 )
                 .0,
@@ -152,6 +147,7 @@ pub(crate) fn riser_3d(
             if show_labels {
                 let top = proj.project(p3((x0 + x1) / 2.0, ytop, zf));
                 labels.push(value_label(
+                    style,
                     top.x.0,
                     top.y.0.saturating_sub(230).max(plot_top),
                     &fmt_val(*val),
@@ -172,6 +168,7 @@ pub(crate) fn riser_3d(
 
 #[cfg(test)]
 mod tests {
+    use super::super::scene::ROOM_FACES;
     use super::*;
     use rpt_model::Color;
     use rpt_pages::Fill;
@@ -233,7 +230,7 @@ mod tests {
     }
 
     #[test]
-    fn draws_three_planes_and_three_faces_per_box() {
+    fn draws_the_room_and_three_faces_per_box() {
         let (cats, series) = single(&[("A", 12.0), ("B", 27.0), ("C", 6.0)]);
         let ops = riser_3d(
             &ChartCtx::test(rect(), "Cities", AxisTitles::default(), true),
@@ -245,8 +242,27 @@ mod tests {
             .iter()
             .filter(|o| matches!(o, DrawOp::Polygon(_)))
             .count();
-        // 3 scenery planes + 3 faces per (1 series × 3 categories) box.
-        assert_eq!(polys, 3 + 3 * 3, "3 planes + 3 faces/box, got {polys}");
+        // The room's faces + 3 faces per (1 series × 3 categories) box.
+        assert_eq!(polys, ROOM_FACES + 3 * 3, "room + 3 faces/box, got {polys}");
+    }
+
+    #[test]
+    fn every_face_is_outlined_in_the_face_ink() {
+        // The engine strokes each riser face with the same black hairline it strokes the room's
+        // scenery with, so a riser never reads as a flat color block against an outlined room.
+        use super::super::projection::FACE_INK;
+        let (cats, series) = single(&[("A", 12.0), ("B", 27.0)]);
+        let ops = riser_3d(
+            &ChartCtx::test(rect(), "", AxisTitles::default(), false),
+            &cats,
+            &series,
+            rpt_model::ChartViewAngle::Standard,
+        );
+        assert!(
+            ops.iter().all(|o| !matches!(o, DrawOp::Polygon(p)
+                if p.stroke.as_ref().is_none_or(|s| s.color != FACE_INK))),
+            "every filled face carries the black outline"
+        );
     }
 
     #[test]
@@ -266,15 +282,15 @@ mod tests {
         let polys = fills(&ops).len();
         assert_eq!(
             polys,
-            3 + 3 * 3 * 3,
-            "3 planes + S×C×3 data faces, got {polys}"
+            ROOM_FACES + 3 * 3 * 3,
+            "room + S×C×3 data faces, got {polys}"
         );
     }
 
     #[test]
     fn shade_ladder_top_is_base_front_and_side_darker() {
-        // A single box: after the 3 scenery planes come its three faces, painter-sorted. The base
-        // colour is PALETTE[0]; the top keeps it, the front is 0.8× and the side 0.6×.
+        // A single box: after the room's faces come its three faces, painter-sorted. The base
+        // color is PALETTE[0]; the top keeps it, the front is 0.8× and the side 0.6×.
         let (cats, series) = single(&[("A", 20.0)]);
         let ops = riser_3d(
             &ChartCtx::test(rect(), "", AxisTitles::default(), false),
@@ -285,16 +301,16 @@ mod tests {
         let f = fills(&ops);
         let base = PALETTE[0];
         let lum = |c: Color| c.r as u32 + c.g as u32 + c.b as u32;
-        // The base colour appears exactly once among the box faces (the top face).
-        assert!(f.contains(&base), "top face keeps the base colour");
-        let box_faces = &f[3..];
+        // The base color appears exactly once among the box faces (the top face).
+        assert!(f.contains(&base), "top face keeps the base color");
+        let box_faces = &f[ROOM_FACES..];
         let top = lum(base);
         let others: Vec<u32> = box_faces
             .iter()
             .filter(|&&c| c != base)
             .map(|&c| lum(c))
             .collect();
-        assert_eq!(others.len(), 2, "front + side beside the base-coloured top");
+        assert_eq!(others.len(), 2, "front + side beside the base-colored top");
         assert!(
             others.iter().all(|&l| l < top),
             "front and side are darker than the base top: {others:?} vs {top}"
@@ -347,7 +363,7 @@ mod tests {
         // every face of the nearer (front) series, so the nearer boxes overlap the farther ones.
         let cats = vec!["A".to_string()];
         // Series 0 sits at the FRONT (z-band starting at 0 = nearest the viewer, drawn last); series 1
-        // recedes to the BACK (larger z = farther, drawn first). Colours: series 0 → PALETTE[0],
+        // recedes to the BACK (larger z = farther, drawn first). Colors: series 0 → PALETTE[0],
         // series 1 → PALETTE[1].
         let series = vec![
             ("front".to_string(), vec![20.0]),
@@ -359,8 +375,8 @@ mod tests {
             &series,
             rpt_model::ChartViewAngle::Standard,
         );
-        // Skip the 3 scenery planes; the next 6 fills are the two boxes' faces in painter order.
-        let data = &fills(&ops)[3..];
+        // Skip the room's faces; the next 6 fills are the two boxes' faces in painter order.
+        let data = &fills(&ops)[ROOM_FACES..];
         assert_eq!(data.len(), 6, "3 faces × 2 boxes");
         // Every BACK-series (series 1, farther) fill must precede every FRONT-series (series 0) fill.
         let shades = |base: Color| [base, shade(base, FRONT_SHADE), shade(base, SIDE_SHADE)];

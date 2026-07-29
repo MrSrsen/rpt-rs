@@ -6,8 +6,7 @@
 #[cfg(test)]
 use super::common::AxisTitles;
 use super::common::{
-    centered_disc, disc_label, slice_color, title_op, truncate, value_label, ChartCtx,
-    SLICE_BORDER_W, WHITE,
+    centered_disc, disc_label, slice_color, title_op, value_label, ChartCtx, SLICE_BORDER_W, WHITE,
 };
 #[cfg(test)]
 use rpt_model::Rect;
@@ -20,7 +19,7 @@ use std::f64::consts::{FRAC_PI_2, PI, TAU};
 const PIE_3D_TILT: f64 = 0.6;
 /// Crust (rim) height for the 3-D variant, as a fraction of the pie radius.
 const PIE_3D_CRUST_FRAC: f64 = 0.16;
-/// Shade factor applied to a slice's colour on its extruded crust wall (a darker, shadowed rim).
+/// Shade factor applied to a slice's color on its extruded crust wall (a darker, shadowed rim).
 const PIE_3D_CRUST_SHADE: f32 = 0.65;
 
 /// Build the draw-ops for a pie chart of `series` (category label → value): no axes/scale — each
@@ -44,7 +43,7 @@ fn flat_pie(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp> {
         return Vec::new();
     }
     let &ChartCtx {
-        def,
+        style,
         rect,
         title,
         show_labels,
@@ -61,7 +60,7 @@ fn flat_pie(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp> {
         (rh / 8).clamp(180, 360)
     };
     if !title.is_empty() {
-        ops.push(title_op(def, rl, rt + pad / 2, rw, title_h, title, &src));
+        ops.push(title_op(style, rl, rt + pad / 2, rw, title_h, title, &src));
     }
 
     // Center the disc in the area below the title; leave a small margin for outer labels.
@@ -106,6 +105,7 @@ fn flat_pie(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp> {
         if show_labels && frac >= 0.05 {
             let ir = radius as f64 * 0.6;
             ops.push(value_label(
+                style,
                 cx + (ir * mid.cos()) as i32,
                 cy + (ir * mid.sin()) as i32 - 100,
                 &format!("{:.0}%", frac * 100.0),
@@ -117,7 +117,7 @@ fn flat_pie(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp> {
         let lr = radius as f64 * 1.02;
         let lx = cx + (lr * mid.cos()) as i32;
         let ly = cy + (lr * mid.sin()) as i32;
-        ops.push(disc_label(lx, ly, &truncate(label, 16), &src));
+        ops.push(disc_label(style, lx, ly, label, &src));
         angle += sweep;
     }
 
@@ -134,7 +134,7 @@ fn depth_pie(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp> {
         return Vec::new();
     }
     let &ChartCtx {
-        def,
+        style,
         rect,
         title,
         show_labels,
@@ -151,7 +151,7 @@ fn depth_pie(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp> {
         (rh / 8).clamp(180, 360)
     };
     if !title.is_empty() {
-        ops.push(title_op(def, rl, rt + pad / 2, rw, title_h, title, &src));
+        ops.push(title_op(style, rl, rt + pad / 2, rw, title_h, title, &src));
     }
 
     let (cx, cy, radius) = centered_disc(rect, title_h);
@@ -251,6 +251,7 @@ fn depth_pie(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp> {
         if show_labels && frac >= 0.05 {
             let ir = 0.6;
             ops.push(value_label(
+                style,
                 (cxf + rx * ir * mid.cos()) as i32,
                 (cyf + ry * ir * mid.sin() + drop) as i32 - 100,
                 &format!("{:.0}%", frac * 100.0),
@@ -260,9 +261,10 @@ fn depth_pie(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp> {
         }
         let lr = 1.04;
         ops.push(disc_label(
+            style,
             (cxf + rx * lr * mid.cos()) as i32,
             (cyf + ry * lr * mid.sin() + drop) as i32,
-            &truncate(label, 16),
+            label,
             &src,
         ));
     }
@@ -383,8 +385,8 @@ mod tests {
             polys(&flat)
         );
 
-        // The three slice faces keep their palette colour; the crust walls are darkened copies, so a
-        // shaded fill that is not any base slice colour must appear.
+        // The three slice faces keep their palette color; the crust walls are darkened copies, so a
+        // shaded fill that is not any base slice color must appear.
         use rpt_pages::Fill;
         let base: Vec<Color> = (0..3).map(slice_color).collect();
         let fills: Vec<Color> = deep
@@ -399,7 +401,7 @@ mod tests {
             .collect();
         let has_face = base.iter().all(|b| fills.contains(b));
         let has_crust = fills.iter().any(|c| !base.contains(c));
-        assert!(has_face, "every slice face keeps its palette colour");
+        assert!(has_face, "every slice face keeps its palette color");
         assert!(has_crust, "a darkened crust wall is emitted");
     }
 

@@ -1,9 +1,9 @@
 //! # Page IR — the formatted-report representation
 //!
 //! A [`Page`] is a list of absolutely-positioned drawing primitives ([`DrawOp`]) in twips, the
-//! output of the layout engine and the input to every backend (SVG/PDF/raster/HTML). It is the
-//! contract backends, the WASM split, and the render parity harness all diff on. It mirrors the
-//! native engine's positioned page representation, the same shape its own export filters consume.
+//! output of the layout engine and the input to every output backend. It is the contract every
+//! backend and the WASM split diff on, and it mirrors the native engine's positioned page
+//! representation, the same shape its own export filters consume.
 //!
 //! Two design commitments baked in from the start:
 //! - **Object identity travels with every op** ([`ObjectRef`]) — a draw-op knows which report
@@ -29,7 +29,7 @@
 //! [`PrintState`] and [`PageCheckpoint`] are **excluded** from this guarantee: their field shapes
 //! are provisional stubs (see [`PrintState::variables`]) and may change incompatibly.
 
-use rpt_model::{Color, Rect, Twips};
+use rpt_model::{AreaSectionKind, Color, Rect, Twips};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::fmt;
@@ -39,6 +39,12 @@ pub use backend::PageBackend;
 
 mod text;
 pub use text::{greedy_wrap, ApproxLayout, TextLayout, TWIPS_PER_PT};
+
+/// `skip_serializing_if` predicate for a twip field whose neutral value is zero, so a field that is
+/// neutral on almost every op costs nothing in a serialized page.
+fn twips_is_zero(t: &Twips) -> bool {
+    t.0 == 0
+}
 
 /// A point in twips (page-absolute).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash, Serialize, Deserialize)]
@@ -184,10 +190,10 @@ pub enum LineStyle {
     Dotted,
 }
 
-/// A stroked edge/border: colour, thickness in twips, style.
+/// A stroked edge/border: color, thickness in twips, style.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Stroke {
-    /// The line colour.
+    /// The line color.
     pub color: Color,
     /// The line thickness in twips.
     pub width: Twips,
@@ -214,26 +220,26 @@ pub enum HatchPattern {
 }
 
 /// How a region is filled: box objects, section backgrounds, and chart geometry can carry
-/// gradient/hatch fills in addition to a solid colour. [`Fill::Solid`] is rendered identically by
+/// gradient/hatch fills in addition to a solid color. [`Fill::Solid`] is rendered identically by
 /// every backend, while gradient/hatch are best-effort per backend (a backend that can't express
-/// one falls back to a representative solid colour).
+/// one falls back to a representative solid color).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum Fill {
-    /// A single flat colour (the pre-widening behaviour).
+    /// A single flat color.
     Solid(Color),
-    /// A linear gradient over colour `stops` (`(offset 0.0..=1.0, colour)`, in paint order) along a
+    /// A linear gradient over color `stops` (`(offset 0.0..=1.0, color)`, in paint order) along a
     /// direction of `angle_deg` degrees.
     LinearGradient {
-        /// Colour stops as `(offset 0.0..=1.0, colour)` in paint order.
+        /// Color stops as `(offset 0.0..=1.0, color)` in paint order.
         stops: Vec<(f32, Color)>,
         /// Gradient direction in degrees.
         angle_deg: f32,
     },
-    /// A two-colour hatch: `fg` lines over a `bg` field in the given `pattern`.
+    /// A two-color hatch: `fg` lines over a `bg` field in the given `pattern`.
     Hatch {
-        /// The hatch line (foreground) colour.
+        /// The hatch line (foreground) color.
         fg: Color,
-        /// The field (background) colour behind the hatch lines.
+        /// The field (background) color behind the hatch lines.
         bg: Color,
         /// The hatch line pattern.
         pattern: HatchPattern,
@@ -247,7 +253,7 @@ impl From<Color> for Fill {
 }
 
 impl Fill {
-    /// A representative solid colour for a backend that can't render this fill: the solid colour
+    /// A representative solid color for a backend that can't render this fill: the solid color
     /// itself, a gradient's midpoint stop (its first stop if it has no stops), or a hatch's
     /// foreground. Backends use this for their gradient/hatch fallback.
     pub fn representative_color(&self) -> Color {
@@ -272,7 +278,7 @@ impl Fill {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct TextMetrics {
     /// Shaped advance width of the run's text — the horizontal extent used to anchor centre/right
-    /// alignment (a backend that measures exactly, like SVG's `text-anchor`, may ignore it).
+    /// alignment (a backend that measures the text itself may ignore it).
     pub advance: Twips,
     /// Baseline offset below the run's top edge (the max ascent over the run's font).
     pub ascent: Twips,
@@ -290,7 +296,7 @@ pub struct TextRun {
     pub text: String,
     /// The resolved font for the run.
     pub font: FontSpec,
-    /// The text colour.
+    /// The text color.
     pub color: Color,
     /// Horizontal alignment of the text within `bounds`.
     pub align: TextAlign,
@@ -306,6 +312,16 @@ pub struct TextRun {
     /// `None`, so this is an additive contract change.
     #[serde(default)]
     pub metrics: Option<TextMetrics>,
+    /// Extra advance inserted after **every Unicode scalar** of `text`, in twips (SDK
+    /// `ParagraphTextElement.CharacterSpacing`; GDI `SetTextCharacterExtra`), including the trailing
+    /// one. `0` — the overwhelming default — means natural advances only.
+    ///
+    /// It is a parameter of the producer's advance model, not a style hint: `metrics.advance` already
+    /// includes it and the same adjusted width decided the wrap. A backend that re-shapes the run must
+    /// add `character_spacing × (Unicode scalars in the cluster)` after each shaped cluster — per
+    /// *scalar*, never per glyph, or a ligature makes the drawn width disagree with the measured one.
+    #[serde(default, skip_serializing_if = "twips_is_zero")]
+    pub character_spacing: Twips,
     /// The report object this run was formatted from, if known.
     pub source: Option<ObjectRef>,
 }
@@ -347,7 +363,7 @@ pub struct LineOp {
     pub from: Point,
     /// The line's end point in twips (printable-relative).
     pub to: Point,
-    /// The line's stroke (colour, width, style).
+    /// The line's stroke (color, width, style).
     pub stroke: Stroke,
     /// The report object this line was formatted from, if known.
     pub source: Option<ObjectRef>,
@@ -403,8 +419,8 @@ pub struct ImageOp {
 }
 
 /// The resolved bytes an [`ImageOp`] references by `image_id`, held out-of-band from the page IR
-/// (which stays cheap to diff/serialize). A backend that can embed images (e.g. the HTML backend as
-/// a `data:` URI) looks the asset up by the op's `image_id`; when there is no asset for an id the
+/// (which stays cheap to diff/serialize). A backend that can embed images looks the asset up by the
+/// op's `image_id`; when there is no asset for an id the
 /// backend draws a placeholder instead. `media_type` is the image MIME (e.g. `image/png`).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ImageAsset {
@@ -549,8 +565,8 @@ pub struct Page {
     pub size: PageSize,
     /// The printable-area origin (the report's top-left margin) in twips. Draw-op coordinates are
     /// **printable-relative** (0,0 = top-left of the printable area, margin removed); a physical
-    /// backend (SVG/PDF/raster) adds this origin to place content on the paper, while the RAS/HTML
-    /// host draws content 0-based inside a container that carries the margin as CSS.
+    /// backend (PDF) adds this origin to place content on the paper, while a host that carries
+    /// the margin itself (as the RAS web host does) draws content 0-based inside it.
     #[serde(default)]
     pub origin: Point,
     /// The page's draw-ops in paint order (earlier ops are painted first, under later ones).
@@ -590,7 +606,6 @@ impl Page {
     /// A stable, pretty-printed serialization of this page for diffing two renders. Serialization
     /// order is paint order, and enum tags are explicit (`"op"`), so a diff is a structural
     /// node-level comparison, never a byte comparison.
-    #[cfg(feature = "json")]
     ///
     /// # Panics
     ///
@@ -604,16 +619,16 @@ impl Page {
 
 /// A snapshot of print-time state captured at a page boundary that makes a page independently
 /// re-formattable. The concrete state (running totals, `WhilePrintingRecords` variables,
-/// page-number counters) is currently a stub map; the type exists so the checkpoint is designed
-/// in, not retrofitted.
+/// page-number counters) is a stub map; the type exists so the checkpoint is designed in, not
+/// retrofitted.
 ///
-/// Excluded from the crate's additive-stable wire guarantee: the stub encoding below is provisional
-/// and will change incompatibly when typed formula values land.
+/// Excluded from the crate's additive-stable wire guarantee: the stub string encoding below is
+/// provisional.
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct PrintState {
     /// Serialized snapshot of Global/Shared formula variables and running-total accumulators,
     /// keyed by name. Placeholder representation: values are stored as strings, so the field's
-    /// wire shape is not yet stable.
+    /// wire shape is not stable.
     pub variables: BTreeMap<String, String>,
 }
 
@@ -651,7 +666,7 @@ pub enum Severity {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Hash)]
 #[non_exhaustive]
 pub enum DiagnosticKind {
-    /// An object kind with no real renderer yet was drawn as a placeholder box (chart, cross-tab, …).
+    /// An object kind with no real renderer was drawn as a placeholder box (chart, cross-tab, …).
     UnsupportedObject,
     /// A formula used a builtin/feature the evaluator does not implement (`EvalError::Unsupported`).
     UnsupportedFormula,
@@ -683,7 +698,7 @@ pub enum DiagnosticKind {
 ///
 /// A name alone (`Diagnostic::source`) does not let a user find the problem: the same formula runs on
 /// every row, and the same object appears on every page. Every field is optional and — following the
-/// convention `rpt::StreamLoc` established for decode errors — **never fabricated**: a site fills in
+/// convention `rpt_reader::StreamLoc` established for decode errors — **never fabricated**: a site fills in
 /// only what it genuinely has in scope.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct DiagnosticLocation {
@@ -839,6 +854,22 @@ impl Diagnostic {
     }
 }
 
+/// What a section is and where it sits, for a consumer that needs the report's structure and not
+/// just its marks (a PDF structure tree deciding artifact-vs-content, an outline, group navigation).
+///
+/// Held document-level in [`PagedDocument::sections`] and keyed by [`ObjectRef::section`] — the
+/// stored section name is a poor classifier (most reports carry at least one `Section1`-style name)
+/// but a fine key.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SectionInfo {
+    /// Which band this section belongs to.
+    pub band: AreaSectionKind,
+    /// For a group header/footer, its 0-based nesting level (outermost = 0). `None` for every other
+    /// band.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub group_level: Option<usize>,
+}
+
 /// A whole formatted document: its pages, the checkpoint that begins each one, and any pipeline
 /// fidelity [`Diagnostic`]s collected while producing it.
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
@@ -851,11 +882,16 @@ pub struct PagedDocument {
     #[serde(default)]
     pub diagnostics: Vec<Diagnostic>,
     /// The resolved bytes for every embedded image referenced by an [`ImageOp`] on these pages, keyed
-    /// by its `image_id`. Collected during layout so a backend can inline images (e.g. HTML `data:`
-    /// URIs) without the caller having to gather them separately — an [`ImageOp`] whose id is absent
-    /// here draws a placeholder.
+    /// by its `image_id`. Collected during layout so a backend can embed images without the caller
+    /// having to gather them separately — an [`ImageOp`] whose id is absent here draws a placeholder.
     #[serde(default)]
     pub assets: std::collections::BTreeMap<String, ImageAsset>,
+    /// What each section named by an [`ObjectRef::section`] on these pages actually is. Empty when
+    /// the producer did not classify; a consumer that finds no entry for a section **must** fall back
+    /// to treating its content as document content, never as furniture — missing information must
+    /// never delete content from the reading order.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub sections: BTreeMap<String, SectionInfo>,
 }
 
 #[cfg(test)]
@@ -939,6 +975,7 @@ mod tests {
             align: TextAlign::Left,
             rotation: 0.0,
             metrics: None,
+            character_spacing: Twips(0),
             source: Some(ObjectRef::new("Details", ObjectKind::Field).named("name")),
         }));
         page
@@ -957,6 +994,7 @@ mod tests {
             }],
             diagnostics: Vec::new(),
             assets: std::collections::BTreeMap::new(),
+            sections: BTreeMap::new(),
         };
         let json = serde_json::to_string_pretty(&doc).unwrap();
         rpt_test_support::assert_golden(env!("CARGO_MANIFEST_DIR"), "page.json", &json);
@@ -1004,7 +1042,6 @@ mod tests {
     }
 
     #[test]
-    #[cfg(feature = "json")]
     fn normalized_json_roundtrips() {
         let page = sample_page();
         let json = page.to_normalized_json();
@@ -1096,9 +1133,63 @@ mod tests {
                 ascent: Twips(160),
                 line_height: Twips(234),
             }),
+            character_spacing: Twips(0),
             source: None,
         };
         let back: TextRun = serde_json::from_str(&serde_json::to_string(&with).unwrap()).unwrap();
         assert_eq!(back, with);
+    }
+
+    #[test]
+    fn textrun_character_spacing_is_absent_at_zero_and_round_trips_otherwise() {
+        // Older serialized runs (no `character_spacing` key) still deserialize, defaulting to the
+        // natural advances — the additive IR contract holds.
+        let json = r#"{"bounds":{"left":0,"top":0,"width":10,"height":10},"text":"x",
+            "font":{"family":"Arial","size_pt":10.0,"bold":false,"italic":false,
+            "underline":false,"strikethrough":false},"color":{"a":255,"r":0,"g":0,"b":0},
+            "align":"Left","rotation":0.0,"metrics":null,"source":null}"#;
+        let mut run: TextRun = serde_json::from_str(json).unwrap();
+        assert_eq!(run.character_spacing, Twips(0));
+        // The neutral value costs zero bytes on the wire.
+        assert!(!serde_json::to_string(&run)
+            .unwrap()
+            .contains("character_spacing"));
+
+        run.character_spacing = Twips(30);
+        let back: TextRun = serde_json::from_str(&serde_json::to_string(&run).unwrap()).unwrap();
+        assert_eq!(back, run);
+    }
+
+    #[test]
+    fn document_sections_are_absent_when_empty_and_round_trip_otherwise() {
+        // A document serialized before the dictionary existed still loads, with no classification —
+        // which a consumer must read as "treat everything as content".
+        let json = r#"{"pages":[],"checkpoints":[]}"#;
+        let mut doc: PagedDocument = serde_json::from_str(json).unwrap();
+        assert!(doc.sections.is_empty());
+        assert!(!serde_json::to_string(&doc).unwrap().contains("sections"));
+
+        doc.sections.insert(
+            "PageHeaderA".to_string(),
+            SectionInfo {
+                band: AreaSectionKind::PageHeader,
+                group_level: None,
+            },
+        );
+        doc.sections.insert(
+            "GroupHeaderB".to_string(),
+            SectionInfo {
+                band: AreaSectionKind::GroupHeader,
+                group_level: Some(1),
+            },
+        );
+        let text = serde_json::to_string(&doc).unwrap();
+        // A band with no nesting level emits no key for it.
+        assert!(
+            text.contains(r#""PageHeaderA":{"band":"PageHeader"}"#),
+            "{text}"
+        );
+        let back: PagedDocument = serde_json::from_str(&text).unwrap();
+        assert_eq!(back, doc);
     }
 }

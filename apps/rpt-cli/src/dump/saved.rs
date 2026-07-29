@@ -1,17 +1,17 @@
-//! The saved-data batch substrate view (`--saved`) — the encrypted-batch layer the record `dump`
+//! The saved-data batch view (`--saved`) — the encrypted-batch layer the record `dump`
 //! cannot reach: the decoded catalog schema, the batch directory, and, per batch, the derived
 //! decrypt IV, whether it inflates, and (on failure) the directory + derived-IV metadata.
 
 use std::fmt::Write as _;
 
-use rpt::Rpt;
+use rpt_reader::Rpt;
 
 use crate::util::{paint, CliError, BOLD};
 
 use super::parse::{hexdump_lines, probe_cap};
 use super::DumpOpts;
 
-/// Inspect the saved-data batch substrate — the encrypted-batch layer the record `dump` cannot
+/// Inspect the saved-data batches — the encrypted-batch layer the record `dump` cannot
 /// reach. Surfaces the decoded catalog schema (each field's record offset +
 /// memo flag), the batch directory (per batch: role, count, on-disk item size), and, per batch, the
 /// decrypt IV the decoder derives, whether it yields a zlib header, and — on success — the inflated
@@ -21,11 +21,14 @@ pub(super) fn dump_saved(files: &[String], opts: &DumpOpts) -> Result<(), CliErr
     for file in files {
         let rpt = Rpt::open(file)?;
         let Some(insp) = rpt.saved_batch_inspection() else {
-            println!("{file}: no saved-data directory");
+            match crate::util::subdocument_saved_data(&rpt) {
+                Some(where_) => println!("{file}: {where_}"),
+                None => println!("{file}: no saved-data directory"),
+            }
             continue;
         };
         let mut out = String::new();
-        let heading = format!("── {file} · saved-data batch substrate ──");
+        let heading = format!("── {file} · saved-data batches ──");
         let _ = writeln!(out, "{}", paint(opts.color, BOLD, &heading));
         let _ = writeln!(
             out,
@@ -43,11 +46,16 @@ pub(super) fn dump_saved(files: &[String], opts: &DumpOpts) -> Result<(), CliErr
         }
 
         let _ = writeln!(out, "   batches ({}):", insp.batches.len());
+        if insp.batches.is_empty() {
+            if let Some(where_) = crate::util::subdocument_saved_data(&rpt) {
+                let _ = writeln!(out, "   {where_}");
+            }
+        }
         for (i, b) in insp.batches.iter().enumerate() {
             let kind = match b.kind {
-                rpt::SavedBatchKind::Index => "index",
-                rpt::SavedBatchKind::Descriptor => "descriptor",
-                rpt::SavedBatchKind::MemoValue => "memo-value",
+                rpt_reader::SavedBatchKind::Index => "index",
+                rpt_reader::SavedBatchKind::Descriptor => "descriptor",
+                rpt_reader::SavedBatchKind::MemoValue => "memo-value",
             };
             let stream = if b.in_memo_stream {
                 "MemoValuesStream"
@@ -66,15 +74,15 @@ pub(super) fn dump_saved(files: &[String], opts: &DumpOpts) -> Result<(), CliErr
             );
             let iv_hex: String = b.iv.iter().map(|x| format!("{x:02x}")).collect();
             let _ = writeln!(out, "      IV bytes: {iv_hex}");
-            if !b.dir_leaf.is_empty() {
-                let _ = writeln!(out, "      directory leaf 0x6d ({} B):", b.dir_leaf.len());
-                for line in hexdump_lines(&b.dir_leaf) {
+            if !b.dir_entry.is_empty() {
+                let _ = writeln!(out, "      directory entry 0x6d ({} B):", b.dir_entry.len());
+                for line in hexdump_lines(&b.dir_entry) {
                     let _ = writeln!(out, "     {line}");
                 }
                 // A packed index batch carries a per-column table after byte 16: a u16 entry count
                 // then `3 × string_columns` big-endian u32s; every third is the on-disk offset of the
                 // field after a compacted string (the per-column slot boundary).
-                let l = &b.dir_leaf;
+                let l = &b.dir_entry;
                 if l.len() >= 18 {
                     let be32 = |o: usize| {
                         u32::from_be_bytes([l[o], l[o + 1], l[o + 2], l[o + 3]]) as usize

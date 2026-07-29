@@ -9,12 +9,12 @@ use crate::{
     browser_renderable, emf, push_diag, translate_op, EmptyRows, Formatter, SubreportChunk,
     SubreportRender, TextPlan,
 };
-use crystal_formula::eval::Value;
-use crystal_formula::token::strip_braces;
 use rpt_data::{
     compile_formulas, compile_formulas_at, normalize_param_name, DataContext, FieldFilter,
     Parameters, RunningTotals, SavedDataSource,
 };
+use rpt_formula::eval::Value;
+use rpt_formula::token::strip_braces;
 use rpt_model::{
     BlobFieldObject, BoxShape, Color, FieldObject, FieldRefKind, ImageFormat, LineShape,
     LineStyle as RptLineStyle, PictureObject, Rect, ReportObject, ReportObjectKind, Section,
@@ -29,7 +29,7 @@ use rpt_pages::{
 /// grid lines, and as the minimum stroke width.
 pub(crate) const HAIRLINE_W: Twips = Twips(10);
 
-/// The default border colour when a box/field border sets no explicit colour: opaque black.
+/// The default border color when a box/field border sets no explicit color: opaque black.
 const DEFAULT_BORDER: Color = Color {
     a: 255,
     r: 0,
@@ -37,7 +37,7 @@ const DEFAULT_BORDER: Color = Color {
     b: 0,
 };
 
-/// The dashed placeholder-box outline colour (mid-grey) drawn for objects that cannot be rendered.
+/// The dashed placeholder-box outline color (mid-grey) drawn for objects that cannot be rendered.
 const PLACEHOLDER_STROKE: Color = Color {
     a: 255,
     r: 136,
@@ -140,7 +140,7 @@ impl Formatter<'_> {
         )
         .or(section.format.background_color);
         if let Some(bg) = bg {
-            self.cur.push(fill_rect(
+            self.push_op(fill_rect(
                 Rect {
                     left: Twips(self.col_offset),
                     top: Twips(origin_y),
@@ -216,8 +216,8 @@ impl Formatter<'_> {
         if suppressed {
             return;
         }
-        // One instance id per placed object: its text runs and its border/fill box share it, so the
-        // HTML backend groups a wrapped value and links its adornment by id, not by geometry.
+        // One instance id per placed object: its text runs and its border/fill box share it, so a
+        // consumer groups a wrapped value and links its adornment by id, not by geometry.
         let instance = self.next_instance_id;
         self.next_instance_id += 1;
         let at = Placement {
@@ -302,6 +302,9 @@ impl Formatter<'_> {
             let deg = obj.format.text_rotation.degrees();
             let multiline = plan.lines.len() > 1;
             let mut y = rect.top.0 + v_offset;
+            // Ops the last line emitted — one per tab-separated segment, so the page-total fixup
+            // below can address every run the line produced.
+            let mut emitted = 0;
             for (i, line) in plan.lines.iter().enumerate() {
                 let line_rect = if deg % 180 == 90 {
                     rotated_line_rect(rect, deg, i as i32, line.line_height.0, line.width)
@@ -316,8 +319,15 @@ impl Formatter<'_> {
                     y += line.line_height.0;
                     lr
                 };
-                let advance = Twips(self.text_layout.width_twips(&line.text, &line.font) as i32);
-                self.cur.push(DrawOp::Text(TextRun {
+                // The reported advance is the one the wrap was decided on: natural advances plus the
+                // paragraph's character spacing.
+                let advance = Twips(crate::text::spaced_width_twips(
+                    self.text_layout,
+                    &line.text,
+                    &line.font,
+                    line.character_spacing,
+                ) as i32);
+                emitted = self.push_op(DrawOp::Text(TextRun {
                     bounds: line_rect,
                     text: line.text.clone(),
                     font: line.font.clone(),
@@ -329,22 +339,50 @@ impl Formatter<'_> {
                         ascent: line.ascent,
                         line_height: line.line_height,
                     }),
+                    character_spacing: line.character_spacing,
                     source: at.src(obj, plan.kind),
                 }));
             }
-            // A `TotalPageCount`/`PageNofM` field is a forward reference: its total is not
+            // A `TotalPageCount`/`PageNofM` reference is a forward reference: its total is not
             // known until the last page is laid out. Record the just-emitted single-line run
-            // so the final count can be patched in (see `Formatter::resolve_page_totals`).
+            // so the final count can be patched in (see `Formatter::resolve_page_totals`) —
+            // whether the reference is the placed field object itself or one run of a text object.
             if plan.lines.len() == 1 {
-                if let ReportObjectKind::Field(f) = &obj.kind {
-                    if total_page_dependent(f) {
+                let kinds: Vec<crate::PageCountFixupKind> = match &obj.kind {
+                    ReportObjectKind::Field(f) if total_page_dependent(f) => {
+                        vec![crate::PageCountFixupKind::Field(f.clone())]
+                    }
+                    ReportObjectKind::Text(t) => total_page_dependent_runs(t)
+                        .map(|p| crate::PageCountFixupKind::Embedded(p.to_string()))
+                        .collect(),
+                    _ => Vec::new(),
+                };
+                // A tabbed line splits into one run per segment and the reference sits in exactly one
+                // of them, so each gets a fixup — the substitution is a no-op in the others. An
+                // untabbed line emits one run, which is the common case.
+                let first = self.cur.ops.len() - emitted;
+                for kind in kinds {
+                    for op_index in first..self.cur.ops.len() {
                         self.page_count_fixups.push(crate::PageCountFixup {
                             page_index: self.pages.len(),
-                            op_index: self.cur.ops.len() - 1,
-                            field: (**f).clone(),
+                            op_index,
                             page_number: self.page_number,
+                            provisional_total: self.pages.len() as i64 + 1,
+                            kind: kind.clone(),
                         });
                     }
+                }
+                // A field that shows one currency symbol per page: which of its values is the page's
+                // first is only decidable once page membership is final, so record the run and let
+                // the post-pagination pass blank the repeats (see `Formatter::resolve_currency_symbols`).
+                // A tabbed split is excluded — a formatted amount holds no tab, so `emitted` is 1.
+                if let (Some(mark), 1) = (&plan.currency, emitted) {
+                    self.currency_fixups.push(crate::CurrencyFixup {
+                        page_index: self.pages.len(),
+                        op_index: first,
+                        object: obj.name.clone(),
+                        mark: mark.clone(),
+                    });
                 }
             }
         }
@@ -352,7 +390,7 @@ impl Formatter<'_> {
     }
 
     /// Draw a box shape: its fill/border rect (resolving the per-row conditional-format formulas
-    /// first, then the static colours), extended to its end section or grown with the band as needed,
+    /// first, then the static colors), extended to its end section or grown with the band as needed,
     /// plus its drop shadow.
     fn emit_box(
         &mut self,
@@ -368,8 +406,13 @@ impl Formatter<'_> {
         // most of the way down the section) grows with the band, so when can-grow content makes
         // the row taller the shading/frame tracks the actual rendered height instead of covering
         // only the top slice, preserving its distance from the band bottom.
-        let rect = if spans_sections(&b.end_section_name, at.section_name) {
-            self.span_rect(rect, at.section_name, &b.end_section_name, obj.bounds.top.0)
+        let rect = if self.spans_sections(b.shape.end_section_index, at.section_name) {
+            self.span_rect(
+                rect,
+                at.section_name,
+                b.shape.end_section_index,
+                obj.bounds.top.0,
+            )
         } else {
             extend_section_box(rect, &obj.bounds, at.band_height, at.section_design_height)
         };
@@ -377,14 +420,18 @@ impl Formatter<'_> {
         // swatch's `BackgroundColor = Color({r},{g},{b})`), then the static colors.
         let conds = &obj.border.condition_formulas;
         let fill = crate::resolve::cond_color(conds, cond::BACK_COLOR, ctx)
-            .or(obj.border.background_color)
-            .or(b.fill_color);
-        let border_color =
-            crate::resolve::cond_color(conds, cond::FORE_COLOR, ctx).unwrap_or(b.shape.line_color);
-        self.cur.push(DrawOp::Rect(RectOp {
+            .or(obj.border.background_color);
+        let border_color = crate::resolve::cond_color(conds, cond::FORE_COLOR, ctx)
+            .or(obj.border.border_color)
+            .unwrap_or_default();
+        self.push_op(DrawOp::Rect(RectOp {
             bounds: rect,
             fill: fill.map(Into::into),
-            stroke: stroke_of(b.shape.line_style, border_color, b.shape.line_thickness),
+            stroke: stroke_of(
+                border_line_style(&obj.border).unwrap_or(RptLineStyle::NoLine),
+                border_color,
+                b.shape.line_thickness,
+            ),
             corner_radius: Twips(b.corner_ellipse_width.0.max(b.corner_ellipse_height.0)),
             source: at.src(obj, ObjectKind::Box),
         }));
@@ -396,18 +443,19 @@ impl Formatter<'_> {
     }
 
     /// Draw a line shape: its endpoints from the object rect (extended to its end section for a
-    /// spanning line), stroked with the style/colour from the border record (falling back to the
-    /// shape's own fields).
+    /// spanning line), stroked with the style/color from the border record.
     fn emit_line(&mut self, obj: &ReportObject, l: &LineShape, at: &Placement) {
         let rect = self.page_rect(&obj.bounds, at.origin_y);
         // A horizontal line uses the box top; a vertical line its left. Use the object rect.
         let (mut from, mut to) = line_endpoints(rect);
         // A line that names a later end section spans down to it (a spanning line is vertical):
         // extend its lower endpoint to that section's bottom in the design section layout.
-        if spans_sections(&l.end_section_name, at.section_name) {
-            if let Some(h) =
-                self.design_span_height(at.section_name, &l.end_section_name, obj.bounds.top.0)
-            {
+        if self.spans_sections(l.shape.end_section_index, at.section_name) {
+            if let Some(h) = self.design_span_height(
+                at.section_name,
+                l.shape.end_section_index,
+                obj.bounds.top.0,
+            ) {
                 let bottom = rect.top.0 + h;
                 if to.y.0 >= from.y.0 {
                     to.y = Twips(to.y.0.max(bottom));
@@ -416,13 +464,12 @@ impl Formatter<'_> {
                 }
             }
         }
-        // A line's stroke style and colour live in its border record (the `0xec` leaf), while
-        // the shape carries only the thickness. Prefer the border's style/colour; fall back to
-        // the shape's own fields for a line that does carry them there.
-        let style = border_line_style(&obj.border).unwrap_or(l.shape.line_style);
-        let color = obj.border.border_color.unwrap_or(l.shape.line_color);
+        // A line's stroke style and color live in its border record (the `0xec` leaf); the shape
+        // carries only the thickness.
+        let style = border_line_style(&obj.border).unwrap_or(RptLineStyle::NoLine);
+        let color = obj.border.border_color.unwrap_or_default();
         if let Some(stroke) = stroke_of(style, color, l.shape.line_thickness) {
-            self.cur.push(DrawOp::Line(LineOp {
+            self.push_op(DrawOp::Line(LineOp {
                 from,
                 to,
                 stroke,
@@ -450,12 +497,13 @@ impl Formatter<'_> {
                     },
                 );
             }
-            // The raster is drawn at its authored scaled size (`original × scaling`), then
-            // fitted into that box preserving its pixel aspect ratio (Crystal letterboxes,
-            // it does not distort). Edge cropping (`crop_*`) is latent
-            // (all-zero) and has no Page-IR representation, so it is not yet applied.
-            self.cur.push(DrawOp::Image(ImageOp {
-                bounds: scaled_picture_rect(p, rect),
+            // The raster is drawn into the object box — the engine derives a picture's scale
+            // factors from that box against the image's natural extent, so the box *is* the
+            // authored scaled size — then fitted preserving its pixel aspect ratio (Crystal
+            // letterboxes, it does not distort). Edge cropping (`crop_*`) is latent (all-zero)
+            // and has no Page-IR representation, so it is not applied.
+            self.push_op(DrawOp::Image(ImageOp {
+                bounds: rect,
                 image_id: obj.name.clone(),
                 fit: ImageFit::Contain,
                 source: at.src(obj, ObjectKind::Image),
@@ -469,7 +517,7 @@ impl Formatter<'_> {
                         self.assets.borrow_mut().insert(id, asset);
                     }
                     for op in interp.ops {
-                        self.cur.push(op);
+                        self.push_op(op);
                     }
                     if interp.has_emf_plus {
                         push_diag(
@@ -512,7 +560,7 @@ impl Formatter<'_> {
                         )
                         .with_source(&obj.name),
                     );
-                    self.cur.push(DrawOp::Image(ImageOp {
+                    self.push_op(DrawOp::Image(ImageOp {
                         bounds: rect,
                         image_id: obj.name.clone(),
                         fit: ImageFit::Fill,
@@ -521,9 +569,9 @@ impl Formatter<'_> {
                 }
             }
         } else {
-            // WMF / OLE-embedded / other metafile presentations are not yet interpreted
-            // (separate follow-ups); draw the placeholder image op.
-            self.cur.push(DrawOp::Image(ImageOp {
+            // WMF / OLE-embedded / other metafile presentations are not interpreted; draw the
+            // placeholder image op.
+            self.push_op(DrawOp::Image(ImageOp {
                 bounds: rect,
                 image_id: obj.name.clone(),
                 fit: ImageFit::Fill,
@@ -560,19 +608,21 @@ impl Formatter<'_> {
                         bytes,
                     },
                 );
-                self.cur.push(DrawOp::Image(ImageOp {
+                self.push_op(DrawOp::Image(ImageOp {
                     bounds: rect,
                     image_id,
                     fit: ImageFit::Contain,
                     source: at.src(obj, ObjectKind::Image),
                 }));
             }
-            None => self.cur.push(DrawOp::Image(ImageOp {
-                bounds: rect,
-                image_id: obj.name.clone(),
-                fit: ImageFit::Fill,
-                source: at.src(obj, ObjectKind::Image),
-            })),
+            None => {
+                self.push_op(DrawOp::Image(ImageOp {
+                    bounds: rect,
+                    image_id: obj.name.clone(),
+                    fit: ImageFit::Fill,
+                    source: at.src(obj, ObjectKind::Image),
+                }));
+            }
         }
     }
 
@@ -634,8 +684,8 @@ impl Formatter<'_> {
     /// Render a subreport (a full nested [`rpt_model::Report`]) into the placeholder object's box.
     ///
     /// An **on-demand** subreport ([`SubreportObject::on_demand`]) is not executed: the engine draws a
-    /// click-to-expand placeholder that only runs the subreport on expansion (which a static
-    /// HTML/PDF export never triggers), so we emit just its caption (the subreport name) and return.
+    /// click-to-expand placeholder that only runs the subreport on expansion (which a static export
+    /// never triggers), so we emit just its caption (the subreport name) and return.
     ///
     /// An **inline** subreport is normally formatted ahead of pagination and passed in via `cached`
     /// (see [`Self::run_band_subreports`]); its box-local ops are translated so the subreport's
@@ -663,14 +713,14 @@ impl Formatter<'_> {
         // never routes it through here (see [`Formatter::emit_band`]), so a single chunk is expected.
         if let Some(render) = cached {
             if let Some(first) = render.chunks.first() {
-                self.place_subreport_ops(&first.ops, rect, None);
+                self.place_subreport_ops(first, rect, None);
             }
             return;
         }
         // Cache miss (fixed / multi-column bands, not grown): format once here and clip to the box.
         if let Some(render) = self.format_subreport(sr_obj, obj.bounds.height.0, false) {
             if let Some(first) = render.chunks.first() {
-                self.place_subreport_ops(&first.ops, rect, Some(rect.height.0));
+                self.place_subreport_ops(first, rect, Some(rect.height.0));
             }
         }
     }
@@ -679,11 +729,12 @@ impl Formatter<'_> {
     /// each by the box top-left and lift its 0-based instance ids into the parent's id space so they
     /// don't collide. `clip_below`, when set, drops ops whose top lies at/below that box-local height
     /// (the fallback clipped path); `None` emits every op (the grown, cached path).
-    fn place_subreport_ops(&mut self, ops: &[DrawOp], rect: Rect, clip_below: Option<i32>) {
+    fn place_subreport_ops(&mut self, chunk: &SubreportChunk, rect: Rect, clip_below: Option<i32>) {
         let (dx, dy) = (rect.left.0, rect.top.0);
         let id_offset = self.next_instance_id;
+        let placement = self.take_subreport_placement();
         let mut max_instance: Option<u32> = None;
-        for op in ops {
+        for (i, op) in chunk.ops.iter().enumerate() {
             if let Some(limit) = clip_below {
                 if op.bounds().top.0 >= limit {
                     continue;
@@ -693,12 +744,44 @@ impl Formatter<'_> {
             if let Some(inst) = moved.source().and_then(|s| s.instance) {
                 max_instance = Some(max_instance.map_or(inst, |m| m.max(inst)));
             }
-            self.cur.push(moved);
+            self.merge_currency_fixup(chunk, i, placement);
+            self.push_op(moved);
         }
         // Advance past the merged subreport ids so the parent's next placement id is unique.
         if let Some(m) = max_instance {
             self.next_instance_id = m + 1;
         }
+    }
+
+    /// Re-anchor the chunk's currency fixup for child op `i`, if it has one, to the parent page and
+    /// op index the op is about to land on. Called immediately before the matching `push_op`, so the
+    /// recorded index is the one that op takes; an op the caller skipped never gets here, which is how
+    /// a clipped or sliced-away value drops its fixup.
+    ///
+    /// The key is qualified with `placement`, so each subreport instance is its own object: the grant
+    /// restarts for every instance, and two instances of one subreport definition on a single host
+    /// page each keep the symbol on their own first value. Qualifying at merge time also composes
+    /// through nesting — an inner subreport's key is already qualified by its placement inside the
+    /// child, and the outer placement id distinguishes the child's own repetitions.
+    fn merge_currency_fixup(&mut self, chunk: &SubreportChunk, i: usize, placement: u32) {
+        let Some((_, fx)) = chunk.currency.iter().find(|(idx, _)| *idx == i) else {
+            return;
+        };
+        self.currency_fixups.push(crate::CurrencyFixup {
+            page_index: self.pages.len(),
+            op_index: self.cur.ops.len(),
+            object: format!("{placement}/{}", fx.object),
+            ..fx.clone()
+        });
+    }
+
+    /// Take the next subreport-placement id (see [`Formatter::next_subreport_placement`]). One per
+    /// merged placement, whether the placement is atomic or flowed across pages: a subreport that
+    /// spans several host pages is still one instance.
+    fn take_subreport_placement(&mut self) -> u32 {
+        let id = self.next_subreport_placement;
+        self.next_subreport_placement += 1;
+        id
     }
 
     /// Flow a tall subreport's cached, box-local chunks across parent pages, splitting each chunk at
@@ -710,6 +793,7 @@ impl Formatter<'_> {
     pub(crate) fn place_subreport_flowing(&mut self, chunks: &[SubreportChunk], rect: Rect) {
         let dx = rect.left.0;
         let id_offset = self.next_instance_id;
+        let placement = self.take_subreport_placement();
         let mut max_instance: Option<u32> = None;
         for (ci, chunk) in chunks.iter().enumerate() {
             if ci > 0 {
@@ -744,7 +828,7 @@ impl Formatter<'_> {
                     .max()
                     .unwrap_or(limit);
                 let dy = parent_top - y_lo;
-                for op in &chunk.ops {
+                for (i, op) in chunk.ops.iter().enumerate() {
                     let top = op.bounds().top.0;
                     if top < y_lo || top >= y_break {
                         continue;
@@ -753,7 +837,8 @@ impl Formatter<'_> {
                     if let Some(inst) = moved.source().and_then(|s| s.instance) {
                         max_instance = Some(max_instance.map_or(inst, |m| m.max(inst)));
                     }
-                    self.cur.push(moved);
+                    self.merge_currency_fixup(chunk, i, placement);
+                    self.push_op(moved);
                 }
                 let slice_start = y_lo;
                 y_lo = y_break;
@@ -849,10 +934,13 @@ impl Formatter<'_> {
             self.scope_data,
             self.locale,
         );
+        // A subreport's pages are its own flow chunks, not the parent's physical pages, so the
+        // page-scoped currency pass must not run on them.
+        sub_fmt.nested = true;
         if flow {
             sub_fmt.set_flow_mode();
         }
-        let mut sub_doc = sub_fmt.run();
+        let (mut sub_doc, sub_currency) = sub_fmt.run();
         // Fold the subreport's data-pipeline diagnostics in ahead of its layout ones, so both get the
         // subreport-name tagging below and a selection failure is read before its consequences.
         let mut sub_diags = crate::diagnostics::from_evals(&sub_sink.into_diagnostics());
@@ -867,6 +955,10 @@ impl Formatter<'_> {
         }
         // Lift the subreport's image assets into the parent document (its pictures render in the box).
         self.assets.borrow_mut().extend(sub_doc.assets);
+        // Lift its section dictionary too: the merged ops keep the child's section names, so the
+        // parent document must be able to classify them. Names are not namespaced at merge, so a name
+        // the two reports disagree about is dropped rather than guessed (see `SectionMap`).
+        self.sections.borrow_mut().merge(&sub_doc.sections);
 
         // Map the subreport's printable origin (its margins) to box-local `0,0`. Flow mode paginates
         // only on the subreport's own forced `NewPage` breaks (the body is unbounded), so it yields
@@ -882,7 +974,8 @@ impl Formatter<'_> {
             .pages
             .iter()
             .take(take)
-            .map(|page| {
+            .enumerate()
+            .map(|(pi, page)| {
                 let ops: Vec<DrawOp> = page.ops.iter().map(|op| op.translate(-mx, -my)).collect();
                 // Height = the deepest op bottom below the box top; a chunk shorter than the box keeps
                 // the box height so the band never shrinks.
@@ -892,7 +985,24 @@ impl Formatter<'_> {
                     .max()
                     .unwrap_or(0)
                     .max(box_height);
-                SubreportChunk { ops, height }
+                // The chunk's ops are index-for-index with the child page's, so a child fixup's own
+                // op index carries over. The object key is namespaced with the subreport's name: two
+                // reports may each hold a field of the same name, and they are separate objects. The
+                // placement that merges the chunk qualifies the key further, per instance.
+                let currency = sub_currency
+                    .iter()
+                    .filter(|fx| fx.page_index == pi)
+                    .map(|fx| {
+                        let mut fx = fx.clone();
+                        fx.object = format!("{}/{}", sr_obj.subreport_name, fx.object);
+                        (fx.op_index, fx)
+                    })
+                    .collect();
+                SubreportChunk {
+                    ops,
+                    height,
+                    currency,
+                }
             })
             .collect();
         Some(SubreportRender { chunks })
@@ -930,7 +1040,7 @@ impl Formatter<'_> {
     }
 
     /// Emit an on-demand subreport's placeholder caption (its name) in the placeholder box. The engine
-    /// renders an on-demand subreport as a click-to-expand link that a static HTML/PDF export shows as
+    /// renders an on-demand subreport as a click-to-expand link that a static export shows as
     /// its caption, so we emit just that text — the subreport is never executed (no query, no dataset,
     /// no Shared-variable side effects), matching the engine.
     fn emit_subreport_caption(
@@ -945,7 +1055,7 @@ impl Formatter<'_> {
         let ascent = Twips(self.text_layout.ascent_twips(&font) as i32);
         let line_height = Twips(self.text_layout.line_height_twips(&font) as i32);
         let advance = Twips(self.text_layout.width_twips(&sr_obj.subreport_name, &font) as i32);
-        self.cur.push(DrawOp::Text(TextRun {
+        self.push_op(DrawOp::Text(TextRun {
             bounds: rect,
             text: sr_obj.subreport_name.clone(),
             font,
@@ -957,6 +1067,7 @@ impl Formatter<'_> {
                 ascent,
                 line_height,
             }),
+            character_spacing: Twips(0),
             source: Some(
                 ObjectRef::new(section_name, ObjectKind::Subreport)
                     .named(&obj.name)
@@ -1020,7 +1131,7 @@ impl Formatter<'_> {
         obj: &ReportObject,
         kind: ObjectKind,
     ) {
-        self.cur.push(DrawOp::Rect(RectOp {
+        self.push_op(DrawOp::Rect(RectOp {
             bounds: rect,
             fill: None,
             stroke: Some(Stroke {
@@ -1046,7 +1157,7 @@ impl Formatter<'_> {
         const T: i32 = 60; // bar thickness (~4px)
         const O: i32 = 30; // offset (~2px)
         let mut bar = |left: i32, top: i32, width: i32, height: i32| {
-            self.cur.push(fill_rect(
+            self.push_op(fill_rect(
                 Rect {
                     left: Twips(left),
                     top: Twips(top),
@@ -1067,7 +1178,7 @@ impl Formatter<'_> {
     }
 
     /// Draw a text/field object's background fill, emitted *before* its text so it sits behind the
-    /// glyphs. No-op when the object has no background colour (the transparent default).
+    /// glyphs. No-op when the object has no background color (the transparent default).
     fn push_object_fill(
         &mut self,
         obj: &ReportObject,
@@ -1078,7 +1189,7 @@ impl Formatter<'_> {
         let Some(fill) = obj.border.background_color else {
             return;
         };
-        self.cur.push(DrawOp::Rect(RectOp {
+        self.push_op(DrawOp::Rect(RectOp {
             bounds: rect,
             fill: Some(fill.into()),
             stroke: None,
@@ -1102,7 +1213,7 @@ impl Formatter<'_> {
             return;
         }
         let color = b.border_color.unwrap_or(DEFAULT_BORDER);
-        self.cur.push(DrawOp::Rect(RectOp {
+        self.push_op(DrawOp::Rect(RectOp {
             bounds: rect,
             fill: None,
             stroke: Some(hairline_stroke(color)),
@@ -1124,23 +1235,38 @@ impl Formatter<'_> {
         }
     }
 
-    /// The height of a shape that spans from `start` section (its top `box_top` twips below the
-    /// section top) down to the bottom of `end` section, summed from the design section layout (the
-    /// same canonical section order the decoder resolves `end_section_name` against). `None` when
-    /// either section is not found or the end lies above the start. Growth of the intervening bands is
-    /// not tracked (the span uses design heights); the static layout is reproduced faithfully.
-    fn design_span_height(&self, start: &str, end: &str, box_top: i32) -> Option<i32> {
-        let flat: Vec<(&str, i32)> = self
-            .report
+    /// The report's sections in layout order, as `(name, design height)` — the same order a drawing
+    /// shape's stored [`end_section_index`](rpt_model::DrawingShape::end_section_index) counts.
+    fn flat_sections(&self) -> Vec<(&str, i32)> {
+        self.report
             .report_definition
             .areas
             .iter()
             .flat_map(|a| &a.sections)
             .map(|s| (s.name.as_str(), s.height.0))
-            .collect();
+            .collect()
+    }
+
+    /// Whether a drawing shape spans past the section it is placed in: its stored end-section index
+    /// names a *later* section. A shape ending in its own section — or one whose far end lies in an
+    /// *earlier* section, i.e. a line drawn upward — is drawn within its band.
+    fn spans_sections(&self, end_section_index: u16, section_name: &str) -> bool {
+        let flat = self.flat_sections();
+        flat.iter()
+            .position(|(n, _)| *n == section_name)
+            .is_some_and(|s| usize::from(end_section_index) > s)
+    }
+
+    /// The height of a shape that spans from `start` section (its top `box_top` twips below the
+    /// section top) down to the bottom of the section at `end` (its stored end-section index).
+    /// `None` when the start section is not found, the end index is out of range, or the end lies
+    /// above the start. Growth of the intervening bands is not tracked (the span uses design
+    /// heights); the static layout is reproduced faithfully.
+    fn design_span_height(&self, start: &str, end: u16, box_top: i32) -> Option<i32> {
+        let flat = self.flat_sections();
         let s = flat.iter().position(|(n, _)| *n == start)?;
-        let e = flat.iter().position(|(n, _)| *n == end)?;
-        if e < s {
+        let e = usize::from(end);
+        if e < s || e >= flat.len() {
             return None;
         }
         // From the box top to the bottom of the start section, then every full section down to and
@@ -1154,7 +1280,7 @@ impl Formatter<'_> {
 
     /// Extend a spanning box's rect to reach its end section's bottom (design layout). The box never
     /// shrinks below its own decoded height; a span that cannot be resolved leaves the rect unchanged.
-    fn span_rect(&self, rect: Rect, start: &str, end: &str, box_top: i32) -> Rect {
+    fn span_rect(&self, rect: Rect, start: &str, end: u16, box_top: i32) -> Rect {
         match self.design_span_height(start, end, box_top) {
             Some(h) if h > rect.height.0 => Rect {
                 height: Twips(h),
@@ -1162,36 +1288,6 @@ impl Formatter<'_> {
             },
             _ => rect,
         }
-    }
-}
-
-/// Whether a box/line's decoded `end_section_name` names a *different, later* section than the one
-/// it is placed in — the signal that the shape spans across sections. A non-spanning shape carries
-/// its own section name (or an empty name), which this rejects.
-fn spans_sections(end_section_name: &str, section_name: &str) -> bool {
-    !end_section_name.is_empty() && end_section_name != section_name
-}
-
-/// The rectangle a picture's raster is drawn into: its authored scaled size (`original × scaling`)
-/// placed at the object box's top-left. Falls back to the box when the natural size is unknown
-/// (`original_* == 0`, e.g. a picture with no OLE embedding) or the scale is not finite/positive, in
-/// which case the raster fills the box. Normally the box already equals `original × scaling`.
-fn scaled_picture_rect(p: &PictureObject, box_rect: Rect) -> Rect {
-    let (ow, oh) = (p.original_width.0, p.original_height.0);
-    if ow <= 0
-        || oh <= 0
-        || !p.x_scaling.is_finite()
-        || !p.y_scaling.is_finite()
-        || p.x_scaling <= 0.0
-        || p.y_scaling <= 0.0
-    {
-        return box_rect;
-    }
-    Rect {
-        left: box_rect.left,
-        top: box_rect.top,
-        width: Twips((ow as f64 * p.x_scaling).round() as i32),
-        height: Twips((oh as f64 * p.y_scaling).round() as i32),
     }
 }
 
@@ -1230,10 +1326,22 @@ fn line_endpoints(rect: Rect) -> (rpt_pages::Point, rpt_pages::Point) {
 /// Whether a field's value depends on the report's final page count — the `TotalPageCount` and
 /// `PageNofM` special fields, whose total is a forward reference resolved after pagination.
 fn total_page_dependent(f: &FieldObject) -> bool {
-    if f.ref_kind != FieldRefKind::Special {
-        return false;
-    }
-    let key = f.data_source.to_lowercase().replace(['{', '}', ' '], "");
+    f.ref_kind == FieldRefKind::Special && is_page_total(&f.data_source)
+}
+
+/// The placeholder text of every embedded run of `t` whose value depends on the final page count,
+/// in document order — a text object can carry a `Page N of M` caption as one run among literals.
+fn total_page_dependent_runs(t: &rpt_model::TextObject) -> impl Iterator<Item = &str> {
+    t.paragraphs
+        .iter()
+        .flat_map(|p| &p.runs)
+        .filter(|r| r.field_ref.is_some() && is_page_total(&r.text))
+        .map(|r| r.text.as_str())
+}
+
+/// Whether a special field's reference names one of the page-total specials.
+fn is_page_total(reference: &str) -> bool {
+    let key = reference.to_lowercase().replace(['{', '}', ' '], "");
     matches!(key.as_str(), "pagenofm" | "totalpagecount")
 }
 
@@ -1262,7 +1370,7 @@ fn extend_section_box(
 }
 
 /// The line style a line/box border defines, as the first non-`NoLine` edge (top, then bottom, left,
-/// right). `None` when every edge is `NoLine` — the caller then falls back to the shape's own style.
+/// right). `None` when every edge is `NoLine` — the shape then draws no stroke.
 fn border_line_style(b: &rpt_model::Border) -> Option<RptLineStyle> {
     [b.top, b.bottom, b.left, b.right]
         .into_iter()

@@ -12,10 +12,10 @@ categories.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-# The decoder + its re-exported model (`rpt::model`); `serde` enables the model's derives the dump
+# The decoder + its re-exported model (`rpt_reader::model`); `serde` enables the model's derives the dump
 # serializes through. The dump is a pure projection of the model, so nothing else is needed — no
 # formula engine, no locale/format layer.
-rpt = { workspace = true, features = ["serde"] }
+rpt-reader = { workspace = true, features = ["serde"] }
 serde.workspace = true
 serde_json.workspace = true
 thiserror = { workspace = true }

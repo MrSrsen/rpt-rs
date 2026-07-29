@@ -273,7 +273,6 @@ fn group_and_layout_nesting() {
                 line_thickness: Twips(15),
                 ..Default::default()
             },
-            ..Default::default()
         }),
         ..Default::default()
     });
@@ -494,18 +493,22 @@ fn color_and_twips_rendering() {
             top: Twips(200),
             ..Default::default()
         },
+        // A box's fill is its border's background colour.
+        border: rpt_model::Border {
+            background_color: Some(Color {
+                a: 255,
+                r: 0x12,
+                g: 0x34,
+                b: 0x56,
+            }),
+            ..Default::default()
+        },
         kind: ReportObjectKind::Box(BoxShape {
             shape: DrawingShape {
                 right: Twips(900),
                 bottom: Twips(700),
                 ..Default::default()
             },
-            fill_color: Some(Color {
-                a: 255,
-                r: 0x12,
-                g: 0x34,
-                b: 0x56,
-            }),
             ..Default::default()
         }),
         ..Default::default()
@@ -517,10 +520,14 @@ fn color_and_twips_rendering() {
 
     let doc = reparse(&report);
     let boxn = find(report_node(&doc), "box").expect("a box node");
-    // Raw twips as bare integers; opaque colour as a #rrggbb string.
+    // Raw twips as bare integers; opaque color as a #rrggbb string.
     assert_eq!(boxn.get("x"), Some(&KdlValue::Integer(100)));
     assert_eq!(boxn.get("y2"), Some(&KdlValue::Integer(700)));
-    assert_eq!(boxn.get("fill"), Some(&KdlValue::String("#123456".into())));
+    let border = find(boxn, "border").expect("a border node");
+    assert_eq!(
+        border.get("background"),
+        Some(&KdlValue::String("#123456".into()))
+    );
 }
 
 #[test]
@@ -529,15 +536,16 @@ fn non_opaque_color_is_packed_argb_integer() {
     let mut section = Section::default();
     section.objects.push(ReportObject {
         name: "B".into(),
-        kind: ReportObjectKind::Box(BoxShape {
-            fill_color: Some(Color {
+        border: rpt_model::Border {
+            background_color: Some(Color {
                 a: 0x80,
                 r: 0x10,
                 g: 0x20,
                 b: 0x30,
             }),
             ..Default::default()
-        }),
+        },
+        kind: ReportObjectKind::Box(BoxShape::default()),
         ..Default::default()
     });
     report.report_definition.areas.push(Area {
@@ -547,10 +555,11 @@ fn non_opaque_color_is_packed_argb_integer() {
 
     let doc = reparse(&report);
     let boxn = find(report_node(&doc), "box").expect("a box node");
+    let border = find(boxn, "border").expect("a border node");
     assert_eq!(
-        boxn.get("fill"),
+        border.get("background"),
         Some(&KdlValue::Integer(0x8010_2030)),
-        "non-opaque colour packs to 0xAARRGGBB"
+        "non-opaque color packs to 0xAARRGGBB"
     );
 }
 

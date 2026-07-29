@@ -25,8 +25,8 @@
 use crate::context::{DataContext, FormulaRegistry, Parameters, SharedState};
 use crate::eval_time::{classify_eval_time, EvalTime};
 use crate::source::Row;
-use crystal_formula::eval::{EvalContext, Value};
-use crystal_formula::{references, RefKind};
+use rpt_formula::eval::{EvalContext, Value};
+use rpt_formula::{references, RefKind};
 use rpt_model::{DataDefinition, FieldKindData};
 use std::collections::HashMap;
 

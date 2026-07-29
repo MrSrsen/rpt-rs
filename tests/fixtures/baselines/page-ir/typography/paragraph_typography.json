@@ -1,3 +1,23 @@
+// document
+{
+  "sections": {
+    "DetailSection1": {
+      "band": "Detail"
+    },
+    "PageFooterSection1": {
+      "band": "PageFooter"
+    },
+    "PageHeaderSection1": {
+      "band": "PageHeader"
+    },
+    "ReportFooterSection1": {
+      "band": "ReportFooter"
+    },
+    "ReportHeaderSection1": {
+      "band": "ReportHeader"
+    }
+  }
+}
 // page 1
 {
   "number": 1,
@@ -10,31 +30,6 @@
     "y": 720
   },
   "ops": [
-    {
-      "op": "Rect",
-      "bounds": {
-        "left": 0,
-        "top": 0,
-        "width": 12240,
-        "height": 39496
-      },
-      "fill": {
-        "Solid": {
-          "a": 255,
-          "r": 255,
-          "g": 255,
-          "b": 255
-        }
-      },
-      "stroke": null,
-      "corner_radius": 0,
-      "source": {
-        "section": "ReportHeaderSection1",
-        "object_name": null,
-        "kind": "Section",
-        "instance": null
-      }
-    },
     {
       "op": "Rect",
       "bounds": {
@@ -2234,10 +2229,11 @@
       "align": "Left",
       "rotation": 0.0,
       "metrics": {
-        "advance": 4181,
+        "advance": 4561,
         "ascent": 217,
         "line_height": 276
       },
+      "character_spacing": 10,
       "source": {
         "section": "ReportHeaderSection1",
         "object_name": "Txt7",
@@ -2253,7 +2249,7 @@
         "width": 10800,
         "height": 276
       },
-      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore",
+      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut",
       "font": {
         "family": "Arial",
         "size_pt": 12.0,
@@ -2271,10 +2267,11 @@
       "align": "Left",
       "rotation": 0.0,
       "metrics": {
-        "advance": 10538,
+        "advance": 10724,
         "ascent": 217,
         "line_height": 276
       },
+      "character_spacing": 10,
       "source": {
         "section": "ReportHeaderSection1",
         "object_name": "Txt7",
@@ -2290,7 +2287,7 @@
         "width": 10800,
         "height": 276
       },
-      "text": "et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut",
+      "text": "labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco",
       "font": {
         "family": "Arial",
         "size_pt": 12.0,
@@ -2308,10 +2305,11 @@
       "align": "Left",
       "rotation": 0.0,
       "metrics": {
-        "advance": 10378,
+        "advance": 10534,
         "ascent": 217,
         "line_height": 276
       },
+      "character_spacing": 10,
       "source": {
         "section": "ReportHeaderSection1",
         "object_name": "Txt7",
@@ -2327,7 +2325,7 @@
         "width": 10800,
         "height": 276
       },
-      "text": "aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum",
+      "text": "laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in",
       "font": {
         "family": "Arial",
         "size_pt": 12.0,
@@ -2345,10 +2343,11 @@
       "align": "Left",
       "rotation": 0.0,
       "metrics": {
-        "advance": 10725,
+        "advance": 10305,
         "ascent": 217,
         "line_height": 276
       },
+      "character_spacing": 10,
       "source": {
         "section": "ReportHeaderSection1",
         "object_name": "Txt7",
@@ -2364,7 +2363,7 @@
         "width": 10800,
         "height": 276
       },
-      "text": "dolore eu fugiat nulla pariatur.",
+      "text": "voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
       "font": {
         "family": "Arial",
         "size_pt": 12.0,
@@ -2382,10 +2381,11 @@
       "align": "Left",
       "rotation": 0.0,
       "metrics": {
-        "advance": 3162,
+        "advance": 6550,
         "ascent": 217,
         "line_height": 276
       },
+      "character_spacing": 10,
       "source": {
         "section": "ReportHeaderSection1",
         "object_name": "Txt7",
@@ -2401,7 +2401,7 @@
         "width": 10800,
         "height": 276
       },
-      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore",
+      "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut",
       "font": {
         "family": "Arial",
         "size_pt": 12.0,
@@ -2419,10 +2419,11 @@
       "align": "Left",
       "rotation": 0.0,
       "metrics": {
-        "advance": 10538,
+        "advance": 10724,
         "ascent": 217,
         "line_height": 276
       },
+      "character_spacing": 10,
       "source": {
         "section": "ReportHeaderSection1",
         "object_name": "Txt7",
@@ -2438,7 +2439,7 @@
         "width": 10800,
         "height": 276
       },
-      "text": "et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut",
+      "text": "labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco",
       "font": {
         "family": "Arial",
         "size_pt": 12.0,
@@ -2456,10 +2457,11 @@
       "align": "Left",
       "rotation": 0.0,
       "metrics": {
-        "advance": 10378,
+        "advance": 10534,
         "ascent": 217,
         "line_height": 276
       },
+      "character_spacing": 10,
       "source": {
         "section": "ReportHeaderSection1",
         "object_name": "Txt7",
@@ -2475,7 +2477,7 @@
         "width": 10800,
         "height": 276
       },
-      "text": "aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum",
+      "text": "laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in",
       "font": {
         "family": "Arial",
         "size_pt": 12.0,
@@ -2493,10 +2495,11 @@
       "align": "Left",
       "rotation": 0.0,
       "metrics": {
-        "advance": 10725,
+        "advance": 10305,
         "ascent": 217,
         "line_height": 276
       },
+      "character_spacing": 10,
       "source": {
         "section": "ReportHeaderSection1",
         "object_name": "Txt7",
@@ -2512,7 +2515,7 @@
         "width": 10800,
         "height": 276
       },
-      "text": "dolore eu fugiat nulla pariatur.",
+      "text": "voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
       "font": {
         "family": "Arial",
         "size_pt": 12.0,
@@ -2530,10 +2533,11 @@
       "align": "Left",
       "rotation": 0.0,
       "metrics": {
-        "advance": 3162,
+        "advance": 6550,
         "ascent": 217,
         "line_height": 276
       },
+      "character_spacing": 10,
       "source": {
         "section": "ReportHeaderSection1",
         "object_name": "Txt7",
@@ -3293,56 +3297,6 @@
         "kind": "Text",
         "instance": 8
       }
-    },
-    {
-      "op": "Rect",
-      "bounds": {
-        "left": 0,
-        "top": 39496,
-        "width": 12240,
-        "height": 600
-      },
-      "fill": {
-        "Solid": {
-          "a": 255,
-          "r": 255,
-          "g": 255,
-          "b": 255
-        }
-      },
-      "stroke": null,
-      "corner_radius": 0,
-      "source": {
-        "section": "PageHeaderSection1",
-        "object_name": null,
-        "kind": "Section",
-        "instance": null
-      }
-    },
-    {
-      "op": "Rect",
-      "bounds": {
-        "left": 0,
-        "top": 39932,
-        "width": 12240,
-        "height": 600
-      },
-      "fill": {
-        "Solid": {
-          "a": 255,
-          "r": 255,
-          "g": 255,
-          "b": 255
-        }
-      },
-      "stroke": null,
-      "corner_radius": 0,
-      "source": {
-        "section": "PageFooterSection1",
-        "object_name": null,
-        "kind": "Section",
-        "instance": null
-      }
     }
   ]
 }
@@ -3357,81 +3311,5 @@
     "x": 720,
     "y": 720
   },
-  "ops": [
-    {
-      "op": "Rect",
-      "bounds": {
-        "left": 0,
-        "top": 0,
-        "width": 12240,
-        "height": 600
-      },
-      "fill": {
-        "Solid": {
-          "a": 255,
-          "r": 255,
-          "g": 255,
-          "b": 255
-        }
-      },
-      "stroke": null,
-      "corner_radius": 0,
-      "source": {
-        "section": "PageHeaderSection1",
-        "object_name": null,
-        "kind": "Section",
-        "instance": null
-      }
-    },
-    {
-      "op": "Rect",
-      "bounds": {
-        "left": 0,
-        "top": 600,
-        "width": 12240,
-        "height": 600
-      },
-      "fill": {
-        "Solid": {
-          "a": 255,
-          "r": 255,
-          "g": 255,
-          "b": 255
-        }
-      },
-      "stroke": null,
-      "corner_radius": 0,
-      "source": {
-        "section": "ReportFooterSection1",
-        "object_name": null,
-        "kind": "Section",
-        "instance": null
-      }
-    },
-    {
-      "op": "Rect",
-      "bounds": {
-        "left": 0,
-        "top": 39932,
-        "width": 12240,
-        "height": 600
-      },
-      "fill": {
-        "Solid": {
-          "a": 255,
-          "r": 255,
-          "g": 255,
-          "b": 255
-        }
-      },
-      "stroke": null,
-      "corner_radius": 0,
-      "source": {
-        "section": "PageFooterSection1",
-        "object_name": null,
-        "kind": "Section",
-        "instance": null
-      }
-    }
-  ]
+  "ops": []
 }

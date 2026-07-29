@@ -81,10 +81,12 @@ pub(crate) enum Command {
         input: String,
         tag: String,
         nth: String,
-        offset: String,
-        hexbytes: String,
+        /// The field to change, by name, or `@<offset>` for the raw byte form.
+        target: String,
+        /// The new value, read at the field's declared wire type.
+        value: String,
         output: String,
-        /// Edit a record type that is not cleared for safe editing.
+        /// Write without the write path's safety checks.
         force: bool,
     },
 }
@@ -315,6 +317,7 @@ pub(crate) fn parse(cmd: &str, args: &[String]) -> Result<Command, ArgsError> {
                     ("--glob", Value),
                     ("--cols", Value),
                     ("--anchor-string", Value),
+                    ("--grid", Flag),
                     ("--whole", Flag),
                     ("--saved", Flag),
                     ("--color", Flag),
@@ -338,6 +341,7 @@ pub(crate) fn parse(cmd: &str, args: &[String]) -> Result<Command, ArgsError> {
                 glob,
                 cols: bag.get("--cols").map(str::to_string),
                 anchor_string: bag.get("--anchor-string").map(str::to_string),
+                grid: bag.has("--grid"),
                 whole: bag.has("--whole"),
                 saved: bag.has("--saved"),
                 json: bag.has("--json"),
@@ -413,12 +417,12 @@ pub(crate) fn parse(cmd: &str, args: &[String]) -> Result<Command, ArgsError> {
             warn_json_ignored(cmd, &bag);
             let force = bag.has("--force");
             match bag.positionals.as_slice() {
-                [input, tag, nth, offset, hexbytes, output] => Ok(Command::Patch {
+                [input, tag, nth, target, value, output] => Ok(Command::Patch {
                     input: input.clone(),
                     tag: tag.clone(),
                     nth: nth.clone(),
-                    offset: offset.clone(),
-                    hexbytes: hexbytes.clone(),
+                    target: target.clone(),
+                    value: value.clone(),
                     output: output.clone(),
                     force,
                 }),
@@ -584,10 +588,16 @@ mod tests {
     fn patch_requires_six_positionals() {
         let cmd = parse(
             "patch",
-            &argv(&["in.rpt", "0x76", "0", "4", "deadbeef", "out.rpt"]),
+            &argv(&["in.rpt", "0x76", "0", "group_indent", "12", "out.rpt"]),
         )
         .expect("valid");
-        assert!(matches!(cmd, Command::Patch { .. }));
+        match cmd {
+            Command::Patch { target, value, .. } => {
+                assert_eq!(target, "group_indent");
+                assert_eq!(value, "12");
+            }
+            other => panic!("wrong variant: {other:?}"),
+        }
         assert!(matches!(
             parse("patch", &argv(&["in.rpt", "0x76"])),
             Err(ArgsError::Malformed)

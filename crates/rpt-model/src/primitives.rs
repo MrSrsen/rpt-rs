@@ -75,7 +75,7 @@ pub struct Conditioned<T> {
     pub formula: Option<Formula>,
 }
 
-/// An ARGB colour.
+/// An ARGB color.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Color {
@@ -90,7 +90,7 @@ pub struct Color {
 }
 
 impl Color {
-    /// Opaque white (the engine's default background colour).
+    /// Opaque white (the engine's default background color).
     pub const WHITE: Color = Color {
         a: 255,
         r: 255,
@@ -98,8 +98,8 @@ impl Color {
         b: 255,
     };
 
-    /// The CSS `#rrggbb` hex string (lowercase, alpha dropped) — the shared colour serialization for
-    /// the HTML and SVG backends.
+    /// The CSS `#rrggbb` hex string (lowercase, alpha dropped) — the shared color serialization for
+    /// the markup render backends.
     pub fn to_hex(&self) -> String {
         format!("#{:02x}{:02x}{:02x}", self.r, self.g, self.b)
     }
@@ -110,7 +110,7 @@ impl Color {
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Formula(pub String);
 
-/// A back-reference to the substrate record a DOM node was raised from, so edits can be
+/// A back-reference to the record a model node was decoded from, so edits can be
 /// lowered surgically.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]

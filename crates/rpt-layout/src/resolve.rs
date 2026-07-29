@@ -7,15 +7,16 @@
 
 use crate::format::{field_format_spec, render_value, render_value_default};
 use crate::{push_diag, DiagSink};
-use crystal_formula::eval::{EvalContext, EvalError, Value};
-use crystal_formula::token::{brace_groups, short_name, split_reference, strip_braces};
-use crystal_formula::{parse, Node, RefKind, Syntax};
 use rpt_data::{
     DataContext, FormulaRegistry, Row, RunningTotals, ScheduledValues, SharedState, Summary,
 };
-use rpt_format_value::Locale;
+use rpt_format_value::{CurrencyFormat, FormatSpec, Locale};
+use rpt_formula::eval::{Date, EvalContext, EvalError, Time, Value};
+use rpt_formula::token::{brace_groups, short_name, split_reference, strip_braces};
+use rpt_formula::{parse, Node, RefKind, Syntax};
 use rpt_model::{
-    field_object_value_type, Color, FieldObject, FieldRefKind, Report, SummaryOperation, TextObject,
+    field_object_value_type, first_brace_ref, Color, FieldObject, FieldRefKind, Report,
+    SummaryOperation, TextObject, TextRun,
 };
 use rpt_pages::{Diagnostic, DiagnosticKind};
 use std::cell::RefCell;
@@ -75,7 +76,7 @@ fn parse_cached_reporting(src: &str, diag: &DiagSink, label: &str) -> Rc<ParsedF
 /// A parsed formula and whatever the parser had to say about it.
 struct ParsedFormula {
     node: Node,
-    diagnostics: Vec<crystal_formula::Diagnostic>,
+    diagnostics: Vec<rpt_formula::Diagnostic>,
 }
 
 /// The group/summary state a resolver needs beyond the current row.
@@ -102,6 +103,14 @@ pub struct ResolveState {
     ///
     /// Shared (`Rc`) so every per-record [`ResolveState`] is a refcount bump, not a deep clone.
     pub grand_summaries: Rc<Vec<Summary>>,
+    /// Each enclosing group's key, outermost first — positionally parallel to
+    /// [`group_summaries`](Self::group_summaries) (both are projections of the same group stack). A
+    /// `GroupName ({condition field})` reference names a *specific* level, which need not be the
+    /// nearest one ([`group_key`](Self::group_key)), so it resolves by finding its condition field's
+    /// position here.
+    ///
+    /// Shared (`Rc`) for the same reason as the other group projections.
+    pub group_keys: Rc<Vec<Value>>,
     /// Print-state specials for the current position (page number, record number, …).
     pub page_number: i64,
     pub total_pages: i64,
@@ -109,16 +118,29 @@ pub struct ResolveState {
 }
 
 /// The in-scope summaries resolve a summary function inside a formula body the same way a placed
-/// summary object resolves — by operation, summarized field, and group scope.
+/// summary object resolves — by operation, summarized field, and group scope, including the
+/// `PercentOf<Op>` family.
 impl rpt_data::SummaryScope for ResolveState {
     fn resolve_summary(&self, op: &str, field: &str, group: Option<&str>) -> Value {
-        resolve_summary_in_scope(Some(op), field, group, self)
+        match percent_of_base_op(op) {
+            Some(base) => percent_of_summary(base, field, group, None, self),
+            None => resolve_summary_in_scope(Some(op), field, group, self),
+        }
+    }
+}
+
+/// `GroupName({cond})` in a formula body resolves to the same key a placed Group Name field prints:
+/// the group is named by its condition field, so it need not be the nearest enclosing one.
+impl rpt_data::GroupNameScope for ResolveState {
+    fn group_name(&self, field: &str) -> Value {
+        key_at_level(level_of_condition(field, self), self)
     }
 }
 
 /// Build a [`DataContext`] for `row` carrying the standard specials from `state`, the report
 /// parameter values (`{?Name}` resolution), the print-order running totals (`{#name}`), the in-scope
-/// summaries (so a summary function in a formula body resolves), and any pre-scheduled formula values.
+/// summaries and groups (so a summary function or `GroupName` in a formula body resolves), and any
+/// pre-scheduled formula values.
 #[allow(clippy::too_many_arguments)]
 pub fn context<'a>(
     row: &'a Row,
@@ -137,6 +159,7 @@ pub fn context<'a>(
         .with_running_totals(running)
         .with_scheduled(before, scheduled_row)
         .with_summaries(state)
+        .with_group_names(state)
         .with_special("recordnumber", Value::Number(state.record_number as f64))
         .with_special("pagenumber", Value::Number(state.page_number as f64))
         .with_special("totalpagecount", Value::Number(state.total_pages as f64))
@@ -147,6 +170,7 @@ pub fn context<'a>(
 /// kinds (`Summary`/`Special`/`GroupName`) still resolve from `state`, while the row-bound kinds
 /// (`DatabaseField`/`Formula`/`RunningTotal`/parameter) yield [`Value::Null`].
 pub fn field_value(
+    report: &Report,
     obj: &FieldObject,
     ctx: Option<&DataContext>,
     state: &ResolveState,
@@ -161,9 +185,9 @@ pub fn field_value(
             ctx.and_then(|c| c.resolve(RefKind::Formula, name))
                 .unwrap_or(Value::Null)
         }
-        FieldRefKind::GroupName => state.group_key.clone().unwrap_or(Value::Null),
+        FieldRefKind::GroupName => group_name_value(&obj.data_source, state),
         FieldRefKind::Summary => summary_value(&obj.data_source, state),
-        FieldRefKind::Special => special_value(&obj.data_source, state),
+        FieldRefKind::Special => special_value(&obj.data_source, report, ctx, state),
         // A running total (`{#name}`) resolves to the print-order value accumulated up to the current
         // record; the layout advances it per record before the band is emitted.
         FieldRefKind::RunningTotal => {
@@ -196,24 +220,100 @@ pub fn field_text(
     loc: &Locale,
     diag: &DiagSink,
 ) -> String {
-    let value = field_value(obj, ctx, state, diag);
-    let value_type = field_object_value_type(report, obj);
-    let spec = field_format_spec(obj.format.as_ref(), value_type, loc);
-    render_value(&value, &spec, loc)
+    field_text_marked(report, obj, ctx, state, loc, diag).0
 }
 
-/// Render a text object: its full literal content (the `display` string, which keeps every run —
-/// e.g. a two-line `"Numeric\nCode"` label — unlike `text`, which holds only the last run), with any
-/// embedded `{ref}` substituted by its resolved value. Works **without** a row (`ctx = None`): static
-/// labels in page/report headers and footers have no data row, so we must still use `display` there
-/// rather than falling back to the last-run-only `text`.
+/// A placed value whose field shows its currency symbol only once per page: the amount and the
+/// currency spec it was rendered through.
+///
+/// Both are kept so the post-pagination pass can re-render the amount with a blanked symbol without
+/// evaluating the field a second time — a second evaluation would fire a `WhilePrintingRecords`
+/// formula's side effects again.
+#[derive(Debug, Clone)]
+pub(crate) struct CurrencyMark {
+    pub(crate) value: f64,
+    pub(crate) spec: CurrencyFormat,
+}
+
+/// [`field_text`], plus a [`CurrencyMark`] when the field asks for one currency symbol per page and
+/// the value actually rendered through a currency spec.
+pub(crate) fn field_text_marked(
+    report: &Report,
+    obj: &FieldObject,
+    ctx: Option<&DataContext>,
+    state: &ResolveState,
+    loc: &Locale,
+    diag: &DiagSink,
+) -> (String, Option<CurrencyMark>) {
+    // A date group's name is printed at the group's own granularity, which no date format spec can
+    // express — the period-start key still carries the day the engine drops.
+    if obj.ref_kind == FieldRefKind::GroupName {
+        if let Some(text) = group_name_display(&obj.data_source, report, state) {
+            return (text, None);
+        }
+    }
+    let value = field_value(report, obj, ctx, state, diag);
+    let value_type = field_object_value_type(report, obj);
+    let spec = field_format_spec(obj.format.as_ref(), value_type, loc);
+    let text = render_value(&value, &spec, loc);
+    let mark = match (&value, &spec) {
+        // A spec with no symbol to blank is not marked, so the pass never has to consider one.
+        (Value::Number(n) | Value::Currency(n), FormatSpec::Currency(cf))
+            if !cf.symbol.is_empty()
+                && crate::format::one_currency_symbol_per_page(obj.format.as_ref(), value_type) =>
+        {
+            Some(CurrencyMark {
+                value: *n,
+                spec: cf.clone(),
+            })
+        }
+        _ => None,
+    };
+    (text, mark)
+}
+
+/// The display string of a special field named by its bare placeholder (`PageNofM`, `PrintDate`, …),
+/// formatted with the locale's system defaults — the rendering an *embedded* special run produces.
+/// Used to patch a page-total run once the final page count is known.
+pub(crate) fn special_display(
+    placeholder: &str,
+    report: &Report,
+    state: &ResolveState,
+    loc: &Locale,
+) -> String {
+    render_value_default(&special_value(placeholder, report, None, state), loc)
+}
+
+/// Render a text object: its full literal content with every embedded field reference replaced by
+/// its resolved value.
+///
+/// The reference is carried by the **run**, not by the text: a run with a
+/// [`field_ref`](rpt_model::TextRun::field_ref) holds the engine's *placeholder* rendering of the
+/// reference (`{alias.field}` for a database field, but the bare `PrintDate` for a special and
+/// `GroupName ({cond})` for a group name), which is what must be replaced wholesale. Substituting on
+/// the flattened string instead would print a special's own name (it carries no braces) and would
+/// rewrite only the inner argument of a group-name placeholder, leaving its `GroupName (…)` wrapper
+/// on the page.
+///
+/// Works **without** a row (`ctx = None`): static labels in page/report headers and footers have no
+/// data row, so the literal runs must still render (row-bound references then fall to null, exactly
+/// as a placed field object does). An object with no decoded run tree falls back to brace
+/// substitution over the flattened `display` string.
 pub fn text_display(
+    report: &Report,
     obj: &TextObject,
     ctx: Option<&DataContext>,
     state: &ResolveState,
     loc: &Locale,
     diag: &DiagSink,
 ) -> String {
+    if obj
+        .paragraphs
+        .iter()
+        .any(|p| p.runs.iter().any(is_field_run))
+    {
+        return substitute_runs(report, obj, ctx, state, loc, diag);
+    }
     let src = if obj.display.is_empty() {
         &obj.text
     } else {
@@ -227,7 +327,77 @@ pub fn text_display(
     }
 }
 
-/// Stored conditional-format formula names, keyed exactly as `rpt` decodes them from the record
+/// Whether a run is an embedded field reference (rather than literal text).
+fn is_field_run(run: &TextRun) -> bool {
+    run.field_ref.is_some()
+}
+
+/// Rebuild a text object's content from its run tree, replacing each field run with its resolved
+/// display string. Paragraphs join with `\n` on the same rule as
+/// [`rpt_model::TextObject::flattened_text`], so a text object with no field runs reproduces
+/// `display` byte for byte.
+///
+/// The join is decided by each paragraph's **source** text, not by what it resolved to, so the
+/// `\n`-segments stay positionally aligned with `TextObject::paragraphs` (which is how the formatter
+/// picks up each line's indentation and font) however the values render.
+fn substitute_runs(
+    report: &Report,
+    obj: &TextObject,
+    ctx: Option<&DataContext>,
+    state: &ResolveState,
+    loc: &Locale,
+    diag: &DiagSink,
+) -> String {
+    let mut out = String::with_capacity(obj.display.len());
+    let mut any_source = false;
+    for para in &obj.paragraphs {
+        if any_source {
+            out.push('\n');
+        }
+        for run in &para.runs {
+            any_source |= !run.text.is_empty();
+            match &run.field_ref {
+                None => out.push_str(&run.text),
+                Some(_) => out.push_str(&resolve_run(&run.text, report, ctx, state, loc, diag)),
+            }
+        }
+    }
+    out
+}
+
+/// Resolve one embedded-field run to its display string from the run's placeholder text — the same
+/// surface form a placed field object stores as its `data_source`, so the three reference shapes are
+/// told apart exactly as they are there: a `GroupName (…)` prefix, a brace-wrapped
+/// `{alias.field}`/`{@formula}`/`{?param}`/`{#total}` reference, or a bare special-field name.
+fn resolve_run(
+    placeholder: &str,
+    report: &Report,
+    ctx: Option<&DataContext>,
+    state: &ResolveState,
+    loc: &Locale,
+    diag: &DiagSink,
+) -> String {
+    let text = placeholder.trim();
+    if text.starts_with('{') {
+        return match ctx {
+            Some(c) => resolve_embedded(text, c, state, loc, diag),
+            None => String::new(),
+        };
+    }
+    if text.starts_with("GroupName") {
+        return group_name_display(text, report, state)
+            .unwrap_or_else(|| render_value_default(&group_name_value(text, state), loc));
+    }
+    // Any other parenthesized form is a summary (`Sum ({field})`); a bare name is a special field.
+    let value = if text.contains('(') {
+        summary_value(text, state)
+    } else {
+        special_value(text, report, ctx, state)
+    };
+    render_value_default(&value, loc)
+}
+
+/// Stored conditional-format formula names, keyed exactly as `rpt-reader` decodes them from the record
 /// (the reserved `@`-slot names — see `is_modeled_condition` in the reader). A condition list is a
 /// `Vec<(name, body)>`; [`cond_color`]/[`cond_bool`] match on these names, so they must be the
 /// *stored* names, not the SDK display names (`Back_Color`, not `BackgroundColor`).
@@ -269,7 +439,7 @@ pub fn cond_color(
     let ctx = ctx?;
     let body = conditions.iter().find(|(k, _)| k == key).map(|(_, b)| b)?;
     let ast = parse_cached(body);
-    let value = crystal_formula::eval::eval(&ast.node, ctx).ok()?;
+    let value = rpt_formula::eval::eval(&ast.node, ctx).ok()?;
     color_from_colorref(&value)
 }
 
@@ -283,7 +453,7 @@ pub fn cond_bool(
     let ctx = ctx?;
     let body = conditions.iter().find(|(k, _)| k == key).map(|(_, b)| b)?;
     let ast = parse_cached(body);
-    match crystal_formula::eval::eval(&ast.node, ctx).ok()? {
+    match rpt_formula::eval::eval(&ast.node, ctx).ok()? {
         Value::Bool(b) => Some(b),
         _ => None,
     }
@@ -311,7 +481,7 @@ fn eval_ref(expr: &str, ctx: &DataContext, diag: &DiagSink, label: &str) -> Valu
     // `eval_spanned` costs nothing extra and yields the byte range of the failing sub-expression —
     // which is the difference between "formula error: type mismatch" and being able to point at the
     // offending operator.
-    match crystal_formula::eval::eval_spanned(&ast.node, ctx) {
+    match rpt_formula::eval::eval_spanned(&ast.node, ctx) {
         Ok(v) => v,
         Err(e) => {
             record_eval_error(diag, label, &e.error, Some(e.span.start..e.span.end));
@@ -357,7 +527,7 @@ pub(crate) fn eval_field_ref_reported(
     label: &str,
 ) -> Value {
     let ast = parse_cached_reporting(&brace(reference), diag, label);
-    match crystal_formula::eval::eval_spanned(&ast.node, ctx) {
+    match rpt_formula::eval::eval_spanned(&ast.node, ctx) {
         Ok(v) => v,
         Err(e) => {
             record_eval_error(diag, label, &e.error, Some(e.span.start..e.span.end));
@@ -372,7 +542,7 @@ pub(crate) fn eval_field_ref_reported(
 /// scope, and every such site is a place where a failure goes unreported.
 pub(crate) fn eval_field_ref(reference: &str, ctx: &DataContext) -> Value {
     let ast = parse_cached(&brace(reference));
-    crystal_formula::eval::eval(&ast.node, ctx).unwrap_or(Value::Null)
+    rpt_formula::eval::eval(&ast.node, ctx).unwrap_or(Value::Null)
 }
 
 /// Resolve a blob field's bound reference to its runtime value, or `None` when null or empty. A
@@ -405,10 +575,51 @@ fn brace(reference: &str) -> String {
 /// condition field, so we resolve against **that group's** computed summaries (from
 /// [`ResolveState::group_summaries`]) rather than the nearest group's. A 1-argument summary, or a 2nd
 /// argument that matches no enclosing group, falls back to the nearest in-scope summaries.
+///
+/// A `PercentOf<Op>` source is the same summary expressed as a percentage of a wider scope; see
+/// [`percent_of_summary`].
 fn summary_value(data_source: &str, state: &ResolveState) -> Value {
-    let (field_arg, group_arg) = parse_summary_args(data_source);
+    let (field_arg, scopes) = parse_summary_args(data_source);
     let op = summary_op_token(data_source);
-    resolve_summary_in_scope(op, &field_arg, group_arg.as_deref(), state)
+    let scope = |i: usize| scopes.get(i).map(String::as_str);
+    match op.and_then(percent_of_base_op) {
+        Some(base) => percent_of_summary(base, &field_arg, scope(0), scope(1), state),
+        None => resolve_summary_in_scope(op, &field_arg, scope(0), state),
+    }
+}
+
+/// The base operation of a percentage summary's operation token (`"PercentOfSum"` → `"Sum"`), or
+/// `None` for a plain summary.
+fn percent_of_base_op(token: &str) -> Option<&str> {
+    const PREFIX: &str = "PercentOf";
+    let (prefix, base) = token.split_at_checked(PREFIX.len())?;
+    prefix
+        .eq_ignore_ascii_case(PREFIX)
+        .then_some(base)
+        .filter(|b| !b.is_empty())
+}
+
+/// A percentage summary's value: the summary over `part` as a percentage of the same summary over the
+/// wider `whole` scope, in percentage points (`13.5` for an eighth), which is how the engine reports
+/// it — the stored numeric format supplies the decimals and the `%` symbol.
+///
+/// `whole` is `None` for the usual `PercentOf<Op> ({field}, {group})` form, whose base is the report
+/// grand total; a third operand names an enclosing group to take the percentage of instead. Yields
+/// [`Value::Null`] when either side is missing or the base is zero, so an unresolvable percentage
+/// renders blank rather than as a bare aggregate.
+fn percent_of_summary(
+    base_op: &str,
+    field: &str,
+    part: Option<&str>,
+    whole: Option<&str>,
+    state: &ResolveState,
+) -> Value {
+    let part = resolve_summary_in_scope(Some(base_op), field, part, state);
+    let whole = resolve_summary_in_scope(Some(base_op), field, whole, state);
+    match (part.as_number(), whole.as_number()) {
+        (Some(p), Some(w)) if w != 0.0 => Value::Number(p / w * 100.0),
+        _ => Value::Null,
+    }
 }
 
 /// Resolve a summary by its operation token, summarized field, and optional group scope against the
@@ -509,38 +720,142 @@ fn full_field_eq(a: &str, b: &str) -> bool {
     strip_braces(a).eq_ignore_ascii_case(strip_braces(b))
 }
 
-/// Split a summary data source `Op ({arg0}[, {arg1}])` into its summarized-field argument and the
-/// optional group-condition-field argument (both brace-stripped). Splits on the top-level comma
-/// inside the outer parentheses so a `table.field` name is never mistaken for the separator.
-fn parse_summary_args(data_source: &str) -> (String, Option<String>) {
+/// Split a summary data source `Op ({arg0}[, {arg1}[, {arg2}]])` into its summarized-field argument
+/// and the group-condition-field arguments that follow (all brace-stripped). Splits on top-level
+/// commas inside the outer parentheses so a `table.field` name is never mistaken for the separator.
+///
+/// A quoted operand is a date group's period token (`Sum ({x}, {g}, "monthly")`), not a scope, so it
+/// is dropped — leaving only group references in the returned scopes.
+fn parse_summary_args(data_source: &str) -> (String, Vec<String>) {
     let inner = data_source
         .split_once('(')
         .and_then(|(_, rest)| rest.rsplit_once(')').map(|(f, _)| f))
         .unwrap_or(data_source);
-    // Find the top-level comma (brace depth 0).
+    // Split on commas at brace depth 0 and outside quotes.
     let mut depth = 0i32;
-    let mut split_at = None;
+    let mut quoted = false;
+    let mut args = Vec::new();
+    let mut start = 0;
     for (i, ch) in inner.char_indices() {
         match ch {
-            '{' => depth += 1,
-            '}' => depth -= 1,
-            ',' if depth == 0 => {
-                split_at = Some(i);
-                break;
+            '"' => quoted = !quoted,
+            '{' if !quoted => depth += 1,
+            '}' if !quoted => depth -= 1,
+            ',' if depth == 0 && !quoted => {
+                args.push(&inner[start..i]);
+                start = i + 1;
             }
             _ => {}
         }
     }
-    let clean = |s: &str| strip_braces(s).to_string();
-    match split_at {
-        Some(i) => (clean(&inner[..i]), Some(clean(&inner[i + 1..]))),
-        None => (clean(inner), None),
-    }
+    args.push(&inner[start..]);
+    let mut args = args.into_iter().map(str::trim);
+    let field = args
+        .next()
+        .map(strip_braces)
+        .unwrap_or_default()
+        .to_string();
+    let scopes = args
+        .filter(|a| !a.starts_with('"'))
+        .map(|a| strip_braces(a).to_string())
+        .collect();
+    (field, scopes)
+}
+
+/// The group level a `GroupName ({condition field})` reference names.
+///
+/// The reference names a *level* by its condition field, which is not necessarily the nearest
+/// enclosing group ([`ResolveState::group_key`]) — a `Group #1 Name` caption placed in an inner
+/// band must still print group 1's key. The level is recovered by matching the condition field
+/// against [`ResolveState::group_summaries`] (positionally parallel to
+/// [`ResolveState::group_keys`]); `None` means the reference names none of them, so the nearest
+/// enclosing group answers it.
+fn group_name_level(reference: &str, state: &ResolveState) -> Option<usize> {
+    level_of_condition(first_brace_ref(reference)?, state)
+}
+
+/// The group level whose condition field is `cond` — [`group_name_level`] with the condition already
+/// unwrapped, as a formula's `GroupName({cond})` operand arrives.
+fn level_of_condition(cond: &str, state: &ResolveState) -> Option<usize> {
+    let groups = state.group_summaries.iter();
+    groups
+        .clone()
+        .position(|(c, _)| full_field_eq(c, cond))
+        .or_else(|| {
+            groups
+                .clone()
+                .position(|(c, _)| short_name(c) == short_name(cond))
+        })
+}
+
+/// Resolve a `GroupName ({condition field})` reference to the named group's key (see
+/// [`group_name_level`]).
+fn group_name_value(reference: &str, state: &ResolveState) -> Value {
+    key_at_level(group_name_level(reference, state), state)
+}
+
+/// The key of group `level`, falling back to the nearest enclosing group when the reference names no
+/// level in scope.
+fn key_at_level(level: Option<usize>, state: &ResolveState) -> Value {
+    level
+        .and_then(|i| state.group_keys.get(i))
+        .cloned()
+        .unwrap_or_else(|| state.group_key.clone().unwrap_or(Value::Null))
+}
+
+/// The engine's `GroupName` string for a date group whose period is coarser than a day, else `None`.
+///
+/// A calendar period buckets the key to the period's *start date*, so the key of a monthly group is
+/// the 1st and that of an annual group is 1 January. The engine prints the group at its own
+/// granularity — `M/YYYY` for a month-granular period, `YYYY` for an annual one — and only the
+/// group's decoded condition says which. A day-granular period keeps the full date, so it stays with
+/// the caller's own date rendering (the field's stored format, or the locale default).
+///
+/// The level's condition is read from the report's group definitions rather than carried in
+/// [`ResolveState`]: the period is a definition fact, and the [`Report`] is already in hand here.
+fn group_name_display(reference: &str, report: &Report, state: &ResolveState) -> Option<String> {
+    let level = group_name_level(reference, state)
+        .or_else(|| state.group_summaries.len().checked_sub(1))?;
+    let cond_field = &state.group_summaries.get(level)?.0;
+    let group = report
+        .data_definition
+        .groups
+        .iter()
+        .find(|g| full_field_eq(&g.condition_field, cond_field))?;
+    let period = crate::aggregate::LabelPeriod::from_group(group.date_condition);
+    crate::aggregate::group_name_period_text(&group_name_value(reference, state), period)
 }
 
 /// Resolve a special field by its (spaceless) name.
-fn special_value(data_source: &str, state: &ResolveState) -> Value {
+///
+/// The print-position specials come from `state`; the print/data date and time come from the
+/// render's as-of instant, reached through the evaluation context so a `PrintDate` field and a
+/// `CurrentDate` formula beside it always agree. The rest are stored report facts, including the
+/// file's own timestamps ([`file_time`]).
+///
+/// `FilePath` (where the file sits, not what it contains) and `GroupNumber` (a group instance's
+/// ordinal, which is layout state) resolve to null and render blank rather than to an invented value.
+fn special_value(
+    data_source: &str,
+    report: &Report,
+    ctx: Option<&DataContext>,
+    state: &ResolveState,
+) -> Value {
     let key = data_source.to_lowercase().replace(['{', '}', ' '], "");
+    // The date/time specials share the as-of instant with the formula engine's `CurrentDate` /
+    // `CurrentTime`; `DataDate`/`DataTime` (when the rows were read) fall back to it as well, a live
+    // fetch happening at render time.
+    let clock = |names: &[&str]| {
+        ctx.and_then(|c| names.iter().find_map(|n| c.special(n)))
+            .unwrap_or(Value::Null)
+    };
+    let text = |s: &str| {
+        if s.is_empty() {
+            Value::Null
+        } else {
+            Value::Str(s.to_string())
+        }
+    };
     match key.as_str() {
         "pagenumber" => Value::Number(state.page_number as f64),
         "totalpagecount" => Value::Number(state.total_pages as f64),
@@ -549,9 +864,60 @@ fn special_value(data_source: &str, state: &ResolveState) -> Value {
             "Page {} of {}",
             state.page_number, state.total_pages
         )),
-        // Other specials (dates/times) need the print-run clock — deferred to the orchestrator.
+        "printdate" => clock(&["currentdate"]),
+        "printtime" => clock(&["currenttime"]),
+        "datadate" => clock(&["datadate", "currentdate"]),
+        "datatime" => clock(&["datatime", "currenttime"]),
+        "modificationdate" => date_of(file_time(report.summary_info.last_saved)),
+        "modificationtime" => time_of(file_time(report.summary_info.last_saved)),
+        "filecreationdate" => date_of(file_time(report.summary_info.created)),
+        "reporttitle" => text(&report.summary_info.title),
+        "reportcomments" => text(&report.summary_info.comments),
+        "fileauthor" => text(&report.summary_info.author),
+        "recordselection" => match &report.data_definition.record_selection {
+            Some(f) => text(&f.0),
+            None => Value::Null,
+        },
+        "groupselection" => match &report.data_definition.group_selection {
+            Some(f) => text(&f.0),
+            None => Value::Null,
+        },
         _ => Value::Null,
     }
+}
+
+/// Seconds from the Windows `FILETIME` epoch (1601-01-01) to the Unix epoch (1970-01-01).
+const FILETIME_EPOCH_TO_UNIX_SECS: i64 = 11_644_473_600;
+
+/// Split a stored Windows `FILETIME` — 100-nanosecond intervals since 1601-01-01 — into its calendar
+/// date and time of day, **in UTC**.
+///
+/// UTC, not the host's local time, for two reasons. The render pipeline already treats its instant as
+/// UTC (`rpt_data::DateTimeSpecials::from_unix_seconds`, fed by the clock the facade captures), so
+/// converting the file's timestamps to local time would put two timezone policies in one report —
+/// `PrintDate` in one zone and `ModificationDate` in another. And a local conversion needs a
+/// timezone database, which the WASM-safe render core cannot take a dependency on, and would make
+/// every rendered date an artifact of the machine that rendered it.
+///
+/// A zero `FILETIME` means "never set" (the engine writes one for a report that was never printed),
+/// not the year 1601.
+fn file_time(stored: Option<u64>) -> Option<(Date, Time)> {
+    let secs =
+        i64::try_from(stored.filter(|t| *t != 0)? / 10_000_000).ok()? - FILETIME_EPOCH_TO_UNIX_SECS;
+    Some((
+        Date::from_days(secs.div_euclid(86_400)),
+        Time::from_seconds(secs),
+    ))
+}
+
+/// The date half of a [`file_time`] instant, or null when the file carries no such timestamp.
+fn date_of(instant: Option<(Date, Time)>) -> Value {
+    instant.map_or(Value::Null, |(d, _)| Value::Date(d))
+}
+
+/// The time-of-day half of a [`file_time`] instant, or null when the file carries no such timestamp.
+fn time_of(instant: Option<(Date, Time)>) -> Value {
+    instant.map_or(Value::Null, |(_, t)| Value::Time(t))
 }
 
 /// Replace each `{ref}` run in `src` with its resolved formatted value.
@@ -586,8 +952,13 @@ fn substitute_braces(
     out
 }
 
-/// Resolve one embedded `{…}` reference (field/formula/param) to its display string, formatted with
-/// the locale's system defaults (an embedded ref carries no per-field format leaf of its own).
+/// Resolve one embedded `{…}` reference (field/formula/parameter/running total) to its display
+/// string, formatted with the locale's system defaults (an embedded ref carries no per-field format
+/// leaf of its own).
+///
+/// A `{?Param}` falls to the expression arm, which is the same call a *placed* parameter field
+/// object resolves through ([`field_value`]'s fallback): one parameter-resolution path, so an
+/// embedded reference and a placed field can never disagree about a parameter's value.
 fn resolve_embedded(
     reference: &str,
     ctx: &DataContext,
@@ -602,8 +973,6 @@ fn resolve_embedded(
         // A running total embedded in a text object.
         ctx.resolve(RefKind::RunningTotal, name)
             .unwrap_or(Value::Null)
-    } else if inner.starts_with('?') {
-        Value::Null // parameters resolved by a higher layer
     } else {
         let _ = state;
         eval_ref(&brace(inner), ctx, diag, inner)
@@ -632,11 +1001,28 @@ mod tests {
     fn parse_summary_args_one_and_two_arg() {
         assert_eq!(
             parse_summary_args("Sum ({Command.total})"),
-            ("Command.total".to_string(), None)
+            ("Command.total".to_string(), vec![])
         );
         assert_eq!(
             parse_summary_args("Sum ({@90+}, {Command.cost_center})"),
-            ("@90+".to_string(), Some("Command.cost_center".to_string()))
+            ("@90+".to_string(), vec!["Command.cost_center".to_string()])
+        );
+    }
+
+    /// A date group's period token is a quoted literal, not a scope, so it never becomes a group
+    /// reference; a third *group* operand does.
+    #[test]
+    fn parse_summary_args_period_token_and_third_group() {
+        assert_eq!(
+            parse_summary_args("Sum ({t.amt}, {t.created_at}, \"monthly\")"),
+            ("t.amt".to_string(), vec!["t.created_at".to_string()])
+        );
+        assert_eq!(
+            parse_summary_args("PercentOfSum ({t.amt}, {t.region}, {t.year})"),
+            (
+                "t.amt".to_string(),
+                vec!["t.region".to_string(), "t.year".to_string()]
+            )
         );
     }
 
@@ -667,6 +1053,84 @@ mod tests {
         assert_eq!(
             summary_value("Sum ({t.amt}, {t.unknown})", &state),
             Value::Number(50.0)
+        );
+    }
+
+    /// A `PercentOf<Op>` summary is its group's aggregate as a percentage of the report grand total,
+    /// in percentage points — never the raw aggregate.
+    #[test]
+    fn percentage_summary_is_a_share_of_the_grand_total() {
+        let state = ResolveState {
+            summaries: Rc::new(vec![summ("t.amt", 50.0)]),
+            grand_summaries: Rc::new(vec![summ("t.amt", 400.0)]),
+            group_summaries: Rc::new(vec![("t.region".to_string(), vec![summ("t.amt", 100.0)])]),
+            ..ResolveState::default()
+        };
+        assert_eq!(
+            summary_value("PercentOfSum ({t.amt}, {t.region})", &state),
+            Value::Number(25.0)
+        );
+        // The same expression without the prefix still yields the raw group aggregate.
+        assert_eq!(
+            summary_value("Sum ({t.amt}, {t.region})", &state),
+            Value::Number(100.0)
+        );
+    }
+
+    /// A third operand names an ancestor group to take the percentage of, in place of the grand
+    /// total.
+    #[test]
+    fn percentage_summary_can_be_of_an_ancestor_group() {
+        let state = ResolveState {
+            grand_summaries: Rc::new(vec![summ("t.amt", 400.0)]),
+            group_summaries: Rc::new(vec![
+                ("t.year".to_string(), vec![summ("t.amt", 200.0)]),
+                ("t.region".to_string(), vec![summ("t.amt", 100.0)]),
+            ]),
+            ..ResolveState::default()
+        };
+        assert_eq!(
+            summary_value("PercentOfSum ({t.amt}, {t.region}, {t.year})", &state),
+            Value::Number(50.0)
+        );
+    }
+
+    /// An unresolvable percentage (no base summary, or a zero base) renders blank rather than
+    /// falling back to the aggregate, which would be silently wrong by orders of magnitude.
+    #[test]
+    fn percentage_summary_without_a_base_is_null() {
+        let zero_base = ResolveState {
+            grand_summaries: Rc::new(vec![summ("t.amt", 0.0)]),
+            group_summaries: Rc::new(vec![("t.region".to_string(), vec![summ("t.amt", 100.0)])]),
+            ..ResolveState::default()
+        };
+        assert_eq!(
+            summary_value("PercentOfSum ({t.amt}, {t.region})", &zero_base),
+            Value::Null
+        );
+        let no_base = ResolveState {
+            group_summaries: Rc::new(vec![("t.region".to_string(), vec![summ("t.amt", 100.0)])]),
+            ..ResolveState::default()
+        };
+        assert_eq!(
+            summary_value("PercentOfSum ({t.amt}, {t.region})", &no_base),
+            Value::Null
+        );
+    }
+
+    /// The `PercentOf<Op>` family resolves the same way through a formula body's summary call as it
+    /// does for a placed object.
+    #[test]
+    fn percentage_summary_resolves_in_a_formula_body() {
+        use rpt_data::SummaryScope;
+        let state = ResolveState {
+            grand_summaries: Rc::new(vec![summ("t.amt", 400.0)]),
+            group_summaries: Rc::new(vec![("t.region".to_string(), vec![summ("t.amt", 100.0)])]),
+            ..ResolveState::default()
+        };
+        assert_eq!(
+            state.resolve_summary("PercentOfSum", "t.amt", Some("t.region")),
+            Value::Number(25.0)
         );
     }
 
@@ -777,6 +1241,7 @@ mod tests {
             ..ResolveState::default()
         };
         let diag: DiagSink = std::cell::RefCell::new(Vec::new());
+        let report = Report::default();
 
         let grand_total = FieldObject {
             data_source: "Count ({product.product_id})".to_string(),
@@ -784,7 +1249,7 @@ mod tests {
             ..Default::default()
         };
         assert_eq!(
-            field_value(&grand_total, None, &state, &diag),
+            field_value(&report, &grand_total, None, &state, &diag),
             Value::Number(800.0)
         );
 
@@ -793,6 +1258,82 @@ mod tests {
             ref_kind: FieldRefKind::DatabaseField,
             ..Default::default()
         };
-        assert_eq!(field_value(&db_field, None, &state, &diag), Value::Null);
+        assert_eq!(
+            field_value(&report, &db_field, None, &state, &diag),
+            Value::Null
+        );
+    }
+
+    /// A date group's `GroupName` prints at the group's own granularity, taken from the group's
+    /// decoded condition rather than from the bucketed key — which cannot say which period produced
+    /// it. A month-granular period drops the day the period-start key still carries, an annual one
+    /// keeps only the year, and a day-granular period prints the full date.
+    ///
+    /// The case that decides it: every one of these keys is the 1st of a month, so any rule reading
+    /// the grain off the key would give them all the same rendering.
+    #[test]
+    fn group_name_prints_at_the_group_period() {
+        use rpt_model::GroupCondition as G;
+        let locale = Locale::default();
+        let diag: DiagSink = std::cell::RefCell::new(Vec::new());
+        let obj = FieldObject {
+            data_source: "GroupName ({t.at})".to_string(),
+            ref_kind: FieldRefKind::GroupName,
+            ..Default::default()
+        };
+        let render = |cond: Option<G>, key: Value| {
+            let mut report = Report::default();
+            report.data_definition.groups = vec![rpt_model::Group {
+                condition_field: "t.at".to_string(),
+                date_condition: cond,
+                ..Default::default()
+            }];
+            let state = ResolveState {
+                group_summaries: Rc::new(vec![("t.at".to_string(), Vec::new())]),
+                group_keys: Rc::new(vec![key]),
+                ..ResolveState::default()
+            };
+            (
+                field_text(&report, &obj, None, &state, &locale, &diag),
+                resolve_run("GroupName ({t.at})", &report, None, &state, &locale, &diag),
+            )
+        };
+        let jan1 = Value::Date(Date::new(2024, 1, 1));
+
+        // Month-granular periods drop the day; an annual bucket is the bare year.
+        assert_eq!(
+            render(Some(G::Monthly), jan1.clone()),
+            ("1/2024".into(), "1/2024".into())
+        );
+        assert_eq!(
+            render(Some(G::Quarterly), jan1.clone()),
+            ("1/2024".into(), "1/2024".into())
+        );
+        assert_eq!(
+            render(Some(G::SemiAnnually), jan1.clone()),
+            ("1/2024".into(), "1/2024".into())
+        );
+        assert_eq!(
+            render(Some(G::Annually), jan1.clone()),
+            ("2024".into(), "2024".into())
+        );
+
+        // Day-granular periods print the full date, on the 1st like any other day.
+        for cond in [G::Daily, G::Weekly, G::BiWeekly, G::SemiMonthly] {
+            assert_eq!(
+                render(Some(cond), jan1.clone()),
+                ("1/1/2024".into(), "1/1/2024".into()),
+                "{cond:?}"
+            );
+        }
+        // A discrete (unbucketed) date group, and a non-date key, keep the ordinary rendering.
+        assert_eq!(
+            render(None, jan1.clone()),
+            ("1/1/2024".into(), "1/1/2024".into())
+        );
+        assert_eq!(
+            render(Some(G::Monthly), Value::Str("East".into())),
+            ("East".into(), "East".into())
+        );
     }
 }

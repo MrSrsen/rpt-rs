@@ -1,9 +1,10 @@
 # Builtin functions
 
-The builtin library lives in `eval/builtins/`, split by family. `mod.rs` holds the `Builtin` enum, the single
-lowercase-name→variant table (`NAMES`, where aliases live), the null-propagation rule, and a router that dispatches a
-resolved variant to its family module; each family module (`string`, `math`, `datetime`, `daterange`, `conversion`,
-`financial`, `statistical`, `numeral`) owns its arm implementations and co-located tests.
+The builtin library lives in `eval/builtins/`, split by family. `mod.rs` holds the family-tagged `Builtin` enum, the
+single lowercase-name→kind table (`TABLE`, where aliases live), the null-propagation rule, and a router that dispatches
+a resolved variant to its family module; each family module (`string`, `math`, `datetime`, `conversion`, `financial`,
+`statistical`, `numeral`) owns its arm implementations and co-located tests. Date ranges (`daterange`) are resolved
+outside that router.
 
 Names are case-insensitive. Unless noted, a `Null` argument makes the whole call return `Null`. Function *names* Crystal
 knows but this engine does not implement (the cross-tab, hierarchy, grid, and context/record-set aggregate functions,
@@ -107,13 +108,14 @@ Crystal follows VBA semantics; the notable rules are called out below.
   `w` weekday, `ww` week, `h` hour, `n` minute, `s` second. Note `w`/`ww` differ by function — in `DateAdd`/`DatePart`,
   `w` is a single weekday and `ww` a 7-day period; in `DateDiff`, `w` counts whole 7-day spans and `ww` counts
   `firstDayOfWeek`-boundary crossings (e.g. `DateDiff("ww", #5/1/2003#, #6/1/2003#, crMonday)` = 4).
-- **`firstDayOfWeek`**: `crUseSystem`=0 and an omitted argument both default to Sunday (`crSunday`=1 … `crSaturday`=7).
-  Threaded through `DayOfWeek`/`Weekday`/`WeekdayName`, `DatePart("w"/"ww", …)`, and `DateDiff("ww", …)`.
-- **`firstWeekOfYear`** (`DatePart` only): `crFirstJan1` (0/1 — week 1 contains January 1, late-December never rolls
-  forward), `crFirstFourDays` (2 — week 1 is the first week with ≥4 days in the new year; with a Monday start this is
-  exactly ISO-8601), and `crFirstFullWeek` (3 — week 1 is the first full week). Modes 2/3 assign a boundary date to the
-  year whose week 1 contains it, so late-December dates can be week 1 of the next year and early-January the last week
-  of the previous year.
+- **`firstDayOfWeek`**: `0` (`crUseSystem`) and an omitted argument both default to Sunday; otherwise `1` (`crSunday`)
+  … `7` (`crSaturday`). Threaded through `DayOfWeek`/`Weekday`/`WeekdayName`, `DatePart("w"/"ww", …)`, and
+  `DateDiff("ww", …)`.
+- **`firstWeekOfYear`** (`DatePart` only): `0`/`1` (`crUseSystem`/`crFirstJan1`: week 1 contains January 1,
+  late-December never rolls forward), `2` (`crFirstFourDays`: week 1 is the first week with ≥4 days in the new year;
+  with a Monday start this is exactly ISO-8601), and `3` (`crFirstFullWeek`: week 1 is the first full week). Modes 2/3
+  assign a boundary date to the year whose week 1 contains it, so late-December dates can be week 1 of the next year
+  and early-January the last week of the previous year.
 - **End-of-month clamping**: `DateAdd("m", 1, #1/31/2004#)` = 2004-02-29 (clamped), whereas `DateSerial` rolls over.
 
 ## Date ranges (`daterange.rs`)
@@ -192,22 +194,33 @@ Nulls in the array are skipped (matching the aggregate builtins); an all-null/em
 
 | Function  | Signature → return              | Semantics                                                                                                                                                                                                                       |
 |-----------|---------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `ToWords` | `(number[, decimals]) → String` | Cheque-style spelling: `ToText(1145.31)` → `"one thousand one hundred forty-five and 31 / 100"`. Default `decimals` = 2; `0` suppresses the fraction. Lowercase, hyphenated tens-units; the fraction is `NN / 10ᵈ` zero-padded. |
+| `ToWords` | `(number[, decimals]) → String` | Cheque-style spelling: `ToWords(1145.31)` → `"one thousand one hundred forty-five and 31 / 100"`. Default `decimals` = 2; `0` suppresses the fraction. Lowercase, hyphenated tens-units; the fraction is `NN / 10ᵈ` zero-padded. |
 | `Roman`   | `(number[, form]) → String`     | Classic Roman numerals for 1..3999 (`Roman(1998)` → `"MCMXCVIII"`); `0` → `""`. The graduated simplified forms 1–4 are deferred (`Unsupported`).                                                                                |
 
-## Null, colour, and 0-ary constants (`mod.rs`)
+## Null, color, and 0-ary constants (`mod.rs`)
 
 - `IsNull(value) → Boolean` and `HasValue(value) → Boolean` see through null.
-- `Color` / `RGB` `(r,g,b) → Number` build a COLORREF (`r + g·256 + b·65536`); the named colour constants (`crBlack`,
+- `Color` / `RGB` `(r,g,b) → Number` build a COLORREF (`r + g·256 + b·65536`); the named color constants (`crBlack`,
   `crRed`, `crWhite`, `crNoColor`, …) resolve to their COLORREF value.
-- Print-state specials (`PageNumber`, `CurrentDate`, …) and the `WhilePrintingRecords`/`WhileReadingRecords` markers are
-  described in [Architecture › References](01-architecture.md#references-and-the-evaluation-context).
+- The `cr*` enumeration constants split by whether the number they stand for is known. The eleven that name a date
+  builtin's argument carry that argument's value (`crUseSystem` `0`, `crSunday` `1` … `crSaturday` `7`, `crFirstJan1`
+  `1`, `crFirstFourDays` `2`, `crFirstFullWeek` `3`), so the two week arguments may be spelled either way —
+  `DateDiff("ww", #5/1/2003#, #6/1/2003#, crMonday)` and `DayOfWeek(#1/1/2004#, crMonday)` evaluate exactly as `2`
+  does. The format-enum names (`crBold`, `crLandscape`, `crLeftAligned`, …) resolve to the ordinal their enumeration
+  stores — the same numbering `rpt-model` decodes for the property itself, so `crBold` is `1` and `crLandscape` is `2`.
+  That is what makes a conditional-format formula agree with the option picked statically. Line-thickness constants
+  carry twips rather than an ordinal (`crOnePointLine` = `20`), matching what that property stores.
+- Three `cr*` names — `crNoLeadingDay`, `crShortLeadingDay`, `crLongLeadingDay` — have no identified enumeration, so
+  they evaluate as **unimplemented** rather than to a guessed number.
+- Print-state specials (`PageNumber`, `CurrentDate`, …) and the `WhilePrintingRecords` / `WhileReadingRecords` /
+  `BeforeReadingRecords` markers are described in
+  [Architecture › References](01-architecture.md#references-and-the-evaluation-context).
 
 ## Adding a builtin
 
-1. Add a variant to the `Builtin` enum (in the family's section) and its lowercase name (s) to `NAMES` (kept sorted — a
+1. Add a variant to the family's own enum (`StringFn`, `MathFn`, …) and a row naming it to `TABLE` (kept sorted — a
    test enforces it).
-2. Classify it in `Builtin::family`.
+2. Wrap it in the matching `Builtin` family variant in that row, which is what routes the call.
 3. Implement the arm in the family module's `call`, using the shared helpers (`str_arg`, `num_arg`, `opt_num`,
    `map_numeric`, `mismatch`, `bad_arg`).
 4. Add tests (normal, edge, and error cases) in that module's `#[cfg(test)] mod tests`.
@@ -217,4 +230,4 @@ evaluation.
 
 ---
 
-← [Language reference](02-language.md) · [Index](../README.md) · **Next:** [Validation](04-validation.md) →
+← [Language reference](02-language.md) · [Index](README.md) · **Next:** [Validation](04-validation.md) →

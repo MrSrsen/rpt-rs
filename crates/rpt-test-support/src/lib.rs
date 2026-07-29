@@ -1,9 +1,11 @@
 //! Dev-only test helpers shared across the workspace's test suites.
 //!
 //! This crate carries the small amount of boilerplate that several crates' tests would otherwise
-//! duplicate: resolving a fixture path relative to the workspace root, and hand-building a
-//! [`SavedData`] batch from literal columns and rows. It is depended on only under
-//! `[dev-dependencies]` and pulls in nothing beyond `rpt-model`.
+//! duplicate: resolving a fixture path relative to the workspace root, hand-building a [`SavedData`]
+//! batch from literal columns and rows, and inspecting rendered PDF bytes ([`pdf`]). It is depended on
+//! only under `[dev-dependencies]`.
+
+pub mod pdf;
 
 use rpt_model::{FieldValueType, SavedColumn, SavedData};
 use std::path::{Path, PathBuf};
@@ -33,6 +35,72 @@ pub fn fixture(rel: impl AsRef<Path>) -> PathBuf {
     workspace_root().join(rel)
 }
 
+/// Every `.rpt` a corpus-wide sweep should see, sorted and deduplicated.
+///
+/// A sweep that walks *some* of the report trees can only support a claim scoped to those trees, and
+/// a claim of the form "no record in the corpus does X" is exactly the kind that decides whether a
+/// field gets decoded at all. So the corpus is discovered rather than named: every `.rpt` under
+/// `tests/` (the committed fixtures, the Meridian corpus, and any newly added tree), plus any
+/// directory listed in the colon-separated `RPT_EXTRA_CORPUS`. Callers that genuinely want a subset
+/// should walk that subset explicitly and say so where the conclusion is recorded.
+///
+/// `RPT_EXTRA_CORPUS` is how an out-of-tree report set joins a sweep. Nothing outside the repository
+/// is walked by default, so a claim of the form "no record in the corpus does X" is a claim about
+/// the committed trees unless a run says otherwise.
+///
+/// Colon-separated `RPT_CORPUS` *replaces* the discovered roots, which is how a run narrows the
+/// sweep to one tree to attribute a disagreement to it.
+///
+/// # Panics
+///
+/// If the walk finds implausibly few reports, which means it is rooted in the wrong place: a sweep
+/// that scans nothing passes, and that failure mode is the one this helper exists to prevent.
+/// Not checked when `RPT_CORPUS` names the roots, since a deliberate subset may be small.
+pub fn corpus_reports() -> Vec<PathBuf> {
+    let root = workspace_root();
+    let narrowed = std::env::var("RPT_CORPUS").ok().filter(|s| !s.is_empty());
+    let mut roots = match &narrowed {
+        Some(list) => list.split(':').map(PathBuf::from).collect(),
+        None => vec![root.join("tests")],
+    };
+    if let Ok(extra) = std::env::var("RPT_EXTRA_CORPUS") {
+        roots.extend(
+            extra
+                .split(':')
+                .filter(|s| !s.is_empty())
+                .map(PathBuf::from),
+        );
+    }
+    let mut out = Vec::new();
+    for dir in &roots {
+        collect_rpt_files(dir, &mut out);
+    }
+    out.sort();
+    out.dedup();
+    assert!(
+        narrowed.is_some() || out.len() > 100,
+        "the corpus walk found only {} report(s) — it is looking in the wrong place",
+        out.len()
+    );
+    out
+}
+
+/// Append every `.rpt` under `dir`, recursively. A directory that does not exist contributes
+/// nothing, so an optional corpus needs no separate existence check.
+pub fn collect_rpt_files(dir: &Path, out: &mut Vec<PathBuf>) {
+    let Ok(entries) = std::fs::read_dir(dir) else {
+        return;
+    };
+    for e in entries.flatten() {
+        let p = e.path();
+        if p.is_dir() {
+            collect_rpt_files(&p, out);
+        } else if p.extension().is_some_and(|x| x == "rpt") {
+            out.push(p);
+        }
+    }
+}
+
 /// Build a [`SavedData`] batch from column `(name, type)` pairs and row-major string cells.
 ///
 /// Every cell is stored as a present (`Some`) value and `record_count` is taken from `rows.len()`.
@@ -58,8 +126,8 @@ pub fn saved_data(columns: &[(&str, FieldValueType)], rows: &[&[&str]]) -> Saved
 ///
 /// The caller passes its own `env!("CARGO_MANIFEST_DIR")` as `manifest_dir` (this crate can't read
 /// the caller's manifest at runtime). With `RPT_BLESS` set the golden is (re)written instead of
-/// compared; a missing golden panics with a regenerate hint. `str` variant for text backends (HTML,
-/// SVG, Page-IR JSON) — see [`assert_golden_bytes`] for binary backends.
+/// compared; a missing golden panics with a regenerate hint. `str` variant for text output (the
+/// Page-IR JSON) — see [`assert_golden_bytes`] for binary backends.
 ///
 /// # Panics
 ///

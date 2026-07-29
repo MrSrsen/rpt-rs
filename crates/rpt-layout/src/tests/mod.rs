@@ -1,9 +1,9 @@
 //! Layout unit tests over a hand-built minimal report + dataset.
 //!
-//! Several `rpt` model structs (`ChartObject`, `CrossTabObject`, …) are cross-crate
-//! `#[non_exhaustive]`, so the builders below construct them via `Default` + field assignment
-//! (struct literals are disallowed cross-crate) — which `clippy::field_reassign_with_default` flags
-//! but cannot offer a valid rewrite for, so the lint is allowed for this test module.
+//! Model structs like `ChartObject` and `CrossTabObject` carry far more fields than any one test
+//! sets, so the builders below start from `Default` and assign the few that matter. A struct literal
+//! would spell out every field and bury what the test is about. That is what
+//! `clippy::field_reassign_with_default` flags, so the lint is allowed for this module.
 #![allow(clippy::field_reassign_with_default)]
 
 pub(crate) use crate::layout;
@@ -198,8 +198,23 @@ fn chart_object(name: &str, top: i32) -> ReportObject {
     o
 }
 
+/// The summary definition a cross-tab aggregates: `Sum(t.amt)`. A cross-tab carries no measure list
+/// of its own — the measures are the report's summary definitions — so a test that renders
+/// [`crosstab_object`] must put this on the report's `data_definition`.
+fn crosstab_measure_def() -> rpt_model::FieldDef {
+    use rpt_model::{FieldDef, FieldKindData, SummaryField, SummaryOperation};
+    FieldDef {
+        kind: FieldKindData::Summary(SummaryField {
+            operation: SummaryOperation::Sum,
+            summarized_field: "t.amt".to_string(),
+            ..Default::default()
+        }),
+        ..FieldDef::default()
+    }
+}
+
 fn crosstab_object(name: &str) -> ReportObject {
-    use rpt_model::{CrossTabDimension, CrossTabMeasure, CrossTabObject, SummaryOperation};
+    use rpt_model::{CrossTabDimension, CrossTabObject};
     let mut o = ReportObject::default();
     o.name = name.to_string();
     o.bounds = Rect {
@@ -216,10 +231,6 @@ fn crosstab_object(name: &str) -> ReportObject {
     let mut ct = CrossTabObject::default();
     ct.rows = vec![dim("t.region")];
     ct.columns = vec![dim("t.quarter")];
-    let mut m = CrossTabMeasure::default();
-    m.operation = SummaryOperation::Sum;
-    m.field = "t.amt".to_string();
-    ct.measures = vec![m];
     o.kind = ReportObjectKind::CrossTab(ct);
     o
 }
@@ -263,11 +274,17 @@ fn ungrouped_dataset(saved: &SavedData) -> rpt_data::Dataset {
 }
 
 /// Render a legend-visible single-series chart of `graph_type` over three string categories and
-/// return every text drawn. A per-category-coloured family (bar) repeats each category label in its
-/// legend (axis + legend); a single-colour family (area/line) draws no legend, so each category
+/// return every text drawn. A per-category-colored family (bar) repeats each category label in its
+/// legend (axis + legend); a single-color family (area/line) draws no legend, so each category
 /// appears once (axis only).
 #[cfg(test)]
 fn chart_render_texts(graph_type: rpt_model::ChartGraphType) -> Vec<String> {
+    chart_render_texts_bound(graph_type, "")
+}
+
+/// As [`chart_render_texts`], with `binding` as the chart's stored data binding — the summary-bearing
+/// form (`Sum ({t.amt}, {t.cat}, "daily")`) the single-color families derive their series name from.
+fn chart_render_texts_bound(graph_type: rpt_model::ChartGraphType, binding: &str) -> Vec<String> {
     use rpt_model::ReportObjectKind;
     let saved = saved_data(
         &[
@@ -282,6 +299,9 @@ fn chart_render_texts(graph_type: rpt_model::ChartGraphType) -> Vec<String> {
         def.definition.legend_visible = true;
         def.data_refs = vec!["t.amt".into()];
         def.category_refs = vec!["t.cat".into()];
+        if !binding.is_empty() {
+            def.definition.data_refs = vec![binding.to_string()];
+        }
     }
     // A tall report-header section holding just the chart, so it renders once over the whole dataset.
     let mut report = tiny_report(15840);
@@ -330,6 +350,158 @@ fn underlay_report(underlay: bool) -> Report {
 
 fn underlay_saved(rows: usize) -> SavedData {
     numeric_rows(rows)
+}
+
+/// A named group area, so [`crate::group_area_key`] pairs each header level with its own footer
+/// instead of falling back to "footers are stored innermost-first".
+fn group_area(kind: AreaSectionKind, name: &str, sections: Vec<Section>) -> Area {
+    let mut a = area(kind, sections);
+    a.name = name.to_string();
+    a
+}
+
+/// One group level whose **second** group-header section is (optionally) an underlay `underlay_h`
+/// twips tall, over a 300-twip detail band and a 400-twip group footer. Three rows in one group, so
+/// the detail block is deliberately shorter than a tall underlay — the shape that tells the underlay
+/// rules apart. Bands: "GHNORMAL" (400), "UTOP", "line" ×3, "GROUPFTR".
+fn group_underlay_report(underlay: bool, underlay_h: i32, page_height: i32) -> (Report, SavedData) {
+    use rpt_model::{Group, SortDirection};
+    let mut report = Report::default();
+    report.print_options.content_width = Twips(12240);
+    report.print_options.content_height = Twips(page_height);
+    let mut g = Group::default();
+    g.condition_field = "t.region".into();
+    g.sort.direction = SortDirection::AscendingOrder;
+    report.data_definition.groups = vec![g];
+
+    let mut under = section(
+        AreaSectionKind::GroupHeader,
+        "GHUnder",
+        underlay_h,
+        vec![text_object("UTop", "UTOP", 0)],
+    );
+    under.format.underlay_section = underlay;
+    report.report_definition.areas = vec![
+        group_area(
+            AreaSectionKind::GroupHeader,
+            "GroupHeaderArea1",
+            vec![
+                section(
+                    AreaSectionKind::GroupHeader,
+                    "GHNormal",
+                    400,
+                    vec![text_object("GhTop", "GHNORMAL", 0)],
+                ),
+                under,
+            ],
+        ),
+        area(
+            AreaSectionKind::Detail,
+            vec![section(
+                AreaSectionKind::Detail,
+                "Details",
+                300,
+                vec![text_object("Row", "line", 0)],
+            )],
+        ),
+        group_area(
+            AreaSectionKind::GroupFooter,
+            "GroupFooterArea1",
+            vec![section(
+                AreaSectionKind::GroupFooter,
+                "GF",
+                400,
+                vec![text_object("GfText", "GROUPFTR", 0)],
+            )],
+        ),
+    ];
+    let saved = saved_data(
+        &[
+            ("t.region", FieldValueType::String),
+            ("t.x", FieldValueType::Number),
+        ],
+        &[&["A", "1"], &["A", "2"], &["A", "3"]],
+    );
+    (report, saved)
+}
+
+/// Two group levels where the **inner** header is a 4000-twip underlay, over a 300-twip detail band,
+/// a 300-twip inner footer ("GF2") and a 300-twip outer footer ("GF1"). One outer group holding two
+/// inner groups of two rows each.
+fn nested_underlay_report() -> (Report, SavedData) {
+    use rpt_model::{Group, SortDirection};
+    let mut report = Report::default();
+    report.print_options.content_width = Twips(12240);
+    report.print_options.content_height = Twips(31680);
+    let group_on = |field: &str| {
+        let mut g = Group::default();
+        g.condition_field = field.into();
+        g.sort.direction = SortDirection::AscendingOrder;
+        g
+    };
+    report.data_definition.groups = vec![group_on("t.region"), group_on("t.city")];
+
+    let mut inner = section(
+        AreaSectionKind::GroupHeader,
+        "GH2Under",
+        4000,
+        vec![text_object("UTop", "UTOP", 0)],
+    );
+    inner.format.underlay_section = true;
+    report.report_definition.areas = vec![
+        group_area(
+            AreaSectionKind::GroupHeader,
+            "GroupHeaderArea1",
+            vec![section(
+                AreaSectionKind::GroupHeader,
+                "GH1",
+                300,
+                vec![text_object("Gh1Text", "GH1", 0)],
+            )],
+        ),
+        group_area(
+            AreaSectionKind::GroupHeader,
+            "GroupHeaderArea2",
+            vec![inner],
+        ),
+        area(
+            AreaSectionKind::Detail,
+            vec![section(
+                AreaSectionKind::Detail,
+                "Details",
+                300,
+                vec![text_object("Row", "line", 0)],
+            )],
+        ),
+        group_area(
+            AreaSectionKind::GroupFooter,
+            "GroupFooterArea2",
+            vec![section(
+                AreaSectionKind::GroupFooter,
+                "GF2",
+                300,
+                vec![text_object("Gf2Text", "GF2", 0)],
+            )],
+        ),
+        group_area(
+            AreaSectionKind::GroupFooter,
+            "GroupFooterArea1",
+            vec![section(
+                AreaSectionKind::GroupFooter,
+                "GF1",
+                300,
+                vec![text_object("Gf1Text", "GF1", 0)],
+            )],
+        ),
+    ];
+    let saved = saved_data(
+        &[
+            ("t.region", FieldValueType::String),
+            ("t.city", FieldValueType::String),
+        ],
+        &[&["A", "P"], &["A", "P"], &["A", "Q"], &["A", "Q"]],
+    );
+    (report, saved)
 }
 
 /// The op-list index and `top` twip of the first `DrawOp::Text` with the given text on `page`.
@@ -477,6 +649,7 @@ fn multi_para_object(name: &str, paras: &[(rpt_model::LineSpacing, f32, &str)]) 
                         text: s.to_string(),
                         field_ref: None,
                         font: Some(font),
+                        ..Default::default()
                     }],
                     indent: IndentAndSpacingFormat {
                         line_spacing: *ls,
@@ -489,9 +662,13 @@ fn multi_para_object(name: &str, paras: &[(rpt_model::LineSpacing, f32, &str)]) 
     o
 }
 
+mod alignment;
 mod charts;
 mod crosstab;
+mod currency;
+mod hierarchical;
 mod objects;
 mod pagination;
+mod specials;
 mod subreports;
 mod text;

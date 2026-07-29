@@ -1,0 +1,1080 @@
+{
+  "model": {
+    "authoring_version": {
+      "letter": 0,
+      "major": 14,
+      "minor": 0
+    },
+    "data_definition": {
+      "condition_formula_bodies": [],
+      "custom_functions": [],
+      "field_definitions": [
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 162,
+          "long_name": null,
+          "name": "country_name",
+          "short_name": "country_name",
+          "value_type": "String"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 162,
+          "long_name": null,
+          "name": "city_name",
+          "short_name": "city_name",
+          "value_type": "String"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Database": {
+              "table_alias": "",
+              "unique_id": ""
+            }
+          },
+          "length": 8,
+          "long_name": null,
+          "name": "amount",
+          "short_name": "amount",
+          "value_type": "Number"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Summary": {
+              "group_index": null,
+              "is_percentage_summary": false,
+              "operation": "Sum",
+              "operation_parameter": 0,
+              "second_group_for_percentage": null,
+              "secondary_summarized_field": "",
+              "summarized_field": "pct_probe2.amount"
+            }
+          },
+          "length": 8,
+          "long_name": null,
+          "name": "",
+          "short_name": null,
+          "value_type": "Number"
+        },
+        {
+          "description": null,
+          "formula_form": null,
+          "heading_text": null,
+          "kind": {
+            "Summary": {
+              "group_index": null,
+              "is_percentage_summary": true,
+              "operation": "Sum",
+              "operation_parameter": 0,
+              "second_group_for_percentage": 1,
+              "secondary_summarized_field": "",
+              "summarized_field": "pct_probe2.amount"
+            }
+          },
+          "length": 8,
+          "long_name": null,
+          "name": "",
+          "short_name": null,
+          "value_type": "Number"
+        }
+      ],
+      "field_manager_census": {
+        "database_fields": 3,
+        "formula_bodies": 5
+      },
+      "formula_variables": [],
+      "group_selection": "",
+      "groups": [
+        {
+          "area_format": {
+            "keep_group_together": false,
+            "repeat_group_header": false,
+            "visible_groups_per_page": 0
+          },
+          "condition_field": "pct_probe2.country_name",
+          "date_condition": null,
+          "hierarchical": [],
+          "hierarchical_options": null,
+          "options": {},
+          "sort": {
+            "direction": "AscendingOrder",
+            "field": "pct_probe2.country_name",
+            "kind": "GroupSortField",
+            "topn": null
+          }
+        },
+        {
+          "area_format": {
+            "keep_group_together": false,
+            "repeat_group_header": false,
+            "visible_groups_per_page": 0
+          },
+          "condition_field": "pct_probe2.city_name",
+          "date_condition": null,
+          "hierarchical": [],
+          "hierarchical_options": null,
+          "options": {},
+          "sort": {
+            "direction": "AscendingOrder",
+            "field": "pct_probe2.city_name",
+            "kind": "GroupSortField",
+            "topn": null
+          }
+        }
+      ],
+      "record_selection": "",
+      "record_sorts": [
+        {
+          "direction": "AscendingOrder",
+          "field": "pct_probe2.country_name",
+          "kind": "GroupSortField",
+          "topn": null
+        },
+        {
+          "direction": "AscendingOrder",
+          "field": "pct_probe2.city_name",
+          "kind": "GroupSortField",
+          "topn": null
+        }
+      ],
+      "running_total_condition_formulas": [],
+      "saved_data_filter": "",
+      "summary_binding_fields": [
+        "pct_probe2.amount",
+        "pct_probe2.amount"
+      ]
+    },
+    "database": {
+      "links": [],
+      "tables": [
+        {
+          "alias": "pct_probe2",
+          "class_name": "CrystalReports.Table",
+          "command_text": null,
+          "connection": {
+            "attributes": [
+              [
+                "Database_DLL",
+                "crdb_odbc.dll"
+              ],
+              [
+                "QE_DatabaseName",
+                "meridian"
+              ],
+              [
+                "QE_DatabaseType",
+                "ODBC (RDO)"
+              ],
+              [
+                "QE_LogonProperties",
+                "System.__ComObject"
+              ],
+              [
+                "QE_ServerDescription",
+                "meridian"
+              ],
+              [
+                "QE_SQLDB",
+                "True"
+              ],
+              [
+                "SSO_Enabled",
+                "False"
+              ]
+            ],
+            "kind": "Unknown",
+            "user_name": "rpt"
+          },
+          "data_fields": [
+            {
+              "description": null,
+              "length": 4,
+              "long_name": "pct_probe2.id",
+              "name": "id",
+              "short_name": "id",
+              "value_type": "Int32s"
+            },
+            {
+              "description": null,
+              "length": 162,
+              "long_name": "pct_probe2.country_name",
+              "name": "country_name",
+              "short_name": "country_name",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 162,
+              "long_name": "pct_probe2.city_name",
+              "name": "city_name",
+              "short_name": "city_name",
+              "value_type": "String"
+            },
+            {
+              "description": null,
+              "length": 8,
+              "long_name": "pct_probe2.amount",
+              "name": "amount",
+              "short_name": "amount",
+              "value_type": "Number"
+            }
+          ],
+          "name": "pct_probe2",
+          "parameters": [],
+          "qualified_name": "meridian.public.pct_probe2"
+        }
+      ]
+    },
+    "designer_state": {
+      "connections": [],
+      "guidelines": []
+    },
+    "embeds": [],
+    "has_saved_data": true,
+    "print_options": {
+      "content_height": 16118,
+      "content_width": 11179,
+      "driver_name": null,
+      "margins": {
+        "bottom": 360,
+        "left": 360,
+        "right": 360,
+        "top": 360
+      },
+      "multi_column": null,
+      "paper_orientation": "Portrait",
+      "paper_size": "DefaultPaperSize",
+      "paper_source": "FormSource",
+      "port_name": null,
+      "printer_duplex": "Default",
+      "printer_name": "",
+      "saved_printer_name": ""
+    },
+    "reimport": {
+      "imported_at": {
+        "julian_day": 2461252,
+        "time_fraction": 45913
+      },
+      "reimport_when_opening": 1,
+      "source_path": "",
+      "source_saved_at": {
+        "julian_day": 0,
+        "time_fraction": 0
+      }
+    },
+    "report_definition": {
+      "areas": [
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": true,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "ReportHeader",
+          "name": "ReportHeaderArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": null,
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 600,
+              "kind": "ReportHeader",
+              "name": "ReportHeaderSection1",
+              "objects": [],
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": true,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "PageHeader",
+          "name": "PageHeaderArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": null,
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 600,
+              "kind": "PageHeader",
+              "name": "PageHeaderSection1",
+              "objects": [],
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": {
+              "keep_group_together": false,
+              "repeat_group_header": false,
+              "visible_groups_per_page": 0
+            },
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": 0,
+          "kind": "GroupHeader",
+          "name": "GroupHeaderArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": null,
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 220,
+              "kind": "GroupHeader",
+              "name": "GroupHeaderSection1",
+              "objects": [],
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": {
+              "keep_group_together": false,
+              "repeat_group_header": false,
+              "visible_groups_per_page": 0
+            },
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": 1,
+          "kind": "GroupHeader",
+          "name": "GroupHeaderArea2",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": null,
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 220,
+              "kind": "GroupHeader",
+              "name": "GroupHeaderSection2",
+              "objects": [],
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "Detail",
+          "name": "DetailArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": null,
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 220,
+              "kind": "Detail",
+              "name": "DetailSection1",
+              "objects": [],
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": 1,
+          "kind": "GroupFooter",
+          "name": "GroupFooterArea2",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": null,
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 226,
+              "kind": "GroupFooter",
+              "name": "GroupFooterSection2",
+              "objects": [
+                {
+                  "border": {
+                    "background_color": null,
+                    "border_color": {
+                      "a": 255,
+                      "b": 0,
+                      "g": 0,
+                      "r": 0
+                    },
+                    "bottom": "NoLine",
+                    "condition_formulas": [],
+                    "has_drop_shadow": false,
+                    "left": "NoLine",
+                    "right": "NoLine",
+                    "tight_horizontal": false,
+                    "top": "NoLine"
+                  },
+                  "bounds": {
+                    "height": 226,
+                    "left": 400,
+                    "top": 0,
+                    "width": 955
+                  },
+                  "format": {
+                    "can_grow": false,
+                    "close_at_page_break": false,
+                    "condition_formulas": [],
+                    "css_class": null,
+                    "horizontal_alignment": "DefaultAlign",
+                    "hyperlink": null,
+                    "keep_together": true,
+                    "suppress": {
+                      "formula": null,
+                      "value": false
+                    },
+                    "text_rotation": "Rotate0",
+                    "tooltip_text": null,
+                    "vertical_alignment": "Top"
+                  },
+                  "kind": {
+                    "Field": {
+                      "data_source": "PercentOfSum ({pct_probe2.amount}, {pct_probe2.city_name}, {pct_probe2.country_name})",
+                      "font_color": {
+                        "color": {
+                          "a": 255,
+                          "b": 0,
+                          "g": 0,
+                          "r": 0
+                        },
+                        "condition_formulas": [],
+                        "font": {
+                          "bold": false,
+                          "charset": 0,
+                          "italic": false,
+                          "name": "Arial",
+                          "size_pt": 10.0,
+                          "strikethrough": false,
+                          "underline": false,
+                          "weight": 400
+                        }
+                      },
+                      "format": {
+                        "boolean": {
+                          "output_type": "TrueOrFalse"
+                        },
+                        "common": {
+                          "suppress_if_duplicated": false,
+                          "use_system_defaults": false
+                        },
+                        "currency_numeric": {
+                          "currency_position": "TrailingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "%",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
+                        "date": {
+                          "calendar": "GregorianCalendar",
+                          "date_order": "YearMonthDay",
+                          "day": "LeadingZeroNumericDay",
+                          "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
+                          "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
+                          "system_default": "UseWindowsShortDate",
+                          "year": "ShortYear"
+                        },
+                        "date_time": {
+                          "order": "DateThenTime",
+                          "separator": "  "
+                        },
+                        "numeric": {
+                          "currency_position": "TrailingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "%",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
+                        "string": {
+                          "enable_word_wrap": true,
+                          "indent": {
+                            "first_line_indent": 0,
+                            "left_indent": 0,
+                            "line_spacing": {
+                              "raw": 65536,
+                              "spacing_type": "Multiple"
+                            },
+                            "right_indent": 0
+                          },
+                          "max_number_of_lines": 0,
+                          "reading_order": "LeftToRight",
+                          "text_format": "StandardText"
+                        },
+                        "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
+                          "hour": "NumericHour",
+                          "hour_minute_separator": ":",
+                          "minute": "NumericMinute",
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
+                        }
+                      },
+                      "ref_kind": "Summary",
+                      "summary_code": 1,
+                      "value_type": "Number"
+                    }
+                  },
+                  "name": "PercentageofSumofamount1",
+                  "origin": {
+                    "index": 0
+                  }
+                }
+              ],
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": false,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": 0,
+          "kind": "GroupFooter",
+          "name": "GroupFooterArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": null,
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 220,
+              "kind": "GroupFooter",
+              "name": "GroupFooterSection1",
+              "objects": [],
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": false,
+              "new_page_after": true,
+              "new_page_before": false,
+              "print_at_bottom_of_page": false,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "ReportFooter",
+          "name": "ReportFooterArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": null,
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 600,
+              "kind": "ReportFooter",
+              "name": "ReportFooterSection1",
+              "objects": [],
+              "width": 0
+            }
+          ]
+        },
+        {
+          "format": {
+            "base": {
+              "keep_together": true,
+              "new_page_after": true,
+              "new_page_before": false,
+              "print_at_bottom_of_page": true,
+              "reset_page_number_after": false,
+              "suppress": false
+            },
+            "clamp_page_footer": false,
+            "group": null,
+            "hide_for_drill_down": false,
+            "visible_records_per_page": 0
+          },
+          "group_level": null,
+          "kind": "PageFooter",
+          "name": "PageFooterArea1",
+          "sections": [
+            {
+              "condition_formulas": [],
+              "format": {
+                "background_color": null,
+                "base": {
+                  "keep_together": true,
+                  "new_page_after": false,
+                  "new_page_before": false,
+                  "print_at_bottom_of_page": false,
+                  "reset_page_number_after": false,
+                  "suppress": false
+                },
+                "css_class": null,
+                "page_orientation": null,
+                "suppress_if_blank": false,
+                "underlay_section": false
+              },
+              "height": 600,
+              "kind": "PageFooter",
+              "name": "PageFooterSection1",
+              "objects": [],
+              "width": 0
+            }
+          ]
+        }
+      ],
+      "kind": "ColumnarReport",
+      "style": "Standard"
+    },
+    "report_options": {
+      "convert_null_field_to_default": false,
+      "convert_other_nulls_to_default": false,
+      "enable_verify_on_every_print": true,
+      "initial_data_context": null,
+      "initial_report_part_name": null,
+      "save_data_with_report": true,
+      "save_preview_picture": true,
+      "save_summaries_with_report": true,
+      "use_dummy_data": false
+    },
+    "save_metadata": [
+      {
+        "key": "Saved Date",
+        "value": "2026.07.31 12:45:13 +0100"
+      },
+      {
+        "key": "Build Version",
+        "value": "13.0.40.5789"
+      },
+      {
+        "key": "Print Engine",
+        "value": "CRVBD"
+      },
+      {
+        "key": "OS",
+        "value": "Windows Vista"
+      },
+      {
+        "key": "Architecture",
+        "value": "x86"
+      },
+      {
+        "key": "Saved Date",
+        "value": "2026.07.31 12:46:12 +0100"
+      },
+      {
+        "key": "Build Version",
+        "value": "13.0.40.5789"
+      },
+      {
+        "key": "Print Engine",
+        "value": "CRPE"
+      },
+      {
+        "key": "OS",
+        "value": "Windows Vista"
+      },
+      {
+        "key": "Architecture",
+        "value": "x86"
+      }
+    ],
+    "saved_data": {
+      "columns": [
+        {
+          "name": "pct_probe2.country_name",
+          "value_type": "String"
+        },
+        {
+          "name": "pct_probe2.city_name",
+          "value_type": "String"
+        },
+        {
+          "name": "pct_probe2.amount",
+          "value_type": "Number"
+        }
+      ],
+      "record_count": 27,
+      "rows": [
+        [
+          "Borealia",
+          "Delta City",
+          "1450"
+        ],
+        [
+          "Borealia",
+          "Delta City",
+          "390"
+        ],
+        [
+          "Borealia",
+          "Delta City",
+          "675.25"
+        ],
+        [
+          "Borealia",
+          "Epsilon City",
+          "540.6"
+        ],
+        [
+          "Borealia",
+          "Epsilon City",
+          "260"
+        ],
+        [
+          "Borealia",
+          "Epsilon City",
+          "980.15"
+        ],
+        [
+          "Borealia",
+          "Zeta City",
+          "715.3"
+        ],
+        [
+          "Borealia",
+          "Zeta City",
+          "1020"
+        ],
+        [
+          "Borealia",
+          "Zeta City",
+          "455.45"
+        ],
+        [
+          "Cantoria",
+          "Eta City",
+          "920"
+        ],
+        [
+          "Cantoria",
+          "Eta City",
+          "510.5"
+        ],
+        [
+          "Cantoria",
+          "Eta City",
+          "335.75"
+        ],
+        [
+          "Cantoria",
+          "Iota City",
+          "215"
+        ],
+        [
+          "Cantoria",
+          "Iota City",
+          "455"
+        ],
+        [
+          "Cantoria",
+          "Iota City",
+          "990.35"
+        ],
+        [
+          "Cantoria",
+          "Theta City",
+          "640.2"
+        ],
+        [
+          "Cantoria",
+          "Theta City",
+          "805"
+        ],
+        [
+          "Cantoria",
+          "Theta City",
+          "280.9"
+        ],
+        [
+          "Numeria",
+          "Alpha City",
+          "430.25"
+        ],
+        [
+          "Numeria",
+          "Alpha City",
+          "1200"
+        ],
+        [
+          "Numeria",
+          "Alpha City",
+          "850.5"
+        ],
+        [
+          "Numeria",
+          "Beta City",
+          "975"
+        ],
+        [
+          "Numeria",
+          "Beta City",
+          "610.75"
+        ],
+        [
+          "Numeria",
+          "Beta City",
+          "305.1"
+        ],
+        [
+          "Numeria",
+          "Gamma City",
+          "215.6"
+        ],
+        [
+          "Numeria",
+          "Gamma City",
+          "890.9"
+        ],
+        [
+          "Numeria",
+          "Gamma City",
+          "720.4"
+        ]
+      ]
+    },
+    "subreports": [],
+    "summary_info": {
+      "author": "",
+      "comments": "",
+      "created": 134299683133583209,
+      "keywords": "",
+      "last_printed": null,
+      "last_saved": 134299683729394210,
+      "last_saved_by": "",
+      "revision_number": "3",
+      "save_with_preview": true,
+      "subject": "",
+      "title": ""
+    },
+    "version": 1
+  }
+}

@@ -1,11 +1,10 @@
 -- Fixture for worrall_AlphaISOsByCountry.rpt (PUBLIC report; worrallbrian/crystal_reports).
 --
 -- SYNTHETIC data only — invented country-like rows (NOT real ISO 3166).
--- Portable DDL: this exact script seeds BOTH the SQLite test DB (cargo test) and the postgres DB
--- that the Crystal engine re-queries via the cross-engine oracle, so both stacks read identical
--- rows. Column names + types MUST match the report's stored bindings (QESession table
+-- Portable DDL: this exact script seeds both the SQLite test DB (cargo test) and the
+-- postgres DB used by the render tests, so both read identical rows. Column names + types MUST match the report's stored bindings (QESession table
 -- `countries_all_iso`: id Int32s; name/alpha_2_code/alpha_3_code/numeric_code/internet_cctld text)
--- or the Crystal engine's VerifyDatabase rejects the refresh.
+-- or the report will not bind to them.
 DROP TABLE IF EXISTS countries_all_iso;
 CREATE TABLE countries_all_iso (
   id             INTEGER PRIMARY KEY,

@@ -3,11 +3,11 @@
 //! Extracted from `main.rs` so the coercion has its own unit tests.
 
 use crate::error::RenderError;
-use crystal_formula::eval::{Date, Time, Value};
-use rpt::model::{
+use rpt_data::{normalize_param_name, Parameters};
+use rpt_formula::eval::{Date, Time, Value};
+use rpt_reader::model::{
     ParameterField, ParameterValue, ParameterValueKind as Vk, RangeBoundType, Report,
 };
-use rpt_data::{normalize_param_name, Parameters};
 
 use crate::applog::{Comp, Log};
 
@@ -194,16 +194,27 @@ fn stored_default(pf: &ParameterField) -> Option<Value> {
 
 /// Coerce one stored [`ParameterValue`] to a [`Value`] of the declared kind: a discrete value maps
 /// through [`coerce`]; a range maps to a [`Value::Range`] with each end's inclusivity from its bound
-/// type. A range end that fails to coerce (e.g. an open, empty bound) makes the whole range unusable.
+/// type. A *bounded* end that fails to coerce makes the whole range unusable.
 fn default_one(kind: Vk, pv: &ParameterValue) -> Option<Value> {
     match &pv.range {
         None => coerce(kind, &pv.value).ok(),
         Some(r) => Some(Value::Range {
-            lo: Box::new(coerce(kind, &pv.value).ok()?),
-            hi: Box::new(coerce(kind, &r.end_value).ok()?),
+            lo: Box::new(range_end(kind, &pv.value, r.lower_bound)?),
+            hi: Box::new(range_end(kind, &r.end_value, r.upper_bound)?),
             lo_incl: matches!(r.lower_bound, RangeBoundType::BoundInclusive),
             hi_incl: matches!(r.upper_bound, RangeBoundType::BoundInclusive),
         }),
+    }
+}
+
+/// One end of a stored range parameter value. `NoBound` is an **open** end: it stores no value, so
+/// it yields [`Value::Null`], which the evaluator reads as unbounded. Coercing the empty string it
+/// stores would fail for every non-string kind and discard the whole range — binding the parameter
+/// to `Null`, against which the selection formula keeps no record at all.
+fn range_end(kind: Vk, s: &str, bound: RangeBoundType) -> Option<Value> {
+    match bound {
+        RangeBoundType::NoBound => Some(Value::Null),
+        _ => coerce(kind, s).ok(),
     }
 }
 
@@ -311,6 +322,137 @@ fn edit_distance(a: &str, b: &str) -> usize {
         std::mem::swap(&mut prev, &mut cur);
     }
     prev[b.len()]
+}
+
+#[cfg(test)]
+mod range_default_tests {
+    use super::{default_one, stored_default, Vk};
+    use rpt_formula::eval::{eval, MapContext, Value};
+    use rpt_formula::{parse, RefKind, Syntax};
+    use rpt_reader::model::{ParameterField, ParameterRange, ParameterValue, RangeBoundType};
+
+    fn range_value(
+        lo: &str,
+        hi: &str,
+        lower: RangeBoundType,
+        upper: RangeBoundType,
+    ) -> ParameterValue {
+        ParameterValue {
+            value: lo.to_string(),
+            description: None,
+            range: Some(ParameterRange {
+                end_value: hi.to_string(),
+                lower_bound: lower,
+                upper_bound: upper,
+            }),
+        }
+    }
+
+    fn bounds(v: &Value) -> (Value, Value, bool, bool) {
+        match v {
+            Value::Range {
+                lo,
+                hi,
+                lo_incl,
+                hi_incl,
+            } => ((**lo).clone(), (**hi).clone(), *lo_incl, *hi_incl),
+            other => panic!("expected a Range, got {other:?}"),
+        }
+    }
+
+    /// An end declared `NoBound` carries no value, so it binds `Null` — the evaluator's open end —
+    /// instead of discarding the whole range.
+    #[test]
+    fn an_open_range_end_binds_null_rather_than_discarding_the_range() {
+        // "over 10,000": exclusive lower bound, open above.
+        let over_10k = range_value(
+            "10000",
+            "",
+            RangeBoundType::BoundExclusive,
+            RangeBoundType::NoBound,
+        );
+        let v = default_one(Vk::NumberParameter, &over_10k).expect("half-open range is usable");
+        assert_eq!(
+            bounds(&v),
+            (Value::Number(10_000.0), Value::Null, false, false)
+        );
+
+        // Open below, inclusive upper bound.
+        let up_to_100 = range_value(
+            "",
+            "100",
+            RangeBoundType::NoBound,
+            RangeBoundType::BoundInclusive,
+        );
+        let v = default_one(Vk::NumberParameter, &up_to_100).expect("half-open range is usable");
+        assert_eq!(bounds(&v), (Value::Null, Value::Number(100.0), false, true));
+
+        // Open at both ends.
+        let unbounded = range_value("", "", RangeBoundType::NoBound, RangeBoundType::NoBound);
+        let v = default_one(Vk::NumberParameter, &unbounded).expect("unbounded range is usable");
+        assert_eq!(bounds(&v), (Value::Null, Value::Null, false, false));
+    }
+
+    /// A fully bounded range is unchanged: both ends coerce to the declared kind and keep their
+    /// inclusivity.
+    #[test]
+    fn a_closed_range_still_coerces_both_ends() {
+        let closed = range_value(
+            "5",
+            "150",
+            RangeBoundType::BoundInclusive,
+            RangeBoundType::BoundInclusive,
+        );
+        let v = default_one(Vk::CurrencyParameter, &closed).expect("closed range is usable");
+        assert_eq!(
+            bounds(&v),
+            (Value::Currency(5.0), Value::Currency(150.0), true, true)
+        );
+
+        // A bounded end that does not coerce still makes the range unusable — an unparseable bound
+        // is not silently widened to "no limit".
+        let bad = range_value(
+            "not-a-number",
+            "150",
+            RangeBoundType::BoundInclusive,
+            RangeBoundType::BoundInclusive,
+        );
+        assert_eq!(default_one(Vk::NumberParameter, &bad), None);
+    }
+
+    /// The stored current value of a half-open range parameter reaches the formula engine and keeps
+    /// the records above the bound — the end-to-end shape of an unsupplied `{Field} = {?Param}`
+    /// selection. Binding `Null` instead keeps no record at all.
+    #[test]
+    fn a_half_open_current_value_selects_records_above_the_bound() {
+        let pf = ParameterField {
+            value_kind: Vk::NumberParameter,
+            has_current_value: true,
+            current_values: vec![range_value(
+                "10000",
+                "",
+                RangeBoundType::BoundExclusive,
+                RangeBoundType::NoBound,
+            )],
+            ..ParameterField::default()
+        };
+        let param = stored_default(&pf).expect("a stored half-open range binds a value");
+
+        let selects = |amount: f64| {
+            let ctx = MapContext::default()
+                .with_field(RefKind::Field, "orders.order amount", Value::Number(amount))
+                .with_field(RefKind::Parameter, "order_amt_range", param.clone());
+            let (ast, diags) = parse(
+                "{orders.order amount} = {?order_amt_range}",
+                Syntax::Crystal,
+            );
+            assert!(diags.is_empty(), "parse diagnostics: {diags:?}");
+            eval(&ast, &ctx)
+        };
+        assert_eq!(selects(12_500.0), Ok(Value::Bool(true)));
+        assert_eq!(selects(10_000.0), Ok(Value::Bool(false)));
+        assert_eq!(selects(9_999.0), Ok(Value::Bool(false)));
+    }
 }
 
 #[cfg(test)]

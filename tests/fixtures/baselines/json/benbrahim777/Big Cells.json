@@ -1,5 +1,10 @@
 {
   "model": {
+    "authoring_version": {
+      "letter": 0,
+      "major": 12,
+      "minor": 0
+    },
     "data_definition": {
       "condition_formula_bodies": [],
       "custom_functions": [],
@@ -94,6 +99,7 @@
               "is_percentage_summary": false,
               "operation": "Sum",
               "operation_parameter": 0,
+              "second_group_for_percentage": null,
               "secondary_summarized_field": "",
               "summarized_field": "Orders.Order Amount"
             }
@@ -877,12 +883,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -902,12 +903,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -981,6 +977,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": true,
@@ -1004,11 +1001,9 @@
                   "name": "Text1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 6000
+                  }
                 }
               ],
-              "section_code": 6000,
               "width": 0
             }
           ]
@@ -1035,12 +1030,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -1060,12 +1050,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1132,11 +1117,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -1150,11 +1160,15 @@
                           "currency_symbol_text": "$",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1172,24 +1186,28 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Special",
                       "summary_code": null,
-                      "value_type": "Date"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "PrintDate1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 12000
+                  }
                 }
               ],
-              "section_code": 12000,
               "width": 0
             }
           ]
@@ -1220,12 +1238,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -1245,12 +1258,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1317,11 +1325,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -1335,11 +1368,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1357,30 +1394,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "GroupName",
                       "summary_code": null,
-                      "value_type": "String"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "GroupNameRegion1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 18000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1416,15 +1453,13 @@
                       "formula": null,
                       "value": false
                     },
-                    "text_rotation": {
-                      "Other": 28276
-                    },
+                    "text_rotation": "Rotate0",
                     "tooltip_text": null,
                     "vertical_alignment": "Top"
                   },
                   "kind": {
                     "CrossTab": {
-                      "column_axis_options": 0,
+                      "column_level_count": 0,
                       "columns": [
                         {
                           "field_ref": "",
@@ -1470,6 +1505,7 @@
                         "Customer.Customer Name"
                       ],
                       "grid_format": {
+                        "cell_count": 20,
                         "cells": [
                           {
                             "background_color": null,
@@ -1572,7 +1608,6 @@
                             "flags": 0
                           }
                         ],
-                        "raw": 20,
                         "style": {
                           "column_grand_total_color": {
                             "a": 255,
@@ -1596,12 +1631,6 @@
                           "suppress_row_grand_totals": false
                         }
                       },
-                      "measures": [
-                        {
-                          "field": "Orders.Order Amount",
-                          "operation": "Sum"
-                        }
-                      ],
                       "options": {
                         "column_grand_total_color": null,
                         "keep_columns_together": true,
@@ -1614,7 +1643,7 @@
                         "suppress_empty_rows": false,
                         "suppress_row_grand_totals": false
                       },
-                      "row_axis_options": 0,
+                      "row_level_count": 0,
                       "rows": [
                         {
                           "field_ref": "",
@@ -1634,17 +1663,11 @@
                   "name": "CrossTab1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 18000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1718,6 +1741,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": true,
@@ -1741,17 +1765,11 @@
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 18000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1818,11 +1836,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -1836,11 +1879,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -1858,30 +1905,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "GroupName",
                       "summary_code": null,
-                      "value_type": "String"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 18000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -1955,6 +2002,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": true,
@@ -1978,17 +2026,11 @@
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 18000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2062,6 +2104,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": true,
@@ -2085,17 +2128,11 @@
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 18000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2162,11 +2199,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "MonthDayYear",
                           "day": "NumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "/",
                           "month": "NumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "/",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "LongYear"
                         },
@@ -2180,11 +2242,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2202,30 +2268,30 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": "AM",
                           "hour": "NoLeadingZeroNumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": "PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "GroupName",
                       "summary_code": null,
-                      "value_type": "String"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 18000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2299,6 +2365,7 @@
                           },
                           "runs": [
                             {
+                              "character_spacing": 0,
                               "field_ref": null,
                               "font": {
                                 "bold": true,
@@ -2322,17 +2389,11 @@
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 18000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2399,11 +2460,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": false
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "YearMonthDay",
                           "day": "LeadingZeroNumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
                           "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "ShortYear"
                         },
@@ -2412,16 +2498,20 @@
                           "separator": "  "
                         },
                         "numeric": {
-                          "currency_position": "LeadingCurrencyOutsideNegative",
-                          "currency_symbol": "FloatingSymbol",
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
                           "currency_symbol_text": "$",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
-                          "negative": "Bracketed",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2439,9 +2529,15 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Summary",
@@ -2452,17 +2548,11 @@
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 18000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2529,11 +2619,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": false
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "YearMonthDay",
                           "day": "LeadingZeroNumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
                           "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "ShortYear"
                         },
@@ -2542,16 +2657,20 @@
                           "separator": "  "
                         },
                         "numeric": {
-                          "currency_position": "LeadingCurrencyOutsideNegative",
-                          "currency_symbol": "FloatingSymbol",
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
                           "currency_symbol_text": "$",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
-                          "negative": "Bracketed",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2569,9 +2688,15 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Summary",
@@ -2582,17 +2707,11 @@
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 18000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2659,11 +2778,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": false
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "YearMonthDay",
                           "day": "LeadingZeroNumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
                           "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "ShortYear"
                         },
@@ -2672,16 +2816,20 @@
                           "separator": "  "
                         },
                         "numeric": {
-                          "currency_position": "LeadingCurrencyOutsideNegative",
-                          "currency_symbol": "FloatingSymbol",
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
                           "currency_symbol_text": "$",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
-                          "negative": "Bracketed",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2699,9 +2847,15 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Summary",
@@ -2712,17 +2866,11 @@
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 18000
+                  }
                 },
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -2789,11 +2937,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": false
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyOutsideNegative",
+                          "currency_symbol": "FloatingSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "Bracketed",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "YearMonthDay",
                           "day": "LeadingZeroNumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
                           "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "ShortYear"
                         },
@@ -2802,16 +2975,20 @@
                           "separator": "  "
                         },
                         "numeric": {
-                          "currency_position": "LeadingCurrencyOutsideNegative",
-                          "currency_symbol": "FloatingSymbol",
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
                           "currency_symbol_text": "$",
                           "decimal_places": 2,
                           "decimal_symbol": ".",
-                          "negative": "Bracketed",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToHundredth",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -2829,9 +3006,15 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Summary",
@@ -2842,11 +3025,9 @@
                   "name": "",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 18000
+                  }
                 }
               ],
-              "section_code": 18000,
               "width": 0
             }
           ]
@@ -2873,12 +3054,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -2896,7 +3072,6 @@
               "kind": "Detail",
               "name": "DetailSection1",
               "objects": [],
-              "section_code": 24000,
               "width": 0
             }
           ]
@@ -2923,12 +3098,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -2946,7 +3116,6 @@
               "kind": "GroupFooter",
               "name": "GroupFooterSection1",
               "objects": [],
-              "section_code": 30000,
               "width": 0
             }
           ]
@@ -2973,12 +3142,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -2996,7 +3160,6 @@
               "kind": "ReportFooter",
               "name": "ReportFooterSection1",
               "objects": [],
-              "section_code": 48000,
               "width": 0
             }
           ]
@@ -3023,12 +3186,7 @@
             {
               "condition_formulas": [],
               "format": {
-                "background_color": {
-                  "a": 255,
-                  "b": 255,
-                  "g": 255,
-                  "r": 255
-                },
+                "background_color": null,
                 "base": {
                   "keep_together": true,
                   "new_page_after": false,
@@ -3048,12 +3206,7 @@
               "objects": [
                 {
                   "border": {
-                    "background_color": {
-                      "a": 255,
-                      "b": 255,
-                      "g": 255,
-                      "r": 255
-                    },
+                    "background_color": null,
                     "border_color": {
                       "a": 255,
                       "b": 0,
@@ -3120,11 +3273,36 @@
                           "suppress_if_duplicated": false,
                           "use_system_defaults": true
                         },
+                        "currency_numeric": {
+                          "currency_position": "LeadingCurrencyInsideNegative",
+                          "currency_symbol": "NoSymbol",
+                          "currency_symbol_text": "$",
+                          "decimal_places": 2,
+                          "decimal_symbol": ".",
+                          "display_reverse_sign": false,
+                          "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
+                          "rounding": "RoundToHundredth",
+                          "suppress_if_zero": false,
+                          "thousand_symbol": ",",
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
+                        },
                         "date": {
+                          "calendar": "GregorianCalendar",
                           "date_order": "YearMonthDay",
                           "day": "LeadingZeroNumericDay",
                           "day_of_week": "NoDayOfWeek",
+                          "day_of_week_enclosure": "NotEnclosed",
+                          "day_of_week_position": "LeadingPosition",
+                          "day_of_week_separator": "",
+                          "era": "NoEra",
+                          "first_separator": "-",
                           "month": "LeadingZeroNumericMonth",
+                          "prefix_separator": "",
+                          "second_separator": "-",
+                          "suffix_separator": "",
                           "system_default": "UseWindowsShortDate",
                           "year": "ShortYear"
                         },
@@ -3138,11 +3316,15 @@
                           "currency_symbol_text": "",
                           "decimal_places": 0,
                           "decimal_symbol": ".",
+                          "display_reverse_sign": false,
                           "negative": "LeadingMinus",
+                          "one_currency_symbol_per_page": false,
                           "rounding": "RoundToUnit",
                           "suppress_if_zero": false,
                           "thousand_symbol": ",",
-                          "thousands_separator": true
+                          "thousands_separator": true,
+                          "use_lead_zero": true,
+                          "zero_value_string": "<Default Format>"
                         },
                         "string": {
                           "enable_word_wrap": true,
@@ -3160,29 +3342,35 @@
                           "text_format": "StandardText"
                         },
                         "time": {
+                          "am_pm_format": "AMPMAfter",
+                          "am_string": " AM",
                           "hour": "NumericHour",
+                          "hour_minute_separator": ":",
                           "minute": "NumericMinute",
-                          "second": "NumericSecond"
+                          "minute_second_separator": ":",
+                          "pm_string": " PM",
+                          "second": "NumericSecond",
+                          "time_base": "TwelveHour"
                         }
                       },
                       "ref_kind": "Special",
                       "summary_code": null,
-                      "value_type": "Int32u"
+                      "value_type": "Unknown"
                     }
                   },
                   "name": "PageNumber1",
                   "origin": {
                     "index": 0
-                  },
-                  "section_code": 42000
+                  }
                 }
               ],
-              "section_code": 42000,
               "width": 0
             }
           ]
         }
-      ]
+      ],
+      "kind": "ColumnarReport",
+      "style": "Standard"
     },
     "report_options": {
       "convert_null_field_to_default": false,
@@ -3246,1456 +3434,1456 @@
           "BC",
           "Cycles and Sports",
           "Mountain",
-          "323942",
+          "3239.42",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Hybrid",
-          "754440",
+          "7544.4",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Saddles",
-          "890771",
+          "8907.71",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Kids",
-          "46995",
+          "469.95",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Helmets",
-          "46995",
+          "469.95",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Helmets",
-          "46995",
+          "469.95",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Mountain",
-          "70120",
+          "701.2",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Gloves",
-          "70120",
+          "701.2",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Gloves",
-          "70120",
+          "701.2",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Hybrid",
-          "339690",
+          "3396.9",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Competition",
-          "339690",
+          "3396.9",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Competition",
-          "890771",
+          "8907.71",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Gloves",
-          "165055",
+          "1650.55",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Kids",
-          "56370",
+          "563.7",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Competition",
-          "323942",
+          "3239.42",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Mountain",
-          "37175",
+          "371.75",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Helmets",
-          "37175",
+          "371.75",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Mountain",
-          "94008",
+          "940.08",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Mountain",
-          "229455",
+          "2294.55",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Gloves",
-          "4050",
+          "40.5",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Kids",
-          "84555",
+          "845.55",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Competition",
-          "349365",
+          "3493.65",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Gloves",
-          "349365",
+          "3493.65",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Competition",
-          "273525",
+          "2735.25",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Competition",
-          "347970",
+          "3479.7",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Hybrid",
-          "165055",
+          "1650.55",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Kids",
-          "34475",
+          "344.75",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Helmets",
-          "581196",
+          "5811.96",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Saddles",
-          "87133",
+          "871.33",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Locks",
-          "87133",
+          "871.33",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Helmets",
-          "27730",
+          "277.3",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Helmets",
-          "27730",
+          "277.3",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Helmets",
-          "27730",
+          "277.3",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Kids",
-          "87945",
+          "879.45",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Helmets",
-          "87945",
+          "879.45",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Helmets",
-          "12570",
+          "125.7",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Competition",
-          "306555",
+          "3065.55",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Saddles",
-          "890771",
+          "8907.71",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Mountain",
-          "152970",
+          "1529.7",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Hybrid",
-          "754440",
+          "7544.4",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Helmets",
-          "34475",
+          "344.75",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Gloves",
-          "34475",
+          "344.75",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Hybrid",
-          "74912",
+          "749.12",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Locks",
-          "2994",
+          "29.94",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Mountain",
-          "107106",
+          "1071.06",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Helmets",
-          "107106",
+          "1071.06",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Gloves",
-          "107106",
+          "1071.06",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Helmets",
-          "7962",
+          "79.62",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Helmets",
-          "16170",
+          "161.7",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Saddles",
-          "3273",
+          "32.73",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Gloves",
-          "3273",
+          "32.73",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Helmets",
-          "306555",
+          "3065.55",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Mountain",
-          "47985",
+          "479.85",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Locks",
-          "273525",
+          "2735.25",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Locks",
-          "11370",
+          "113.7",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Gloves",
-          "2700",
+          "27",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Competition",
-          "881955",
+          "8819.55",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Locks",
-          "4380",
+          "43.8",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Helmets",
-          "10780",
+          "107.8",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Mountain",
-          "614899",
+          "6148.99",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Competition",
-          "614899",
+          "6148.99",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Locks",
-          "614899",
+          "6148.99",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Helmets",
-          "21560",
+          "215.6",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Gloves",
-          "297085",
+          "2970.85",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Helmets",
-          "10170",
+          "101.7",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Competition",
-          "297085",
+          "2970.85",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Mountain",
-          "248940",
+          "2489.4",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Mountain",
-          "248940",
+          "2489.4",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Helmets",
-          "5390",
+          "53.9",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Competition",
-          "273555",
+          "2735.55",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Saddles",
-          "273555",
+          "2735.55",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Locks",
-          "3570",
+          "35.7",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Competition",
-          "1088679",
+          "10886.79",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Competition",
-          "1088679",
+          "10886.79",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Helmets",
-          "1088679",
+          "10886.79",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Mountain",
-          "581196",
+          "5811.96",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Competition",
-          "581196",
+          "5811.96",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Helmets",
-          "21560",
+          "215.6",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Helmets",
-          "112742",
+          "1127.42",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Competition",
-          "754440",
+          "7544.4",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Competition",
-          "296175",
+          "2961.75",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Locks",
-          "296175",
+          "2961.75",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Mountain",
-          "76485",
+          "764.85",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Mountain",
-          "241885",
+          "2418.85",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Gloves",
-          "241885",
+          "2418.85",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Helmets",
-          "241885",
+          "2418.85",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Mountain",
-          "337125",
+          "3371.25",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Competition",
-          "337125",
+          "3371.25",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Helmets",
-          "337125",
+          "3371.25",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Mountain",
-          "95970",
+          "959.7",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Hybrid",
-          "112742",
+          "1127.42",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Gloves",
-          "170236",
+          "1702.36",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Kids",
-          "54870",
+          "548.7",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Gloves",
-          "4050",
+          "40.5",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Hybrid",
-          "531204",
+          "5312.04",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Competition",
-          "531204",
+          "5312.04",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Helmets",
-          "8611",
+          "86.11",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Helmets",
-          "8611",
+          "86.11",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Competition",
-          "883746",
+          "8837.46",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Competition",
-          "883746",
+          "8837.46",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Competition",
-          "881955",
+          "8819.55",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Helmets",
-          "8330",
+          "83.3",
           "Canada"
         ],
         [
           "BC",
           "Pedal Pusher Bikes Inc.",
           "Gloves",
-          "8330",
+          "83.3",
           "Canada"
         ],
         [
           "BC",
           "Cycles and Sports",
           "Helmets",
-          "6780",
+          "67.8",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Helmets",
-          "29662",
+          "296.62",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Hybrid",
-          "323691",
+          "3236.91",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Mountain",
-          "65970",
+          "659.7",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Mountain",
-          "98955",
+          "989.55",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Kids",
-          "398259",
+          "3982.59",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Mountain",
-          "398259",
+          "3982.59",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Hybrid",
-          "398259",
+          "3982.59",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Mountain",
-          "153042",
+          "1530.42",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Mountain",
-          "153042",
+          "1530.42",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Helmets",
-          "153042",
+          "1530.42",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Kids",
-          "52126",
+          "521.26",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Helmets",
-          "29662",
+          "296.62",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Helmets",
-          "1155300",
+          "11553",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Competition",
-          "269955",
+          "2699.55",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Locks",
-          "11370",
+          "113.7",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Competition",
-          "587970",
+          "5879.7",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Gloves",
-          "1650",
+          "16.5",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Mountain",
-          "98955",
+          "989.55",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Hybrid",
-          "145761",
+          "1457.61",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Saddles",
-          "7050",
+          "70.5",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Saddles",
-          "13160",
+          "131.6",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Hybrid",
-          "87133",
+          "871.33",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Locks",
-          "3500",
+          "35",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Saddles",
-          "29662",
+          "296.62",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Mountain",
-          "257925",
+          "2579.25",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Mountain",
-          "112140",
+          "1121.4",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Helmets",
-          "112140",
+          "1121.4",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Locks",
-          "900",
+          "9",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Helmets",
-          "12570",
+          "125.7",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Mountain",
-          "265425",
+          "2654.25",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Hybrid",
-          "265425",
+          "2654.25",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Saddles",
-          "2400",
+          "24",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Saddles",
-          "900",
+          "9",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Saddles",
-          "7200",
+          "72",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Helmets",
-          "13470",
+          "134.7",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Mountain",
-          "323691",
+          "3236.91",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Hybrid",
-          "161955",
+          "1619.55",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Mountain",
-          "152970",
+          "1529.7",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Hybrid",
-          "257925",
+          "2579.25",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Mountain",
-          "162514",
+          "1625.14",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Mountain",
-          "162514",
+          "1625.14",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Helmets",
-          "162514",
+          "1625.14",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Mountain",
-          "229455",
+          "2294.55",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Gloves",
-          "1650",
+          "16.5",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Gloves",
-          "4650",
+          "46.5",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Competition",
-          "1155300",
+          "11553",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Competition",
-          "1155300",
+          "11553",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Competition",
-          "587970",
+          "5879.7",
           "Canada"
         ],
         [
           "BC",
           "Bikes for Tykes",
           "Gloves",
-          "13470",
+          "134.7",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Competition",
-          "1085917",
+          "10859.17",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Mountain",
-          "395955",
+          "3959.55",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Saddles",
-          "13160",
+          "131.6",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Competition",
-          "589320",
+          "5893.2",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Gloves",
-          "589320",
+          "5893.2",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Competition",
-          "347970",
+          "3479.7",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Mountain",
-          "156525",
+          "1565.25",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Helmets",
-          "156525",
+          "1565.25",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Locks",
-          "7580",
+          "75.8",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Helmets",
-          "10170",
+          "101.7",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Locks",
-          "2994",
+          "29.94",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Mountain",
-          "92655",
+          "926.55",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Helmets",
-          "5531",
+          "55.31",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Gloves",
-          "4350",
+          "43.5",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Competition",
-          "1085917",
+          "10859.17",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Helmets",
-          "1085917",
+          "10859.17",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Mountain",
-          "143955",
+          "1439.55",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Competition",
-          "359790",
+          "3597.9",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Helmets",
-          "359790",
+          "3597.9",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Gloves",
-          "359790",
+          "3597.9",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Helmets",
-          "8931",
+          "89.31",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Gloves",
-          "8931",
+          "89.31",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Competition",
-          "170236",
+          "1702.36",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Gloves",
-          "170236",
+          "1702.36",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Gloves",
-          "5531",
+          "55.31",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Gloves",
-          "2900",
+          "29",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Saddles",
-          "92655",
+          "926.55",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Helmets",
-          "92655",
+          "926.55",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Helmets",
-          "8380",
+          "83.8",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Mountain",
-          "621810",
+          "6218.1",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Competition",
-          "621810",
+          "6218.1",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Saddles",
-          "621810",
+          "6218.1",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Competition",
-          "293985",
+          "2939.85",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Competition",
-          "395955",
+          "3959.55",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Mountain",
-          "98955",
+          "989.55",
           "Canada"
         ],
         [
           "BC",
           "Crazy Wheels",
           "Helmets",
-          "16170",
+          "161.7",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Competition",
-          "801501",
+          "8015.01",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Helmets",
-          "8380",
+          "83.8",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Gloves",
-          "3300",
+          "33",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Kids",
-          "82305",
+          "823.05",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Mountain",
-          "92361",
+          "923.61",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Saddles",
-          "801501",
+          "8015.01",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Mountain",
-          "229455",
+          "2294.55",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Saddles",
-          "139108",
+          "1391.08",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Mountain",
-          "139108",
+          "1391.08",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Mountain",
-          "229455",
+          "2294.55",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Competition",
-          "641955",
+          "6419.55",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Competition",
-          "641955",
+          "6419.55",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Helmets",
-          "801501",
+          "8015.01",
           "Canada"
         ],
         [
           "BC",
           "Biking's It Industries",
           "Gloves",
-          "92361",
+          "923.61",
           "Canada"
         ],
         [
           "MB",
           "Dag City Cycle",
           "Mountain",
-          "86374",
+          "863.74",
           "Canada"
         ],
         [
           "NS",
           "Halifax Cycle Centre",
           "Mountain",
-          "95970",
+          "959.7",
           "Canada"
         ],
         [
           "ON",
           "Don't Tread On Me",
           "Kids",
-          "27435",
+          "274.35",
           "Canada"
         ],
         [
           "ON",
           "Cycle Fever",
           "Competition",
-          "881955",
+          "8819.55",
           "Canada"
         ],
         [
           "PQ",
           "Wheels 'n' Deals",
           "Competition",
-          "179970",
+          "1799.7",
           "Canada"
         ]
       ]
@@ -4704,7 +4892,10 @@
     "summary_info": {
       "author": "",
       "comments": "",
+      "created": 129943961557480000,
       "keywords": "",
+      "last_printed": null,
+      "last_saved": 129943989875920000,
       "last_saved_by": "",
       "revision_number": "3",
       "save_with_preview": true,

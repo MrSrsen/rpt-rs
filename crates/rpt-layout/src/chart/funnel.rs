@@ -5,9 +5,7 @@
 
 #[cfg(test)]
 use super::common::AxisTitles;
-use super::common::{
-    fmt_val, title_op, truncate, ChartCtx, LABEL_PT, PALETTE, SLICE_BORDER_W, WHITE,
-};
+use super::common::{fmt_val, title_op, ChartCtx, LABEL_PT, PALETTE, SLICE_BORDER_W, WHITE};
 use rpt_model::{Rect, Twips};
 use rpt_pages::{DrawOp, FontSpec, Point, PolygonOp, Stroke, TextAlign, TextRun};
 
@@ -25,7 +23,7 @@ pub(crate) fn funnel_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawO
         return Vec::new();
     }
     let &ChartCtx {
-        def,
+        style,
         rect,
         title,
         show_labels,
@@ -42,7 +40,7 @@ pub(crate) fn funnel_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawO
         (rh / 8).clamp(180, 360)
     };
     if !title.is_empty() {
-        ops.push(title_op(def, rl, rt + pad / 2, rw, title_h, title, &src));
+        ops.push(title_op(style, rl, rt + pad / 2, rw, title_h, title, &src));
     }
 
     let cx = rl + rw / 2;
@@ -99,9 +97,9 @@ pub(crate) fn funnel_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawO
         // Category (always) + value (gated) labels, centred in the band.
         let mid_y = ty + band_h / 2;
         let text = if show_labels {
-            format!("{}  {}", truncate(label, 16), fmt_val(*val))
+            format!("{}  {}", label, fmt_val(*val))
         } else {
-            truncate(label, 16)
+            label.clone()
         };
         ops.push(DrawOp::Text(TextRun {
             bounds: Rect {
@@ -113,13 +111,14 @@ pub(crate) fn funnel_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawO
             text,
             font: FontSpec {
                 family: "Arial".into(),
-                size_pt: LABEL_PT,
+                size_pt: style.scaled_pt(LABEL_PT),
                 ..Default::default()
             },
             color: WHITE,
             align: TextAlign::Center,
             rotation: 0.0,
             metrics: None,
+            character_spacing: Twips(0),
             source: src(),
         }));
     }

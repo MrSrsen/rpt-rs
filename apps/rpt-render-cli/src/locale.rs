@@ -5,8 +5,9 @@
 //! host locale once at process start and uses it to resolve "System Default" date/number formats;
 //! there is no stored per-report locale to arbitrate.
 //!
-//! NOTE: this resolves and *reports* the locale, but `rpt-format-value` is still en-US only, so a
-//! non-en-US locale does not yet change the formatted output — the CLI warns when that gap bites.
+//! The resolved locale drives the formatted output, so a host whose `LC_NUMERIC`/`LANG` differs from
+//! the machine a comparison was produced on renders different currency symbols and date orders; pass
+//! `--locale` to pin it.
 
 /// Where the resolved locale came from — surfaced in the log so the user can see why.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]

@@ -9,7 +9,7 @@ use crate::{
 };
 use rpt_data::{DataContext, GroupInstance, Row};
 use rpt_model::{
-    Alignment, LineSpacing, Paragraph, ReadingOrder, ReportObject, ReportObjectKind, Section, Twips,
+    LineSpacing, Paragraph, ReadingOrder, ReportObject, ReportObjectKind, Section, Twips,
 };
 use rpt_pages::{FontSpec, ObjectKind, Page, PageCheckpoint, TextAlign, TextLayout};
 use std::rc::Rc;
@@ -54,6 +54,18 @@ fn paragraph_font(p: &Paragraph) -> Option<FontSpec> {
         .map(crate::font_of)
 }
 
+/// A paragraph's rigid character spacing: the first run that sets one. It is a property of a
+/// literal-text run (a field run has no such member and always reads zero), and the wrapped lines a
+/// paragraph produces are drawn as single runs, so the paragraph carries one value. Zero — the
+/// overwhelming default — leaves the natural advances alone.
+fn paragraph_character_spacing(p: &Paragraph) -> Twips {
+    p.runs
+        .iter()
+        .map(|r| r.character_spacing)
+        .find(|s| s.0 != 0)
+        .unwrap_or_default()
+}
+
 /// The line pitch (top-to-top vertical advance) for a paragraph, in twips: the font's natural line
 /// height scaled by a `Multiple` line spacing (1.0 = single, 1.5, 2.0), or the `Exact` twip pitch when
 /// the spacing is exact. Floored at 1 so a line always advances.
@@ -64,6 +76,23 @@ fn line_pitch(spacing: LineSpacing, font: &FontSpec, layout: &dyn TextLayout) ->
         None => spacing.exact_twips().unwrap_or(natural as i32),
     }
     .max(1)
+}
+
+/// The band that closes an "Underlay Following Sections" span — the *companion* of the section that
+/// opened it. Sections between the two draw over the underlay; the companion itself is not underlaid.
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub(crate) enum UnderlayEnd {
+    /// Opened by a Report Header section; closed by the Report Footer.
+    ReportFooter,
+    /// Opened by a Group Header section at this level; closed by the Group Footer of the same level.
+    GroupFooter(usize),
+}
+
+/// An open underlay span: the y its section would have ended at, and the band that closes it.
+#[derive(Debug)]
+pub(crate) struct UnderlaySpan {
+    bottom: i32,
+    end: UnderlayEnd,
 }
 
 /// The running position of a multi-column detail flow: the current column, the shared/row top
@@ -115,7 +144,10 @@ impl<'a> Formatter<'a> {
         state: &ResolveState,
         allow_grow: bool,
     ) -> Option<TextPlan> {
-        use crate::resolve::{cond, cond_color, field_text, text_display};
+        use crate::resolve::{cond, cond_color, field_text_marked, text_display};
+        // Set by the `Field` arm below when the field prints one currency symbol per page; the plan
+        // carries it so the emit path can record a fixup without resolving the value again.
+        let mut currency = None;
         // `reading_order` (Text/FieldHeading only) sets the paragraph's base direction; `paragraphs`
         // carries per-paragraph indentation for a text object (fields/headings have none).
         let (raw, font, color, kind, reading_order, paragraphs): (
@@ -127,7 +159,18 @@ impl<'a> Formatter<'a> {
             Option<&[Paragraph]>,
         ) = match &obj.kind {
             ReportObjectKind::Field(f) => (
-                field_text(self.report, f, ctx, state, &self.locale, &self.diagnostics),
+                {
+                    let (text, mark) = field_text_marked(
+                        self.report,
+                        f,
+                        ctx,
+                        state,
+                        &self.locale,
+                        &self.diagnostics,
+                    );
+                    currency = mark;
+                    text
+                },
                 font_of(&f.font_color.font),
                 cond_color(&f.font_color.condition_formulas, cond::FONT_COLOR, ctx)
                     .unwrap_or(f.font_color.color),
@@ -136,7 +179,7 @@ impl<'a> Formatter<'a> {
                 None,
             ),
             ReportObjectKind::Text(t) => (
-                text_display(t, ctx, state, &self.locale, &self.diagnostics),
+                text_display(self.report, t, ctx, state, &self.locale, &self.diagnostics),
                 font_of(&t.font_color.font),
                 cond_color(&t.font_color.condition_formulas, cond::FONT_COLOR, ctx)
                     .unwrap_or(t.font_color.color),
@@ -145,7 +188,7 @@ impl<'a> Formatter<'a> {
                 Some(&t.paragraphs),
             ),
             // A field heading is a static column-label text object: its literal is stored (needing
-            // no row), drawn with its own font/colour, so it resolves like a text object.
+            // no row), drawn with its own font/color, so it resolves like a text object.
             ReportObjectKind::FieldHeading(h) => (
                 h.text.clone(),
                 font_of(&h.font_color.font),
@@ -187,15 +230,7 @@ impl<'a> Formatter<'a> {
                 );
             }
         }
-        // A right-to-left paragraph left at the default alignment reads flush-right (its base
-        // direction), the same resolution the engine applies. An explicit alignment still wins.
-        let align = if matches!(obj.format.horizontal_alignment, Alignment::DefaultAlign)
-            && matches!(reading_order, ReadingOrder::RightToLeft)
-        {
-            TextAlign::Right
-        } else {
-            crate::align_of(obj.format.horizontal_alignment)
-        };
+        let align = crate::resolved_align(self.report, obj, reading_order);
         // Explicit line breaks (a multi-line label like "Numeric\nCode") always split into separate
         // runs so every backend renders them as lines. Can-grow additionally word-wraps each line.
         // Each `\n`-segment is one paragraph, aligned by position with `paragraphs` to pick up its
@@ -234,16 +269,21 @@ impl<'a> Formatter<'a> {
             ));
             let ascent = Twips(self.text_layout.ascent_twips(&para_font) as i32);
             let avail = (body_w - left - right).max(1);
+            // A spaced paragraph must break at the width it is drawn at, so the wrap measures through
+            // the same adjusted advance the emitted run reports. Unspaced text (the default) uses the
+            // injected layout untouched.
+            let spacing = para.map(paragraph_character_spacing).unwrap_or_default();
+            let spaced;
+            let wrap_layout: &dyn TextLayout = if spacing.0 == 0 {
+                self.text_layout
+            } else {
+                spaced = crate::text::SpacedLayout::new(self.text_layout, spacing);
+                &spaced
+            };
             let wrapped: Vec<String> = if obj.format.can_grow && allow_grow {
                 // The first-line indent narrows where the first line breaks, not just where it sits:
                 // the first line wraps at `avail - first`, the rest at the paragraph's full `avail`.
-                wrap_first_line_indent(
-                    self.text_layout,
-                    seg,
-                    avail as f64,
-                    first as f64,
-                    &para_font,
-                )
+                wrap_first_line_indent(wrap_layout, seg, avail as f64, first as f64, &para_font)
             } else {
                 vec![seg.to_string()]
             };
@@ -267,6 +307,7 @@ impl<'a> Formatter<'a> {
                     line_height,
                     ascent,
                     align: line_align,
+                    character_spacing: spacing,
                 });
             }
         }
@@ -279,16 +320,35 @@ impl<'a> Formatter<'a> {
                 line_height: Twips(self.text_layout.line_height_twips(&font) as i32),
                 ascent: Twips(self.text_layout.ascent_twips(&font) as i32),
                 align,
+                character_spacing: Twips(0),
             });
         }
-        Some(TextPlan { lines, color, kind })
+        Some(TextPlan {
+            lines,
+            color,
+            kind,
+            currency,
+        })
     }
 
     /// Emit one band (section) at the cursor, paginating first if it would overflow the body. The
     /// band grows vertically when a `can-grow` text object wraps to more lines than its box holds.
-    pub(crate) fn emit_band(&mut self, section: &Section, row: Option<&Row>, state: &ResolveState) {
+    ///
+    /// Returns whether the band produced any output: `false` when it was suppressed (statically,
+    /// conditionally, or as a blank section), which is what makes a detail record *invisible* for
+    /// the "Records per page" cap.
+    ///
+    /// `underlay_end` names the companion band that would close an underlay span opened here (see
+    /// [`Self::open_underlay`]); `None` for a band whose kind has no companion.
+    pub(crate) fn emit_band(
+        &mut self,
+        section: &Section,
+        row: Option<&Row>,
+        state: &ResolveState,
+        underlay_end: Option<UnderlayEnd>,
+    ) -> bool {
         if section.format.base.suppress {
-            return;
+            return false;
         }
         // A Section_Visibility condition suppresses the whole band per record, like the static flag.
         // Evaluated on a probe context (the incoming record) so a suppressed band forces no page
@@ -303,7 +363,7 @@ impl<'a> Formatter<'a> {
             )
             .unwrap_or(false)
             {
-                return;
+                return false;
             }
         }
         // NewPageBefore on this band, or a deferred NewPageAfter from the previous band, starts a
@@ -332,7 +392,7 @@ impl<'a> Formatter<'a> {
         // formulas have already evaluated (above), so their record-time side effects still fire.
         if section.format.suppress_if_blank && self.section_is_blank(section, &plans, ctx.as_ref())
         {
-            return;
+            return false;
         }
         // Route to the cross-page-flow path only when an inline subreport can't land atomically on a
         // page at all (see [`Self::try_emit_flowing_subreport`]).
@@ -363,15 +423,12 @@ impl<'a> Formatter<'a> {
                 self.cursor_y
             };
             self.emit_band_plans(section, &plans, origin_y, height, ctx.as_ref(), &subs, None);
-            // "Underlay Following Sections": the band is a background for the sections that follow it.
-            // It is emitted first (so painter's order puts its ops underneath the later bands) and does
-            // not advance the cursor, so the following section(s) draw over the same vertical region
-            // instead of being pushed below. First cut: the underlay backs whatever follows in normal
-            // flow; multi-area spans and section opacity are follow-ups.
             if pin_bottom {
                 // The band consumed the rest of the page: the next flow band starts a fresh page.
                 self.cursor_y = self.body_bottom;
-            } else if !section.format.underlay_section {
+            } else if section.format.underlay_section {
+                self.open_underlay(origin_y + height, underlay_end);
+            } else {
                 self.cursor_y += height;
             }
         }
@@ -384,6 +441,38 @@ impl<'a> Formatter<'a> {
         if section.format.base.reset_page_number_after {
             self.pending_page_number_reset = true;
         }
+        true
+    }
+
+    /// Open an "Underlay Following Sections" span for a band just emitted at `bottom - height`.
+    ///
+    /// The band is a background for the sections that follow it: it draws first (so painter's order
+    /// puts its ops underneath) and does not advance the cursor, so the following sections cover the
+    /// same vertical region — across area boundaries — instead of being pushed below it. The span
+    /// ends at the section's **companion** band, which is not underlaid: reaching it drops the cursor
+    /// to `bottom` (see [`Self::close_underlay_spans`]). A band with no companion (`end` is `None` —
+    /// a detail, a footer, or a page header, whose companion page footer is pinned to the body bottom
+    /// anyway) simply underlays the rest of the page.
+    fn open_underlay(&mut self, bottom: i32, end: Option<UnderlayEnd>) {
+        if let Some(end) = end {
+            self.underlay_spans.push(UnderlaySpan { bottom, end });
+        }
+    }
+
+    /// Close every underlay span that `end` is the companion of, dropping the cursor to the lowest
+    /// point they reached. A span that ended above the cursor leaves it alone — the overlaying
+    /// content already ran past the underlay.
+    pub(crate) fn close_underlay_spans(&mut self, end: UnderlayEnd) {
+        let mut floor = self.cursor_y;
+        self.underlay_spans.retain(|span| {
+            if span.end == end {
+                floor = floor.max(span.bottom);
+                false
+            } else {
+                true
+            }
+        });
+        self.cursor_y = floor;
     }
 
     /// Flow an inline subreport across pages when it can't land atomically on one — it produced
@@ -556,14 +645,64 @@ impl<'a> Formatter<'a> {
                 height += self.measure_group_height(sub);
             }
         }
+        // A hierarchical subtree prints inside this instance's header/footer bracket, so it is part of
+        // the group's height for Keep Group Together.
+        for child in &g.hierarchy_children {
+            height += self.measure_group_height(child);
+        }
         if let Some(ftr) = self.bands.group_footers.get(g.level) {
             height += band_height(ftr);
         }
         height
     }
 
+    /// The left indent one level of a hierarchically grouped tree adds to every object in the group's
+    /// bands ("Group Indent", stored per group). `0` for a group without hierarchical sorting.
+    fn hierarchy_indent_step(&self, level: usize) -> i32 {
+        self.report
+            .data_definition
+            .groups
+            .get(level)
+            .and_then(|g| g.hierarchical_options.as_ref())
+            .filter(|h| h.enabled)
+            .map_or(0, |h| h.group_indent.0)
+    }
+
+    /// Whether the current page already holds the Detail area's full quota of visible records
+    /// ("Records per page"). A stored `0` is the designer's unchecked state — no limit.
+    fn record_limit_reached(&self) -> bool {
+        let limit = self.bands.records_per_page;
+        limit > 0 && self.records_on_page >= limit
+    }
+
+    /// Whether the current page already holds this group level's full quota of group instances
+    /// ("Groups per page"). A stored `0` is the designer's unchecked state — no limit.
+    fn group_limit_reached(&self, level: usize) -> bool {
+        let limit = self
+            .bands
+            .group_formats
+            .get(level)
+            .map_or(0, |f| f.visible_groups_per_page);
+        limit > 0 && self.groups_on_page.get(level).copied().unwrap_or(0) >= limit
+    }
+
+    /// Break to a fresh page when the current one has no quota left for the group about to start —
+    /// either its own level's "Groups per page" cap, or the Detail area's "Records per page" cap,
+    /// which the engine applies here too rather than orphaning the group header on a full page.
+    fn break_for_paging_limits(&mut self, level: usize) {
+        if (self.group_limit_reached(level) || self.record_limit_reached()) && self.cursor_y > 0 {
+            self.finish_page();
+            self.begin_page();
+        }
+    }
+
     pub(crate) fn emit_group(&mut self, g: &'a GroupInstance) {
+        self.break_for_paging_limits(g.level);
         self.keep_group_together(g);
+        // Counted after every break this group may force, since opening a page rebuilds the counters.
+        if let Some(count) = self.groups_on_page.get_mut(g.level) {
+            *count += 1;
+        }
         // Enter this group: its scope is now in effect for band/summary resolution and running-total
         // reset detection.
         self.group_stack.push(GroupScope {
@@ -579,7 +718,7 @@ impl<'a> Formatter<'a> {
         if let Some(hdr) = self.bands.group_headers.get(g.level).cloned() {
             let first = g.details.first().or_else(|| first_row(g));
             for s in hdr {
-                self.emit_band(s, first, &state);
+                self.emit_band(s, first, &state, Some(UnderlayEnd::GroupFooter(g.level)));
             }
         }
         // Children: subgroups or detail rows.
@@ -590,12 +729,26 @@ impl<'a> Formatter<'a> {
                 self.emit_group(sub);
             }
         }
+        // Hierarchically grouped children print between this instance's own content and its footer —
+        // the group's header/footer bands therefore bracket the whole subtree — each one step further
+        // indented ("Group Indent"). See [`Self::hierarchy_indent_step`].
+        if !g.hierarchy_children.is_empty() {
+            let base = self.col_offset;
+            self.col_offset = base + self.hierarchy_indent_step(g.level);
+            for child in &g.hierarchy_children {
+                self.emit_group(child);
+            }
+            self.col_offset = base;
+        }
         // Group footer for this level: resolved against the group's last record (Crystal's
-        // group-footer record context), so its field/formula objects populate.
+        // group-footer record context), so its field/formula objects populate. It is this level's
+        // underlay companion, so any span its header opened closes first — the footer prints below
+        // the underlay, not over it.
+        self.close_underlay_spans(UnderlayEnd::GroupFooter(g.level));
         if let Some(ftr) = self.bands.group_footers.get(g.level).cloned() {
             let last = g.details.last().or_else(|| crate::last_row(g));
             for s in ftr {
-                self.emit_band(s, last, &state);
+                self.emit_band(s, last, &state, None);
             }
         }
         self.group_stack.pop();
@@ -612,14 +765,15 @@ impl<'a> Formatter<'a> {
         let state = self.state(None);
         let headers: Vec<Vec<&'a Section>> = self.bands.group_headers.clone();
         let footers: Vec<Vec<&'a Section>> = self.bands.group_footers.clone();
-        for hdr in &headers {
+        for (level, hdr) in headers.iter().enumerate() {
             for s in hdr {
-                self.emit_band(s, None, &state);
+                self.emit_band(s, None, &state, Some(UnderlayEnd::GroupFooter(level)));
             }
         }
-        for ftr in footers.iter().rev() {
+        for (level, ftr) in footers.iter().enumerate().rev() {
+            self.close_underlay_spans(UnderlayEnd::GroupFooter(level));
             for s in ftr {
-                self.emit_band(s, None, &state);
+                self.emit_band(s, None, &state, None);
             }
         }
     }
@@ -635,6 +789,12 @@ impl<'a> Formatter<'a> {
         // Group-constant: share one Rc across every detail row instead of deep-cloning per record.
         let summaries = Rc::new(summaries.to_vec());
         for row in rows {
+            // "Records per page": a page holding its full quota breaks before the next record, so
+            // the cap wins over the space still left on the page.
+            if self.record_limit_reached() && self.cursor_y > 0 {
+                self.finish_page();
+                self.begin_page();
+            }
             self.record_number += 1;
             self.current_row = Some(row);
             let mut state = self.state(None);
@@ -642,8 +802,13 @@ impl<'a> Formatter<'a> {
             // Advance running totals in print order before emitting the band, so a `{#name}` object
             // shows the value accumulated up to and including this record.
             self.advance_running_totals(row, &state);
+            let mut visible = false;
             for s in &detail_bands {
-                self.emit_band(s, Some(row), &state);
+                visible |= self.emit_band(s, Some(row), &state, None);
+            }
+            // Only a record that printed counts against the cap ("*Visible* records per page").
+            if visible {
+                self.records_on_page += 1;
             }
         }
     }
@@ -691,7 +856,11 @@ impl<'a> Formatter<'a> {
             // NewPageBefore on the detail section, or a break deferred from a prior band, starts a
             // fresh page before this record and resets the column cursor (mirrors `emit_band`).
             let new_page_before = banded.iter().any(|(s, _, _)| s.format.base.new_page_before);
-            if (self.pending_page_break || new_page_before) && cur.dirty {
+            // A "Records per page" cap breaks before the record it has no room for, exactly as in the
+            // single-column path.
+            if (self.pending_page_break || new_page_before || self.record_limit_reached())
+                && cur.dirty
+            {
                 self.finish_page();
                 self.begin_page();
                 cur.reset_to(self.cursor_y);
@@ -704,14 +873,21 @@ impl<'a> Formatter<'a> {
                 self.place_down(&mut cur, rec_h, cols)
             };
 
-            self.col_offset = cur.col * pitch;
+            // The column offset composes with whatever offset the enclosing band already carries (a
+            // hierarchical group's indent), so it is added to it and restored, not assigned.
+            let base = self.col_offset;
+            self.col_offset = base + cur.col * pitch;
             let mut band_y = record_top;
             for (s, plans, h) in &banded {
                 self.emit_band_plans(s, plans, band_y, *h, Some(&ctx), &[], None);
                 band_y += *h;
             }
-            self.col_offset = 0;
+            self.col_offset = base;
             cur.deepest = cur.deepest.max(band_y);
+            // Only a record that printed counts against the cap ("*Visible* records per page").
+            if !banded.is_empty() {
+                self.records_on_page += 1;
+            }
 
             if across {
                 cur.row_h = cur.row_h.max(band_y - cur.col_top);
@@ -791,6 +967,17 @@ impl<'a> Formatter<'a> {
         self.cur = Page::new(self.page_number as u32, self.page_size);
         self.cur.origin = self.origin;
         self.cursor_y = 0;
+        // An underlay section is drawn once, on the page it lands on; a span left open by a page
+        // turn has nothing left to back, so the new page starts with none.
+        self.underlay_spans.clear();
+        // Both paging caps are per-page. The record count starts over; the group counts start at 1 for
+        // every level the page opens *inside*, because a group carried over by a break still occupies
+        // one of the new page's group slots.
+        self.records_on_page = 0;
+        let depth = self.group_stack.len();
+        for (level, count) in self.groups_on_page.iter_mut().enumerate() {
+            *count = i32::from(depth > level);
+        }
         self.checkpoints.push(PageCheckpoint {
             page_number: self.page_number as u32,
             record_position: self.record_number as u64,
@@ -816,23 +1003,29 @@ impl<'a> Formatter<'a> {
     /// Open a continuation page and emit its repeating page header. Every page turn *after* the first
     /// goes through here; the first page is opened by [`Self::run`], which emits the report header
     /// above the page header. (The report header is page-1-only, so it never belongs on a page turn.)
+    ///
+    /// A page turn taken *inside* the report header carries no page header: the page header sits
+    /// below the report header, so it does not print on any page the header occupies.
     pub(crate) fn begin_page(&mut self) {
         self.open_page();
-        self.emit_page_header();
+        if !self.in_report_header {
+            self.emit_page_header();
+        }
     }
 
     /// Emit the report header once, at the very top of page 1, above the page header (Crystal's
     /// top-of-page band order). A report header is a flow section: a can-grow object extends it, and
-    /// an inline subreport taller than a page flows across continuation pages — each of which repeats
-    /// the page header via [`Self::begin_page`]. When the report header flows, the page-1 page header
-    /// is suppressed (it belongs below the header, which never finishes on page 1) and instead prints
-    /// at the top of each continuation page; the body then resumes below the last header slice.
+    /// an inline subreport taller than a page flows across continuation pages. The page header sits
+    /// *below* the report header, so it prints on none of the pages the header occupies — it is
+    /// emitted once here, at the cursor the header leaves behind, and repeats from the next page turn
+    /// on. For a header that fits, that cursor is partway down page 1; for one that flows, it is the
+    /// top of the first page the body reaches.
     pub(crate) fn emit_report_header(&mut self) {
         // The report header resolves against the report's first record (Crystal's report-header
         // record context) so its field/formula objects populate.
         let first = self.dataset.iter_detail_rows().first().copied();
         let rh: Vec<&Section> = self.bands.report_header.clone();
-        let mut rh_flowed = false;
+        self.in_report_header = true;
         for s in rh {
             let state = self.state(None);
             if s.format.base.suppress {
@@ -843,26 +1036,23 @@ impl<'a> Formatter<'a> {
             let subs = self.run_band_subreports(s, ctx.as_ref());
             let (plans, text_height) = self.band_plans_and_height(s, ctx.as_ref(), &state, true);
             let height = self.grow_for_subreports(s, &subs, text_height);
-            if self.try_emit_flowing_subreport(s, &plans, text_height, height, ctx.as_ref(), &subs)
+            if !self.try_emit_flowing_subreport(s, &plans, text_height, height, ctx.as_ref(), &subs)
             {
-                rh_flowed = true;
-            } else {
                 // Fits on the page: emit at the cursor, growing the band to any inline subreport's
                 // content height (the atomic detail-band behavior) instead of clipping it to the
                 // placeholder box. Byte-identical to the plain emit when the band has no subreport —
                 // `grow_for_subreports` returns `text_height` and the empty `subs` draws nothing extra.
                 let origin_y = self.cursor_y;
                 self.emit_band_plans(s, &plans, origin_y, height, ctx.as_ref(), &subs, None);
-                if !s.format.underlay_section {
+                if s.format.underlay_section {
+                    self.open_underlay(origin_y + height, Some(UnderlayEnd::ReportFooter));
+                } else {
                     self.cursor_y += height;
                 }
             }
         }
-        // Page 1's page header prints below a report header that fits; a flowed report header already
-        // had the page header repeated at the top of each continuation page, so it is not re-emitted.
-        if !rh_flowed {
-            self.emit_page_header();
-        }
+        self.in_report_header = false;
+        self.emit_page_header();
     }
 
     pub(crate) fn finish_page(&mut self) {
@@ -901,9 +1091,12 @@ impl<'a> Formatter<'a> {
         let (plans, height) = self.band_plans_and_height(section, ctx.as_ref(), state, allow_grow);
         let origin_y = self.cursor_y;
         self.emit_band_plans(section, &plans, origin_y, height, ctx.as_ref(), &[], None);
-        // An underlay band backs what follows: keep the cursor at its top so the next band overlays
-        // it (see `emit_band`).
-        if !section.format.underlay_section {
+        // A page header/footer has no underlay companion that can close the span: the page footer is
+        // pinned to the body bottom, so an underlaid page header backs the whole page (see
+        // [`Self::open_underlay`]).
+        if section.format.underlay_section {
+            self.open_underlay(origin_y + height, None);
+        } else {
             self.cursor_y += height;
         }
     }

@@ -2,7 +2,7 @@
 //! supply credentials for all of them, and drive the `--db` live-fetch behind a driver abstraction.
 //!
 //! ## Multiple connections
-//! A report is not single-connection: every [`Table`](rpt::model::Table) carries its own [`ConnectionInfo`], and
+//! A report is not single-connection: every [`Table`](rpt_reader::model::Table) carries its own [`ConnectionInfo`], and
 //! subreports are full nested reports with their own tables. Each report *scope* (main + each
 //! subreport) uses one server, so connections are keyed by SERVER: one connection URL per distinct
 //! server, in `RPT_DB_URL_<SERVER>` (or the generic `RPT_DB_URL`/`DATABASE_URL` for a single-server
@@ -15,10 +15,11 @@
 //! by the connection URL's scheme. Postgres and SQLite are implemented; the rest return a clear
 //! "recognized but not available in this build" error.
 
+#[cfg(feature = "db")]
 use crate::applog::Comp;
 #[cfg(feature = "db")]
 use crate::error::RenderError;
-use rpt::model::{ConnectionInfo, Report};
+use rpt_reader::model::{ConnectionInfo, Report};
 
 /// A distinct data source (connection) a report reads from.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -164,8 +165,8 @@ fn collect(report: &Report, acc: &mut Vec<DataSource>) {
 
 /// The server key of a report scope (its first credential-needing table's server), or `None` when
 /// the scope has no live tables (nothing to fetch — falls back to saved data).
-#[cfg_attr(not(feature = "db"), allow(dead_code))]
-pub fn scope_server_key(database: &rpt::model::Database) -> Option<String> {
+#[cfg(feature = "db")]
+pub fn scope_server_key(database: &rpt_reader::model::Database) -> Option<String> {
     database.tables.iter().find_map(|t| {
         let id = identity(&t.connection);
         id.needs_credentials().then(|| id.group_id())
@@ -388,7 +389,9 @@ pub fn scope_comment(report_label: &str, scope: &str) -> String {
 /// The report-derived inputs that shape a scope's fetch query: the record-selection formula (pushed
 /// to the `WHERE` where translatable), the scope's SQL Expression fields (selected into the query),
 /// and the parameter values (bound into the pushed-down `WHERE`). Bundled so the fetch functions take
-/// one query-inputs argument instead of threading the three separately.
+/// one query-inputs argument instead of threading the three separately. Every driver hands the whole
+/// bundle to the query builder and the dialect decides how much of it it can use, so a driver's SQL
+/// differs from another's only by its dialect.
 #[cfg(feature = "db")]
 pub struct FetchInputs<'a> {
     pub selection: Option<&'a str>,
@@ -431,17 +434,11 @@ pub fn fetch_scope(
         Comp::Data,
         format!("datasource: {} ({})", driver.name(), redacted_summary(url)),
     );
-    // `inputs` and `comment` are consumed by every concrete driver — unused only when none is
-    // compiled in. (The SQLite path uses only `inputs.sql_exprs`; the WHERE push-down inputs —
-    // `selection`/`params` — are Postgres-only, but a partial field read still marks `inputs` used.)
-    #[cfg(not(any(feature = "db-postgres", feature = "db-sqlite")))]
-    let _ = (inputs, comment);
-
     let fetched = match driver {
         #[cfg(feature = "db-postgres")]
         Driver::Postgres => fetch_scope_postgres(database, inputs, url, log, comment),
         #[cfg(feature = "db-sqlite")]
-        Driver::Sqlite => fetch_scope_sqlite(database, inputs.sql_exprs, url, log, comment),
+        Driver::Sqlite => fetch_scope_sqlite(database, inputs, url, log, comment),
         // A driver whose backend feature is not compiled in (or has no implementation yet).
         other => Err(RenderError::Datasource(not_implemented(*other))),
     };
@@ -469,8 +466,8 @@ fn log_query(
             log.detail(
                 Comp::Data,
                 format!(
-                    "[query {qid}] record-selection formula present: translatable part pushed to \
-                     SQL WHERE (see SQL), remainder applied per-row in-engine"
+                    "[query {qid}] record-selection formula present: whatever the dialect can \
+                     translate is in the SQL WHERE (see SQL), the rest is applied per-row in-engine"
                 ),
             );
         }
@@ -494,7 +491,7 @@ fn log_query(
 
 #[cfg(feature = "db-postgres")]
 fn fetch_scope_postgres(
-    database: &rpt::model::Database,
+    database: &rpt_reader::model::Database,
     inputs: &FetchInputs,
     url: &str,
     log: &crate::applog::Log,
@@ -573,8 +570,8 @@ fn fetch_scope_postgres(
 /// the full table (no WHERE push-down); the pipeline applies any record-selection formula per row.
 #[cfg(feature = "db-sqlite")]
 fn fetch_scope_sqlite(
-    database: &rpt::model::Database,
-    sql_exprs: &[(String, String)],
+    database: &rpt_reader::model::Database,
+    inputs: &FetchInputs,
     url: &str,
     log: &crate::applog::Log,
     comment: Option<&str>,
@@ -584,16 +581,29 @@ fn fetch_scope_sqlite(
     use rpt_query::{build_query_full, Dialect};
     use std::time::Instant;
 
+    let param_pairs: Vec<(String, rpt_query::Value)> = inputs
+        .params
+        .iter()
+        .map(|(k, v)| (k.clone(), v.clone()))
+        .collect();
     // Build the query once, then run *that* query — the logged SQL is by construction the executed
-    // SQL. The SQLite dialect emits no WHERE push-down, so no selection/params are passed.
+    // SQL. The full input set goes to the builder here exactly as it does on the Postgres path; only
+    // the dialect differs. SQLite translates no predicate, so the builder returns the whole record
+    // selection as not-pushed and the log says the query reads more rows than the report shows.
     let conn = SqliteConn::open(url)?;
-    let mut query = build_query_full(database, sql_exprs, None, &[], Dialect::Sqlite)
-        .map_err(|e| DbError::no_query(e.to_string()))?;
+    let mut query = build_query_full(
+        database,
+        inputs.sql_exprs,
+        inputs.selection,
+        &param_pairs,
+        Dialect::Sqlite,
+    )
+    .map_err(|e| DbError::no_query(e.to_string()))?;
     if let Some(c) = comment {
         query = query.with_comment(c);
     }
     let qid = log.next_query_id();
-    log_query(qid, &query, None, log);
+    log_query(qid, &query, inputs.selection, log);
     log.info(
         Comp::Data,
         format!(
@@ -758,11 +768,11 @@ mod tests {
 
     fn report_with(conns: &[ConnectionInfo]) -> Report {
         Report {
-            database: rpt::model::Database {
+            database: rpt_reader::model::Database {
                 tables: conns
                     .iter()
                     .enumerate()
-                    .map(|(i, c)| rpt::model::Table {
+                    .map(|(i, c)| rpt_reader::model::Table {
                         name: format!("t{i}"),
                         alias: format!("t{i}"),
                         connection: c.clone(),
@@ -783,7 +793,7 @@ mod tests {
             conn("db1", "app", "PostgreSQL"),
             conn("db2", "app", "PostgreSQL"),
         ]);
-        report.subreports = vec![rpt::model::Subreport {
+        report.subreports = vec![rpt_reader::model::Subreport {
             name: "s".into(),
             report: Box::new(report_with(&[conn("db1", "", "PostgreSQL")])),
             ..Default::default()
@@ -810,6 +820,7 @@ mod tests {
         assert!(credential_sources(&sources).is_empty());
     }
 
+    #[cfg(feature = "db")]
     #[test]
     fn scope_server_key_reads_first_live_table() {
         let report = report_with(&[conn("Sales DB", "sales", "ODBC (RDO)")]);
@@ -847,6 +858,48 @@ mod tests {
         // Postgres + SQLite are implemented; the rest are recognized but not yet available.
         assert!(not_implemented(Driver::MySql).contains("recognized but not available"));
         assert!(not_implemented(Driver::MsSql).contains("recognized but not available"));
+    }
+
+    /// Every driver hands the query builder the whole [`FetchInputs`] bundle and lets the dialect
+    /// decide what it can use. For a dialect with no predicate translator that must change only the
+    /// not-pushed report, never the SQL — otherwise passing the selection would silently alter the
+    /// rows a non-Postgres fetch returns.
+    #[cfg(feature = "db")]
+    #[test]
+    fn a_dialect_without_push_down_reports_the_selection_without_changing_the_sql() {
+        use rpt_query::{build_query_full, Dialect};
+        let database = rpt_reader::model::Database {
+            tables: vec![rpt_reader::model::Table {
+                name: "countries".into(),
+                alias: "countries".into(),
+                data_fields: vec![rpt_reader::model::DbFieldDef {
+                    name: "id".into(),
+                    ..Default::default()
+                }],
+                ..Default::default()
+            }],
+            ..Default::default()
+        };
+        let without = build_query_full(&database, &[], None, &[], Dialect::Sqlite).unwrap();
+        let with = build_query_full(
+            &database,
+            &[],
+            Some("{countries.id} > 1"),
+            &[],
+            Dialect::Sqlite,
+        )
+        .unwrap();
+
+        assert_eq!(
+            with.sql, without.sql,
+            "the selection must not reach the SQL"
+        );
+        assert!(without.not_pushed.is_empty());
+        assert_eq!(
+            with.not_pushed,
+            vec!["{countries.id} > 1".to_string()],
+            "the whole selection is applied locally, and the log must be able to say so"
+        );
     }
 
     #[cfg(feature = "db")]

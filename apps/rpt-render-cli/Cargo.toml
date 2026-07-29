@@ -1,6 +1,6 @@
 [package]
 name = "rpt-render-cli"
-description = "The `rpt-render` command-line renderer: a decoded .rpt + its data (saved or a live DB) → HTML / PDF / SVG / PNG"
+description = "The `rpt-render` command-line renderer: a decoded .rpt + its data (saved or a live DB) → PDF"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -16,13 +16,11 @@ name = "rpt-render"
 path = "src/main.rs"
 
 [dependencies]
-rpt = { workspace = true }
-crystal-formula = { workspace = true }
+rpt-reader = { workspace = true }
+rpt-formula = { workspace = true }
 rpt-data = { workspace = true }
 rpt-pages = { workspace = true }
 rpt-render = { workspace = true }
-rpt-render-svg = { workspace = true }
-rpt-render-raster = { workspace = true }
 thiserror = { workspace = true }
 # Live-DB path for the CLI (`--db`). Native-only; each driver crate pulls its client. Gated so the
 # default (native) build renders from a live DB while a `--no-default-features` build stays DB-free.
@@ -30,12 +28,16 @@ rpt-query = { workspace = true, optional = true }
 rpt-db-postgres = { workspace = true, optional = true }
 rpt-db-sqlite = { workspace = true, optional = true }
 
+[dev-dependencies]
+# Drives the built binary against a committed fixture (flag plumbing, refusals, and CLI-vs-library
+# agreement), so the app's own surface is covered without a helper in the shipping build.
+rpt-test-support = { workspace = true }
+
 [features]
-# Mirror the facade's build knobs. `cosmic` forwards to the rpt-render library's font-accurate
-# cosmic-text layout (on by default for native; drop it for wasm). The `db-*` features compile the
-# CLI's live-DB backends and the driver-error `From` impls on the CLI's own `RenderError`.
-default = ["cosmic", "db-postgres", "db-sqlite"]
-cosmic = ["rpt-render/cosmic"]
+# The `db-*` features compile the CLI's live-DB backends and the driver-error `From` impls on the
+# CLI's own `RenderError`. Text layout is not a build knob: the font-accurate stack is always compiled,
+# because a build that silently paginates differently is not one worth shipping.
+default = ["db-postgres", "db-sqlite"]
 # `db` is the driver-agnostic live-DB machinery (URL/scheme parsing, fetch/scope plumbing); each
 # concrete driver feature turns it on plus its backend crate.
 db = ["dep:rpt-query"]

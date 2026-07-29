@@ -6,6 +6,7 @@
 use crate::aggregate;
 use crate::chart;
 use crate::{push_diag, Formatter};
+use rpt_formula::token::{brace_groups, last_segment, strip_braces};
 use rpt_model::Rect;
 use rpt_model::ReportObject;
 use rpt_model::Twips;
@@ -23,6 +24,11 @@ impl Formatter<'_> {
         section_name: &str,
         obj: &ReportObject,
     ) {
+        // Chart text scales with the chart's own height, so take it before a band reduces `rect`.
+        let style = chart::ChartStyle {
+            def: &chart.definition,
+            height: rect.height,
+        };
         // The inherently 3-D families (Riser3D/Surface3D) take the perspective riser path, which draws
         // multiple data series as z-rows over its own frame.
         if chart.definition.is_3d() {
@@ -101,11 +107,10 @@ impl Formatter<'_> {
         // Dispatch on the decoded visual type. Bar and Line have renderers; other types fall back to
         // a bar chart with a type-specific diagnostic rather than silently drawing the wrong shape.
         use rpt_model::ChartGraphType as Gt;
-        // A single-series area/line chart draws its whole series in one colour, so a per-category
-        // colour-swatch legend is meaningless and the engine omits it entirely, regardless of
-        // category count. The per-category-coloured families (bar/pie/doughnut/funnel/gauge/…) keep
-        // their legend.
-        let per_category_legend = !matches!(chart.definition.graph_type, Gt::Area | Gt::Line);
+        // An area/line/stock/radar chart draws its whole series in one color, so the engine legends
+        // the series itself — one boxed entry naming it — rather than listing categories. The
+        // per-category-colored families (bar/pie/doughnut/funnel/gauge/…) keep their category list.
+        let kind = legend_kind(chart);
         // Pie/doughnut legends match their per-slice fills; the axis families cycle the base palette.
         let per_slice = matches!(chart.definition.graph_type, Gt::Pie | Gt::Doughnut);
         // The axis families draw the chart title alone on top (their axis titles go around the plot);
@@ -131,7 +136,7 @@ impl Formatter<'_> {
             &str,
             &str,
         ) = match chart_captions(
-            &chart.definition,
+            style,
             rect,
             top_title,
             &chart.definition.subtitle,
@@ -145,9 +150,9 @@ impl Formatter<'_> {
         // legend visibility + position (`0x0121` `+0x410`). A hidden or suppressed
         // legend gives the whole rect to the chart body.
         let (legend_ops, body) = resolve_legend(
-            chart,
+            style,
             chart_area,
-            chart.definition.legend_visible && per_category_legend,
+            kind,
             &series,
             per_slice,
             section_name,
@@ -160,7 +165,7 @@ impl Formatter<'_> {
         // families draw `render_axis_top` (their axis titles go around the plot), so those take a
         // context with the axis-top title substituted.
         let cx = chart::ChartCtx {
-            def: &chart.definition,
+            style,
             rect: body,
             title: render_title,
             axis_titles,
@@ -207,10 +212,9 @@ impl Formatter<'_> {
     }
 
     /// Render a 3-D riser chart: categories on X, each data binding a z-row receding into the scene,
-    /// projected with the native perspective transform. A single-series chart legends its
-    /// categories (each a distinct colour); a multi-series chart legends its series names. Records the
-    /// view-angle-approximation diagnostic for a non-default preset (the preset is decoded, but most
-    /// presets' concrete angles are reconstructed approximations).
+    /// projected with the native perspective transform. Draws no legend, whatever the report stores.
+    /// Records the view-angle-approximation diagnostic for a non-default preset — the preset is
+    /// decoded, but most presets' concrete angles are approximate.
     fn emit_chart_3d(
         &mut self,
         chart: &rpt_model::ChartObject,
@@ -218,6 +222,11 @@ impl Formatter<'_> {
         section_name: &str,
         obj: &ReportObject,
     ) {
+        // Chart text scales with the chart's own height, so take it before a band reduces `rect`.
+        let style = chart::ChartStyle {
+            def: &chart.definition,
+            height: rect.height,
+        };
         let (categories, series) = aggregate::chart_series_multi(self.dataset, &self.locale, chart);
         if categories.is_empty() || series.is_empty() {
             self.chart_empty(
@@ -233,14 +242,17 @@ impl Formatter<'_> {
         } else {
             chart.definition.group_axis_title.clone()
         };
-        // A single-series 3-D riser colours its bars per category, so its legend lists the categories;
-        // a multi-series one colours per series, so its legend lists the series names.
-        let legend_series = multi_legend_series(&categories, &series);
+        let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(&obj.name));
+        let (caption_ops, rect, title) = reserve_captions(style, rect, &title, &src);
+        // A 3-D family draws no legend and gives the freed width to the room, whatever the report's
+        // legend flag says: its series are the depth axis, already labelled on the floor beside the
+        // series-axis title, so there is nothing left for a legend to name. The rule is the engine's
+        // behaviour, not a stored fact — the flat families still honour the same flag.
         let (legend_ops, body) = resolve_legend(
-            chart,
+            style,
             rect,
-            chart.definition.legend_visible,
-            &legend_series,
+            LegendKind::None,
+            &[],
             false,
             section_name,
             &obj.name,
@@ -250,9 +262,9 @@ impl Formatter<'_> {
         // scenery and perspective. Both recede their data series along Z.
         let view_angle = chart.definition.view_angle;
         let cx = chart::ChartCtx {
-            def: &chart.definition,
+            style,
             rect: body,
-            title: &title,
+            title,
             axis_titles: chart::AxisTitles::default(),
             section_name,
             obj_name: &obj.name,
@@ -274,12 +286,14 @@ impl Formatter<'_> {
             );
         }
         ops.extend(legend_ops);
+        self.cur.extend(caption_ops);
         self.cur.extend(ops);
     }
 
-    /// Render a 3-D area ribbon chart: each data series an extruded area silhouette receding along Z,
-    /// routed here from the flat area path when the Area family's depth-effect bit is set. The
-    /// legend lists the series names; records the view-angle diagnostic.
+    /// Render a depth-effect area chart: the flat 2-D area frame with each series' ribbon given a
+    /// shallow cast solid, routed here from the flat area path when the Area family's depth-effect bit
+    /// is set. It is not a 3-D scene — the engine draws no room and no perspective for it — so it
+    /// keeps the area family's axis titles and legend and records no view-angle diagnostic.
     fn emit_chart_area3d(
         &mut self,
         chart: &rpt_model::ChartObject,
@@ -287,6 +301,11 @@ impl Formatter<'_> {
         section_name: &str,
         obj: &ReportObject,
     ) {
+        // Chart text scales with the chart's own height, so take it before a band reduces `rect`.
+        let style = chart::ChartStyle {
+            def: &chart.definition,
+            height: rect.height,
+        };
         let (categories, series) = aggregate::chart_series_multi(self.dataset, &self.locale, chart);
         if categories.is_empty() || series.is_empty() {
             self.chart_empty(
@@ -297,44 +316,44 @@ impl Formatter<'_> {
             );
             return;
         }
-        let title = if !chart.definition.title.is_empty() {
-            chart.definition.title.clone()
-        } else {
-            chart.definition.group_axis_title.clone()
-        };
+        // An axis family: the chart title alone goes on top, the two decoded axis titles around the
+        // plot.
+        let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(&obj.name));
+        let (caption_ops, rect, title) =
+            reserve_captions(style, rect, &chart.definition.title, &src);
         let legend_series = multi_legend_series(&categories, &series);
+        // The cast area is still the area family: a single series takes the engine's one-entry
+        // series legend, and only a genuinely multi-series chart lists its series.
+        let kind = if series.len() == 1 {
+            legend_kind(chart)
+        } else {
+            LegendKind::Categories
+        };
         let (legend_ops, body) = resolve_legend(
-            chart,
+            style,
             rect,
-            chart.definition.legend_visible,
+            kind,
             &legend_series,
             false,
             section_name,
             &obj.name,
         );
         let show_labels = chart.definition.data_labels_show_value;
-        let view_angle = chart.definition.view_angle;
         let cx = chart::ChartCtx {
-            def: &chart.definition,
+            style,
             rect: body,
-            title: &title,
-            axis_titles: chart::AxisTitles::default(),
+            title,
+            axis_titles: chart::AxisTitles {
+                value: &chart.definition.data_axis_title,
+                category: &chart.definition.group_axis_title,
+            },
             section_name,
             obj_name: &obj.name,
             show_labels,
         };
-        let mut ops = chart::chart3d::area_3d(&cx, &categories, &series, view_angle);
-        if view_angle != rpt_model::ChartViewAngle::Standard {
-            push_diag(
-                &self.diagnostics,
-                Diagnostic::warn(
-                    DiagnosticKind::UnsupportedObject,
-                    "3-D chart uses a non-default view-angle preset; rendered at an approximated angle",
-                )
-                .with_source(&obj.name),
-            );
-        }
+        let mut ops = chart::chart3d::area_3d(&cx, &categories, &series);
         ops.extend(legend_ops);
+        self.cur.extend(caption_ops);
         self.cur.extend(ops);
     }
 
@@ -348,6 +367,11 @@ impl Formatter<'_> {
         section_name: &str,
         obj: &ReportObject,
     ) {
+        // Chart text scales with the chart's own height, so take it before a band reduces `rect`.
+        let style = chart::ChartStyle {
+            def: &chart.definition,
+            height: rect.height,
+        };
         let (categories, series) = aggregate::chart_series_multi(self.dataset, &self.locale, chart);
         if categories.is_empty() || series.is_empty() {
             self.chart_empty(
@@ -364,15 +388,17 @@ impl Formatter<'_> {
             category: &chart.definition.group_axis_title,
         };
         let title = chart.definition.title.clone();
+        let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(&obj.name));
+        let (caption_ops, rect, title) = reserve_captions(style, rect, &title, &src);
         let series_names: Vec<String> = series.iter().map(|(n, _)| n.clone()).collect();
-        // The legend entries are the series names (each a distinct palette colour), so compose it from
+        // The legend entries are the series names (each a distinct palette color), so compose it from
         // a synthetic series list carrying those labels.
         let legend_series: Vec<(String, f64)> =
             series_names.iter().map(|n| (n.clone(), 0.0)).collect();
         let (legend_ops, body) = resolve_legend(
-            chart,
+            style,
             rect,
-            chart.definition.legend_visible,
+            LegendKind::Categories,
             &legend_series,
             false,
             section_name,
@@ -384,9 +410,9 @@ impl Formatter<'_> {
             .map(|ci| series.iter().map(|(_, vals)| vals[ci]).collect())
             .collect();
         let cx = chart::ChartCtx {
-            def: &chart.definition,
+            style,
             rect: body,
-            title: &title,
+            title,
             axis_titles,
             section_name,
             obj_name: &obj.name,
@@ -400,6 +426,7 @@ impl Formatter<'_> {
             chart.definition.arrangement(),
         );
         ops.extend(legend_ops);
+        self.cur.extend(caption_ops);
         self.cur.extend(ops);
     }
 
@@ -413,6 +440,11 @@ impl Formatter<'_> {
         section_name: &str,
         obj: &ReportObject,
     ) {
+        // Chart text scales with the chart's own height, so take it before a band reduces `rect`.
+        let style = chart::ChartStyle {
+            def: &chart.definition,
+            height: rect.height,
+        };
         let (Some(x_ref), Some(y_ref)) = (chart.data_refs.first(), chart.data_refs.get(1)) else {
             self.chart_empty(
                 rect,
@@ -441,16 +473,20 @@ impl Formatter<'_> {
             value: &chart.definition.data_axis_title,
             category: &chart.definition.group_axis_title,
         };
+        let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(&obj.name));
+        let (caption_ops, rect, title) =
+            reserve_captions(style, rect, &chart.definition.title, &src);
         let cx = chart::ChartCtx {
-            def: &chart.definition,
+            style,
             rect,
-            title: &chart.definition.title,
+            title,
             axis_titles,
             section_name,
             obj_name: &obj.name,
             show_labels: chart.definition.data_labels_show_value,
         };
         let ops = chart::scatter_chart(&cx, &points, None);
+        self.cur.extend(caption_ops);
         self.cur.extend(ops);
     }
 
@@ -465,6 +501,11 @@ impl Formatter<'_> {
         section_name: &str,
         obj: &ReportObject,
     ) {
+        // Chart text scales with the chart's own height, so take it before a band reduces `rect`.
+        let style = chart::ChartStyle {
+            def: &chart.definition,
+            height: rect.height,
+        };
         let (Some(x_ref), Some(y_ref), Some(size_ref)) = (
             chart.data_refs.first(),
             chart.data_refs.get(1),
@@ -492,16 +533,20 @@ impl Formatter<'_> {
             value: &chart.definition.data_axis_title,
             category: &chart.definition.group_axis_title,
         };
+        let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(&obj.name));
+        let (caption_ops, rect, title) =
+            reserve_captions(style, rect, &chart.definition.title, &src);
         let cx = chart::ChartCtx {
-            def: &chart.definition,
+            style,
             rect,
-            title: &chart.definition.title,
+            title,
             axis_titles,
             section_name,
             obj_name: &obj.name,
             show_labels: chart.definition.data_labels_show_value,
         };
         let ops = chart::scatter_chart(&cx, &points, Some(&sizes));
+        self.cur.extend(caption_ops);
         self.cur.extend(ops);
     }
 
@@ -566,6 +611,11 @@ impl Formatter<'_> {
         section_name: &str,
         obj: &ReportObject,
     ) {
+        // Chart text scales with the chart's own height, so take it before a band reduces `rect`.
+        let style = chart::ChartStyle {
+            def: &chart.definition,
+            height: rect.height,
+        };
         let points = aggregate::chart_stock_series(self.dataset, &self.locale, chart);
         if points.is_empty() {
             self.chart_empty(
@@ -580,16 +630,32 @@ impl Formatter<'_> {
             value: &chart.definition.data_axis_title,
             category: &chart.definition.group_axis_title,
         };
-        let cx = chart::ChartCtx {
-            def: &chart.definition,
+        let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(&obj.name));
+        let (caption_ops, rect, title) =
+            reserve_captions(style, rect, &chart.definition.title, &src);
+        // A stock chart draws its hi-lo bars in one color, so it takes the single-entry series
+        // legend rather than a category list.
+        let (legend_ops, body) = resolve_legend(
+            style,
             rect,
-            title: &chart.definition.title,
+            legend_kind(chart),
+            &[],
+            false,
+            section_name,
+            &obj.name,
+        );
+        let cx = chart::ChartCtx {
+            style,
+            rect: body,
+            title,
             axis_titles,
             section_name,
             obj_name: &obj.name,
             show_labels: chart.definition.data_labels_show_value,
         };
         let ops = chart::stock_chart(&cx, &points);
+        self.cur.extend(caption_ops);
+        self.cur.extend(legend_ops);
         self.cur.extend(ops);
     }
 
@@ -603,6 +669,11 @@ impl Formatter<'_> {
         section_name: &str,
         obj: &ReportObject,
     ) {
+        // Chart text scales with the chart's own height, so take it before a band reduces `rect`.
+        let style = chart::ChartStyle {
+            def: &chart.definition,
+            height: rect.height,
+        };
         let Some(field) = chart.data_refs.first().map(|r| aggregate::inner_field(r)) else {
             self.chart_empty(
                 rect,
@@ -634,16 +705,20 @@ impl Formatter<'_> {
         };
         // Seven bins matches the native engine's default binning for this distribution.
         const BINS: usize = 7;
+        let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(&obj.name));
+        let (caption_ops, rect, title) =
+            reserve_captions(style, rect, &chart.definition.title, &src);
         let cx = chart::ChartCtx {
-            def: &chart.definition,
+            style,
             rect,
-            title: &chart.definition.title,
+            title,
             axis_titles,
             section_name,
             obj_name: &obj.name,
             show_labels: chart.definition.data_labels_show_value,
         };
         let ops = chart::histogram_chart(&cx, &values, BINS);
+        self.cur.extend(caption_ops);
         self.cur.extend(ops);
     }
 
@@ -659,6 +734,11 @@ impl Formatter<'_> {
         section_name: &str,
         obj: &ReportObject,
     ) {
+        // Chart text scales with the chart's own height, so take it before a band reduces `rect`.
+        let style = chart::ChartStyle {
+            def: &chart.definition,
+            height: rect.height,
+        };
         let (Some(start_ref), Some(end_ref)) = (chart.data_refs.first(), chart.data_refs.get(1))
         else {
             self.chart_empty(
@@ -705,16 +785,20 @@ impl Formatter<'_> {
             value: "",
             category: &chart.definition.group_axis_title,
         };
+        let src = || Some(ObjectRef::new(section_name, ObjectKind::Chart).named(&obj.name));
+        let (caption_ops, rect, title) =
+            reserve_captions(style, rect, &chart.definition.title, &src);
         let cx = chart::ChartCtx {
-            def: &chart.definition,
+            style,
             rect,
-            title: &chart.definition.title,
+            title,
             axis_titles,
             section_name,
             obj_name: &obj.name,
             show_labels: chart.definition.data_labels_show_value,
         };
         let ops = chart::gantt_chart(&cx, &bars);
+        self.cur.extend(caption_ops);
         self.cur.extend(ops);
     }
 
@@ -732,30 +816,103 @@ impl Formatter<'_> {
 /// Reserve a legend band and return `(legend_ops, body_rect)`, honouring the decoded legend
 /// visibility + position (`0x0121` `+0x410`). When `visible` is false the whole
 /// `rect` is given to the chart body and no legend ops are emitted. `per_slice` picks the pie/
-/// doughnut per-slice swatch colours over the cycled base palette.
+/// doughnut per-slice swatch colors over the cycled base palette.
 fn resolve_legend(
-    chart: &rpt_model::ChartObject,
+    style: chart::ChartStyle,
     rect: Rect,
-    visible: bool,
+    kind: LegendKind,
     series: &[(String, f64)],
     per_slice: bool,
     section_name: &str,
     obj_name: &str,
 ) -> (Vec<DrawOp>, Rect) {
-    if visible {
-        use rpt_model::ChartLegendPosition as Lp;
-        let pos = match chart.definition.legend_position {
-            Lp::Right => chart::LegendPosition::Right,
-            Lp::Left => chart::LegendPosition::Left,
-            // A manually-positioned legend: place it at the top as a render approximation (the exact
-            // stored geometry is not decoded).
-            Lp::Custom => chart::LegendPosition::Top,
-            Lp::BottomCenter => chart::LegendPosition::Bottom,
-        };
-        chart::legend(rect, pos, series, per_slice, section_name, obj_name)
-    } else {
-        (Vec::new(), rect)
+    if !style.def.legend_visible || kind == LegendKind::None {
+        return (Vec::new(), rect);
     }
+    use rpt_model::ChartLegendPosition as Lp;
+    let pos = match style.def.legend_position {
+        Lp::Right => chart::LegendPosition::Right,
+        Lp::Left => chart::LegendPosition::Left,
+        // A manually-positioned legend: place it at the top as a render approximation (the exact
+        // stored geometry is not decoded).
+        Lp::Custom => chart::LegendPosition::Top,
+        Lp::BottomCenter => chart::LegendPosition::Bottom,
+    };
+    match kind {
+        LegendKind::Series(name) => {
+            chart::series_legend(style, rect, pos, &name, section_name, obj_name)
+        }
+        _ => chart::legend(style, rect, pos, series, per_slice, section_name, obj_name),
+    }
+}
+
+/// What a chart's legend lists.
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum LegendKind {
+    /// One boxed entry naming the plotted series — the engine's legend for the single-color
+    /// families (area/line/stock/radar).
+    Series(String),
+    /// One entry per category or per series, colored to match the marks.
+    Categories,
+    /// No legend at all: a single-color family whose series name cannot be derived. A category list
+    /// would be actively wrong here (every mark is one color), so nothing is drawn.
+    None,
+}
+
+/// Which legend `chart` draws. The single-color families legend their series; every other family
+/// legends its categories.
+fn legend_kind(chart: &rpt_model::ChartObject) -> LegendKind {
+    use rpt_model::ChartGraphType as Gt;
+    if !matches!(
+        chart.definition.graph_type,
+        Gt::Area | Gt::Line | Gt::Stock | Gt::Radar
+    ) {
+        return LegendKind::Categories;
+    }
+    // The stored data-axis title is the same auto-generated string when the author never edited it,
+    // so it stands in for a binding this does not parse.
+    match series_name(chart) {
+        Some(name) => LegendKind::Series(name),
+        None if !chart.definition.data_axis_title.is_empty() => {
+            LegendKind::Series(chart.definition.data_axis_title.clone())
+        }
+        None => LegendKind::None,
+    }
+}
+
+/// The name the engine gives a single-series chart's legend entry: the summary operation applied to
+/// the charted field, `Sum of id` / `Min of total`, built from the chart's first data binding
+/// (`Sum ({orders.id}, {orders.created_at}, "daily")`). It is derived rather than read from
+/// [`ChartDefinition::data_axis_title`](rpt_model::ChartDefinition::data_axis_title), which a stock
+/// chart leaves empty while the engine still legends its series.
+fn series_name(chart: &rpt_model::ChartObject) -> Option<String> {
+    let binding = chart.definition.data_refs.first()?.trim();
+    let op = binding
+        .split(['(', ' '])
+        .find(|t| !t.is_empty())
+        .filter(|t| !t.starts_with('{'))?;
+    let field = brace_groups(binding)
+        .next()
+        .map(|g| last_segment(strip_braces(g)))?;
+    if field.is_empty() {
+        return None;
+    }
+    Some(format!("{} of {field}", summary_label(op)?))
+}
+
+/// The engine's display name for a summary operation in a series label — abbreviated for the
+/// operations Crystal shortens (`Minimum` legends as `Min`), the operation's own name otherwise.
+fn summary_label(op: &str) -> Option<&'static str> {
+    Some(match op.to_ascii_lowercase().as_str() {
+        "sum" => "Sum",
+        "count" => "Count",
+        "distinctcount" | "distinct count" => "DCount",
+        "average" | "avg" => "Avg",
+        "maximum" | "max" => "Max",
+        "minimum" | "min" => "Min",
+        "median" => "Median",
+        _ => return None,
+    })
 }
 
 /// Reserve the subtitle band (under the title) and footnote band (at the chart bottom) and draw both
@@ -766,7 +923,7 @@ fn resolve_legend(
 /// is handed an empty title. Fonts come from the per-element default table
 /// ([`chart::ChartText`]): subtitle Arial 10, footnote Arial 8 bold-italic, title Arial 14 bold.
 fn chart_captions(
-    def: &rpt_model::ChartDefinition,
+    style: chart::ChartStyle,
     rect: Rect,
     top_title: &str,
     subtitle: &str,
@@ -802,7 +959,7 @@ fn chart_captions(
     };
     if !top_title.is_empty() {
         ops.push(chart::chart_text_op(
-            def,
+            style,
             band(rt + pad / 2, title_h),
             top_title,
             chart::ChartText::Title,
@@ -811,7 +968,7 @@ fn chart_captions(
     }
     if !subtitle.is_empty() {
         ops.push(chart::chart_text_op(
-            def,
+            style,
             band(rt + title_h, subtitle_h),
             subtitle,
             chart::ChartText::Subtitle,
@@ -820,7 +977,7 @@ fn chart_captions(
     }
     if !footnote.is_empty() {
         ops.push(chart::chart_text_op(
-            def,
+            style,
             band(rt + rh - footnote_h, footnote_h),
             footnote,
             chart::ChartText::Footnote,
@@ -836,9 +993,34 @@ fn chart_captions(
     Some((ops, body))
 }
 
-/// The legend entries for a 3-D group chart: a single-series riser colours its bars per category
-/// (legend lists the categories with their values), a multi-series one colours per series (legend
-/// lists the series names). Callers guard `series` non-empty, so `series[0]` is safe.
+/// Reserve the caption bands around `rect` for a chart that builds its own title and legend instead
+/// of going through the shared 2-D dispatch (multi-series bar, 3-D riser/area, scatter/bubble, stock,
+/// histogram, gantt). Returns the caption draw-ops, the reduced rect the chart body draws into, and
+/// the title the per-type renderer must still draw itself — empty once [`chart_captions`] has drawn
+/// it above the subtitle. With neither caption set (the common case) this reserves nothing and the
+/// renderer's own output is unchanged.
+fn reserve_captions<'a>(
+    style: chart::ChartStyle,
+    rect: Rect,
+    title: &'a str,
+    src: &dyn Fn() -> Option<ObjectRef>,
+) -> (Vec<DrawOp>, Rect, &'a str) {
+    match chart_captions(
+        style,
+        rect,
+        title,
+        &style.def.subtitle,
+        &style.def.footnote,
+        src,
+    ) {
+        Some((ops, body)) => (ops, body, ""),
+        None => (Vec::new(), rect, title),
+    }
+}
+
+/// The legend entries for a depth-effect area chart: a single-series ribbon colors its area per
+/// category (legend lists the categories with their values), a multi-series one colors per series
+/// (legend lists the series names). Callers guard `series` non-empty, so `series[0]` is safe.
 fn multi_legend_series(categories: &[String], series: &[(String, Vec<f64>)]) -> Vec<(String, f64)> {
     if series.len() > 1 {
         series.iter().map(|(n, _)| (n.clone(), 0.0)).collect()
@@ -867,6 +1049,13 @@ mod tests {
         }
     }
 
+    fn style(def: &rpt_model::ChartDefinition) -> crate::chart::ChartStyle<'_> {
+        crate::chart::ChartStyle {
+            def,
+            height: rect().height,
+        }
+    }
+
     /// With neither a subtitle nor a footnote (the common case), no bands are reserved and the
     /// per-type renderer keeps drawing its own title into the full rect — so existing output is
     /// byte-identical.
@@ -874,7 +1063,7 @@ mod tests {
     fn no_captions_leaves_the_rect_untouched() {
         let src = || None;
         let def = rpt_model::ChartDefinition::default();
-        assert!(chart_captions(&def, rect(), "Title", "", "", &src).is_none());
+        assert!(chart_captions(style(&def), rect(), "Title", "", "", &src).is_none());
     }
 
     /// A chart with a subtitle and footnote draws both as text ops (the title centrally above the
@@ -884,8 +1073,9 @@ mod tests {
     fn subtitle_and_footnote_are_drawn_and_reserve_bands() {
         let src = || None;
         let def = rpt_model::ChartDefinition::default();
-        let (ops, body) = chart_captions(&def, rect(), "Title", "Sub here", "Foot here", &src)
-            .expect("captions present");
+        let (ops, body) =
+            chart_captions(style(&def), rect(), "Title", "Sub here", "Foot here", &src)
+                .expect("captions present");
 
         let texts: Vec<(&str, &rpt_pages::FontSpec)> = ops
             .iter()
@@ -900,10 +1090,11 @@ mod tests {
         assert!(by("Title").is_some(), "title drawn: {texts:?}");
         let sub = by("Sub here").expect("subtitle drawn");
         let foot = by("Foot here").expect("footnote drawn");
-        // Each uses its per-element default font.
-        assert_eq!(sub.size_pt, 10.0, "subtitle Arial 10");
+        // Each uses its per-element default font, scaled to the chart's height.
+        let scaled = |pt: f32| style(&def).scaled_pt(pt);
+        assert_eq!(sub.size_pt, scaled(10.0), "subtitle Arial 10");
         assert!(!sub.bold && !sub.italic, "subtitle normal");
-        assert_eq!(foot.size_pt, 8.0, "footnote Arial 8");
+        assert_eq!(foot.size_pt, scaled(8.0), "footnote Arial 8");
         assert!(foot.bold && foot.italic, "footnote bold-italic");
         let _ = ChartText::Footnote; // the caption fonts come from this table.
 
@@ -916,5 +1107,96 @@ mod tests {
             body.height.0 < rect().height.0,
             "body shorter than the full rect"
         );
+    }
+
+    /// The specialized chart paths (multi-series bar, 3-D riser/area, scatter/bubble, stock,
+    /// histogram, gantt) reserve their caption bands through this wrapper: with captions it draws
+    /// them, shrinks the body rect and takes the title off the renderer's hands; without, it reserves
+    /// nothing and hands the title straight back.
+    #[test]
+    fn reserve_captions_hands_the_title_over_only_when_it_draws_one() {
+        use super::reserve_captions;
+        let src = || None;
+        let mut def = rpt_model::ChartDefinition::default();
+
+        let (ops, body, title) = reserve_captions(style(&def), rect(), "Sales", &src);
+        assert!(ops.is_empty(), "no captions reserves nothing");
+        assert_eq!(body, rect());
+        assert_eq!(title, "Sales", "the renderer still draws its own title");
+
+        def.subtitle = "By region".to_string();
+        def.footnote = "Source: ledger".to_string();
+        let (ops, body, title) = reserve_captions(style(&def), rect(), "Sales", &src);
+        let texts: Vec<&str> = ops
+            .iter()
+            .filter_map(|o| match o {
+                DrawOp::Text(t) => Some(t.text.as_str()),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(texts, ["Sales", "By region", "Source: ledger"]);
+        assert!(title.is_empty(), "the caption band drew the title");
+        assert!(body.height.0 < rect().height.0, "body shrunk for the bands");
+    }
+
+    /// The single-series legend entry names the summary applied to the charted field, built from the
+    /// chart's first data binding — the engine's `Sum of id` / `Min of total`. It is derived, not read
+    /// from `data_axis_title`, which a stock chart leaves empty while still legending its series.
+    #[test]
+    fn series_name_is_the_summary_of_the_charted_field() {
+        use super::series_name;
+        let named = |binding: &str| {
+            let mut chart = rpt_model::ChartObject::default();
+            chart.definition.data_refs = vec![binding.to_string()];
+            series_name(&chart)
+        };
+        assert_eq!(
+            named("Sum ({orders.id}, {orders.created_at}, \"daily\")").as_deref(),
+            Some("Sum of id")
+        );
+        assert_eq!(
+            named("Minimum ({orders.total}, {orders.created_at}, \"daily\")").as_deref(),
+            Some("Min of total"),
+            "Minimum abbreviates to Min"
+        );
+        assert_eq!(
+            named("Average of {orders.total}").as_deref(),
+            Some("Avg of total")
+        );
+        // A binding whose leading token is not a summary operation, or that names no field, has no
+        // series name — the chart then falls back to the per-category legend rather than inventing one.
+        assert_eq!(named("{orders.total}"), None);
+        assert_eq!(named("Wibble ({orders.total})"), None);
+        assert_eq!(named("Sum ()"), None);
+    }
+
+    /// The single-color families — area, line, stock and radar — legend the plotted series with one
+    /// boxed entry; every other family lists its categories. Radar belongs with them: its polygon is
+    /// drawn in one color, so a per-category swatch list would name colors the chart never uses.
+    #[test]
+    fn the_single_color_families_legend_their_series() {
+        use super::{legend_kind, LegendKind};
+        use rpt_model::ChartGraphType as Gt;
+        let kind = |ty: Gt| {
+            let mut chart = rpt_model::ChartObject::default();
+            chart.definition.graph_type = ty;
+            chart.definition.data_refs =
+                vec!["Sum ({orders.total}, {orders.created_at}, \"daily\")".to_string()];
+            legend_kind(&chart)
+        };
+        for ty in [Gt::Area, Gt::Line, Gt::Stock, Gt::Radar] {
+            assert_eq!(
+                kind(ty),
+                LegendKind::Series("Sum of total".to_string()),
+                "{ty:?} legends its series"
+            );
+        }
+        for ty in [Gt::Bar, Gt::Pie, Gt::Doughnut, Gt::Funnel, Gt::Gauge] {
+            assert_eq!(
+                kind(ty),
+                LegendKind::Categories,
+                "{ty:?} legends categories"
+            );
+        }
     }
 }

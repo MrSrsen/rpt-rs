@@ -1,0 +1,39 @@
+# Configuration for `cargo about`, which generates THIRD-PARTY-NOTICES.md — the notice file the
+# release archives and the Docker image ship alongside the binaries. Regenerate with
+# `scripts/gen-third-party-notices.sh`.
+#
+# The binaries are statically linked, so every crate below is distributed inside them and its
+# licence's notice condition applies to the archive. All five release targets are listed so one
+# generated file covers every published artifact: the Windows and Apple targets pull in dependencies
+# the Linux build never sees.
+
+targets = [
+    "x86_64-unknown-linux-musl",
+    "aarch64-unknown-linux-musl",
+    "x86_64-apple-darwin",
+    "aarch64-apple-darwin",
+    "x86_64-pc-windows-msvc",
+]
+
+# Build scripts and test-only crates run at build time and are not part of the shipped binaries.
+ignore-build-dependencies = true
+ignore-dev-dependencies = true
+
+# Every licence a dependency may carry. A new dependency under anything else fails the generator,
+# which is the point: an unexpected licence is a decision for the maintainer, not a silent addition.
+accepted = [
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "BSL-1.0",
+    "CC0-1.0",
+    "ISC",
+    "MIT",
+    "MIT-0",
+    "MPL-2.0",
+    "OFL-1.1",
+    "Unicode-3.0",
+    "Unlicense",
+    "Zlib",
+]

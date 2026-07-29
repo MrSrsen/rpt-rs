@@ -37,7 +37,7 @@ pub(crate) fn scatter_chart(
         return Vec::new();
     }
     let &ChartCtx {
-        def,
+        style,
         rect,
         title,
         axis_titles,
@@ -50,8 +50,8 @@ pub(crate) fn scatter_chart(
     // by the y values (the slot/category count it also computes is unused — scatter has no category
     // slots). The X numeric scale is layered on below.
     let y_series: Vec<(String, f64)> = points.iter().map(|(_, y)| (String::new(), *y)).collect();
-    let f = compute_frame(rect, title, axis_titles, &y_series);
-    emit_value_axis(def, &mut ops, &f, rect, title, axis_titles, &src);
+    let f = compute_frame(style, rect, title, axis_titles, &y_series);
+    emit_value_axis(style, &mut ops, &f, rect, title, axis_titles, &src);
 
     // X numeric scale: 0..nice_max over the x values, mapped across the plot rectangle.
     let x_data_max = points.iter().map(|(x, _)| *x).fold(0.0_f64, f64::max);
@@ -101,11 +101,12 @@ pub(crate) fn scatter_chart(
             align: TextAlign::Center,
             rotation: 0.0,
             metrics: None,
+            character_spacing: Twips(0),
             source: src(),
         }));
     }
 
-    // One filled marker per point, cycling the base palette (the engine colours each marker
+    // One filled marker per point, cycling the base palette (the engine colors each marker
     // distinctly). A plain scatter draws a fixed square (a closed polygon, so every backend renders
     // the same mark); a bubble chart draws a circle sized by its third value.
     match sizes {
@@ -240,7 +241,7 @@ mod tests {
             texts.contains(&"200".to_string()),
             "Y tick label: {texts:?}"
         );
-        assert!(texts.contains(&"30".to_string()), "X tick label: {texts:?}");
+        assert!(texts.contains(&"32".to_string()), "X tick label: {texts:?}");
     }
 
     /// A bubble chart draws one filled circle (ellipse) per point over the same two numeric axes —

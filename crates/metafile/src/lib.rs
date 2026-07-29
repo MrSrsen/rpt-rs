@@ -13,7 +13,7 @@
 //! [`rectangle`](MetafileSink::rectangle), [`ellipse`](MetafileSink::ellipse),
 //! [`text`](MetafileSink::text)) and map each into your own scene. Every callback receives geometry
 //! already transformed into the metafile's device space plus a resolved [`GraphicsState`] (pen,
-//! brush, font, text colour). The [`MetafileHeader`] reported first carries the device-space
+//! brush, font, text color). The [`MetafileHeader`] reported first carries the device-space
 //! [`bounds`](MetafileHeader::bounds) you map onto your target box, so the crate stays device- and
 //! backend-independent.
 //!
@@ -47,7 +47,7 @@
 //!   `TRANSPARENTBLT` — each delivered as a [`Bitmap`] (a self-contained BMP/PNG/JPEG file) via
 //!   [`MetafileSink::image`].
 //! - **State:** world transform (set/left/right-multiply), window/viewport origin & extent,
-//!   `SAVEDC`/`RESTOREDC`, pen/brush/font create-select-delete, stock objects, text colour.
+//!   `SAVEDC`/`RESTOREDC`, pen/brush/font create-select-delete, stock objects, text color.
 //! - **Text:** `EXTTEXTOUTA`/`EXTTEXTOUTW` at their reference point.
 //!
 //! ### Not yet rendered

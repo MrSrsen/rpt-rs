@@ -18,9 +18,5 @@ rpt-query = { workspace = true }
 postgres = { workspace = true }
 thiserror = { workspace = true }
 
-[dev-dependencies]
-rpt-render = { workspace = true }
-rpt-render-html = { workspace = true }
-
 [lints]
 workspace = true

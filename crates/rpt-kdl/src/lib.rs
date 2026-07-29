@@ -5,7 +5,7 @@
 //! generic serde derive) whose readability *is* the format — construct kinds as node names, the
 //! identifying name as the first argument, scalars as `key=value` properties, nested structs and
 //! `Vec`s as child nodes in model order, and only non-default values emitted. Geometry stays in raw
-//! twips, colours render as `#rrggbb`, enums as kebab-case tokens (an unmapped engine code falls
+//! twips, colors render as `#rrggbb`, enums as kebab-case tokens (an unmapped engine code falls
 //! back to its raw integer), and formula bodies render as KDL multi-line strings.
 //!
 //! Binary payloads never enter the KDL: an embedded picture emits a `source="…"` reference to a
@@ -13,8 +13,8 @@
 //! crate itself does no I/O). OLE embeds, which the model keeps only as a digest, are listed under an
 //! `embeds` node by reference.
 //!
-//! The crate depends only on [`rpt_model`] and [`kdl`]: no decoder, no I/O, WASM-safe. The lossless
-//! carrier layer (undecoded residue/raw/stream nodes) is a later addition tracked separately.
+//! The crate depends only on [`rpt_model`] and [`kdl`]: no decoder, no I/O, WASM-safe. A lossless
+//! carrier for undecoded residue/raw/stream nodes is out of scope here.
 //!
 //! ```no_run
 //! # fn demo(report: &rpt_model::Report) {

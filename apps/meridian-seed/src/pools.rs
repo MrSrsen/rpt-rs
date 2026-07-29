@@ -477,7 +477,7 @@ pub(crate) const PROVINCE_NOUN: &[&str] = &[
     "Reach",
 ];
 
-/// A small solid-colour swatch per entity kind (see [`crate::png`]).
+/// A small solid-color swatch per entity kind (see [`crate::png`]).
 pub(crate) const BLOB_COLORS: &[(&str, [u8; 3])] = &[
     ("product", [0x3a, 0x6e, 0xa5]),
     ("customer", [0x8a, 0x4f, 0x9e]),

@@ -2,8 +2,7 @@
 //! over the shared Num+Ord axis frame.
 
 use super::common::{
-    category_label, category_stride, chart_frame, fmt_val, value_frac, value_label, ChartCtx,
-    LABEL, PALETTE,
+    category_label, chart_frame, fmt_val, value_frac, value_label, ChartCtx, LABEL, PALETTE,
 };
 use rpt_model::{Rect, Twips};
 use rpt_pages::{DrawOp, LineOp, Point, RectOp, Stroke};
@@ -18,7 +17,7 @@ pub(crate) fn line_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp>
         return Vec::new();
     }
     let &ChartCtx {
-        def,
+        style,
         rect,
         title,
         axis_titles,
@@ -27,7 +26,7 @@ pub(crate) fn line_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp>
     } = cx;
     let src = || cx.src();
     let mut ops: Vec<DrawOp> = Vec::new();
-    let f = chart_frame(def, &mut ops, rect, title, axis_titles, series, &src);
+    let f = chart_frame(style, &mut ops, rect, title, axis_titles, series, &src);
 
     // Point per category, centered in its slot; y scales from the baseline like a bar's top.
     let point = |i: i32, val: f64| Point {
@@ -50,7 +49,7 @@ pub(crate) fn line_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp>
     }
     // Marker (small filled square) + (thinned) category label at each point.
     const M: i32 = 90; // marker half-extent (~0.06")
-    let stride = category_stride(&f, series.len());
+    let stride = f.cats.stride;
     for (i, (label, val)) in series.iter().enumerate() {
         let i = i as i32;
         let p = point(i, *val);
@@ -69,6 +68,7 @@ pub(crate) fn line_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp>
         // Value label above each marker, gated on "show value".
         if show_labels {
             ops.push(value_label(
+                style,
                 p.x.0,
                 (p.y.0 - M - 230).max(f.plot_top()),
                 &fmt_val(*val),
@@ -77,7 +77,7 @@ pub(crate) fn line_chart(cx: &ChartCtx, series: &[(String, f64)]) -> Vec<DrawOp>
             ));
         }
         if (i as usize).is_multiple_of(stride) {
-            ops.push(category_label(&f, i, label, &src));
+            ops.push(category_label(style, &f, i, label, &src));
         }
     }
 

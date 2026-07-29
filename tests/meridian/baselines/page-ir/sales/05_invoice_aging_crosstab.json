@@ -1,0 +1,3847 @@
+// document
+{
+  "sections": {
+    "DetailSection1": {
+      "band": "Detail"
+    },
+    "PageFooterSection1": {
+      "band": "PageFooter"
+    },
+    "PageHeaderSection1": {
+      "band": "PageHeader"
+    },
+    "ReportFooterSection1": {
+      "band": "ReportFooter"
+    },
+    "ReportHeaderSection1": {
+      "band": "ReportHeader"
+    }
+  }
+}
+// page 1
+{
+  "number": 1,
+  "size": {
+    "width": 11899,
+    "height": 16838
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": [
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 200,
+        "top": 100,
+        "width": 4402,
+        "height": 226
+      },
+      "text": "Invoice Aging Crosstab — Aging Bucket x Region",
+      "font": {
+        "family": "Arial",
+        "size_pt": 10.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 0,
+        "g": 0,
+        "b": 0
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": {
+        "advance": 4600,
+        "ascent": 160,
+        "line_height": 240
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "Text1",
+        "kind": "Text",
+        "instance": 0
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 200,
+        "top": 500,
+        "width": 569,
+        "height": 248
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 232,
+          "g": 232,
+          "b": 232
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 769,
+        "top": 500,
+        "width": 569,
+        "height": 248
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 232,
+          "g": 232,
+          "b": 232
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 1338,
+        "top": 500,
+        "width": 569,
+        "height": 248
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 232,
+          "g": 232,
+          "b": 232
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 1907,
+        "top": 500,
+        "width": 569,
+        "height": 248
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 232,
+          "g": 232,
+          "b": 232
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 2476,
+        "top": 500,
+        "width": 569,
+        "height": 248
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 232,
+          "g": 232,
+          "b": 232
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 3045,
+        "top": 500,
+        "width": 569,
+        "height": 248
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 232,
+          "g": 232,
+          "b": 232
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 3614,
+        "top": 500,
+        "width": 569,
+        "height": 248
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 232,
+          "g": 232,
+          "b": 232
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 200,
+        "top": 748,
+        "width": 569,
+        "height": 248
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 232,
+          "g": 232,
+          "b": 232
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 200,
+        "top": 996,
+        "width": 569,
+        "height": 248
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 232,
+          "g": 232,
+          "b": 232
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 200,
+        "top": 1244,
+        "width": 569,
+        "height": 248
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 232,
+          "g": 232,
+          "b": 232
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 200,
+        "top": 1492,
+        "width": 569,
+        "height": 248
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 232,
+          "g": 232,
+          "b": 232
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 200,
+        "top": 1740,
+        "width": 569,
+        "height": 248
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 232,
+          "g": 232,
+          "b": 232
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Rect",
+      "bounds": {
+        "left": 200,
+        "top": 1988,
+        "width": 569,
+        "height": 248
+      },
+      "fill": {
+        "Solid": {
+          "a": 255,
+          "r": 232,
+          "g": 232,
+          "b": 232
+        }
+      },
+      "stroke": null,
+      "corner_radius": 0,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 200,
+        "y": 500
+      },
+      "to": {
+        "x": 4183,
+        "y": 500
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 200,
+        "y": 748
+      },
+      "to": {
+        "x": 4183,
+        "y": 748
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 200,
+        "y": 996
+      },
+      "to": {
+        "x": 4183,
+        "y": 996
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 200,
+        "y": 1244
+      },
+      "to": {
+        "x": 4183,
+        "y": 1244
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 200,
+        "y": 1492
+      },
+      "to": {
+        "x": 4183,
+        "y": 1492
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 200,
+        "y": 1740
+      },
+      "to": {
+        "x": 4183,
+        "y": 1740
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 200,
+        "y": 1988
+      },
+      "to": {
+        "x": 4183,
+        "y": 1988
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 200,
+        "y": 2236
+      },
+      "to": {
+        "x": 4183,
+        "y": 2236
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 200,
+        "y": 500
+      },
+      "to": {
+        "x": 200,
+        "y": 2236
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 769,
+        "y": 500
+      },
+      "to": {
+        "x": 769,
+        "y": 2236
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 1338,
+        "y": 500
+      },
+      "to": {
+        "x": 1338,
+        "y": 2236
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 1907,
+        "y": 500
+      },
+      "to": {
+        "x": 1907,
+        "y": 2236
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 2476,
+        "y": 500
+      },
+      "to": {
+        "x": 2476,
+        "y": 2236
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 3045,
+        "y": 500
+      },
+      "to": {
+        "x": 3045,
+        "y": 2236
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 3614,
+        "y": 500
+      },
+      "to": {
+        "x": 3614,
+        "y": 2236
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Line",
+      "from": {
+        "x": 4183,
+        "y": 500
+      },
+      "to": {
+        "x": 4183,
+        "y": 2236
+      },
+      "stroke": {
+        "color": {
+          "a": 255,
+          "r": 153,
+          "g": 153,
+          "b": 153
+        },
+        "width": 10,
+        "style": "Single"
+      },
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": null
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 809,
+        "top": 540,
+        "width": 489,
+        "height": 168
+      },
+      "text": "Total",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 2
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1378,
+        "top": 540,
+        "width": 489,
+        "height": 168
+      },
+      "text": "Latin America",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 3
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1947,
+        "top": 540,
+        "width": 489,
+        "height": 168
+      },
+      "text": "Americas (North)",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 4
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2516,
+        "top": 540,
+        "width": 489,
+        "height": 168
+      },
+      "text": "Asia Pacific",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 5
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3085,
+        "top": 540,
+        "width": 489,
+        "height": 168
+      },
+      "text": "Europe",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 6
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3654,
+        "top": 540,
+        "width": 489,
+        "height": 168
+      },
+      "text": "Middle East & Africa",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Center",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 7
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 240,
+        "top": 788,
+        "width": 489,
+        "height": 168
+      },
+      "text": "Total",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 8
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 809,
+        "top": 788,
+        "width": 489,
+        "height": 84
+      },
+      "text": "4,993,617.63",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 9
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 809,
+        "top": 872,
+        "width": 489,
+        "height": 84
+      },
+      "text": "1,291",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 10
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1378,
+        "top": 788,
+        "width": 489,
+        "height": 84
+      },
+      "text": "646,053.94",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 11
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1378,
+        "top": 872,
+        "width": 489,
+        "height": 84
+      },
+      "text": "139",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 12
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1947,
+        "top": 788,
+        "width": 489,
+        "height": 84
+      },
+      "text": "2,010,241.40",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 13
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1947,
+        "top": 872,
+        "width": 489,
+        "height": 84
+      },
+      "text": "547",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 14
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2516,
+        "top": 788,
+        "width": 489,
+        "height": 84
+      },
+      "text": "895,665.25",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 15
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2516,
+        "top": 872,
+        "width": 489,
+        "height": 84
+      },
+      "text": "229",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 16
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3085,
+        "top": 788,
+        "width": 489,
+        "height": 84
+      },
+      "text": "1,181,254.97",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 17
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3085,
+        "top": 872,
+        "width": 489,
+        "height": 84
+      },
+      "text": "323",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 18
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3654,
+        "top": 788,
+        "width": 489,
+        "height": 84
+      },
+      "text": "260,402.07",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 19
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3654,
+        "top": 872,
+        "width": 489,
+        "height": 84
+      },
+      "text": "53",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 20
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 240,
+        "top": 1036,
+        "width": 489,
+        "height": 168
+      },
+      "text": "90+",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 21
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 809,
+        "top": 1036,
+        "width": 489,
+        "height": 84
+      },
+      "text": "3,987,371.77",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 22
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 809,
+        "top": 1120,
+        "width": 489,
+        "height": 84
+      },
+      "text": "1,030",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 23
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1378,
+        "top": 1036,
+        "width": 489,
+        "height": 84
+      },
+      "text": "493,150.78",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 24
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1378,
+        "top": 1120,
+        "width": 489,
+        "height": 84
+      },
+      "text": "112",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 25
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1947,
+        "top": 1036,
+        "width": 489,
+        "height": 84
+      },
+      "text": "1,639,442.07",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 26
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1947,
+        "top": 1120,
+        "width": 489,
+        "height": 84
+      },
+      "text": "441",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 27
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2516,
+        "top": 1036,
+        "width": 489,
+        "height": 84
+      },
+      "text": "743,659.03",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 28
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2516,
+        "top": 1120,
+        "width": 489,
+        "height": 84
+      },
+      "text": "188",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 29
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3085,
+        "top": 1036,
+        "width": 489,
+        "height": 84
+      },
+      "text": "890,565.24",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 30
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3085,
+        "top": 1120,
+        "width": 489,
+        "height": 84
+      },
+      "text": "249",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 31
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3654,
+        "top": 1036,
+        "width": 489,
+        "height": 84
+      },
+      "text": "220,554.65",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 32
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3654,
+        "top": 1120,
+        "width": 489,
+        "height": 84
+      },
+      "text": "40",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 33
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 240,
+        "top": 1284,
+        "width": 489,
+        "height": 168
+      },
+      "text": "Current",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 34
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 809,
+        "top": 1284,
+        "width": 489,
+        "height": 84
+      },
+      "text": "597,578.39",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 35
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 809,
+        "top": 1368,
+        "width": 489,
+        "height": 84
+      },
+      "text": "158",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 36
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1378,
+        "top": 1284,
+        "width": 489,
+        "height": 84
+      },
+      "text": "98,186.93",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 37
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1378,
+        "top": 1368,
+        "width": 489,
+        "height": 84
+      },
+      "text": "17",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 38
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1947,
+        "top": 1284,
+        "width": 489,
+        "height": 84
+      },
+      "text": "208,864.87",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 39
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1947,
+        "top": 1368,
+        "width": 489,
+        "height": 84
+      },
+      "text": "59",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 40
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2516,
+        "top": 1284,
+        "width": 489,
+        "height": 84
+      },
+      "text": "80,571.23",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 41
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2516,
+        "top": 1368,
+        "width": 489,
+        "height": 84
+      },
+      "text": "25",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 42
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3085,
+        "top": 1284,
+        "width": 489,
+        "height": 84
+      },
+      "text": "201,037.96",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 43
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3085,
+        "top": 1368,
+        "width": 489,
+        "height": 84
+      },
+      "text": "53",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 44
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3654,
+        "top": 1284,
+        "width": 489,
+        "height": 84
+      },
+      "text": "8,917.40",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 45
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3654,
+        "top": 1368,
+        "width": 489,
+        "height": 84
+      },
+      "text": "4",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 46
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 240,
+        "top": 1532,
+        "width": 489,
+        "height": 168
+      },
+      "text": "1-30",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 47
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 809,
+        "top": 1532,
+        "width": 489,
+        "height": 84
+      },
+      "text": "105,390.18",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 48
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 809,
+        "top": 1616,
+        "width": 489,
+        "height": 84
+      },
+      "text": "30",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 49
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1378,
+        "top": 1532,
+        "width": 489,
+        "height": 84
+      },
+      "text": "6,628.67",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 50
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1378,
+        "top": 1616,
+        "width": 489,
+        "height": 84
+      },
+      "text": "1",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 51
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1947,
+        "top": 1532,
+        "width": 489,
+        "height": 84
+      },
+      "text": "50,417.26",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 52
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1947,
+        "top": 1616,
+        "width": 489,
+        "height": 84
+      },
+      "text": "15",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 53
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2516,
+        "top": 1532,
+        "width": 489,
+        "height": 84
+      },
+      "text": "23,991.82",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 54
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2516,
+        "top": 1616,
+        "width": 489,
+        "height": 84
+      },
+      "text": "6",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 55
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3085,
+        "top": 1532,
+        "width": 489,
+        "height": 84
+      },
+      "text": "4,366.36",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 56
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3085,
+        "top": 1616,
+        "width": 489,
+        "height": 84
+      },
+      "text": "3",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 57
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3654,
+        "top": 1532,
+        "width": 489,
+        "height": 84
+      },
+      "text": "19,986.07",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 58
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3654,
+        "top": 1616,
+        "width": 489,
+        "height": 84
+      },
+      "text": "5",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 59
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 240,
+        "top": 1780,
+        "width": 489,
+        "height": 168
+      },
+      "text": "31-60",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 60
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 809,
+        "top": 1780,
+        "width": 489,
+        "height": 84
+      },
+      "text": "145,863.99",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 61
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 809,
+        "top": 1864,
+        "width": 489,
+        "height": 84
+      },
+      "text": "39",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 62
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1378,
+        "top": 1780,
+        "width": 489,
+        "height": 84
+      },
+      "text": "14,936.59",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 63
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1378,
+        "top": 1864,
+        "width": 489,
+        "height": 84
+      },
+      "text": "2",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 64
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1947,
+        "top": 1780,
+        "width": 489,
+        "height": 84
+      },
+      "text": "61,736.80",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 65
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1947,
+        "top": 1864,
+        "width": 489,
+        "height": 84
+      },
+      "text": "18",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 66
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2516,
+        "top": 1780,
+        "width": 489,
+        "height": 84
+      },
+      "text": "31,482.86",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 67
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2516,
+        "top": 1864,
+        "width": 489,
+        "height": 84
+      },
+      "text": "7",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 68
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3085,
+        "top": 1780,
+        "width": 489,
+        "height": 84
+      },
+      "text": "35,135.90",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 69
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3085,
+        "top": 1864,
+        "width": 489,
+        "height": 84
+      },
+      "text": "11",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 70
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3654,
+        "top": 1780,
+        "width": 489,
+        "height": 84
+      },
+      "text": "2,571.84",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 71
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3654,
+        "top": 1864,
+        "width": 489,
+        "height": 84
+      },
+      "text": "1",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 72
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 240,
+        "top": 2028,
+        "width": 489,
+        "height": 168
+      },
+      "text": "61-90",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": true,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Left",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 73
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 809,
+        "top": 2028,
+        "width": 489,
+        "height": 84
+      },
+      "text": "157,413.30",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 74
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 809,
+        "top": 2112,
+        "width": 489,
+        "height": 84
+      },
+      "text": "34",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 75
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1378,
+        "top": 2028,
+        "width": 489,
+        "height": 84
+      },
+      "text": "33,150.97",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 76
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1378,
+        "top": 2112,
+        "width": 489,
+        "height": 84
+      },
+      "text": "7",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 77
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1947,
+        "top": 2028,
+        "width": 489,
+        "height": 84
+      },
+      "text": "49,780.40",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 78
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 1947,
+        "top": 2112,
+        "width": 489,
+        "height": 84
+      },
+      "text": "14",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 79
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2516,
+        "top": 2028,
+        "width": 489,
+        "height": 84
+      },
+      "text": "15,960.31",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 80
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 2516,
+        "top": 2112,
+        "width": 489,
+        "height": 84
+      },
+      "text": "3",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 81
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3085,
+        "top": 2028,
+        "width": 489,
+        "height": 84
+      },
+      "text": "50,149.51",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 82
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3085,
+        "top": 2112,
+        "width": 489,
+        "height": 84
+      },
+      "text": "7",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 83
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3654,
+        "top": 2028,
+        "width": 489,
+        "height": 84
+      },
+      "text": "8,372.11",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 84
+      }
+    },
+    {
+      "op": "Text",
+      "bounds": {
+        "left": 3654,
+        "top": 2112,
+        "width": 489,
+        "height": 84
+      },
+      "text": "3",
+      "font": {
+        "family": "Arial",
+        "size_pt": 8.0,
+        "bold": false,
+        "italic": false,
+        "underline": false,
+        "strikethrough": false
+      },
+      "color": {
+        "a": 255,
+        "r": 34,
+        "g": 34,
+        "b": 34
+      },
+      "align": "Right",
+      "rotation": 0.0,
+      "metrics": null,
+      "source": {
+        "section": "ReportHeaderSection1",
+        "object_name": "CrossTab1",
+        "kind": "CrossTab",
+        "instance": 85
+      }
+    }
+  ]
+}
+// page 2
+{
+  "number": 2,
+  "size": {
+    "width": 11899,
+    "height": 16838
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 3
+{
+  "number": 3,
+  "size": {
+    "width": 11899,
+    "height": 16838
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 4
+{
+  "number": 4,
+  "size": {
+    "width": 11899,
+    "height": 16838
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 5
+{
+  "number": 5,
+  "size": {
+    "width": 11899,
+    "height": 16838
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 6
+{
+  "number": 6,
+  "size": {
+    "width": 11899,
+    "height": 16838
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 7
+{
+  "number": 7,
+  "size": {
+    "width": 11899,
+    "height": 16838
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 8
+{
+  "number": 8,
+  "size": {
+    "width": 11899,
+    "height": 16838
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 9
+{
+  "number": 9,
+  "size": {
+    "width": 11899,
+    "height": 16838
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 10
+{
+  "number": 10,
+  "size": {
+    "width": 11899,
+    "height": 16838
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 11
+{
+  "number": 11,
+  "size": {
+    "width": 11899,
+    "height": 16838
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 12
+{
+  "number": 12,
+  "size": {
+    "width": 11899,
+    "height": 16838
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 13
+{
+  "number": 13,
+  "size": {
+    "width": 11899,
+    "height": 16838
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 14
+{
+  "number": 14,
+  "size": {
+    "width": 11899,
+    "height": 16838
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 15
+{
+  "number": 15,
+  "size": {
+    "width": 11899,
+    "height": 16838
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 16
+{
+  "number": 16,
+  "size": {
+    "width": 11899,
+    "height": 16838
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 17
+{
+  "number": 17,
+  "size": {
+    "width": 11899,
+    "height": 16838
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 18
+{
+  "number": 18,
+  "size": {
+    "width": 11899,
+    "height": 16838
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 19
+{
+  "number": 19,
+  "size": {
+    "width": 11899,
+    "height": 16838
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}
+// page 20
+{
+  "number": 20,
+  "size": {
+    "width": 11899,
+    "height": 16838
+  },
+  "origin": {
+    "x": 360,
+    "y": 360
+  },
+  "ops": []
+}

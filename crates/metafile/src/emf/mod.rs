@@ -153,7 +153,7 @@ fn read_rectl_raw(b: &[u8], off: usize) -> Option<Rect> {
     })
 }
 
-/// Build the [`GraphicsState`] handed to a sink callback: the current brush, text colour, and font
+/// Build the [`GraphicsState`] handed to a sink callback: the current brush, text color, and font
 /// verbatim, and the pen with its width resolved from logical units into device units through the
 /// current transform (a cosmetic width of `0` stays `0`).
 fn graphics_state(dc: &Dc) -> GraphicsState<'_> {
@@ -525,7 +525,7 @@ impl BlitLayout {
     };
     /// `EMR_BITBLT`/`EMR_STRETCHBLT`/`EMR_ALPHABLEND`/`EMR_TRANSPARENTBLT`: dest box at 24/32, DIB at
     /// 84 (a source `XFORM` occupies 52..76 first). The extra `*BLT` fields (ROP, source extent,
-    /// blend/transparent-colour) don't affect placement or the source bitmap, so one layout serves.
+    /// blend/transparent-color) don't affect placement or the source bitmap, so one layout serves.
     const BLT: BlitLayout = BlitLayout {
         dst_x: 24,
         dst_y: 28,
@@ -561,7 +561,7 @@ fn blit<S: MetafileSink>(rec: &[u8], dc: &Dc, sink: &mut S, l: &BlitLayout) -> O
     Some(())
 }
 
-/// Repackage a device-independent bitmap (its `BITMAPINFO` block `bmi` — header + colour table — and
+/// Repackage a device-independent bitmap (its `BITMAPINFO` block `bmi` — header + color table — and
 /// pixel block `bits`) into a complete image file. A `BI_JPEG`/`BI_PNG` DIB already *is* a JPEG/PNG
 /// file, so its bits are returned verbatim; any other DIB is wrapped in a 14-byte `BITMAPFILEHEADER`
 /// to form a `.bmp`. No pixel decoding happens here.

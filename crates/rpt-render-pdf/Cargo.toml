@@ -1,6 +1,6 @@
 [package]
 name = "rpt-render-pdf"
-description = "PDF output backend for the rpt-pages Page IR — font-subsetting krilla writer with a dependency-free fallback"
+description = "PDF output backend for the rpt-pages Page IR — a font-subsetting krilla writer"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -11,31 +11,26 @@ keywords.workspace = true
 categories.workspace = true
 rust-version.workspace = true
 
-[features]
-# The krilla backend (real font subset embedding, Type0/CID Unicode, /FlateDecode) is on by default.
-# Disable it (`--no-default-features`) to fall back to the zero-dependency hand-rolled writer.
-default = ["krilla-backend"]
-krilla-backend = ["dep:krilla", "dep:rustybuzz", "dep:fontdb", "dep:rpt-text"]
-
 [dependencies]
 rpt-model = { workspace = true }
 rpt-pages = { workspace = true }
 rpt-render-util = { workspace = true }
-krilla = { workspace = true, default-features = false, features = [
-    "raster-images",
-    "simple-text",
-], optional = true }
-# Per-glyph shaping of each single-face segment for font fallback (⚠ etc.): matches krilla's own
-# shaper so mixed-face runs position identically. Same version krilla depends on.
-rustybuzz = { workspace = true, optional = true }
-fontdb = { workspace = true, optional = true }
+thiserror = { workspace = true }
+# `simple-text` is deliberately absent: it exists only to provide `Surface::draw_text`, the
+# single-face/no-BIDI convenience shim this backend does not use, and it is krilla's only reason to
+# pull a shaper. Without it krilla places the glyphs we shape (`draw_glyphs`) and shapes nothing.
+krilla = { workspace = true, default-features = false, features = ["raster-images"] }
+# Shaping every run ourselves, per single-face segment, so font fallback (⚠ etc.) and the per-word
+# pen of a justified line both work off advances we can see.
+harfrust = { workspace = true }
+fontdb = { workspace = true }
 # Shared face resolution (FontSpec → OS face); `default-features = false` takes only the fontdb-based
-# resolver, not the cosmic-text shaping stack. Only needed by the krilla writer's font embedding.
-rpt-text = { workspace = true, default-features = false, optional = true }
+# resolver, not the cosmic-text shaping stack.
+rpt-text = { workspace = true, default-features = false }
 
 [dev-dependencies]
-# Inflate the krilla backend's /FlateDecode content streams in tests to assert on the emitted ops.
-miniz_oxide = { workspace = true }
+# `rpt_test_support::pdf` inflates this backend's /FlateDecode content streams, which is what the
+# op-level tests assert against.
 rpt-test-support = { workspace = true }
 
 [lints]

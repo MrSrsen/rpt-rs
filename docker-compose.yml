@@ -1,8 +1,7 @@
 # PostgreSQL for the render-parity test corpus (crates/rpt-render/tests/postgres_fixtures.rs).
 #
 # PostgreSQL is the single DB technology for render testing: the harness seeds each committed
-# `tests/fixtures/sql/**/*.sql` migration into this server and renders the report against it. The
-# out-of-band cross-engine oracle reads the SAME kind of server through the native SAP engine, so
+# `tests/fixtures/sql/**/*.sql` migration into this server and renders the report against it, so
 # the only variable under test is rendering, not the data.
 #
 # Usage:
@@ -14,8 +13,7 @@
 # The data directory is a tmpfs, so every `up` starts from an empty server and the seed migrations
 # (idempotent DROP/CREATE/INSERT) fully define the state — fast, and never stale between runs.
 #
-# Port 55432 is the project-wide convention. If another Postgres already holds it (e.g. a long-lived
-# oracle container), override with `RPT_DB_PORT=55433 docker compose up -d --wait` and point
+# Port 55432 is the project-wide convention. If another Postgres already holds it, override with `RPT_DB_PORT=55433 docker compose up -d --wait` and point
 # RPT_DB_URL at the same port.
 services:
   postgres:

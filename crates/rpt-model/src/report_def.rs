@@ -1,6 +1,6 @@
 //! Report definition — areas/sections/objects (SDK: `IReportDefinition`).
 
-use super::enums::{AreaSectionKind, PaperOrientation};
+use super::enums::{AreaSectionKind, PaperOrientation, ReportKind, ReportStyle};
 use super::objects::ReportObject;
 use super::primitives::{Color, Twips};
 
@@ -8,6 +8,14 @@ use super::primitives::{Color, Twips};
 #[derive(Debug, Clone, PartialEq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct ReportDefinition {
+    /// Which layout family the report belongs to (SDK `ReportKind`). A `MultiColumnReport` states
+    /// at report level what [`PrintOptions::multi_column`](crate::PrintOptions) describes
+    /// geometrically; the two are stored independently and the engine reads this one on its own.
+    pub kind: ReportKind,
+    /// The canned formatting style applied to the whole report (SDK `ReportStyle`). Stored beside
+    /// [`kind`](Self::kind) in the page-setup record; the engine re-lays the report out when it
+    /// changes, so the style is a design-time choice rather than a render-time one.
+    pub style: ReportStyle,
     /// The report's areas, in top-to-bottom layout order (report/page header, group headers,
     /// details, group footers, report/page footer).
     pub areas: Vec<Area>,
@@ -64,8 +72,6 @@ pub struct Section {
     /// (page width minus the left/right margins), resolved at layout time from the print options.
     /// Left `0` by the decoder — it is populated only where a layout has the page geometry.
     pub width: Twips,
-    /// Numeric id that report objects reference (SDK: SectionCode).
-    pub section_code: i32,
     /// The section's formatting (suppress, underlay, background, …).
     pub format: SectionFormat,
     /// The report objects placed in this section.
@@ -136,6 +142,6 @@ pub struct SectionFormat {
     pub css_class: Option<String>,
     /// A per-section page-orientation override, when set.
     pub page_orientation: Option<PaperOrientation>,
-    /// The section's background colour, when set.
+    /// The section's background color, when set.
     pub background_color: Option<Color>,
 }

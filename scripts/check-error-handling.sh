@@ -18,6 +18,13 @@ sources() {
         -not -path '*/tests/*' -not -name 'tests.rs' -not -name '*_tests.rs' 2>/dev/null
 }
 
+# A guard that scans nothing passes everything. If the source set is empty the layout has moved
+# under this script, and reporting OK would be a false all-clear rather than a result.
+if [ "$(sources | wc -l)" -lt 20 ]; then
+    echo "check-error-handling: found $(sources | wc -l) source file(s); the tree layout has moved and nothing meaningful was scanned." >&2
+    exit 2
+fi
+
 fail() {
     printf '\n%s\n' "$1" >&2
     status=1
@@ -64,7 +71,7 @@ double_print=$(
 )
 if [ -n "$double_print" ]; then
     fail "error-handling: an error variant interpolates the same value it marks as its source.
-The cause is then printed twice by any chain-walking reporter (rpt::error_chain). Drop the {0} from
+The cause is then printed twice by any chain-walking reporter (rpt_reader::error_chain). Drop the {0} from
 the message and let the chain supply the cause:
 
 $double_print"

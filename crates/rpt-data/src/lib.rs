@@ -8,7 +8,7 @@
 //! Stages (see [`build_dataset`]): record selection (evaluate the selection formula per row) →
 //! record sort → grouping (nest by each [`Group`](rpt_model::Group)) → summaries at every group
 //! level and a grand total. Formula/field resolution runs through [`DataContext`], which is the
-//! evaluator's [`EvalContext`](crystal_formula::eval::EvalContext).
+//! evaluator's [`EvalContext`](rpt_formula::eval::EvalContext).
 
 mod context;
 mod diagnostics;
@@ -21,8 +21,8 @@ mod summary;
 mod value_order;
 
 pub use context::{
-    normalize_param_name, DataContext, DateTimeSpecials, FormulaRegistry, Parameters, SharedState,
-    SummaryScope,
+    normalize_param_name, DataContext, DateTimeSpecials, FormulaRegistry, GroupNameScope,
+    Parameters, SharedState, SummaryScope,
 };
 pub use diagnostics::{CollectingSink, DiagnosticKind, DiagnosticSink, EvalDiagnostic};
 pub use eval_time::{classify_eval_time, EvalTime};
@@ -41,7 +41,7 @@ pub use source::{
 pub use summary::SummaryAccumulator;
 pub use value_order::{compare_values, value_key};
 
-use crystal_formula::eval::Value;
+use rpt_formula::eval::Value;
 use rpt_model::SummaryOperation;
 
 /// One computed summary: the operation, the field summarized, and the resulting value.
@@ -64,12 +64,25 @@ pub struct GroupInstance {
     pub condition_field: String,
     /// The group's key value (its `GroupName`).
     pub key: Value,
+    /// The group's decoded [`rpt_model::GroupCondition`], carried through from its
+    /// [`rpt_model::Group`]. A calendar period bucketed [`key`](Self::key) to the period's start
+    /// date, which alone cannot say *which* period produced it — a 1st-of-month key is equally a
+    /// monthly, semi-monthly, or daily bucket — so the label formatters read the grain from here
+    /// rather than inferring it from the key.
+    pub date_condition: Option<rpt_model::GroupCondition>,
     /// Summaries computed over this group's rows.
     pub summaries: Vec<Summary>,
     /// Deeper group instances (empty at the deepest level).
     pub subgroups: Vec<GroupInstance>,
     /// Detail rows (only populated at the deepest level).
     pub details: Vec<Row>,
+    /// Instances of **this same group level** nested under this one by Crystal's *Hierarchical
+    /// Grouping* (`HierarchicalGroupOptions`): the instances whose `ParentIDField` value matches this
+    /// one's `InstanceIDField` value. Always empty for a group without hierarchical sorting.
+    ///
+    /// They share `level` with their parent, so they print through the same group header/footer
+    /// bands — the tree is a print-order nesting, not a deeper grouping level.
+    pub hierarchy_children: Vec<GroupInstance>,
 }
 
 /// The materialized result of the pipeline: the instance tree plus schema and grand totals.
@@ -102,6 +115,9 @@ impl Dataset {
             }
             for sub in &g.subgroups {
                 walk(sub, out);
+            }
+            for child in &g.hierarchy_children {
+                walk(child, out);
             }
         }
         for g in &self.groups {

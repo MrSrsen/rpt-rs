@@ -5,8 +5,8 @@ use crate::diagnostics::{DiagnosticKind, DiagnosticSink, EvalDiagnostic};
 use crate::source::Row;
 use crate::value_order::compare_values;
 use crate::GroupInstance;
-use crystal_formula::eval::Value;
-use crystal_formula::token::short_name;
+use rpt_formula::eval::Value;
+use rpt_formula::token::short_name;
 use rpt_model::{Group, SortDirection};
 use std::cmp::Ordering;
 
@@ -89,9 +89,11 @@ pub(super) fn apply_group_topn(
             level,
             condition_field: group.condition_field.clone(),
             key: Value::Str(topn.not_in_topn_name.clone()),
+            date_condition: group.date_condition,
             summaries: summarize(&rows, summaries, formulas, params),
             subgroups: Vec::new(),
             details: rows,
+            hierarchy_children: Vec::new(),
         });
     }
     instances

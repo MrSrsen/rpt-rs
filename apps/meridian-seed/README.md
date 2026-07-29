@@ -2,7 +2,7 @@
 
 Deterministic seed-database generator for the synthetic **Meridian Global Logistics (MGL)** render-test
 corpus. It builds a fictional third-party-logistics universe — freight, trade, and capital projects —
-and emits portable SQL that loads identically into **PostgreSQL** (perf / oracle path) and **SQLite**
+and emits portable SQL that loads identically into **PostgreSQL** (perf path) and **SQLite**
 (zero-process CI path). Nothing it produces is real: no PII, safe to commit.
 
 The schema (tables, columns, FKs) and the generation model live in this crate's source; see `schema.sql` for the
@@ -95,7 +95,7 @@ are NULL at a realistic rate so reports exercise `IsNull`/`HasValue`.
 
 ## Blobs
 
-Every `image`/`logo`/`photo` column carries a tiny procedurally-generated solid-colour PNG (one swatch
+Every `image`/`logo`/`photo` column carries a tiny procedurally-generated solid-color PNG (one swatch
 per entity kind, encoded by `src/png.rs` with no compression dependency) — enough to exercise
 Picture/Blob rendering. The bytes are a valid, decodable PNG (signature `89 50 4E 47 …`).
 

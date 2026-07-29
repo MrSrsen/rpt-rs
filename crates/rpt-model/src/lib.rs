@@ -1,17 +1,19 @@
 //! The rpt-rs semantic report model — the format-neutral IR.
 //!
-//! Pure data; no I/O. Produced by the `rpt` binary decoder today, and by future readers (serde,
-//! DSL); consumed by the render pipeline, the exporter, and future writers.
+//! Pure data; no I/O. Produced by a reader (`rpt-reader` decodes `.rpt` bytes into it; a serde or
+//! DSL-based reader could too); consumed by the render pipeline, the exporter, and any writer.
 //!
 //! [`Report`] is the root, a type-strict tree of domain DTOs named after the RAS/Engine SDK. Its
 //! typed members ([`ReportDefinition`], [`DataDefinition`], [`Database`], [`PrintOptions`], …) are
-//! populated by whichever reader produced it. The raw record substrate (the per-record DOM and its
-//! inventory) is *not* part of this format-neutral model — the `rpt` reader projects it on demand
-//! from the bytes (`Rpt::record_dom`/`Rpt::inventory`), so pipeline consumers link no format types.
+//! populated by whichever reader produced it. The decoded records themselves (the typed record tree
+//! and its inventory) are *not* part of this format-neutral model — `rpt-reader` builds them on
+//! demand from the bytes (`Rpt::typed_record_tree`/`Rpt::inventory`), so pipeline consumers link no
+//! format types.
 //!
-//! These types describe *what* a report contains, not *where* it lives in the `.rpt` bytes. The
-//! binary-format provenance of each field — its source `Contents` record and leaf layout — is
-//! documented in the reader crate's `rpt::provenance` module.
+//! These types describe *what* a report contains, not *where* it lives in the `.rpt` bytes. Which
+//! record a field is decoded from, and where in it, is a property of the reader rather than of this
+//! model: `rpt-reader` states it at the decoder that reads the field and in the field table that
+//! decoder reads the record through.
 
 #![forbid(unsafe_code)]
 
@@ -22,12 +24,14 @@ mod document;
 mod enums;
 mod fit;
 mod format;
+#[cfg(feature = "serde")]
+mod hex_bytes;
 mod objects;
 mod primitives;
 mod report_def;
 mod saved;
 
-pub use analysis::field_object_value_type;
+pub use analysis::{crosstab_measures, field_object_value_type, first_brace_ref};
 pub use data_def::{
     CustomFunction, DataDefinition, DbField, DynamicLovBinding, FieldDef, FieldKind, FieldKindData,
     FieldManagerCensus, FormulaField, FormulaSyntax, FormulaVariable, Group, GroupCondition,
@@ -37,8 +41,8 @@ pub use data_def::{
 };
 pub use database::{CommandParameter, ConnectionInfo, Database, DbFieldDef, Table, TableLink};
 pub use document::{
-    DesignerState, Guideline, MultiColumn, ObjectConnection, PageMargins, PrintOptions,
-    ReimportTimestamp, ReportOptions, SaveMetadataEntry, Subreport, SubreportLink,
+    AuthoringVersion, DesignerState, Guideline, MultiColumn, ObjectConnection, PageMargins,
+    PrintOptions, ReimportTimestamp, ReportOptions, SaveMetadataEntry, Subreport, SubreportLink,
     SubreportReimportInfo, SummaryInfo,
 };
 pub use enums::*;
@@ -48,9 +52,11 @@ pub use format::{
     TimeFieldFormat,
 };
 pub use objects::{
-    BlobFieldObject, BoxShape, ChartArrangement, ChartCategoryPeriod, ChartDefinition,
-    ChartElementFont, ChartGraphType, ChartGridType, ChartLegendPosition, ChartObject,
-    ChartViewAngle, CrossTabCellFormat, CrossTabDimension, CrossTabGridFormat, CrossTabGridOptions,
+    BlobFieldObject, BoxShape, ChartArrangement, ChartBarSize, ChartCategoryPeriod, ChartColorMode,
+    ChartDataPoint, ChartDefinition, ChartDivisionMethod, ChartElementFont, ChartGraphType,
+    ChartGridType, ChartLegendLayout, ChartLegendPosition, ChartMarkerShape, ChartMarkerSize,
+    ChartNumberFormat, ChartObject, ChartPieSize, ChartSliceDetachment, ChartViewAngle,
+    CrossTabCellFormat, CrossTabDimension, CrossTabGridFormat, CrossTabGridOptions,
     CrossTabMeasure, CrossTabObject, DrawingShape, FieldHeadingObject, FieldObject, FieldRefKind,
     IndentAndSpacingFormat, LineShape, LineSpacing, Paragraph, PictureObject, ReportObject,
     ReportObjectKind, SubreportObject, TextObject, TextRun,
@@ -90,8 +96,17 @@ pub use saved::{
 #[derive(Debug, Clone, PartialEq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Report {
-    /// Format version word from the `Contents` stream header.
+    /// The `Contents` stream header's **encryption** version word — a property of the stream
+    /// envelope, not of the report. It reads `1` on every report seen.
+    ///
+    /// For which Crystal Reports wrote the file, see [`Report::authoring_version`].
     pub version: u16,
+    /// The version of Crystal Reports that wrote this report, as it stores it: major, minor, and a
+    /// letter that is `0` on every report seen.
+    ///
+    /// This is the file's own statement about itself, stored in the first field of its root record
+    /// — not something inferred from what the file contains.
+    pub authoring_version: AuthoringVersion,
     /// SDK `ReportDocument.HasSavedData` — the file carries a saved result set (saved rows), not
     /// just the report definition. The saved rows themselves are decoded separately (see
     /// [`Report::saved_data`]).

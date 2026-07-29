@@ -4,7 +4,6 @@ target/
 .github/
 
 # Sensitive / local-only — must never enter the build context or image.
-samples/
 research/
 .claude/
 CLAUDE.md
@@ -16,3 +15,8 @@ docs/
 .dockerignore
 Dockerfile
 LICENSE
+
+# ...except the two the image redistributes: it ships statically linked binaries, so it carries
+# every dependency and both bundled font families with it, and owes their notices.
+!LICENSE
+!THIRD-PARTY-NOTICES.md
