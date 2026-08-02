@@ -96,7 +96,7 @@ rpt-test-support = { path = "crates/rpt-test-support" }
 cfb = "0.10"
 # kdl 6.6.0+ require rustc 1.95; cap at 6.5.x to stay within the workspace MSRV (1.92).
 kdl = ">=6.5.0, <6.6.0"
-miniz_oxide = "0.8"
+miniz_oxide = "0.9"
 thiserror = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
