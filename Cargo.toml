@@ -93,7 +93,7 @@ rpt-render = { path = "crates/rpt-render" }
 rpt-render-pdf = { path = "crates/rpt-render-pdf" }
 rpt-render-util = { path = "crates/rpt-render-util" }
 rpt-test-support = { path = "crates/rpt-test-support" }
-cfb = "0.10"
+cfb = "0.14"
 # kdl 6.6.0+ require rustc 1.95; cap at 6.5.x to stay within the workspace MSRV (1.92).
 kdl = ">=6.5.0, <6.6.0"
 miniz_oxide = "0.8"
