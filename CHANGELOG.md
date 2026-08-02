@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+WIP.
+
+## [0.4.0]
+
 More than 340 tracked issues went into this release.
 
 Its focus is the **`rpt-reader` rewrite**: every record type now decodes through a declarative field table — a stated
