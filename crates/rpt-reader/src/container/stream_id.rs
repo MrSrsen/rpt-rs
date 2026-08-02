@@ -50,11 +50,7 @@ pub enum StreamId {
 impl StreamId {
     /// Classify an OLE entry by its full path within the compound file.
     pub(crate) fn classify(path: &Path) -> StreamId {
-        let comps: Vec<String> = path
-            .components()
-            .filter_map(|c| c.as_os_str().to_str().map(str::to_owned))
-            .filter(|s| !s.is_empty() && s != "/")
-            .collect();
+        let comps = super::ole_components(path);
 
         let Some(top) = comps.first() else {
             return StreamId::Other(String::new());
@@ -68,7 +64,7 @@ impl StreamId {
             return StreamId::Other(join(&comps));
         }
 
-        match top.as_str() {
+        match *top {
             "Contents" => StreamId::Contents,
             SUMMARY_INFORMATION => StreamId::SummaryInformation,
             "ReportInfo" => StreamId::ReportInfo,
@@ -123,7 +119,7 @@ fn classify_indexed(name: &str) -> StreamId {
     StreamId::Other(name.to_owned())
 }
 
-fn join(comps: &[String]) -> String {
+fn join(comps: &[&str]) -> String {
     comps.join("/")
 }
 
@@ -169,5 +165,43 @@ mod tests {
             id("/Embedding 1/CONTENTS"),
             StreamId::Embedding("Embedding 1/CONTENTS".into())
         );
+    }
+
+    /// Both root spellings must classify alike on every platform: a root that survives into the
+    /// component list makes every top-level stream look nested, leaving nothing decodable.
+    #[test]
+    fn root_and_separator_spelling_do_not_change_classification() {
+        for path in ["/Contents", r"\Contents", "Contents"] {
+            assert_eq!(id(path), StreamId::Contents, "path {path:?}");
+        }
+        for path in ["/Subdocument 13", r"\Subdocument 13"] {
+            assert_eq!(id(path), StreamId::Subdocument(13), "path {path:?}");
+        }
+        for path in [
+            "/Embedding 1/CONTENTS",
+            r"\Embedding 1\CONTENTS",
+            r"\Embedding 1/CONTENTS",
+        ] {
+            assert_eq!(
+                id(path),
+                StreamId::Embedding("Embedding 1/CONTENTS".into()),
+                "path {path:?}"
+            );
+        }
+    }
+
+    /// Nested paths rejoin with `/` whatever the host's separator, so the predicates that match on
+    /// the joined form (`is_qe_session`) still hold.
+    #[test]
+    fn nested_paths_rejoin_with_forward_slashes() {
+        for path in ["/Subdocument 1/QESession", r"\Subdocument 1\QESession"] {
+            let id = id(path);
+            assert_eq!(
+                id,
+                StreamId::Other("Subdocument 1/QESession".into()),
+                "path {path:?}"
+            );
+            assert!(id.is_qe_session(), "path {path:?}");
+        }
     }
 }

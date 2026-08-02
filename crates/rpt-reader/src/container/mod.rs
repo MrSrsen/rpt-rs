@@ -13,10 +13,27 @@ mod stream_id;
 pub use stream_id::StreamId;
 
 use std::io::{Cursor, Read};
-use std::path::PathBuf;
+use std::path::{Component, Path, PathBuf};
 
 use crate::bytes::{u16_le, u32_le};
 use crate::error::{ContainerError, Result};
+
+/// The names along an OLE entry path, below the root.
+///
+/// An OLE path is not a filesystem path: `Path::components` spells the root `/` on Unix but `\` on
+/// Windows, so matching on the component text leaves a phantom leading component on the other
+/// platform — and a top-level stream that looks nested never classifies. The root is dropped
+/// structurally instead, and both separators split, which MS-CFB forbids inside an entry name.
+pub(crate) fn ole_components(path: &Path) -> Vec<&str> {
+    path.components()
+        .filter_map(|c| match c {
+            Component::RootDir | Component::Prefix(_) => None,
+            c => c.as_os_str().to_str(),
+        })
+        .flat_map(|s| s.split(['/', '\\']))
+        .filter(|s| !s.is_empty())
+        .collect()
+}
 
 /// One loaded stream: its symbolic id, original OLE path, and raw bytes.
 #[derive(Clone)]
@@ -107,12 +124,7 @@ impl Container {
             .iter()
             .filter_map(|s| {
                 // Path components below the root, e.g. `["Embedding 2", "\x01Ole"]`.
-                let parts: Vec<&str> = s
-                    .path
-                    .components()
-                    .filter_map(|c| c.as_os_str().to_str())
-                    .filter(|c| !c.is_empty() && *c != "/" && *c != "\\")
-                    .collect();
+                let parts = ole_components(&s.path);
                 let [storage, stream] = parts.as_slice() else {
                     return None;
                 };
@@ -188,13 +200,7 @@ pub(crate) fn load_embedding_contents(
         .chain([format!("Embedding {ordinal}"), "CONTENTS".to_owned()])
         .collect();
     container.streams().iter().find_map(|s| {
-        let parts: Vec<String> = s
-            .path
-            .components()
-            .filter_map(|c| c.as_os_str().to_str())
-            .filter(|c| !c.is_empty() && *c != "/" && *c != "\\")
-            .map(clean)
-            .collect();
+        let parts: Vec<String> = ole_components(&s.path).into_iter().map(clean).collect();
         (parts == want).then(|| s.bytes.clone())
     })
 }

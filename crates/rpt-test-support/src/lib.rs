@@ -41,14 +41,14 @@ pub fn fixture(rel: impl AsRef<Path>) -> PathBuf {
 /// a claim of the form "no record in the corpus does X" is exactly the kind that decides whether a
 /// field gets decoded at all. So the corpus is discovered rather than named: every `.rpt` under
 /// `tests/` (the committed fixtures, the Meridian corpus, and any newly added tree), plus any
-/// directory listed in the colon-separated `RPT_EXTRA_CORPUS`. Callers that genuinely want a subset
+/// directory listed in `RPT_EXTRA_CORPUS`. Callers that genuinely want a subset
 /// should walk that subset explicitly and say so where the conclusion is recorded.
 ///
 /// `RPT_EXTRA_CORPUS` is how an out-of-tree report set joins a sweep. Nothing outside the repository
 /// is walked by default, so a claim of the form "no record in the corpus does X" is a claim about
 /// the committed trees unless a run says otherwise.
 ///
-/// Colon-separated `RPT_CORPUS` *replaces* the discovered roots, which is how a run narrows the
+/// `RPT_CORPUS` *replaces* the discovered roots, which is how a run narrows the
 /// sweep to one tree to attribute a disagreement to it.
 ///
 /// # Panics
@@ -59,17 +59,14 @@ pub fn fixture(rel: impl AsRef<Path>) -> PathBuf {
 pub fn corpus_reports() -> Vec<PathBuf> {
     let root = workspace_root();
     let narrowed = std::env::var("RPT_CORPUS").ok().filter(|s| !s.is_empty());
-    let mut roots = match &narrowed {
-        Some(list) => list.split(':').map(PathBuf::from).collect(),
+    // Split like the host splits `PATH`: a literal `:` cuts a Windows root at its drive letter, and
+    // roots that walk to nothing make the sweep silently see no reports.
+    let mut roots: Vec<PathBuf> = match &narrowed {
+        Some(list) => std::env::split_paths(list).collect(),
         None => vec![root.join("tests")],
     };
     if let Ok(extra) = std::env::var("RPT_EXTRA_CORPUS") {
-        roots.extend(
-            extra
-                .split(':')
-                .filter(|s| !s.is_empty())
-                .map(PathBuf::from),
-        );
+        roots.extend(std::env::split_paths(&extra).filter(|p| !p.as_os_str().is_empty()));
     }
     let mut out = Vec::new();
     for dir in &roots {

@@ -1,3 +1,14 @@
+# Baselines are compared as exact strings against output written with `\n`, so a CRLF checkout fails
+# every one of them at once and reads as a decode regression.
+* text=auto eol=lf
+
+# The fixture corpus is the bytes under test, and a line-ending rewrite inside one corrupts it. Git
+# would usually detect these as binary anyway; stating it means no `core.autocrlf` can reach them.
+*.rpt binary
+*.ttf binary
+*.png binary
+*.thumbnail binary
+
 # GitHub language statistics (linguist).
 #
 # This is a Rust workspace, but the committed render/decode regression baselines are megabytes of

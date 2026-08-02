@@ -300,6 +300,8 @@ re-emits them byte for byte; no decode baseline moves unless an entry says so.
   path does; the SQL is unchanged, but the run now warns that selection is applied after the fetch.
 - `rpt_text::FaceRun` and `rpt_model::first_brace_ref` are public — the first was the unnameable return type of a public
   method, the second was copied in two crates.
+- The test suite runs on Windows in CI as well as Linux, and text files check out with LF line endings everywhere — the
+  baselines are compared as exact strings, so a CRLF checkout failed all of them at once.
 
 ### Fixed
 
@@ -354,6 +356,12 @@ is fixed is a reading that would have been wrong on a report we do not have.
   number. It also stops blaming the field table for a record it never read.
 - **`rpt saved` and `rpt dump --saved` no longer blame a batch class the reader never reached** for a report whose rows
   live in a subreport.
+- **Reports decode on Windows again.** Streams are addressed by OLE path, read with the host's path rules — and
+  `Path::components` spells the container root `/` on Unix but `\` on Windows. The root survived there, so every
+  top-level stream looked nested and classified as `Other`; with `Contents` unrecognised nothing decoded at all, and
+  `rpt inspect` reported zero records for every file. Subreport grouping misread the same path the same way. The root is
+  now dropped structurally and both separators split, so an OLE path classifies identically everywhere. Reported by
+  @jporeilly ([#1](https://github.com/MrSrsen/rpt-rs/pull/1)).
 
 **Tests.**
 

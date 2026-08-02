@@ -219,11 +219,7 @@ pub(crate) fn build_subreports(
     // Group every `Subdocument N/…` stream by its subdocument index.
     let mut groups: BTreeMap<u32, Vec<&LoadedStream>> = BTreeMap::new();
     for s in container.streams() {
-        let first = s
-            .path
-            .components()
-            .filter_map(|c| c.as_os_str().to_str())
-            .find(|c| !c.is_empty() && *c != "/");
+        let first = crate::container::ole_components(&s.path).into_iter().next();
         if let Some(name) = first {
             if let Some(n) = name.strip_prefix("Subdocument ") {
                 if let Ok(idx) = n.trim().parse::<u32>() {

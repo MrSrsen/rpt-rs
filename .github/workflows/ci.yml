@@ -58,9 +58,17 @@ jobs:
       - name: Build (all features, all targets)
         run: cargo build --all-features --all-targets
 
+  # Every OS we publish a binary for. Host path and line-ending rules differ enough to break decoding
+  # outright: a Windows misreading of the OLE root once left every stream unclassified, decoding
+  # nothing at all, while a Linux-only CI stayed green.
   test:
-    runs-on: ubuntu-latest
+    name: test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -74,12 +82,20 @@ jobs:
       #
       # qpdf is what makes the L4b artifact layer an actual check rather than a skip: without it the
       # gate reports ok in 0.00s, so RPT_REQUIRE_QPDF turns a missing reader into a failure instead of
-      # a silent pass.
+      # a silent pass. It is packaged only on the Linux runner, so that layer is required there and
+      # skipped elsewhere; every layer below it runs on both.
       - name: Install the PDF reader the artifact layer reads back with
+        if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends qpdf
+      # Two steps, not a conditional env: the gate checks the variable is *present*, so an empty
+      # value would still demand the reader.
       - name: Test
+        if: runner.os == 'Linux'
         env:
           RPT_REQUIRE_QPDF: '1'
+        run: cargo test --all-features
+      - name: Test
+        if: runner.os != 'Linux'
         run: cargo test --all-features
 
   # Render-parity corpus: seed the committed SQL fixtures into a real PostgreSQL (the single DB
