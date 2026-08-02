@@ -113,7 +113,7 @@ harfrust = "0.5"
 postgres = "0.19"
 rusqlite = "0.32"
 sea-query = { version = "0.32", default-features = false }
-similar = "2"
+similar = "3"
 
 [profile.release]
 lto = "thin"
