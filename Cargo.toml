@@ -101,7 +101,7 @@ thiserror = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 rand_chacha = { version = "0.9", default-features = false }
-rand_core = "0.9"
+rand_core = "0.10"
 # Render/data pipeline third-party deps. Hoisted so a version can't drift into two compiled copies
 # (fontdb especially: one version across the pdf and text crates). Per-crate feature sets and
 # `optional`/`default-features` stay at the leaf via `name = { workspace = true, ... }`.
