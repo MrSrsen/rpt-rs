@@ -214,7 +214,7 @@ impl<'c> Evaluator<'c> {
             .iter()
             .map(|n| self.eval(n))
             .collect::<Result<_, _>>()?;
-        builtins::resolve(name, &vals, self.ctx)
+        builtins::resolve_call(name, &vals, self.ctx)
     }
 
     fn eval_index(&mut self, base: &Node, index: &Node) -> Result<Value, EvalError> {

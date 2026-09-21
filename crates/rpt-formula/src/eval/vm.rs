@@ -766,7 +766,7 @@ fn exec_op(
                 return Err(underflow());
             }
             let args = stack.split_off(stack.len() - argc);
-            stack.push(builtins::resolve(name, &args, ctx)?);
+            stack.push(builtins::resolve_call(name, &args, ctx)?);
         }
         Op::Summary { op, field, group } => {
             let v = ctx
