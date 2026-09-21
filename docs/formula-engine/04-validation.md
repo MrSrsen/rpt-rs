@@ -95,6 +95,10 @@ Each set is optional and independent: a kind whose set is **absent** is not chec
 field set supplied is silently accepted), so an empty `ValidationContext`
 runs only the intrinsic function / arity / operator checks. Membership is case-insensitive.
 
+For execution, an embedding application can implement `EvalContext::call_function` and declare the
+same names here. Declarations alone neither execute a function nor check its custom signature; see
+[Host-provided functions](05-host-functions.md) for the contract and a registry example.
+
 ## Spans
 
 The `Node` AST carries no source offsets, so spans are recovered from the token stream:

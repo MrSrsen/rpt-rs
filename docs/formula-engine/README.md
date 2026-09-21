@@ -43,7 +43,7 @@ The formula language lives in its own crate rather than as a module of the reade
   needs to relate a formula's result kind to the `rpt-model` `FieldValueType` does so in the consumer that knows both
   types, never by coupling the formula crate to the model.
 
-This folder documents the engine as it ships, in four parts:
+This folder documents the engine as it ships, in five parts:
 
 | Doc                                          | Covers                                                                                                                                                     |
 |----------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -51,6 +51,7 @@ This folder documents the engine as it ships, in four parts:
 | [02 — Language reference](02-language.md)    | Both dialects (Crystal & Basic syntax): lexis, operators/precedence, expressions, statement bodies, literals, comments — with an EBNF sketch and examples. |
 | [03 — Builtin functions](03-builtins.md)     | The builtin library by family (string / math / date-time / conversion / …): signatures, semantics, Crystal-specific rules, and implementation status.      |
 | [04 — Validation](04-validation.md)          | The semantic diagnostics pass: diagnostic categories, the injected `ValidationContext`, span sourcing, and how it feeds a formula language server.         |
+| [05 — Host functions](05-host-functions.md) | Supplying application-specific functions through `EvalContext`, validation declarations, and the runtime contract. |
 
 The grammar `rpt-formula` implements — token codes, the 17-level precedence ladder, statement productions, and the
 Crystal-vs-Basic split — has no published specification; this documentation describes what the crate actually

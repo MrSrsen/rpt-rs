@@ -1,6 +1,7 @@
 //! Unit tests for the formula module, split by area so they can grow freely.
 
 mod eval_tests;
+mod host_function_tests;
 mod lexer_tests;
 mod parser_tests;
 mod refs_tests;

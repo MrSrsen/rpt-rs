@@ -516,6 +516,22 @@ pub(super) fn resolve(
     }
 }
 
+/// Resolve an explicit function call, allowing the host to handle non-built-in names. Kept
+/// separate from `resolve`: a bare identifier must not invoke a zero-argument host callback.
+pub(super) fn resolve_call(
+    name: &str,
+    args: &[Value],
+    ctx: &dyn EvalContext,
+) -> Result<Value, EvalError> {
+    let lname = name.to_lowercase();
+    if lookup(&lname).is_none() && !crate::types::is_builtin(&lname) {
+        if let Some(result) = ctx.call_function(&lname, args) {
+            return result;
+        }
+    }
+    resolve(name, args, ctx)
+}
+
 pub(super) fn dispatch(
     name: &str,
     args: &[Value],

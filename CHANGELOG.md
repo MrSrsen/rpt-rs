@@ -6,7 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-WIP.
+### Added
+
+- `rpt-formula`: embedding applications can implement `EvalContext::call_function` to evaluate
+  explicit calls to host-provided functions in both the VM and reference evaluator. Built-in names
+  stay reserved; existing contexts retain their behavior through the default implementation.
+  The host handles argument validation and nulls, and its errors retain the calling expression's span.
 
 ## [0.4.0]
 

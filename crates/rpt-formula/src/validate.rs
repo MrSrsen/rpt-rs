@@ -104,6 +104,9 @@ impl ValidationContext {
     /// Declare known **custom** function names (in addition to the built-ins). When set, a call to a
     /// name that is neither a built-in nor in this set is a hard error; when unset, such a call is a
     /// warning (it may be a custom function the caller didn't declare).
+    ///
+    /// This is a name declaration, not an implementation or signature: host-provided functions
+    /// execute through [`crate::eval::EvalContext::call_function`], which checks their arguments.
     pub fn with_functions<I: IntoIterator<Item = S>, S: Into<String>>(mut self, names: I) -> Self {
         self.functions = Some(lower_set(names));
         self

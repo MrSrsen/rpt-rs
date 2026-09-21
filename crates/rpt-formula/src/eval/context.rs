@@ -133,6 +133,28 @@ pub trait EvalContext {
     /// Resolve a `{...}` reference to its current value, or `None` if the name is unknown.
     fn resolve(&self, kind: RefKind, name: &str) -> Option<Value>;
 
+    /// Evaluate a host-provided function invoked as `name(args...)`.
+    ///
+    /// `name` is lowercase and `args` have already been evaluated, left to right. Arguments may
+    /// include [`Value::Null`]; the host owns argument-count/type checks and null handling. Return
+    /// `None` for an unregistered name, `Some(Ok(value))` for a result (including null), or
+    /// `Some(Err(error))` for a registered function that failed. Errors propagate to the caller.
+    ///
+    /// Only explicit calls to names outside the built-in dispatch and type tables reach this hook.
+    /// Built-ins (including known but unsupported ones), language constructs, and bare identifiers retain
+    /// their existing behavior and cannot be overridden. The default leaves unknown calls as
+    /// [`EvalError::UnknownName`], so existing contexts need no changes.
+    ///
+    /// Declare the same names with [`crate::ValidationContext::with_functions`] when validating
+    /// formulas. That declares names only: custom arity/types are checked here at execution time,
+    /// and their static return type remains unknown. This hook does not load Crystal UFL binaries;
+    /// callbacks are trusted code supplied by the embedding application and must bound their own
+    /// work (the evaluator's loop limit cannot interrupt a callback).
+    fn call_function(&self, name: &str, args: &[Value]) -> Option<Result<Value, EvalError>> {
+        let _ = (name, args);
+        None
+    }
+
     /// The type-default value substituted for a **null** `{...}` field when the running formula uses
     /// [`NullTreatment::DefaultValue`] — `0` / `""` / `False` / the zero date, chosen from the field's
     /// declared type. Returns `None` when this context cannot supply a typed default (the field then
