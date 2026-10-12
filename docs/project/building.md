@@ -74,7 +74,7 @@ There are few, deliberately, and none of them changes what a correct build *prod
 |-----------------------------------------------|-------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
 | `rpt-reader`, `rpt-model`, `rpt-format-value` | `serde`                                   | Derive `Serialize`/`Deserialize` on the model and its value types.                                                                               |
 | `rpt-text`                                    | `cosmic` (default)                        | The cosmic-text shaping stack (`CosmicLayout` + `FontProvider`). With it off, only the `FontDb` face resolver the PDF backend needs is compiled. |
-| `rpt-render-cli`                              | `db-postgres`, `db-sqlite` (both default) | Compile the live-DB backends. The `rpt-render` **library** never links a driver, so there is nothing to turn off there.                          |
+| `rpt-render-cli`                              | `db-postgres`, `db-sqlite` (both default), `db-mssql` (opt-in) | Compile the live-DB backends. The `rpt-render` **library** never links a driver, so there is nothing to turn off there. SQL Server is opt-in because it pulls an async TDS client and a TLS stack. |
 | `rpt-formula`                                 | `differential`                            | Expose the tree-walking evaluator (the VM's differential-test reference) to external test crates.                                                |
 
 `rpt-render` has **no** features, deliberately: every flag above changes *linkage*, and none changes *output*. A flag
@@ -88,7 +88,7 @@ explicitly to `render_dataset_with`. It is chosen at the call site, never fallen
 
 `wasm32-unknown-unknown` is a first-class target for the pipeline, and CI builds 13 crates for it on every push: the
 whole render/data path plus its dependency-free leaves. Two crates are excluded **by design**
-rather than by defect — `rpt-db-postgres` and `rpt-db-sqlite`. Native database clients live behind the
+rather than by defect — `rpt-db-postgres`, `rpt-db-sqlite` and `rpt-db-mssql`. Native database clients live behind the
 `RowSource` trait precisely so the portable core never links them.
 
 Font handling needs no filesystem: the Liberation faces are compiled in with `include_bytes!`, and the bundled set is

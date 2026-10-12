@@ -19,6 +19,7 @@ members = [
     "crates/rpt-render-pdf",
     "crates/rpt-db-postgres",
     "crates/rpt-db-sqlite",
+    "crates/rpt-db-mssql",
     "crates/rpt-render-util",
     "crates/rpt-test-support",
     "apps/meridian-seed",
@@ -87,6 +88,7 @@ rpt-data = { path = "crates/rpt-data" }
 rpt-query = { path = "crates/rpt-query" }
 rpt-db-postgres = { path = "crates/rpt-db-postgres" }
 rpt-db-sqlite = { path = "crates/rpt-db-sqlite" }
+rpt-db-mssql = { path = "crates/rpt-db-mssql" }
 rpt-layout = { path = "crates/rpt-layout" }
 rpt-text = { path = "crates/rpt-text", default-features = false }
 rpt-render = { path = "crates/rpt-render" }
@@ -112,6 +114,12 @@ krilla = { version = "0.8.2", default-features = false }
 harfrust = "0.5"
 postgres = "0.19"
 rusqlite = "0.32"
+# SQL Server over TDS. rustls rather than the default native-tls so the build needs no OpenSSL / system TLS
+# library (same "no system library" stance as the bundled SQLite); no winauth/tds80 — SQL logins only.
+tiberius = { version = "0.13", default-features = false, features = ["rustls", "tds73"] }
+# tiberius is async; the driver blocks on a private current-thread runtime so the RowSource API stays sync.
+tokio = { version = "1", default-features = false, features = ["rt", "net", "time"] }
+tokio-util = { version = "0.7", default-features = false, features = ["compat"] }
 sea-query = { version = "0.32", default-features = false }
 similar = "3"
 

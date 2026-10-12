@@ -226,6 +226,8 @@ jobs:
         run: cargo clippy -p rpt-render-cli --no-default-features --features db-postgres --all-targets -- -D warnings
       - name: rpt-render-cli with only SQLite
         run: cargo clippy -p rpt-render-cli --no-default-features --features db-sqlite --all-targets -- -D warnings
+      - name: rpt-render-cli with only SQL Server
+        run: cargo clippy -p rpt-render-cli --no-default-features --features db-mssql --all-targets -- -D warnings
       # `db` is the shared live-DB machinery, reachable only through a driver: on its own it yields a
       # binary that accepts `--db`, resolves the connections, and then always fails. The crate rejects
       # the combination with a compile_error!, and this asserts the rejection is real — without it the

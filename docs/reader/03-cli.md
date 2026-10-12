@@ -33,7 +33,7 @@ rpt <COMMAND> <file.rpt> [--json] [--depth N] [--color | --no-color]
 
 `--json` emits the command's output as JSON instead of text, for scripting. `--depth N` (for `tree`) caps the tree at N
 record levels (the stream tier is always shown); deeper nodes are collapsed to a `… N more` marker.
-`--dialect D` (for `sql`) selects the generated query's SQL dialect (`postgres` (default) / `sqlite` / `mysql`).
+`--dialect D` (for `sql`) selects the generated query's SQL dialect (`postgres` (default) / `sqlite` / `mysql` / `mssql`).
 `rpt <command> --help` prints scoped, per-command help. `rpt --version` (`-V`) prints the version the binary was built
 from, which is also the first line of `--help`.
 

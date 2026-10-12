@@ -25,7 +25,7 @@
 mod selection;
 mod used_fields;
 
-pub use selection::{push_down_selection_with_params, PushDown};
+pub use selection::{push_down_selection_for, push_down_selection_with_params, PushDown};
 pub use used_fields::{prune_database, used_database_fields};
 
 /// Re-exported so callers can name the parameter-value type used by [`build_query_full`] /
@@ -148,6 +148,10 @@ pub enum Dialect {
     Sqlite,
     /// MySQL/MariaDB (`CAST(x AS CHAR)` casts, `` `…` `` quoting).
     Mysql,
+    /// Microsoft SQL Server (T-SQL): `[…]` quoting and a typed text conversion per column
+    /// ([`Dialect::cast_value`]) so a number, date, time or flag arrives as the text `rpt-data` parses.
+    /// Always built by the hand-rolled path (`sea-query` has no SQL Server backend).
+    MsSql,
 }
 
 impl Dialect {
@@ -159,14 +163,61 @@ impl Dialect {
             Dialect::Postgres => format!("{expr}::text"),
             Dialect::Sqlite => format!("CAST({expr} AS TEXT)"),
             Dialect::Mysql => format!("CAST({expr} AS CHAR)"),
+            Dialect::MsSql => format!("CAST({expr} AS NVARCHAR(MAX))"),
+        }
+    }
+
+    /// Cast `expr` (an already-quoted column reference or a parenthesised expression) to the text form
+    /// `rpt-data` re-types back into a value of the declared type `vt`.
+    ///
+    /// For every dialect but SQL Server one text cast serves all types. SQL Server's default text forms do
+    /// not round-trip: a `float` converts to six significant digits, a `datetime` to `Oct 12 2026 10:07AM`,
+    /// and a `bit` to `1`/`0` where the reader expects a word. So each type picks its own `CONVERT` style:
+    ///
+    /// - numbers: style `3` (17 digits, lossless for a `float`; ignored by integers and `decimal`);
+    /// - currency (`money`, `smallmoney`): style `2` — style `3` is read as `1`, giving `1,323.46`, which
+    ///   is neither a number nor the four decimals a `money` holds (`2` gives `1323.4567`);
+    /// - date `23` (`yyyy-mm-dd`), datetime `120` (`yyyy-mm-dd hh:mi:ss`), time `108` (`hh:mi:ss`);
+    /// - a boolean (`bit`): `true` / `false`, with a null kept null;
+    /// - everything else: `NVARCHAR(MAX)`.
+    pub(crate) fn cast_value(self, expr: &str, vt: FieldValueType) -> String {
+        if self != Dialect::MsSql {
+            return self.cast_text(expr);
+        }
+        use FieldValueType as T;
+        match vt {
+            T::Int8s | T::Int16s | T::Int32s | T::Int32u | T::Number => {
+                format!("CONVERT(NVARCHAR(64), {expr}, 3)")
+            }
+            T::Currency => format!("CONVERT(NVARCHAR(64), {expr}, 2)"),
+            T::Date => format!("CONVERT(CHAR(10), {expr}, 23)"),
+            T::DateTime => format!("CONVERT(VARCHAR(19), {expr}, 120)"),
+            T::Time => format!("CONVERT(VARCHAR(8), {expr}, 108)"),
+            T::Boolean => {
+                format!("CASE WHEN {expr} IS NULL THEN NULL WHEN {expr} <> 0 THEN 'true' ELSE 'false' END")
+            }
+            _ => self.cast_text(expr),
+        }
+    }
+
+    /// A condition that is always true, for a link that names no field pairs: `TRUE` where the dialect has
+    /// the keyword, `1 = 1` where it does not (SQL Server).
+    fn always_true(self) -> &'static str {
+        match self {
+            Dialect::MsSql => "1 = 1",
+            _ => "TRUE",
         }
     }
 
     /// Quote a SQL identifier for this dialect, escaping the embedded quote character by doubling it.
-    /// MySQL uses backticks (`` `…` ``); every other dialect uses ANSI double quotes (`"…"`).
+    /// MySQL uses backticks (`` `…` ``), SQL Server brackets (`[…]`); every other dialect uses ANSI double
+    /// quotes (`"…"`).
     pub(crate) fn quote_ident(self, ident: &str) -> String {
         match self {
             Dialect::Mysql => format!("`{}`", ident.replace('`', "``")),
+            // Brackets, not double quotes: those need `QUOTED_IDENTIFIER ON`, which a bare TDS session
+            // does not necessarily have.
+            Dialect::MsSql => format!("[{}]", ident.replace(']', "]]")),
             _ => format!("\"{}\"", ident.replace('"', "\"\"")),
         }
     }
@@ -189,6 +240,8 @@ fn cast_expr(dialect: Dialect, alias: &str, field: &str) -> SimpleExpr {
         Dialect::Postgres => Expr::cust_with_expr("$1::text", colref),
         Dialect::Sqlite => colref.cast_as(Alias::new("TEXT")),
         Dialect::Mysql => colref.cast_as(Alias::new("CHAR")),
+        // Not reached: SQL Server is always built by hand (see `build_query_full`).
+        Dialect::MsSql => colref.cast_as(Alias::new("NVARCHAR(MAX)")),
     }
 }
 
@@ -201,6 +254,8 @@ fn cast_raw_expr(dialect: Dialect, raw: &str) -> SimpleExpr {
         Dialect::Postgres => Expr::cust_with_expr("$1::text", inner),
         Dialect::Sqlite => inner.cast_as(Alias::new("TEXT")),
         Dialect::Mysql => inner.cast_as(Alias::new("CHAR")),
+        // Not reached: SQL Server is always built by hand (see `build_query_full`).
+        Dialect::MsSql => inner.cast_as(Alias::new("NVARCHAR(MAX)")),
     }
 }
 
@@ -292,15 +347,15 @@ pub fn build_query_full(
     // the query returns more rows than the report shows. Carried on the result so a caller can say so
     // without the user having to re-run under `-v`.
     let mut not_pushed: Vec<String> = Vec::new();
-    let where_sql: Option<String> = if dialect == Dialect::Postgres {
+    let where_sql: Option<String> = if matches!(dialect, Dialect::Postgres | Dialect::MsSql) {
         selection.and_then(|formula| {
-            let pushed = push_down_selection_with_params(formula, &columns, params);
+            let pushed = push_down_selection_for(formula, &columns, params, dialect);
             not_pushed = pushed.not_pushed.clone();
             pushed.where_sql
         })
     } else {
-        // Only the Postgres path translates predicates, so on any other dialect the whole selection
-        // is applied locally.
+        // Only the Postgres and SQL Server paths translate predicates, so on any other dialect the whole
+        // selection is applied locally.
         not_pushed = selection
             .filter(|f| !f.trim().is_empty())
             .map(|f| vec![f.to_string()])
@@ -319,7 +374,9 @@ pub fn build_query_full(
         .iter()
         .any(|ti| is_command_table(&database.tables[*ti]));
 
-    let sql = if has_command {
+    // SQL Server is always built by hand: `sea-query` has no backend for it, and its text conversions are
+    // typed per column.
+    let sql = if has_command || dialect == Dialect::MsSql {
         build_sql_raw(database, &order, &columns, dialect, where_sql.as_deref())
     } else {
         build_sql_seaquery(database, &order, &columns, dialect, where_sql.as_deref())
@@ -424,6 +481,8 @@ fn build_sql_seaquery(
         Dialect::Postgres => q.to_string(PostgresQueryBuilder),
         Dialect::Sqlite => q.to_string(SqliteQueryBuilder),
         Dialect::Mysql => q.to_string(MysqlQueryBuilder),
+        // Not reached: SQL Server is always built by hand (see `build_query_full`).
+        Dialect::MsSql => q.to_string(PostgresQueryBuilder),
     }
 }
 
@@ -521,12 +580,12 @@ fn build_sql_raw(
                 // aliased by its field name.
                 Some(e) => format!(
                     "{} AS {}",
-                    dialect.cast_text(&format!("({e})")),
+                    dialect.cast_value(&format!("({e})"), c.value_type),
                     dialect.quote_ident(&c.field)
                 ),
                 // A binary (blob/bytea) column is selected raw so its bytes survive a text cast.
                 None if c.value_type.is_binary() => dialect.qualify(&c.alias, &c.field),
-                None => dialect.cast_text(&dialect.qualify(&c.alias, &c.field)),
+                None => dialect.cast_value(&dialect.qualify(&c.alias, &c.field), c.value_type),
             })
             .collect::<Vec<_>>()
             .join(", ")
@@ -730,7 +789,7 @@ fn join_clause(
         .collect();
     let on = if conds.is_empty() {
         // A link with no field pairs can't constrain — emit a TRUE so the SQL stays valid.
-        "TRUE".to_string()
+        dialect.always_true().to_string()
     } else {
         conds.join(" AND ")
     };
@@ -951,6 +1010,128 @@ mod tests {
         );
     }
 
+    /// The SQL Server query: `[…]` quoting, one typed text conversion per declared column type, joins as in
+    /// every other dialect, and the hand-rolled path (no `sea-query` backend).
+    #[test]
+    fn mssql_query_quotes_with_brackets_and_converts_each_type() {
+        use FieldValueType as T;
+        let db = Database {
+            tables: vec![
+                table(
+                    "Inv",
+                    &[
+                        ("No", T::Int32s),
+                        ("Price", T::Number),
+                        ("Total", T::Currency),
+                        ("Day", T::Date),
+                        ("At", T::DateTime),
+                        ("Clock", T::Time),
+                        ("Hide", T::Boolean),
+                        ("Note", T::String),
+                    ],
+                ),
+                table("Cust", &[("Id", T::Int32s)]),
+            ],
+            links: vec![link(
+                TableJoinKind::LeftOuter,
+                "Inv",
+                "Cust",
+                &["No"],
+                &["Id"],
+            )],
+        };
+        let sql = build_query_in(&db, Dialect::MsSql).unwrap().sql;
+        for expected in [
+            "CONVERT(NVARCHAR(64), [Inv].[No], 3)",
+            "CONVERT(NVARCHAR(64), [Inv].[Price], 3)",
+            "CONVERT(NVARCHAR(64), [Inv].[Total], 2)",
+            "CONVERT(CHAR(10), [Inv].[Day], 23)",
+            "CONVERT(VARCHAR(19), [Inv].[At], 120)",
+            "CONVERT(VARCHAR(8), [Inv].[Clock], 108)",
+            "CASE WHEN [Inv].[Hide] IS NULL THEN NULL WHEN [Inv].[Hide] <> 0 THEN 'true' ELSE 'false' END",
+            "CAST([Inv].[Note] AS NVARCHAR(MAX))",
+            "FROM [Inv] AS [Inv] LEFT JOIN [Cust] AS [Cust] ON [Inv].[No] = [Cust].[Id]",
+        ] {
+            assert!(sql.contains(expected), "missing `{expected}` in: {sql}");
+        }
+        assert!(!sql.contains('"'), "no ANSI quotes: {sql}");
+        assert!(!sql.contains("::"), "no Postgres casts: {sql}");
+    }
+
+    /// A `]` in a name is doubled, so a name cannot close the bracket early.
+    #[test]
+    fn mssql_identifier_escapes_the_closing_bracket() {
+        assert_eq!(Dialect::MsSql.quote_ident("a]b"), "[a]]b]");
+        assert_eq!(Dialect::MsSql.qualify("t", "c"), "[t].[c]");
+    }
+
+    /// Other dialects keep one text cast for every type — only SQL Server converts per type.
+    #[test]
+    fn only_mssql_converts_per_type() {
+        for vt in [
+            FieldValueType::Number,
+            FieldValueType::Date,
+            FieldValueType::Boolean,
+        ] {
+            assert_eq!(
+                Dialect::Postgres.cast_value("x", vt),
+                Dialect::Postgres.cast_text("x")
+            );
+            assert_eq!(
+                Dialect::Sqlite.cast_value("x", vt),
+                Dialect::Sqlite.cast_text("x")
+            );
+        }
+        assert_ne!(
+            Dialect::MsSql.cast_value("x", FieldValueType::Number),
+            Dialect::MsSql.cast_text("x")
+        );
+    }
+
+    /// A link with no field pairs joins `ON 1 = 1` on SQL Server, which has no `TRUE`.
+    #[test]
+    fn mssql_always_true_join_has_no_true_keyword() {
+        let db = Database {
+            tables: vec![
+                table("a", &[("k", FieldValueType::Int32s)]),
+                table("b", &[("k", FieldValueType::Int32s)]),
+            ],
+            links: vec![link(TableJoinKind::Inner, "a", "b", &[], &[])],
+        };
+        let sql = build_query_in(&db, Dialect::MsSql).unwrap().sql;
+        assert!(sql.contains("ON 1 = 1"), "{sql}");
+        assert!(!sql.contains("TRUE"), "{sql}");
+    }
+
+    /// The selection reaches the `WHERE` on SQL Server, with T-SQL literals: the three conditions of an
+    /// invoice (firm, number, a non-zero quantity) all push down.
+    #[test]
+    fn mssql_pushes_the_selection_into_the_where() {
+        use FieldValueType as T;
+        let db = Database {
+            tables: vec![table(
+                "Inv",
+                &[("Firm", T::Int32s), ("No", T::Int32s), ("Qty", T::Number)],
+            )],
+            ..Default::default()
+        };
+        let q = build_query_full(
+            &db,
+            &[],
+            Some("{Inv.Firm} = 6 and {Inv.No} = 62820 and {Inv.Qty} <> 0"),
+            &[],
+            Dialect::MsSql,
+        )
+        .unwrap();
+        assert!(
+            q.sql
+                .ends_with(" WHERE [Inv].[Firm] = 6 AND [Inv].[No] = 62820 AND [Inv].[Qty] <> 0"),
+            "{}",
+            q.sql
+        );
+        assert!(q.not_pushed.is_empty(), "{:?}", q.not_pushed);
+    }
+
     #[test]
     fn left_outer_join_keyword() {
         let db = Database {
@@ -1140,11 +1321,18 @@ mod tests {
         let mut t = table("cmd", &[("v", FieldValueType::Int32s)]);
         t.command_text = Some("SELECT foo FROM bar".into());
         db.tables = vec![t];
-        for d in [Dialect::Postgres, Dialect::Sqlite, Dialect::Mysql] {
+        for d in [
+            Dialect::Postgres,
+            Dialect::Sqlite,
+            Dialect::Mysql,
+            Dialect::MsSql,
+        ] {
             let q = build_query_in(&db, d).unwrap();
-            // The alias is quoted per dialect: backticks for MySQL, ANSI double quotes otherwise.
+            // The alias is quoted per dialect: backticks for MySQL, brackets for SQL Server, ANSI double
+            // quotes otherwise.
             let expected = match d {
                 Dialect::Mysql => "FROM (SELECT foo FROM bar) AS `cmd`",
+                Dialect::MsSql => "FROM (SELECT foo FROM bar) AS [cmd]",
                 _ => r#"FROM (SELECT foo FROM bar) AS "cmd""#,
             };
             assert!(q.sql.contains(expected), "{d:?}: {}", q.sql);

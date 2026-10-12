@@ -27,6 +27,7 @@ thiserror = { workspace = true }
 rpt-query = { workspace = true, optional = true }
 rpt-db-postgres = { workspace = true, optional = true }
 rpt-db-sqlite = { workspace = true, optional = true }
+rpt-db-mssql = { workspace = true, optional = true }
 
 [dev-dependencies]
 # Drives the built binary against a committed fixture (flag plumbing, refusals, and CLI-vs-library
@@ -43,6 +44,8 @@ default = ["db-postgres", "db-sqlite"]
 db = ["dep:rpt-query"]
 db-postgres = ["db", "dep:rpt-db-postgres"]
 db-sqlite = ["db", "dep:rpt-db-sqlite"]
+# Opt-in (not in `default`): it pulls an async TDS client and a TLS stack that the other two drivers do not need.
+db-mssql = ["db", "dep:rpt-db-mssql"]
 
 [lints]
 workspace = true
