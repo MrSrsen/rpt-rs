@@ -851,6 +851,50 @@ fn print_at_bottom_of_page_pins_a_footer_to_the_body_bottom() {
     assert_eq!(feet[0], 2700, "footer pinned at the body bottom");
 }
 
+/// A page footer that is suppressed prints nothing and reserves no room: a footer pinned to the bottom of
+/// the body sits against the page bottom, not above the space the hidden footer would have taken.
+#[test]
+fn a_suppressed_page_footer_reserves_no_room() {
+    fn pinned_footer_top(suppress_page_footer: bool) -> i32 {
+        let mut report = Report::default();
+        report.print_options.content_width = Twips(12240);
+        report.print_options.content_height = Twips(3000);
+        let mut footer = section(
+            AreaSectionKind::ReportFooter,
+            "RF",
+            300,
+            vec![text_object("Total", "TOTAL", 0)],
+        );
+        footer.format.base.print_at_bottom_of_page = true;
+        let mut page_footer = section(
+            AreaSectionKind::PageFooter,
+            "PF",
+            400,
+            vec![text_object("Pf", "PAGE", 0)],
+        );
+        page_footer.format.base.suppress = suppress_page_footer;
+        report.report_definition.areas = vec![
+            area(
+                AreaSectionKind::Detail,
+                vec![section(
+                    AreaSectionKind::Detail,
+                    "Details",
+                    300,
+                    vec![text_object("Row", "line", 0)],
+                )],
+            ),
+            area(AreaSectionKind::ReportFooter, vec![footer]),
+            area(AreaSectionKind::PageFooter, vec![page_footer]),
+        ];
+        let doc = rendered(&report, &numeric_rows(1));
+        page_text_tops(&doc.pages[0], "TOTAL")[0]
+    }
+    // Body bottom 3000 less the 300-twip footer: 2700 when the page footer is hidden, 2300 when it is
+    // shown and holds back its 400 twips.
+    assert_eq!(pinned_footer_top(true), 2700);
+    assert_eq!(pinned_footer_top(false), 2300);
+}
+
 #[test]
 fn reset_page_number_after_restarts_the_page_counter() {
     // A group footer with ResetPageNumberAfter (+ NewPageAfter) restarts the page-number counter, so
