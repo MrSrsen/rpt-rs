@@ -917,6 +917,11 @@ impl Formatter<'_> {
             Some(dt) => compile_formulas_at(&sub_report.data_definition, dt),
             None => compile_formulas(&sub_report.data_definition),
         };
+        // ... and the parent's number separators, so a subreport's `CStr({x})` prints like the parent's.
+        let formulas = match self.formulas.separators() {
+            Some(sep) => formulas.with_separators(sep),
+            None => formulas,
+        };
         // A subreport gets its own Global variable store (its running totals / global counters reset
         // per subreport, matching the engine) but **shares the parent's `Shared` scope** — a `Shared`
         // variable set in the main report is visible in the subreport and vice-versa.

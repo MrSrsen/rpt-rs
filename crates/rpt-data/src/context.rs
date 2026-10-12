@@ -9,7 +9,7 @@ use crate::diagnostics::{DiagnosticKind, DiagnosticSink, EvalDiagnostic};
 use crate::running_total::RunningTotals;
 use crate::source::Row;
 use rpt_formula::eval::vm::{self, Chunk};
-use rpt_formula::eval::{Date, EvalContext, NullTreatment, Time, Value};
+use rpt_formula::eval::{Date, EvalContext, NullTreatment, NumberSeparators, Time, Value};
 use rpt_formula::token::{split_reference, strip_braces};
 use rpt_formula::{RefKind, VarScope};
 use std::cell::RefCell;
@@ -78,6 +78,9 @@ pub struct FormulaRegistry {
     /// resolves `CurrentDate`/`Today`/`CurrentDateTime`/`CurrentTime`. `None` = not supplied (the
     /// offline/inspection paths that never set an as-of leave these specials unresolved).
     datetime: Option<DateTimeSpecials>,
+    /// The separators a bare numeric `ToText`/`CStr` prints with (the render locale's). `None` = not
+    /// supplied: the en-US pair.
+    separators: Option<NumberSeparators>,
 }
 
 impl FormulaRegistry {
@@ -128,6 +131,19 @@ impl FormulaRegistry {
     pub fn with_datetime(mut self, datetime: DateTimeSpecials) -> FormulaRegistry {
         self.datetime = Some(datetime);
         self
+    }
+
+    /// Attach the separators a bare `ToText`/`CStr` of a number prints with (chainable) — the render
+    /// locale's, so a formula-built string such as `CStr({Line.Price})` matches the formatted fields.
+    pub fn with_separators(mut self, separators: NumberSeparators) -> FormulaRegistry {
+        self.separators = Some(separators);
+        self
+    }
+
+    /// The separators attached to this registry, if any. A child (sub)report registry is built with the
+    /// same pair so its formulas print numbers like the parent's.
+    pub fn separators(&self) -> Option<NumberSeparators> {
+        self.separators
     }
 
     /// The as-of date/time specials attached to this registry, if any. A child (sub)report registry
@@ -487,6 +503,10 @@ impl EvalContext for DataContext<'_> {
             .get(name)
             .cloned()
             .or_else(|| self.formulas.datetime_special(name))
+    }
+
+    fn number_separators(&self) -> NumberSeparators {
+        self.formulas.separators().unwrap_or_default()
     }
 
     fn var_get(&self, scope: VarScope, name: &str) -> Option<Value> {

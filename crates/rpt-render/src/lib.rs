@@ -367,6 +367,14 @@ pub fn default_as_of() -> DateTimeSpecials {
     }
 }
 
+/// The separators a bare `ToText`/`CStr` of a number prints with under `locale`.
+fn separators_of(locale: &Locale) -> rpt_formula::NumberSeparators {
+    rpt_formula::NumberSeparators {
+        decimal: locale.decimal_sep,
+        thousands: locale.thousands_sep,
+    }
+}
+
 /// Compile the report's formulas and lay out a [`Dataset`] with the default text layout — the last
 /// step shared by every non-BYO-layout entry point.
 fn layout_dataset(
@@ -377,7 +385,8 @@ fn layout_dataset(
     as_of: DateTimeSpecials,
     fonts: FontSource,
 ) -> PagedDocument {
-    let formulas = compile_formulas_at(&report.data_definition, as_of);
+    let formulas =
+        compile_formulas_at(&report.data_definition, as_of).with_separators(separators_of(&locale));
     rpt_layout::layout_scoped(
         report,
         dataset,
@@ -403,7 +412,8 @@ pub fn render_dataset_with(
     as_of: Option<DateTimeSpecials>,
 ) -> PagedDocument {
     let as_of = as_of.unwrap_or_else(default_as_of);
-    let formulas = compile_formulas_at(&report.data_definition, as_of);
+    let formulas =
+        compile_formulas_at(&report.data_definition, as_of).with_separators(separators_of(&locale));
     rpt_layout::layout_scoped(report, dataset, &formulas, text_layout, scope, locale)
 }
 

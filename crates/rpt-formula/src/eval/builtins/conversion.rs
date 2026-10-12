@@ -1,7 +1,7 @@
 //! Type-conversion builtins (`Val`/`ToNumber`/`ToText`/`CCur`/`CBool`) and the `IsNumeric` predicate.
 
 use super::{arg, bad_arg, mismatch, opt_num};
-use crate::eval::{EvalError, Value};
+use crate::eval::{EvalContext, EvalError, Value};
 use rpt_format_value::{
     format_currency, format_number, format_picture, parse_number_picture, CurrencyFormat,
     NumberFormat,
@@ -19,7 +19,12 @@ pub(super) enum ConversionFn {
 }
 
 /// Handle a conversion builtin (routed here from [`super::call`]).
-pub(super) fn call(b: ConversionFn, name: &str, args: &[Value]) -> Result<Value, EvalError> {
+pub(super) fn call(
+    b: ConversionFn,
+    name: &str,
+    args: &[Value],
+    ctx: &dyn EvalContext,
+) -> Result<Value, EvalError> {
     use ConversionFn as B;
     match b {
         B::Val => {
@@ -75,7 +80,7 @@ pub(super) fn call(b: ConversionFn, name: &str, args: &[Value]) -> Result<Value,
                 None => Err(mismatch(name, v)),
             },
         },
-        B::ToText => to_text(name, args),
+        B::ToText => to_text(name, args, ctx),
     }
 }
 
@@ -90,8 +95,9 @@ fn sep_arg(arg: Option<&Value>, default: char) -> char {
 /// `ToText`/`CStr`. Forms: bare scalars; Number/Currency with either a **picture string**
 /// (`ToText(x, "#,##0.00")`, via [`parse_number_picture`]) or a numeric `decimals` arg (+ optional
 /// thousands/decimal separator strings); date/time with a **picture string**
-/// (`ToText(d, "dd-MMM-yyyy")`, via [`format_picture`]) or, bare, the default pattern.
-fn to_text(name: &str, args: &[Value]) -> Result<Value, EvalError> {
+/// (`ToText(d, "dd-MMM-yyyy")`, via [`format_picture`]) or, bare, the default pattern. A numeric call
+/// that names no separators prints with the context's ([`EvalContext::number_separators`]).
+fn to_text(name: &str, args: &[Value], ctx: &dyn EvalContext) -> Result<Value, EvalError> {
     let v = args
         .first()
         .ok_or_else(|| EvalError::BadArg(format!("{name}: missing argument")))?;
@@ -109,8 +115,9 @@ fn to_text(name: &str, args: &[Value]) -> Result<Value, EvalError> {
             }
             // Numeric-decimals form: `ToText(x[, decimals[, thouSep[, decSep]]])`.
             let decimals = opt_num(args, 1).unwrap_or(2.0).max(0.0) as u32;
-            let thousands_sep = sep_arg(args.get(2), ',');
-            let decimal_sep = sep_arg(args.get(3), '.');
+            let separators = ctx.number_separators();
+            let thousands_sep = sep_arg(args.get(2), separators.thousands);
+            let decimal_sep = sep_arg(args.get(3), separators.decimal);
             let number = NumberFormat {
                 decimals,
                 thousands_sep,
@@ -187,6 +194,44 @@ mod tests {
             Ok(Value::Bool(b)) => b,
             other => panic!("`{src}` → {other:?}"),
         }
+    }
+
+    /// A context that supplies nb-NO separators: decimal comma, no-break-space grouping.
+    struct Norwegian;
+
+    impl crate::eval::EvalContext for Norwegian {
+        fn resolve(&self, _kind: crate::RefKind, _name: &str) -> Option<Value> {
+            None
+        }
+        fn number_separators(&self) -> crate::eval::NumberSeparators {
+            crate::eval::NumberSeparators {
+                decimal: ',',
+                thousands: '\u{a0}',
+            }
+        }
+    }
+
+    #[test]
+    fn bare_totext_and_cstr_use_the_context_separators() {
+        let (ast, diags) = parse("CStr(1323)", Syntax::Crystal);
+        assert!(diags.is_empty());
+        assert_eq!(
+            eval(&ast, &Norwegian),
+            Ok(Value::Str("1\u{a0}323,00".into()))
+        );
+        let (ast, _) = parse("ToText(1323.5, 1)", Syntax::Crystal);
+        assert_eq!(
+            eval(&ast, &Norwegian),
+            Ok(Value::Str("1\u{a0}323,5".into()))
+        );
+        // The default context is still en-US.
+        assert_eq!(text("CStr(1323)"), "1,323.00");
+    }
+
+    #[test]
+    fn explicit_separators_override_the_context() {
+        let (ast, _) = parse(r#"ToText(1323.5, 1, ".", ",")"#, Syntax::Crystal);
+        assert_eq!(eval(&ast, &Norwegian), Ok(Value::Str("1.323,5".into())));
     }
 
     #[test]

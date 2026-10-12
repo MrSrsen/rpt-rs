@@ -58,8 +58,8 @@ pub use ast::{Node, NodeKind, VarScope};
 #[cfg(any(test, feature = "differential"))]
 pub use eval::Evaluator;
 pub use eval::{
-    is_print_state_special, is_record_nav, EvalContext, EvalError, NullTreatment, SpannedEvalError,
-    Value,
+    is_print_state_special, is_record_nav, EvalContext, EvalError, NullTreatment, NumberSeparators,
+    SpannedEvalError, Value,
 };
 pub use parser::{Diagnostic, Severity};
 pub use refs::Ref;
