@@ -401,7 +401,10 @@ fn build_sql_seaquery(
         match step.link {
             Some(li) => {
                 let link = &database.links[li];
-                let (kind, cond) = join_spec(link, step.reversed);
+                let (kind, mut cond) = join_spec(link, step.reversed);
+                for &extra in &step.extra_links {
+                    cond = add_link_conditions(cond, &database.links[extra]);
+                }
                 q.join_as(kind, Alias::new(&t.name), Alias::new(&t.alias), cond);
             }
             // Linkless table: a cartesian product. `JOIN … ON TRUE` is exactly a CROSS JOIN.
@@ -482,6 +485,11 @@ fn join_spec(link: &rpt_model::TableLink, reversed: bool) -> (JoinType, Conditio
         JoinKind::Left => JoinType::LeftJoin,
         JoinKind::Right => JoinType::RightJoin,
     };
+    (kind, add_link_conditions(Condition::all(), link))
+}
+
+/// `cond` with `link`'s field comparisons ANDed on (each side by its fixed `alias.field`).
+fn add_link_conditions(mut cond: Condition, link: &rpt_model::TableLink) -> Condition {
     let op = match resolve_link_op(&link.operator) {
         LinkOp::Eq => BinOper::Equal,
         LinkOp::Gt => BinOper::GreaterThan,
@@ -490,13 +498,12 @@ fn join_spec(link: &rpt_model::TableLink, reversed: bool) -> (JoinType, Conditio
         LinkOp::Le => BinOper::SmallerThanOrEqual,
         LinkOp::Ne => BinOper::NotEqual,
     };
-    let mut cond = Condition::all();
     for (sf, tf) in link.source_fields.iter().zip(link.target_fields.iter()) {
         let left = Expr::col((Alias::new(&link.source_table_alias), Alias::new(sf)));
         let right = Expr::col((Alias::new(&link.target_table_alias), Alias::new(tf)));
         cond = cond.add(left.binary(op, right));
     }
-    (kind, cond)
+    cond
 }
 
 /// Build the `SELECT` for a report that contains at least one command table, by hand (sea-query
@@ -539,12 +546,20 @@ fn build_sql_raw(
     for step in &order.steps {
         sql.push(' ');
         match step.link {
-            Some(li) => sql.push_str(&join_clause(
-                &tables[step.table],
-                &database.links[li],
-                step.reversed,
-                dialect,
-            )),
+            Some(li) => {
+                let extra: Vec<&rpt_model::TableLink> = step
+                    .extra_links
+                    .iter()
+                    .map(|&e| &database.links[e])
+                    .collect();
+                sql.push_str(&join_clause(
+                    &tables[step.table],
+                    &database.links[li],
+                    &extra,
+                    step.reversed,
+                    dialect,
+                ))
+            }
             None => sql.push_str(&format!(
                 "CROSS JOIN {}",
                 from_source(&tables[step.table], dialect)
@@ -575,6 +590,11 @@ struct JoinStep {
     link: Option<usize>,
     /// The link's *source* is the new table (reached from the target side) — flips `LEFT`↔`RIGHT`.
     reversed: bool,
+    /// Further forward links into the same new table, from tables placed before it (indices into
+    /// `database.links`). A lookup keyed from two tables — `Prices.FirmID = Invoice.FirmID` *and*
+    /// `Prices.CustID = Customer.ID` — is one join with both conditions in its `ON`, as the native
+    /// engine writes it; keeping only the first would join every price row of the firm.
+    extra_links: Vec<usize>,
 }
 
 /// Order the tables by walking the link graph out from the primary (`tables[0]`), emitting a join
@@ -639,6 +659,7 @@ fn join_order(database: &Database) -> JoinOrder {
                         table: ni,
                         link: Some(li),
                         reversed,
+                        extra_links: Vec::new(),
                     });
                     placed.push(ni);
                     placed_aliases.insert(tables[ni].alias.clone());
@@ -658,6 +679,7 @@ fn join_order(database: &Database) -> JoinOrder {
                     table: i,
                     link: None,
                     reversed: false,
+                    extra_links: Vec::new(),
                 });
                 placed.push(i);
                 placed_aliases.insert(tables[i].alias.clone());
@@ -666,7 +688,36 @@ fn join_order(database: &Database) -> JoinOrder {
         }
     }
 
+    attach_extra_links(database, &placed, &mut steps);
     JoinOrder { placed, steps }
+}
+
+/// Give every table that is the **target** of more than one link all of those links, not only the one
+/// that placed it: each forward link whose source was placed before its target joins the step that
+/// placed the target. (A link that runs the other way, or that joins two tables placed for other
+/// reasons, stays out of the `ON` as before.) A link-less `CROSS JOIN` step is left alone.
+fn attach_extra_links(database: &Database, placed: &[usize], steps: &mut [JoinStep]) {
+    let tables = &database.tables;
+    let position = |alias: &str| {
+        let ti = tables.iter().position(|t| t.alias == alias)?;
+        placed.iter().position(|&p| p == ti)
+    };
+    for (li, link) in database.links.iter().enumerate() {
+        let (Some(source), Some(target)) = (
+            position(&link.source_table_alias),
+            position(&link.target_table_alias),
+        ) else {
+            continue;
+        };
+        // `placed[0]` is the primary table; step `n` placed `placed[n + 1]`.
+        if target == 0 || target <= source {
+            continue;
+        }
+        let step = &mut steps[target - 1];
+        if step.link.is_some() && step.link != Some(li) && !step.reversed {
+            step.extra_links.push(li);
+        }
+    }
 }
 
 /// Precedence for which pending link attaches the next table, lower is preferred (ties broken by
@@ -699,6 +750,7 @@ fn link_priority(reversed: bool, target_aliases: &HashSet<&str>, new_alias: &str
 fn join_clause(
     new_table: &Table,
     link: &rpt_model::TableLink,
+    extra: &[&rpt_model::TableLink],
     reversed: bool,
     dialect: Dialect,
 ) -> String {
@@ -707,25 +759,28 @@ fn join_clause(
         JoinKind::Left => "LEFT JOIN",
         JoinKind::Right => "RIGHT JOIN",
     };
-    let op = match resolve_link_op(&link.operator) {
-        LinkOp::Eq => "=",
-        LinkOp::Gt => ">",
-        LinkOp::Ge => ">=",
-        LinkOp::Lt => "<",
-        LinkOp::Le => "<=",
-        LinkOp::Ne => "<>",
-    };
     // The ON condition references each side by its fixed alias.field, independent of placement order.
-    let conds: Vec<String> = link
-        .source_fields
-        .iter()
-        .zip(link.target_fields.iter())
-        .map(|(sf, tf)| {
-            format!(
-                "{} {op} {}",
-                dialect.qualify(&link.source_table_alias, sf),
-                dialect.qualify(&link.target_table_alias, tf)
-            )
+    let conds: Vec<String> = std::iter::once(link)
+        .chain(extra.iter().copied())
+        .flat_map(|l| {
+            let op = match resolve_link_op(&l.operator) {
+                LinkOp::Eq => "=",
+                LinkOp::Gt => ">",
+                LinkOp::Ge => ">=",
+                LinkOp::Lt => "<",
+                LinkOp::Le => "<=",
+                LinkOp::Ne => "<>",
+            };
+            l.source_fields
+                .iter()
+                .zip(l.target_fields.iter())
+                .map(move |(sf, tf)| {
+                    format!(
+                        "{} {op} {}",
+                        dialect.qualify(&l.source_table_alias, sf),
+                        dialect.qualify(&l.target_table_alias, tf)
+                    )
+                })
         })
         .collect();
     let on = if conds.is_empty() {
@@ -949,6 +1004,88 @@ mod tests {
             q.columns.iter().map(|c| c.key()).collect::<Vec<_>>(),
             vec!["orders.id", "orders.cust", "customers.id", "customers.name"]
         );
+    }
+
+    /// A lookup keyed from two tables gets both links in its `ON` (as the native engine writes it), not just
+    /// the first: `prices` is reached from `invoice` by firm and from `customer` by customer.
+    #[test]
+    fn a_table_linked_from_two_tables_gets_both_conditions() {
+        let db = Database {
+            tables: vec![
+                table(
+                    "invoice",
+                    &[
+                        ("firm", FieldValueType::Int32s),
+                        ("cust", FieldValueType::Int32s),
+                    ],
+                ),
+                table("customer", &[("id", FieldValueType::Int32s)]),
+                table(
+                    "prices",
+                    &[
+                        ("firm", FieldValueType::Int32s),
+                        ("cust", FieldValueType::Int32s),
+                        ("rate", FieldValueType::Number),
+                    ],
+                ),
+            ],
+            links: vec![
+                link(
+                    TableJoinKind::LeftOuter,
+                    "invoice",
+                    "customer",
+                    &["cust"],
+                    &["id"],
+                ),
+                link(
+                    TableJoinKind::LeftOuter,
+                    "invoice",
+                    "prices",
+                    &["firm"],
+                    &["firm"],
+                ),
+                link(
+                    TableJoinKind::LeftOuter,
+                    "customer",
+                    "prices",
+                    &["id"],
+                    &["cust"],
+                ),
+            ],
+        };
+        for dialect in [Dialect::Postgres, Dialect::Sqlite] {
+            let q = build_query_in(&db, dialect).unwrap();
+            let on = q
+                .sql
+                .split(r#"JOIN "prices""#)
+                .nth(1)
+                .expect("prices is joined");
+            assert!(
+                on.contains(r#""invoice"."firm" = "prices"."firm""#)
+                    && on.contains(r#""customer"."id" = "prices"."cust""#),
+                "{dialect:?}: both links belong in prices' ON, sql was: {}",
+                q.sql
+            );
+        }
+    }
+
+    /// A link that runs against the placement order (its source placed after its target) is not added to
+    /// the ON — only forward links into the placed table are.
+    #[test]
+    fn a_reverse_link_is_not_added_to_the_on() {
+        let db = Database {
+            tables: vec![
+                table("a", &[("k", FieldValueType::Int32s)]),
+                table("b", &[("k", FieldValueType::Int32s)]),
+            ],
+            links: vec![
+                link(TableJoinKind::Inner, "a", "b", &["k"], &["k"]),
+                // b → a would make a the lookup; a is already placed first, so it adds nothing here.
+                link(TableJoinKind::Inner, "b", "a", &["k"], &["k"]),
+            ],
+        };
+        let q = build_query_in(&db, Dialect::Postgres).unwrap();
+        assert_eq!(q.sql.matches(" AND ").count(), 0, "sql was: {}", q.sql);
     }
 
     #[test]
@@ -1246,6 +1383,7 @@ mod tests {
         let sql = join_clause(
             &table("b", &[("k", FieldValueType::Int32s)]),
             &l,
+            &[],
             false,
             Dialect::Postgres,
         );
