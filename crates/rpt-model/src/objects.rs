@@ -168,6 +168,10 @@ pub struct TextRun {
     /// `ParagraphFieldElement`, which has no such member, and always reads `0` here — a field run's
     /// letter spacing comes from its own string format instead.
     pub character_spacing: Twips,
+    /// For an embedded-field run, the field's own stored format — the same `FieldFormat` block a field
+    /// object carries (both numeric slots, date, string …), streamed after the run's `0xc4` record.
+    /// `None` for a literal run, and for a field run whose block was not streamed.
+    pub format: Option<FieldFormat>,
 }
 
 /// One paragraph (line) of a text object — the engine's `ISCRParagraph`. Its `runs` are the
@@ -668,6 +672,7 @@ mod tests {
             field_ref: None,
             font: None,
             character_spacing: Twips(0),
+            format: None,
         }
     }
 
@@ -677,6 +682,7 @@ mod tests {
             field_ref: Some(raw.to_string()),
             font: None,
             character_spacing: Twips(0),
+            format: None,
         }
     }
 

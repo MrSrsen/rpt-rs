@@ -5,7 +5,7 @@
 //! `{…}` references get per-reference substitution. The display format is resolved by
 //! [`crate::format`], merging the render locale with the field's stored `FieldFormat` leaf.
 
-use crate::format::{field_format_spec, render_value, render_value_default};
+use crate::format::{field_format_spec, render_value, render_value_default, render_value_in};
 use crate::{push_diag, DiagSink};
 use rpt_data::{
     DataContext, FormulaRegistry, Row, RunningTotals, ScheduledValues, SharedState, Summary,
@@ -15,8 +15,8 @@ use rpt_formula::eval::{Date, EvalContext, EvalError, Time, Value};
 use rpt_formula::token::{brace_groups, short_name, split_reference, strip_braces};
 use rpt_formula::{parse, Node, RefKind, Syntax};
 use rpt_model::{
-    field_object_value_type, first_brace_ref, Color, FieldObject, FieldRefKind, Report,
-    SummaryOperation, TextObject, TextRun,
+    field_object_value_type, first_brace_ref, Color, FieldFormat, FieldObject, FieldRefKind,
+    Report, SummaryOperation, TextObject, TextRun,
 };
 use rpt_pages::{Diagnostic, DiagnosticKind};
 use std::cell::RefCell;
@@ -358,7 +358,15 @@ fn substitute_runs(
             any_source |= !run.text.is_empty();
             match &run.field_ref {
                 None => out.push_str(&run.text),
-                Some(_) => out.push_str(&resolve_run(&run.text, report, ctx, state, loc, diag)),
+                Some(_) => out.push_str(&resolve_run(
+                    &run.text,
+                    run.format.as_ref(),
+                    report,
+                    ctx,
+                    state,
+                    loc,
+                    diag,
+                )),
             }
         }
     }
@@ -371,6 +379,7 @@ fn substitute_runs(
 /// `{alias.field}`/`{@formula}`/`{?param}`/`{#total}` reference, or a bare special-field name.
 fn resolve_run(
     placeholder: &str,
+    fmt: Option<&FieldFormat>,
     report: &Report,
     ctx: Option<&DataContext>,
     state: &ResolveState,
@@ -380,7 +389,7 @@ fn resolve_run(
     let text = placeholder.trim();
     if text.starts_with('{') {
         return match ctx {
-            Some(c) => resolve_embedded(text, c, state, loc, diag),
+            Some(c) => resolve_embedded(text, fmt, c, state, loc, diag),
             None => String::new(),
         };
     }
@@ -938,7 +947,14 @@ fn substitute_braces(
         let after = &rest[open..];
         match after.find('}') {
             Some(close) => {
-                out.push_str(&resolve_embedded(&after[..=close], ctx, state, loc, diag));
+                out.push_str(&resolve_embedded(
+                    &after[..=close],
+                    None,
+                    ctx,
+                    state,
+                    loc,
+                    diag,
+                ));
                 rest = &after[close + 1..];
             }
             // An unmatched `{`: the remainder is literal.
@@ -953,14 +969,15 @@ fn substitute_braces(
 }
 
 /// Resolve one embedded `{…}` reference (field/formula/parameter/running total) to its display
-/// string, formatted with the locale's system defaults (an embedded ref carries no per-field format
-/// leaf of its own).
+/// string, formatted through `fmt` — the embedded run's own stored format — or, when the run carries
+/// none (a flattened `display` string has no runs), with the locale's system defaults.
 ///
 /// A `{?Param}` falls to the expression arm, which is the same call a *placed* parameter field
 /// object resolves through ([`field_value`]'s fallback): one parameter-resolution path, so an
 /// embedded reference and a placed field can never disagree about a parameter's value.
 fn resolve_embedded(
     reference: &str,
+    fmt: Option<&FieldFormat>,
     ctx: &DataContext,
     state: &ResolveState,
     loc: &Locale,
@@ -977,7 +994,7 @@ fn resolve_embedded(
         let _ = state;
         eval_ref(&brace(inner), ctx, diag, inner)
     };
-    render_value_default(&value, loc)
+    render_value_in(&value, fmt, loc)
 }
 
 #[cfg(test)]
@@ -1295,7 +1312,15 @@ mod tests {
             };
             (
                 field_text(&report, &obj, None, &state, &locale, &diag),
-                resolve_run("GroupName ({t.at})", &report, None, &state, &locale, &diag),
+                resolve_run(
+                    "GroupName ({t.at})",
+                    None,
+                    &report,
+                    None,
+                    &state,
+                    &locale,
+                    &diag,
+                ),
             )
         };
         let jan1 = Value::Date(Date::new(2024, 1, 1));

@@ -705,6 +705,7 @@
                                 "underline": false,
                                 "weight": 700
                               },
+                              "format": null,
                               "text": "Printed Date:  "
                             },
                             {
@@ -719,6 +720,94 @@
                                 "strikethrough": false,
                                 "underline": false,
                                 "weight": 400
+                              },
+                              "format": {
+                                "boolean": {
+                                  "output_type": "TrueOrFalse"
+                                },
+                                "common": {
+                                  "suppress_if_duplicated": false,
+                                  "use_system_defaults": true
+                                },
+                                "currency_numeric": {
+                                  "currency_position": "LeadingCurrencyInsideNegative",
+                                  "currency_symbol": "NoSymbol",
+                                  "currency_symbol_text": "$",
+                                  "decimal_places": 2,
+                                  "decimal_symbol": ".",
+                                  "display_reverse_sign": false,
+                                  "negative": "LeadingMinus",
+                                  "one_currency_symbol_per_page": false,
+                                  "rounding": "RoundToHundredth",
+                                  "suppress_if_zero": false,
+                                  "thousand_symbol": ",",
+                                  "thousands_separator": true,
+                                  "use_lead_zero": true,
+                                  "zero_value_string": "<Default Format>"
+                                },
+                                "date": {
+                                  "calendar": "GregorianCalendar",
+                                  "date_order": "MonthDayYear",
+                                  "day": "NumericDay",
+                                  "day_of_week": "NoDayOfWeek",
+                                  "day_of_week_enclosure": "NotEnclosed",
+                                  "day_of_week_position": "LeadingPosition",
+                                  "day_of_week_separator": "",
+                                  "era": "NoEra",
+                                  "first_separator": "/",
+                                  "month": "NumericMonth",
+                                  "prefix_separator": "",
+                                  "second_separator": "/",
+                                  "suffix_separator": "",
+                                  "system_default": "UseWindowsShortDate",
+                                  "year": "LongYear"
+                                },
+                                "date_time": {
+                                  "order": "DateThenTime",
+                                  "separator": "  "
+                                },
+                                "numeric": {
+                                  "currency_position": "LeadingCurrencyInsideNegative",
+                                  "currency_symbol": "NoSymbol",
+                                  "currency_symbol_text": "$",
+                                  "decimal_places": 2,
+                                  "decimal_symbol": ".",
+                                  "display_reverse_sign": false,
+                                  "negative": "LeadingMinus",
+                                  "one_currency_symbol_per_page": false,
+                                  "rounding": "RoundToHundredth",
+                                  "suppress_if_zero": false,
+                                  "thousand_symbol": ",",
+                                  "thousands_separator": true,
+                                  "use_lead_zero": true,
+                                  "zero_value_string": "<Default Format>"
+                                },
+                                "string": {
+                                  "enable_word_wrap": true,
+                                  "indent": {
+                                    "first_line_indent": 0,
+                                    "left_indent": 0,
+                                    "line_spacing": {
+                                      "raw": 65536,
+                                      "spacing_type": "Multiple"
+                                    },
+                                    "right_indent": 0
+                                  },
+                                  "max_number_of_lines": 0,
+                                  "reading_order": "LeftToRight",
+                                  "text_format": "StandardText"
+                                },
+                                "time": {
+                                  "am_pm_format": "AMPMAfter",
+                                  "am_string": " AM",
+                                  "hour": "NumericHour",
+                                  "hour_minute_separator": ":",
+                                  "minute": "NumericMinute",
+                                  "minute_second_separator": ":",
+                                  "pm_string": " PM",
+                                  "second": "NumericSecond",
+                                  "time_base": "TwelveHour"
+                                }
                               },
                               "text": "PrintDate"
                             },
@@ -735,6 +824,7 @@
                                 "underline": false,
                                 "weight": 400
                               },
+                              "format": null,
                               "text": "\t\t"
                             },
                             {
@@ -750,6 +840,7 @@
                                 "underline": false,
                                 "weight": 700
                               },
+                              "format": null,
                               "text": "Last modified: "
                             },
                             {
@@ -765,6 +856,7 @@
                                 "underline": false,
                                 "weight": 700
                               },
+                              "format": null,
                               "text": " "
                             },
                             {
@@ -779,6 +871,94 @@
                                 "strikethrough": false,
                                 "underline": false,
                                 "weight": 400
+                              },
+                              "format": {
+                                "boolean": {
+                                  "output_type": "TrueOrFalse"
+                                },
+                                "common": {
+                                  "suppress_if_duplicated": false,
+                                  "use_system_defaults": true
+                                },
+                                "currency_numeric": {
+                                  "currency_position": "LeadingCurrencyInsideNegative",
+                                  "currency_symbol": "NoSymbol",
+                                  "currency_symbol_text": "$",
+                                  "decimal_places": 2,
+                                  "decimal_symbol": ".",
+                                  "display_reverse_sign": false,
+                                  "negative": "LeadingMinus",
+                                  "one_currency_symbol_per_page": false,
+                                  "rounding": "RoundToHundredth",
+                                  "suppress_if_zero": false,
+                                  "thousand_symbol": ",",
+                                  "thousands_separator": true,
+                                  "use_lead_zero": true,
+                                  "zero_value_string": "<Default Format>"
+                                },
+                                "date": {
+                                  "calendar": "GregorianCalendar",
+                                  "date_order": "MonthDayYear",
+                                  "day": "NumericDay",
+                                  "day_of_week": "NoDayOfWeek",
+                                  "day_of_week_enclosure": "NotEnclosed",
+                                  "day_of_week_position": "LeadingPosition",
+                                  "day_of_week_separator": "",
+                                  "era": "NoEra",
+                                  "first_separator": "/",
+                                  "month": "NumericMonth",
+                                  "prefix_separator": "",
+                                  "second_separator": "/",
+                                  "suffix_separator": "",
+                                  "system_default": "UseWindowsShortDate",
+                                  "year": "LongYear"
+                                },
+                                "date_time": {
+                                  "order": "DateThenTime",
+                                  "separator": "  "
+                                },
+                                "numeric": {
+                                  "currency_position": "LeadingCurrencyInsideNegative",
+                                  "currency_symbol": "NoSymbol",
+                                  "currency_symbol_text": "$",
+                                  "decimal_places": 2,
+                                  "decimal_symbol": ".",
+                                  "display_reverse_sign": false,
+                                  "negative": "LeadingMinus",
+                                  "one_currency_symbol_per_page": false,
+                                  "rounding": "RoundToHundredth",
+                                  "suppress_if_zero": false,
+                                  "thousand_symbol": ",",
+                                  "thousands_separator": true,
+                                  "use_lead_zero": true,
+                                  "zero_value_string": "<Default Format>"
+                                },
+                                "string": {
+                                  "enable_word_wrap": true,
+                                  "indent": {
+                                    "first_line_indent": 0,
+                                    "left_indent": 0,
+                                    "line_spacing": {
+                                      "raw": 65536,
+                                      "spacing_type": "Multiple"
+                                    },
+                                    "right_indent": 0
+                                  },
+                                  "max_number_of_lines": 0,
+                                  "reading_order": "LeftToRight",
+                                  "text_format": "StandardText"
+                                },
+                                "time": {
+                                  "am_pm_format": "AMPMAfter",
+                                  "am_string": " AM",
+                                  "hour": "NumericHour",
+                                  "hour_minute_separator": ":",
+                                  "minute": "NumericMinute",
+                                  "minute_second_separator": ":",
+                                  "pm_string": " PM",
+                                  "second": "NumericSecond",
+                                  "time_base": "TwelveHour"
+                                }
                               },
                               "text": "ModificationDate"
                             }
@@ -1127,6 +1307,7 @@
                                 "underline": false,
                                 "weight": 700
                               },
+                              "format": null,
                               "text": "Report Description:"
                             }
                           ]
@@ -1849,6 +2030,7 @@
                                 "underline": false,
                                 "weight": 400
                               },
+                              "format": null,
                               "text": "Printed Date:  "
                             },
                             {
@@ -1863,6 +2045,94 @@
                                 "strikethrough": false,
                                 "underline": false,
                                 "weight": 400
+                              },
+                              "format": {
+                                "boolean": {
+                                  "output_type": "TrueOrFalse"
+                                },
+                                "common": {
+                                  "suppress_if_duplicated": false,
+                                  "use_system_defaults": true
+                                },
+                                "currency_numeric": {
+                                  "currency_position": "LeadingCurrencyInsideNegative",
+                                  "currency_symbol": "NoSymbol",
+                                  "currency_symbol_text": "$",
+                                  "decimal_places": 2,
+                                  "decimal_symbol": ".",
+                                  "display_reverse_sign": false,
+                                  "negative": "LeadingMinus",
+                                  "one_currency_symbol_per_page": false,
+                                  "rounding": "RoundToHundredth",
+                                  "suppress_if_zero": false,
+                                  "thousand_symbol": ",",
+                                  "thousands_separator": true,
+                                  "use_lead_zero": true,
+                                  "zero_value_string": "<Default Format>"
+                                },
+                                "date": {
+                                  "calendar": "GregorianCalendar",
+                                  "date_order": "MonthDayYear",
+                                  "day": "NumericDay",
+                                  "day_of_week": "NoDayOfWeek",
+                                  "day_of_week_enclosure": "NotEnclosed",
+                                  "day_of_week_position": "LeadingPosition",
+                                  "day_of_week_separator": "",
+                                  "era": "NoEra",
+                                  "first_separator": "/",
+                                  "month": "NumericMonth",
+                                  "prefix_separator": "",
+                                  "second_separator": "/",
+                                  "suffix_separator": "",
+                                  "system_default": "UseWindowsShortDate",
+                                  "year": "LongYear"
+                                },
+                                "date_time": {
+                                  "order": "DateThenTime",
+                                  "separator": "  "
+                                },
+                                "numeric": {
+                                  "currency_position": "LeadingCurrencyInsideNegative",
+                                  "currency_symbol": "NoSymbol",
+                                  "currency_symbol_text": "$",
+                                  "decimal_places": 2,
+                                  "decimal_symbol": ".",
+                                  "display_reverse_sign": false,
+                                  "negative": "LeadingMinus",
+                                  "one_currency_symbol_per_page": false,
+                                  "rounding": "RoundToHundredth",
+                                  "suppress_if_zero": false,
+                                  "thousand_symbol": ",",
+                                  "thousands_separator": true,
+                                  "use_lead_zero": true,
+                                  "zero_value_string": "<Default Format>"
+                                },
+                                "string": {
+                                  "enable_word_wrap": true,
+                                  "indent": {
+                                    "first_line_indent": 0,
+                                    "left_indent": 0,
+                                    "line_spacing": {
+                                      "raw": 65536,
+                                      "spacing_type": "Multiple"
+                                    },
+                                    "right_indent": 0
+                                  },
+                                  "max_number_of_lines": 0,
+                                  "reading_order": "LeftToRight",
+                                  "text_format": "StandardText"
+                                },
+                                "time": {
+                                  "am_pm_format": "AMPMAfter",
+                                  "am_string": " AM",
+                                  "hour": "NumericHour",
+                                  "hour_minute_separator": ":",
+                                  "minute": "NumericMinute",
+                                  "minute_second_separator": ":",
+                                  "pm_string": " PM",
+                                  "second": "NumericSecond",
+                                  "time_base": "TwelveHour"
+                                }
                               },
                               "text": "PrintDate"
                             },
@@ -1879,6 +2149,7 @@
                                 "underline": false,
                                 "weight": 400
                               },
+                              "format": null,
                               "text": "\t\tLast modified: "
                             },
                             {
@@ -1893,6 +2164,94 @@
                                 "strikethrough": false,
                                 "underline": false,
                                 "weight": 400
+                              },
+                              "format": {
+                                "boolean": {
+                                  "output_type": "TrueOrFalse"
+                                },
+                                "common": {
+                                  "suppress_if_duplicated": false,
+                                  "use_system_defaults": true
+                                },
+                                "currency_numeric": {
+                                  "currency_position": "LeadingCurrencyInsideNegative",
+                                  "currency_symbol": "NoSymbol",
+                                  "currency_symbol_text": "$",
+                                  "decimal_places": 2,
+                                  "decimal_symbol": ".",
+                                  "display_reverse_sign": false,
+                                  "negative": "LeadingMinus",
+                                  "one_currency_symbol_per_page": false,
+                                  "rounding": "RoundToHundredth",
+                                  "suppress_if_zero": false,
+                                  "thousand_symbol": ",",
+                                  "thousands_separator": true,
+                                  "use_lead_zero": true,
+                                  "zero_value_string": "<Default Format>"
+                                },
+                                "date": {
+                                  "calendar": "GregorianCalendar",
+                                  "date_order": "MonthDayYear",
+                                  "day": "NumericDay",
+                                  "day_of_week": "NoDayOfWeek",
+                                  "day_of_week_enclosure": "NotEnclosed",
+                                  "day_of_week_position": "LeadingPosition",
+                                  "day_of_week_separator": "",
+                                  "era": "NoEra",
+                                  "first_separator": "/",
+                                  "month": "NumericMonth",
+                                  "prefix_separator": "",
+                                  "second_separator": "/",
+                                  "suffix_separator": "",
+                                  "system_default": "UseWindowsShortDate",
+                                  "year": "LongYear"
+                                },
+                                "date_time": {
+                                  "order": "DateThenTime",
+                                  "separator": "  "
+                                },
+                                "numeric": {
+                                  "currency_position": "LeadingCurrencyInsideNegative",
+                                  "currency_symbol": "NoSymbol",
+                                  "currency_symbol_text": "$",
+                                  "decimal_places": 2,
+                                  "decimal_symbol": ".",
+                                  "display_reverse_sign": false,
+                                  "negative": "LeadingMinus",
+                                  "one_currency_symbol_per_page": false,
+                                  "rounding": "RoundToHundredth",
+                                  "suppress_if_zero": false,
+                                  "thousand_symbol": ",",
+                                  "thousands_separator": true,
+                                  "use_lead_zero": true,
+                                  "zero_value_string": "<Default Format>"
+                                },
+                                "string": {
+                                  "enable_word_wrap": true,
+                                  "indent": {
+                                    "first_line_indent": 0,
+                                    "left_indent": 0,
+                                    "line_spacing": {
+                                      "raw": 65536,
+                                      "spacing_type": "Multiple"
+                                    },
+                                    "right_indent": 0
+                                  },
+                                  "max_number_of_lines": 0,
+                                  "reading_order": "LeftToRight",
+                                  "text_format": "StandardText"
+                                },
+                                "time": {
+                                  "am_pm_format": "AMPMAfter",
+                                  "am_string": " AM",
+                                  "hour": "NumericHour",
+                                  "hour_minute_separator": ":",
+                                  "minute": "NumericMinute",
+                                  "minute_second_separator": ":",
+                                  "pm_string": " PM",
+                                  "second": "NumericSecond",
+                                  "time_base": "TwelveHour"
+                                }
                               },
                               "text": "ModificationDate"
                             }
@@ -2206,6 +2565,7 @@
                                 "underline": false,
                                 "weight": 700
                               },
+                              "format": null,
                               "text": "Total for "
                             },
                             {
@@ -2220,6 +2580,94 @@
                                 "strikethrough": false,
                                 "underline": false,
                                 "weight": 700
+                              },
+                              "format": {
+                                "boolean": {
+                                  "output_type": "TrueOrFalse"
+                                },
+                                "common": {
+                                  "suppress_if_duplicated": false,
+                                  "use_system_defaults": true
+                                },
+                                "currency_numeric": {
+                                  "currency_position": "LeadingCurrencyOutsideNegative",
+                                  "currency_symbol": "FloatingSymbol",
+                                  "currency_symbol_text": "$",
+                                  "decimal_places": 2,
+                                  "decimal_symbol": ".",
+                                  "display_reverse_sign": false,
+                                  "negative": "Bracketed",
+                                  "one_currency_symbol_per_page": false,
+                                  "rounding": "RoundToHundredth",
+                                  "suppress_if_zero": false,
+                                  "thousand_symbol": ",",
+                                  "thousands_separator": true,
+                                  "use_lead_zero": true,
+                                  "zero_value_string": "<Default Format>"
+                                },
+                                "date": {
+                                  "calendar": "GregorianCalendar",
+                                  "date_order": "MonthDayYear",
+                                  "day": "NumericDay",
+                                  "day_of_week": "NoDayOfWeek",
+                                  "day_of_week_enclosure": "NotEnclosed",
+                                  "day_of_week_position": "LeadingPosition",
+                                  "day_of_week_separator": "",
+                                  "era": "NoEra",
+                                  "first_separator": "/",
+                                  "month": "NumericMonth",
+                                  "prefix_separator": "",
+                                  "second_separator": "/",
+                                  "suffix_separator": "",
+                                  "system_default": "UseWindowsShortDate",
+                                  "year": "LongYear"
+                                },
+                                "date_time": {
+                                  "order": "DateThenTime",
+                                  "separator": "  "
+                                },
+                                "numeric": {
+                                  "currency_position": "LeadingCurrencyInsideNegative",
+                                  "currency_symbol": "NoSymbol",
+                                  "currency_symbol_text": "",
+                                  "decimal_places": 2,
+                                  "decimal_symbol": ".",
+                                  "display_reverse_sign": false,
+                                  "negative": "LeadingMinus",
+                                  "one_currency_symbol_per_page": false,
+                                  "rounding": "RoundToHundredth",
+                                  "suppress_if_zero": false,
+                                  "thousand_symbol": ",",
+                                  "thousands_separator": true,
+                                  "use_lead_zero": true,
+                                  "zero_value_string": "<Default Format>"
+                                },
+                                "string": {
+                                  "enable_word_wrap": true,
+                                  "indent": {
+                                    "first_line_indent": 0,
+                                    "left_indent": 0,
+                                    "line_spacing": {
+                                      "raw": 65536,
+                                      "spacing_type": "Multiple"
+                                    },
+                                    "right_indent": 0
+                                  },
+                                  "max_number_of_lines": 0,
+                                  "reading_order": "LeftToRight",
+                                  "text_format": "StandardText"
+                                },
+                                "time": {
+                                  "am_pm_format": "AMPMAfter",
+                                  "am_string": "AM",
+                                  "hour": "NoLeadingZeroNumericHour",
+                                  "hour_minute_separator": ":",
+                                  "minute": "NumericMinute",
+                                  "minute_second_separator": ":",
+                                  "pm_string": "PM",
+                                  "second": "NumericSecond",
+                                  "time_base": "TwelveHour"
+                                }
                               },
                               "text": "GroupName ({Customer.Customer Name})"
                             },
@@ -2236,6 +2684,7 @@
                                 "underline": false,
                                 "weight": 700
                               },
+                              "format": null,
                               "text": ":\t"
                             }
                           ]
