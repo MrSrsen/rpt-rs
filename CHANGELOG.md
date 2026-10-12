@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 WIP.
 
+### Added
+
+- `rpt-render --selection <formula>` narrows the records a report shows with a Crystal-syntax record-selection formula,
+  ANDed with the report's own. Against a live database the translatable part is pushed into the `WHERE`. An invalid
+  formula is refused before anything is fetched.
+
 ## [0.4.0]
 
 More than 340 tracked issues went into this release.

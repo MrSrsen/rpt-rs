@@ -57,6 +57,21 @@ parameter's declared type. Repeat the same name to build a multi-value parameter
 rpt-render report.rpt -p AsOfDate=2026-01-31 -p Region=West -p Region=East -o out.pdf
 ```
 
+## Selection
+
+`--selection <formula>` narrows the records a report shows with a Crystal-syntax record-selection formula — the
+language a report's own selection is written in:
+
+```sh
+rpt-render report.rpt --db --selection '{Invoice.InvoiceNo} = 62820 and {InvoiceLine.Qty} <> 0' -o out.pdf
+```
+
+It is ANDed with the selection the report stores, if any, and also filters embedded saved data (which the engine
+normally treats as already selected). Against a live database the part of the formula that
+translates to SQL (comparisons of a field with a literal combined with `and`/`or`/`not`, `in` lists and ranges, `like`,
+`isnull`) is pushed into the `WHERE`, and the rest is applied per record, so the result is the same either way. A
+formula that is not valid Crystal syntax is refused before anything is fetched.
+
 ## Locale
 
 `--locale <tag>` selects the locale used for date/number formatting. Resolution precedence: an explicit `--locale`
