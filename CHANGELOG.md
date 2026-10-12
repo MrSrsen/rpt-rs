@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 WIP.
 
+### Added
+
+- `nb-NO` (Norwegian Bokmål) built-in locale: decimal comma, no-break-space thousands separator, `dd.MM.yyyy` dates,
+  24-hour clock, Norwegian month and weekday names. `no` and `nn` resolve to it. Values follow Windows nb-NO.
+
 ## [0.4.0]
 
 More than 340 tracked issues went into this release.

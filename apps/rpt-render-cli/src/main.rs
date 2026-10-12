@@ -947,7 +947,7 @@ fn resolve_locale(cli: &Cli, log: &Log) -> rpt_render::Locale {
             Comp::Entry,
             format!(
             "locale {loc_tag:?} is not in the built-in table (en-US, en-GB, de-DE, fr-FR, es-ES, \
-             it-IT); formatting with the en-US fallback"
+             it-IT, nb-NO); formatting with the en-US fallback"
         ),
         );
     }

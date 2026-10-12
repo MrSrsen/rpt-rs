@@ -12,7 +12,7 @@
 //! ## Locale
 //!
 //! [`Locale`] carries the concrete separators, month/day names, and AM/PM designators for a set of
-//! built-in locales (en-US/en-GB/de-DE/fr-FR/es-ES/it-IT + en-US fallback). The `*_in` formatters
+//! built-in locales (en-US/en-GB/de-DE/fr-FR/es-ES/it-IT/nb-NO + en-US fallback). The `*_in` formatters
 //! ([`format_date_in`], [`format_time_in`], [`Locale::number_format`]) take names/separators from a
 //! [`Locale`]; the plain `format_date`/`format_number` entry points use the en-US baseline. The
 //! render layer (`rpt-layout`) merges a [`Locale`] with each field's stored format leaf to pick the
@@ -129,6 +129,12 @@ impl Locale {
     pub fn lookup(tag: &str) -> Option<Locale> {
         let t = tag.trim().replace('_', "-");
         let lang = t.split('-').next().unwrap_or("").to_ascii_lowercase();
+        // `no` (the ISO macrolanguage) and `nn` (nynorsk) answer to the bokmål table, the only Norwegian built-in.
+        let lang = if lang == "no" || lang == "nn" {
+            "nb".to_string()
+        } else {
+            lang
+        };
         BUILTIN
             .iter()
             .find(|l| l.tag.eq_ignore_ascii_case(&t))
@@ -218,6 +224,28 @@ const DE_DAYS: [&str; 7] = [
     "Samstag",
 ];
 const DE_DAYS_ABBR: [&str; 7] = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
+
+const NB_MONTHS: [&str; 12] = [
+    "januar",
+    "februar",
+    "mars",
+    "april",
+    "mai",
+    "juni",
+    "juli",
+    "august",
+    "september",
+    "oktober",
+    "november",
+    "desember",
+];
+const NB_MONTHS_ABBR: [&str; 12] = [
+    "jan", "feb", "mar", "apr", "mai", "jun", "jul", "aug", "sep", "okt", "nov", "des",
+];
+const NB_DAYS: [&str; 7] = [
+    "søndag", "mandag", "tirsdag", "onsdag", "torsdag", "fredag", "lørdag",
+];
+const NB_DAYS_ABBR: [&str; 7] = ["søn.", "man.", "tir.", "ons.", "tor.", "fre.", "lør."];
 
 const FR_MONTHS: [&str; 12] = [
     "janvier",
@@ -379,6 +407,26 @@ const FR_FR: Locale = Locale {
     default_decimals: 2,
 };
 
+const NB_NO: Locale = Locale {
+    tag: "nb-NO",
+    decimal_sep: ',',
+    thousands_sep: '\u{a0}', // no-break space, as Windows nb-NO
+    date_sep: '.',
+    date_order: DateOrder::DayMonthYear,
+    short_date_leading_zero: true,
+    months: &NB_MONTHS,
+    months_abbrev: &NB_MONTHS_ABBR,
+    days: &NB_DAYS,
+    days_abbrev: &NB_DAYS_ABBR,
+    twelve_hour: false,
+    am: "",
+    pm: "",
+    currency_symbol: "kr",
+    currency_position: CurrencyPosition::LeadingSpace,
+    currency_negative: NegativeStyle::LeadingMinus,
+    default_decimals: 2,
+};
+
 const ES_ES: Locale = Locale {
     tag: "es-ES",
     decimal_sep: ',',
@@ -420,7 +468,7 @@ const IT_IT: Locale = Locale {
 };
 
 /// The built-in locale table, with a documented en-US fallback.
-pub const BUILTIN: &[Locale] = &[EN_US, EN_GB, DE_DE, FR_FR, ES_ES, IT_IT];
+pub const BUILTIN: &[Locale] = &[EN_US, EN_GB, DE_DE, FR_FR, ES_ES, IT_IT, NB_NO];
 
 /// Number formatting spec (SDK `INumericFieldFormat`).
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -1159,11 +1207,28 @@ mod tests {
     }
 
     #[test]
+    fn nb_no_separators_and_names() {
+        let nb = Locale::from_tag("nb-NO");
+        assert_eq!(nb.decimal_sep, ',');
+        assert_eq!(nb.thousands_sep, '\u{a0}');
+        assert_eq!(nb.date_sep, '.');
+        assert_eq!(nb.date_order, DateOrder::DayMonthYear);
+        assert_eq!(nb.months[2], "mars");
+        assert_eq!(nb.days[6], "lørdag");
+        assert_eq!(nb.months_abbrev[9], "okt"); // Windows nb-NO: no trailing dot on months …
+        assert_eq!(nb.days_abbrev[0], "søn."); // … but a dot on the abbreviated weekdays
+        assert!(!nb.twelve_hour);
+    }
+
+    #[test]
     fn locale_lookup_and_fallback() {
         assert_eq!(Locale::lookup("de-DE").unwrap().tag, "de-DE");
         assert_eq!(Locale::lookup("de_DE.UTF-8").unwrap().tag, "de-DE"); // underscore + charset
         assert_eq!(Locale::lookup("de").unwrap().tag, "de-DE"); // language subtag only
         assert_eq!(Locale::lookup("EN-us").unwrap().tag, "en-US"); // case-insensitive
+        assert_eq!(Locale::lookup("nb-NO").unwrap().tag, "nb-NO");
+        assert_eq!(Locale::lookup("no").unwrap().tag, "nb-NO"); // macrolanguage
+        assert_eq!(Locale::lookup("nn_NO.UTF-8").unwrap().tag, "nb-NO"); // nynorsk falls back to bokmål
         assert!(Locale::lookup("zz-ZZ").is_none()); // unsupported
         assert_eq!(Locale::from_tag("zz-ZZ").tag, "en-US"); // documented fallback
     }
