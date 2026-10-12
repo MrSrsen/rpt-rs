@@ -1205,6 +1205,30 @@ fn box_spans_to_where_the_end_section_prints() {
     );
 }
 
+/// A box whose end section is suppressed (it prints nothing and takes no room) ends where that section
+/// would have printed, rather than reserving the section's design height.
+#[test]
+fn box_ending_in_a_suppressed_section_ends_where_it_would_have_printed() {
+    let mut report = framed_report(15840, 300, 150);
+    // Head (300, holds the frame) | Skipped (suppressed, 5000) | Details. The frame ends in Skipped.
+    let mut skipped = section(AreaSectionKind::ReportHeader, "Skipped", 5000, vec![]);
+    skipped.format.base.suppress = true;
+    report.report_definition.areas[0].sections.push(skipped);
+    if let ReportObjectKind::Box(b) =
+        &mut report.report_definition.areas[0].sections[0].objects[0].kind
+    {
+        b.shape.end_section_index = 1;
+    }
+    // The footer index shifts down one; it is not involved.
+    let doc = rendered(&report, &numeric_rows(1));
+    let frame = stroked_rects(&doc.pages[0])[0];
+    assert_eq!(
+        frame.bounds.top.0 + frame.bounds.height.0,
+        300,
+        "the frame stops where the suppressed section would have started, not 5000 twips further down"
+    );
+}
+
 /// When a page break comes before the end section, the frame runs to the bottom of the page body and
 /// continues at the top of the next page, closing at the stored bottom edge in the footer.
 #[test]

@@ -159,7 +159,7 @@ impl Formatter<'_> {
         skip: Option<usize>,
     ) {
         // Boxes that were waiting for this section end here, wherever it really landed.
-        self.close_spans(&section.name, origin_y, height);
+        self.close_spans(section, origin_y, height);
         // A section-level BackgroundColor condition formula (e.g. tinting an under-performer's group
         // header) overrides the static fill, resolved per record; the static color is the fallback.
         let bg = crate::resolve::cond_color_any(
@@ -1274,28 +1274,40 @@ impl Formatter<'_> {
         }
     }
 
-    /// Close the open spans whose end section is `section_name`, printed at `origin_y` with grown height
+    /// Close the open spans whose end section is `section`, printed at `origin_y` with grown height
     /// `height`: each box now reaches its stored bottom edge within that section (the section bottom when
     /// the shape stored none), however far the sections in between grew.
-    pub(crate) fn close_spans(&mut self, section_name: &str, origin_y: i32, height: i32) {
+    ///
+    /// A span whose end section comes *before* `section` in the report's section order never saw it
+    /// print — it is suppressed, so it takes no room — and ends where that section would have been: at
+    /// `origin_y`. A page footer prints at the page bottom whatever came before it, so it does not end
+    /// spans it merely follows; the page break does ([`Self::end_spans_at_page_break`]).
+    pub(crate) fn close_spans(&mut self, section: &Section, origin_y: i32, height: i32) {
         if self.pending_spans.is_empty() {
             return;
         }
-        let Some(end) = self
+        let Some(current) = self
             .flat_sections()
             .iter()
-            .position(|(n, _)| *n == section_name)
+            .position(|(n, _)| *n == section.name)
         else {
             return;
         };
+        let skipped_ends_here = section.kind != rpt_model::AreaSectionKind::PageFooter;
         let mut i = 0;
         while i < self.pending_spans.len() {
-            if self.pending_spans[i].end_section != end {
+            let end = self.pending_spans[i].end_section;
+            let skipped = skipped_ends_here && end < current;
+            if end != current && !skipped {
                 i += 1;
                 continue;
             }
             let span = self.pending_spans.remove(i);
-            let edge = origin_y + if span.bottom > 0 { span.bottom } else { height };
+            let edge = if skipped {
+                origin_y
+            } else {
+                origin_y + if span.bottom > 0 { span.bottom } else { height }
+            };
             if let Some(DrawOp::Rect(r)) = self.cur.ops.get_mut(span.op_index) {
                 let h = edge - r.bounds.top.0;
                 if h > 0 {

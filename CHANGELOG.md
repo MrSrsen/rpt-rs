@@ -15,6 +15,8 @@ WIP.
   It is now closed where its end section prints, at its stored bottom edge within that section. When a page break comes
   first it runs to the bottom of the page body and continues at the top of the next page, unless the box is set to close
   at page breaks.
+  A box whose end section is suppressed ends where that section would have printed instead of reserving its design
+  height (the `Top5USA_piechart` PDF baseline changes accordingly).
 
 ## [0.4.0]
 
