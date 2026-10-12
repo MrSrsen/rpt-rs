@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 WIP.
 
+### Fixed
+
+- A field embedded in a text object (`{@Caption}{Order.No}`) is now formatted with its own stored format instead of the
+  locale's system default. `TextRun` gains an optional `format`, decoded from the `FieldFormat` block streamed after
+  each embedded-field record (`0xc4`); an integer field with a 0-decimal number slot no longer prints as `63,161.00`.
+
 ## [0.4.0]
 
 More than 340 tracked issues went into this release.

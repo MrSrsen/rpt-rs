@@ -481,11 +481,23 @@ impl<'a> RdWalk<'a> {
         };
         // Reaches for `areas` rather than `self.object()` so the currency-slot flag, a disjoint
         // field, stays borrowable alongside the object.
-        let Some(ReportObjectKind::Field(f)) = current_object(&mut self.areas).map(|o| &mut o.kind)
-        else {
-            return;
+        let ff = match current_object(&mut self.areas).map(|o| &mut o.kind) {
+            Some(ReportObjectKind::Field(f)) => f.format.get_or_insert_with(Default::default),
+            // A text object streams the same block after each embedded field (`0xc4`): it belongs to
+            // that run, the last one pushed. A block with no field run before it has no owner.
+            Some(ReportObjectKind::Text(t)) => {
+                let Some(run) = t
+                    .paragraphs
+                    .last_mut()
+                    .and_then(|p| p.runs.last_mut())
+                    .filter(|r| r.field_ref.is_some())
+                else {
+                    return;
+                };
+                run.format.get_or_insert_with(Default::default)
+            }
+            _ => return,
         };
-        let ff = f.format.get_or_insert_with(Default::default);
         apply_field_format_child(
             child,
             self.logical,
@@ -560,6 +572,8 @@ impl<'a> RdWalk<'a> {
             .then(|| group_display_number(&raw))
             .flatten();
         let rendered = field_data_source(kind, &raw, self.groups, group_display, code, None, None);
+        // The run's format block streams two numeric records, currency slot first: re-arm for it.
+        self.numeric_currency_slot_pending = true;
         if let Some(t) = self.text() {
             t.display.push_str(&rendered);
             push_text_run(
@@ -571,6 +585,7 @@ impl<'a> RdWalk<'a> {
                     // The record stores a spacing of its own, in the slot a literal run stores one;
                     // the model does not carry it yet.
                     character_spacing: Twips(0),
+                    format: None,
                 },
             );
             t.embedded_fields.push(raw);
@@ -591,6 +606,7 @@ impl<'a> RdWalk<'a> {
                     field_ref: None,
                     font: None,
                     character_spacing,
+                    format: None,
                 },
             );
         }

@@ -84,8 +84,14 @@ pub fn render_value(value: &Value, spec: &FormatSpec, loc: &Locale) -> String {
 }
 
 /// Format a [`Value`] with the locale's system defaults for its runtime kind — used for embedded
-/// `{field}`/`{@formula}` references in a text object, which carry no per-field format leaf.
+/// references that carry no format of their own (see [`render_value_in`]).
 pub fn render_value_default(value: &Value, loc: &Locale) -> String {
+    render_value_in(value, None, loc)
+}
+
+/// Format a [`Value`] for its runtime kind through `fmt` — an embedded field run's own stored format —
+/// or, with `None`, through the locale's system defaults.
+pub fn render_value_in(value: &Value, fmt: Option<&FieldFormat>, loc: &Locale) -> String {
     let vt = match value {
         Value::Number(_) => FieldValueType::Number,
         Value::Currency(_) => FieldValueType::Currency,
@@ -95,7 +101,7 @@ pub fn render_value_default(value: &Value, loc: &Locale) -> String {
         Value::Bool(_) => FieldValueType::Boolean,
         _ => FieldValueType::String,
     };
-    let mut spec = field_format_spec(None, vt, loc);
+    let mut spec = field_format_spec(fmt, vt, loc);
     // An embedded run sits inside a sentence, not a column, and the engine prints it flush — no sign
     // cell is reserved (`Page  1`, not `Page   1`).
     match &mut spec {

@@ -4,7 +4,9 @@
 use super::*;
 use rpt_data::{build_dataset_with_params, normalize_param_name, DateTimeSpecials, Parameters};
 use rpt_formula::eval::Value;
-use rpt_model::{Group, Paragraph, SortDirection, TextRun};
+use rpt_model::{
+    CommonFieldFormat, FieldFormat, Group, NumericFieldFormat, Paragraph, SortDirection, TextRun,
+};
 
 /// A fixed as-of instant: 2023-11-14 22:13:20 UTC. Pinned so the expected strings below are stable.
 const AS_OF_UNIX: i64 = 1_700_000_000;
@@ -193,6 +195,65 @@ fn embedded_parameter_run_renders_its_value() {
         &params_of("Region", Value::Str("Nordwest".into())),
     );
     assert_eq!(texts, vec!["Region: Nordwest".to_string()]);
+}
+
+/// A text object with one literal run and one embedded `{?Param}` run, the field run carrying `format`.
+fn order_caption(format: Option<FieldFormat>) -> ReportObject {
+    let mut o = run_text_object(
+        "Caption",
+        &[("Order nr.: ", None), ("{?OrderNo}", Some("?OrderNo"))],
+        0,
+    );
+    if let ReportObjectKind::Text(t) = &mut o.kind {
+        t.paragraphs[0].runs[1].format = format;
+    }
+    o
+}
+
+/// The stored format of an embedded field run is applied, not the system default: an integer field
+/// whose number slot says 0 decimals and no thousands separator prints `63161`, even though its
+/// currency slot (streamed first) says 2 decimals with grouping.
+#[test]
+fn embedded_field_run_uses_its_own_number_slot() {
+    let mut report = Report::default();
+    let format = FieldFormat {
+        common: CommonFieldFormat {
+            use_system_defaults: false,
+            ..Default::default()
+        },
+        currency_numeric: NumericFieldFormat {
+            decimal_places: 2,
+            thousands_separator: true,
+            ..Default::default()
+        },
+        numeric: NumericFieldFormat {
+            decimal_places: 0,
+            thousands_separator: false,
+            ..Default::default()
+        },
+        ..Default::default()
+    };
+    let texts = header_texts_with_params(
+        &mut report,
+        vec![order_caption(Some(format))],
+        Some(AS_OF_UNIX),
+        &params_of("OrderNo", Value::Number(63161.0)),
+    );
+    assert_eq!(texts, vec!["Order nr.: 63161".to_string()]);
+}
+
+/// A field run that streamed no format block keeps the locale's system default (en-US: grouped, two
+/// decimals) — the behaviour before runs carried a format.
+#[test]
+fn embedded_field_run_without_a_format_keeps_the_system_default() {
+    let mut report = Report::default();
+    let texts = header_texts_with_params(
+        &mut report,
+        vec![order_caption(None)],
+        Some(AS_OF_UNIX),
+        &params_of("OrderNo", Value::Number(63161.0)),
+    );
+    assert_eq!(texts, vec!["Order nr.: 63,161.00".to_string()]);
 }
 
 /// An embedded parameter and a placed parameter field object resolve through the same call, so they
