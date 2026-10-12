@@ -8,6 +8,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 WIP.
 
+### Added
+
+- `rpt-query`: `Dialect::MsSql` generates T-SQL for SQL Server — `[…]` quoting, one typed text conversion per
+  declared column type (so a `float`, `money`, date, time or `bit` arrives in the text form `rpt-data` parses, which
+  SQL Server's default conversions do not give), joins as in the other dialects, and the record-selection push-down
+  into the `WHERE` with T-SQL literals (`CAST('…' AS date)`, `1`/`0`, `N'…'` for non-ASCII). New
+  `push_down_selection_for(…, dialect)`; `push_down_selection_with_params` is unchanged. `rpt sql --dialect mssql`
+  prints it. There is no SQL Server driver yet (`mssql://` is still "not yet implemented" in `rpt-render`).
+
 ## [0.4.0]
 
 More than 340 tracked issues went into this release.

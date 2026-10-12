@@ -37,7 +37,7 @@ USAGE:
     rpt sql <file.rpt> [--dialect <d>] [--json] [--color | --no-color]
 
 OPTIONS:
-    --dialect <d>   SQL dialect for the generated query: postgres (default), sqlite, mysql
+    --dialect <d>   SQL dialect for the generated query: postgres (default), sqlite, mysql, mssql
     --json          emit as JSON
     --color         force coloring on even when piped (e.g. `rpt sql f.rpt --color | less -R`)
     --no-color      force coloring off
@@ -279,6 +279,7 @@ fn dialect_name(d: Dialect) -> &'static str {
         Dialect::Postgres => "postgres",
         Dialect::Sqlite => "sqlite",
         Dialect::Mysql => "mysql",
+        Dialect::MsSql => "mssql",
     }
 }
 
@@ -289,8 +290,9 @@ pub(crate) fn parse_dialect(name: Option<&str>) -> Result<Dialect, CliError> {
         None | Some("postgres") | Some("postgresql") | Some("pg") => Ok(Dialect::Postgres),
         Some("sqlite") => Ok(Dialect::Sqlite),
         Some("mysql") | Some("mariadb") => Ok(Dialect::Mysql),
+        Some("mssql") | Some("sqlserver") | Some("tsql") => Ok(Dialect::MsSql),
         Some(other) => Err(CliError::usage(format!(
-            "unknown --dialect '{other}' (expected postgres, sqlite, or mysql)"
+            "unknown --dialect '{other}' (expected postgres, sqlite, mysql, or mssql)"
         ))),
     }
 }
@@ -484,6 +486,8 @@ mod tests {
         assert_eq!(parse_dialect(Some("Postgres")).unwrap(), Dialect::Postgres);
         assert_eq!(parse_dialect(Some("sqlite")).unwrap(), Dialect::Sqlite);
         assert_eq!(parse_dialect(Some("MySQL")).unwrap(), Dialect::Mysql);
+        assert_eq!(parse_dialect(Some("mssql")).unwrap(), Dialect::MsSql);
+        assert_eq!(parse_dialect(Some("SQLServer")).unwrap(), Dialect::MsSql);
         assert!(parse_dialect(Some("oracle")).is_err());
     }
 
