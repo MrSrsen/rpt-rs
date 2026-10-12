@@ -61,7 +61,7 @@ rpt-render report.rpt -p AsOfDate=2026-01-31 -p Region=West -p Region=East -o ou
 
 `--locale <tag>` selects the locale used for date/number formatting. Resolution precedence: an explicit `--locale`
 overrides the host OS locale (`LC_ALL` / `LC_NUMERIC` / `LANG`), which overrides the `en-US` fallback. Built-in tags are
-`en-US`, `en-GB`, `de-DE`, `fr-FR`, `es-ES`, and `it-IT`; an unrecognized tag formats with the `en-US` fallback (the CLI
+`en-US`, `en-GB`, `de-DE`, `fr-FR`, `es-ES`, `it-IT`, and `nb-NO`; an unrecognized tag formats with the `en-US` fallback (the CLI
 warns). This mirrors the native engine, which reads the host locale once at process start to resolve "System Default"
 formats — there is no stored per-report locale.
 
