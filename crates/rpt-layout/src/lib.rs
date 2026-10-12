@@ -257,7 +257,12 @@ struct Bands<'a> {
     group_headers: Vec<Vec<&'a Section>>, // by group level
     detail: Vec<&'a Section>,
     group_footers: Vec<Vec<&'a Section>>, // by group level
+    /// Whether each group-footer area (parallel to `group_footers`) stores "Print at Bottom of Page" on the
+    /// **area**: the area's sections then print as one block pinned to the bottom of the page body.
+    group_footer_pinned: Vec<bool>,
     report_footer: Vec<&'a Section>,
+    /// The same area-level "Print at Bottom of Page" for the report footer.
+    report_footer_pinned: bool,
     page_footer: Vec<&'a Section>,
     /// The `GroupAreaFormat` for each group level (parallel to `group_headers`), carrying
     /// `keep_group_together` and `visible_groups_per_page` — the group-header area's format, since
@@ -279,11 +284,11 @@ fn group_area_key(name: &str, token: &str) -> String {
 /// shares its [`group_area_key`]. This is robust to whatever order the file/decoder presents footers
 /// in. When the names don't pair up cleanly (an unmatched footer, or a mismatched count), fall back
 /// to the canonical assumption that footers are stored innermost-first and reverse them.
-fn order_group_footers<'a>(
+fn order_group_footers<T: Clone>(
     header_keys: &[String],
-    footer_entries: Vec<(String, Vec<&'a Section>)>,
-) -> Vec<Vec<&'a Section>> {
-    let mut placed: Vec<Option<Vec<&Section>>> = (0..header_keys.len()).map(|_| None).collect();
+    footer_entries: Vec<(String, T)>,
+) -> Vec<T> {
+    let mut placed: Vec<Option<T>> = (0..header_keys.len()).map(|_| None).collect();
     let mut all_matched = footer_entries.len() == header_keys.len();
     let mut fallback = Vec::with_capacity(footer_entries.len());
     for (key, sections) in footer_entries {
@@ -309,7 +314,9 @@ impl<'a> Bands<'a> {
             group_headers: Vec::new(),
             detail: Vec::new(),
             group_footers: Vec::new(),
+            group_footer_pinned: Vec::new(),
             report_footer: Vec::new(),
+            report_footer_pinned: false,
             page_footer: Vec::new(),
             group_formats: Vec::new(),
             records_per_page: 0,
@@ -317,7 +324,7 @@ impl<'a> Bands<'a> {
         // Group headers appear in group-level order (outermost first); record each level's matching
         // key so its footer can be paired back to it by name, not by position.
         let mut header_keys: Vec<String> = Vec::new();
-        let mut footer_entries: Vec<(String, Vec<&Section>)> = Vec::new();
+        let mut footer_entries: Vec<(String, (Vec<&Section>, bool))> = Vec::new();
         for area in &report.report_definition.areas {
             // "Hide (Drill-Down OK)" hides the whole area in the normal (non-drill-down) render, so it
             // contributes no bands — but its structural bookkeeping (group level, header/footer key,
@@ -340,14 +347,23 @@ impl<'a> Bands<'a> {
                     b.detail.extend(sections);
                 }
                 AreaSectionKind::GroupFooter => {
-                    footer_entries.push((group_area_key(&area.name, "Footer"), sections));
+                    footer_entries.push((
+                        group_area_key(&area.name, "Footer"),
+                        (sections, area.format.base.print_at_bottom_of_page),
+                    ));
                 }
-                AreaSectionKind::ReportFooter => b.report_footer.extend(sections),
+                AreaSectionKind::ReportFooter => {
+                    b.report_footer.extend(sections);
+                    b.report_footer_pinned |= area.format.base.print_at_bottom_of_page;
+                }
                 AreaSectionKind::PageFooter => b.page_footer.extend(sections),
                 _ => {}
             }
         }
-        b.group_footers = order_group_footers(&header_keys, footer_entries);
+        (b.group_footers, b.group_footer_pinned) =
+            order_group_footers(&header_keys, footer_entries)
+                .into_iter()
+                .unzip();
         b
     }
 }
@@ -692,9 +708,8 @@ impl<'a> Formatter<'a> {
         let mut rf_state = self.state(None);
         rf_state.summaries = Rc::new(dataset.grand_total.clone());
         let last = dataset.iter_detail_rows().last().copied();
-        for s in rf {
-            self.emit_band(s, last, &rf_state, None);
-        }
+        let pinned = self.bands.report_footer_pinned;
+        self.emit_footer_area(&rf, pinned, last, &rf_state);
         self.finish_page();
 
         // The final page count is now known: rewrite every `TotalPageCount`/`PageNofM` run that was

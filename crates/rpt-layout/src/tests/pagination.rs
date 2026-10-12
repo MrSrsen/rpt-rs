@@ -851,6 +851,67 @@ fn print_at_bottom_of_page_pins_a_footer_to_the_body_bottom() {
     assert_eq!(feet[0], 2700, "footer pinned at the body bottom");
 }
 
+/// A report footer area with two sections (300 and 200 twips) over two detail rows, with
+/// `print_at_bottom_of_page` set on the **area** — the way the file stores it for a footer block.
+fn report_with_footer_area(pinned: bool) -> Report {
+    let mut report = Report::default();
+    report.print_options.content_width = Twips(12240);
+    report.print_options.content_height = Twips(3000);
+    let mut footer_area = area(
+        AreaSectionKind::ReportFooter,
+        vec![
+            section(
+                AreaSectionKind::ReportFooter,
+                "RF1",
+                300,
+                vec![text_object("F1", "FIRST", 0)],
+            ),
+            section(
+                AreaSectionKind::ReportFooter,
+                "RF2",
+                200,
+                vec![text_object("F2", "SECOND", 0)],
+            ),
+        ],
+    );
+    footer_area.format.base.print_at_bottom_of_page = pinned;
+    report.report_definition.areas = vec![
+        area(
+            AreaSectionKind::Detail,
+            vec![section(
+                AreaSectionKind::Detail,
+                "Details",
+                300,
+                vec![text_object("Row", "line", 0)],
+            )],
+        ),
+        footer_area,
+    ];
+    report
+}
+
+/// "Print at Bottom of Page" stored on a footer area pins the area's sections together: the block sits
+/// against the bottom of the body, its sections one after another from there.
+#[test]
+fn print_at_bottom_of_page_on_a_footer_area_pins_the_whole_block() {
+    let doc = rendered(&report_with_footer_area(true), &numeric_rows(2));
+    assert_eq!(doc.pages.len(), 1);
+    let page = &doc.pages[0];
+    // body_bottom 3000 less the block (300 + 200) = 2500; the second section follows at 2800.
+    assert_eq!(page_text_tops(page, "FIRST"), vec![2500]);
+    assert_eq!(page_text_tops(page, "SECOND"), vec![2800]);
+}
+
+/// Without the flag the same footer sections print directly under the last detail row.
+#[test]
+fn an_unpinned_footer_area_prints_under_the_detail() {
+    let doc = rendered(&report_with_footer_area(false), &numeric_rows(2));
+    let page = &doc.pages[0];
+    // Two 300-twip rows (0 and 300), then the footer sections at 600 and 900.
+    assert_eq!(page_text_tops(page, "FIRST"), vec![600]);
+    assert_eq!(page_text_tops(page, "SECOND"), vec![900]);
+}
+
 #[test]
 fn reset_page_number_after_restarts_the_page_counter() {
     // A group footer with ResetPageNumberAfter (+ NewPageAfter) restarts the page-number counter, so
