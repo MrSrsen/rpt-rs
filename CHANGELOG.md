@@ -8,6 +8,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 WIP.
 
+### Fixed
+
+- A `Boolean` field whose value arrives as a number is now read as a boolean. Only the word `true` was true, so the
+  `1` that SQLite stores and SQL Server's `bit` casts to — and Access/ODBC's `-1` — read as false, and a formula such as
+  `if {Invoice.HideTimeCode} then …` never saw a set flag. `true`/`t`/`yes`/`y` (any case) and any non-zero number are
+  true; everything else is false, as before.
+
 ## [0.4.0]
 
 More than 340 tracked issues went into this release.

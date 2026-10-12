@@ -284,6 +284,42 @@ mod tests {
         assert_eq!(rows[0].get("cities.pop"), Some(&Value::Number(2794356.0)));
     }
 
+    /// SQLite has no boolean type: a flag is stored as `0`/`1` and arrives as `'0'`/`'1'`. A `Boolean`
+    /// field must still come out true for `1` and false for `0`, not false for both.
+    #[test]
+    fn a_boolean_column_stored_as_an_integer_reads_true_for_one() {
+        let conn = open("sqlite::memory:").unwrap();
+        conn.execute_batch(
+            "CREATE TABLE flags(name TEXT, hidden INTEGER);
+             INSERT INTO flags VALUES ('a', 1), ('b', 0), ('c', NULL);",
+        )
+        .unwrap();
+        let mut t = Table {
+            name: "flags".into(),
+            alias: "flags".into(),
+            ..Default::default()
+        };
+        for (n, vt) in [
+            ("name", FieldValueType::String),
+            ("hidden", FieldValueType::Boolean),
+        ] {
+            t.data_fields.push(DbFieldDef {
+                name: n.into(),
+                value_type: vt,
+                ..Default::default()
+            });
+        }
+        let db = Database {
+            tables: vec![t],
+            ..Default::default()
+        };
+        let q = build_query_in(&db, Dialect::Sqlite).unwrap();
+        let rows = SqliteSource::run_query(&conn, &q).unwrap().rows();
+        assert_eq!(rows[0].get("flags.hidden"), Some(&Value::Bool(true)));
+        assert_eq!(rows[1].get("flags.hidden"), Some(&Value::Bool(false)));
+        assert_eq!(rows[2].get("flags.hidden"), Some(&Value::Null));
+    }
+
     #[test]
     fn sql_expression_field_is_fetched_and_keyed_by_name() {
         // A SQL Expression field selected as `(<text>) AS "name"` resolves under its bare name:

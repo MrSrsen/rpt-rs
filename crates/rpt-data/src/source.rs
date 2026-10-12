@@ -463,7 +463,7 @@ fn convert(value_type: FieldValueType, cell: Option<&Cell>) -> Value {
             .map(Value::Currency)
             .unwrap_or(Value::Null),
         T::Boolean => match cell {
-            Some(t) => Value::Bool(t.trim().eq_ignore_ascii_case("true")),
+            Some(t) => Value::Bool(parse_bool_cell(t)),
             None => Value::Null,
         },
         // Date/time fields arrive one of two ways: ISO text (`2024-01-03`, `09:12:00`,
@@ -487,6 +487,20 @@ fn convert(value_type: FieldValueType, cell: Option<&Cell>) -> Value {
         // String / memo / blob stored as text: absent = empty string.
         _ => Value::Str(cell.cloned().unwrap_or_default()),
     }
+}
+
+/// A boolean cell: `true` / `t` / `yes` / `y` (any case) or a non-zero number is true; anything else —
+/// `false`, `0`, an empty or unrecognised text — is false.
+///
+/// The text depends on where the value came from. PostgreSQL casts a `boolean` to `true`/`false`, but
+/// SQLite stores one as the integer `0`/`1` and SQL Server's `bit` casts to `'0'`/`'1'` (Access and ODBC
+/// use `-1` for true). Reading only the word `true` made every such column false.
+fn parse_bool_cell(s: &str) -> bool {
+    let s = s.trim();
+    ["true", "t", "yes", "y"]
+        .iter()
+        .any(|word| s.eq_ignore_ascii_case(word))
+        || s.parse::<f64>().is_ok_and(|n| n != 0.0 && !n.is_nan())
 }
 
 /// A failure of a live-database [`RowSource`] fetch, generic over the driver's own error type `E`
@@ -908,6 +922,24 @@ fn parse_iso_datetime(s: &str) -> Option<(Date, Time)> {
 mod tests {
     use super::*;
     use rpt_model::{DbFieldDef, SavedColumn, Table};
+
+    /// A boolean arrives as text from the driver: a word from PostgreSQL, a number from SQLite and SQL
+    /// Server. Both read the same way; a null stays null.
+    #[test]
+    fn a_boolean_cell_reads_words_and_numbers() {
+        let read = |s: &str| cell_to_value(FieldValueType::Boolean, Some(&Cell::Text(s.into())));
+        for truthy in [
+            "true", "TRUE", " True ", "t", "yes", "Y", "1", "-1", "2", "0.5",
+        ] {
+            assert_eq!(read(truthy), Value::Bool(true), "{truthy:?}");
+        }
+        for falsy in [
+            "false", "FALSE", "f", "no", "n", "0", "0.0", "", "  ", "maybe",
+        ] {
+            assert_eq!(read(falsy), Value::Bool(false), "{falsy:?}");
+        }
+        assert_eq!(cell_to_value(FieldValueType::Boolean, None), Value::Null);
+    }
 
     /// A stand-in driver error, so these tests need no DB crate.
     #[derive(Debug)]
