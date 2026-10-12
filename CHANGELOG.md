@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 WIP.
 
+### Fixed
+
+- "Print at Bottom of Page" stored on a group-footer or report-footer **area** (rather than on one of its sections) is
+  now honoured: the area's sections print as one block pinned against the bottom of the page body, above the page
+  footer, each following the previous from there. Only the section-level flag was read before, so a footer block that
+  Crystal places at the bottom of the page printed directly under the last detail row. The block's height is the sum of
+  the sections' design heights, a block never splits across pages, and never rises above the cursor.
+
 ## [0.4.0]
 
 More than 340 tracked issues went into this release.

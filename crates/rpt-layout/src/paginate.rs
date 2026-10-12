@@ -444,6 +444,38 @@ impl<'a> Formatter<'a> {
         true
     }
 
+    /// Emit a footer area's sections. When the **area** stores "Print at Bottom of Page" the sections are one
+    /// block pinned against the bottom of the page body, above the page footer: the block starts at
+    /// `body_bottom` less the sections' heights (design heights, so a measuring pass fires no formulas) and
+    /// the sections follow one another from there. A block never splits — one that does not fit below the
+    /// cursor starts a fresh page — and never rises above the cursor. Without the flag each section is
+    /// emitted in turn (and may still pin itself through its own section-level flag).
+    pub(crate) fn emit_footer_area(
+        &mut self,
+        sections: &[&'a Section],
+        pinned: bool,
+        row: Option<&Row>,
+        state: &ResolveState,
+    ) {
+        if pinned {
+            let total: i32 = sections
+                .iter()
+                .filter(|s| !s.format.base.suppress)
+                .map(|s| s.height.0)
+                .sum();
+            if total > 0 && total <= self.body_bottom {
+                if self.cursor_y + total > self.body_bottom && self.cursor_y > 0 {
+                    self.finish_page();
+                    self.begin_page();
+                }
+                self.cursor_y = (self.body_bottom - total).max(self.cursor_y);
+            }
+        }
+        for s in sections {
+            self.emit_band(s, row, state, None);
+        }
+    }
+
     /// Open an "Underlay Following Sections" span for a band just emitted at `bottom - height`.
     ///
     /// The band is a background for the sections that follow it: it draws first (so painter's order
@@ -747,9 +779,8 @@ impl<'a> Formatter<'a> {
         self.close_underlay_spans(UnderlayEnd::GroupFooter(g.level));
         if let Some(ftr) = self.bands.group_footers.get(g.level).cloned() {
             let last = g.details.last().or_else(|| crate::last_row(g));
-            for s in ftr {
-                self.emit_band(s, last, &state, None);
-            }
+            let pinned = self.bands.group_footer_pinned[g.level];
+            self.emit_footer_area(&ftr, pinned, last, &state);
         }
         self.group_stack.pop();
         self.refresh_group_summaries();
@@ -772,9 +803,8 @@ impl<'a> Formatter<'a> {
         }
         for (level, ftr) in footers.iter().enumerate().rev() {
             self.close_underlay_spans(UnderlayEnd::GroupFooter(level));
-            for s in ftr {
-                self.emit_band(s, None, &state, None);
-            }
+            let pinned = self.bands.group_footer_pinned[level];
+            self.emit_footer_area(ftr, pinned, None, &state);
         }
     }
 
