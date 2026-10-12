@@ -92,8 +92,17 @@ pub(crate) fn push_diag(sink: &DiagSink, d: Diagnostic) {
 }
 
 /// US-Letter fallback when the report carries no page geometry.
-const DEFAULT_PAGE_W: i32 = 12240; // 8.5in
-const DEFAULT_PAGE_H: i32 = 15840; // 11in
+/// The paper a report that stores none prints on — the "system default" the engine takes from the host's
+/// default printer: US Letter in North America (`US`, `CA`, `MX` regions), ISO A4 everywhere else.
+/// Returns `(width, height)` in twips, portrait.
+fn default_paper(locale: &Locale) -> (i32, i32) {
+    const LETTER: (i32, i32) = (12240, 15840); // 8.5 x 11 in
+    const A4: (i32, i32) = (11906, 16838); // 210 x 297 mm
+    match locale.tag.rsplit('-').next() {
+        Some("US" | "CA" | "MX") => LETTER,
+        _ => A4,
+    }
+}
 
 /// One placed line of a text object: its text plus the horizontal offset and usable width for its
 /// [`rpt_pages::TextRun`] bounds. `x_offset`/`width` carry per-paragraph indentation (left/right and
@@ -544,15 +553,16 @@ impl<'a> Formatter<'a> {
         // Letter 11520×15120 = 12240×15840 − 720 twips of margins). Reconstruct the full paper so both
         // the emitted page size and the body height are right — treating the printable size as the
         // whole page double-subtracts the margins and loses ~1 detail row per page.
+        let (default_w, default_h) = default_paper(&locale);
         let page_w = if po.content_width.0 > 0 {
             po.content_width.0 + m.left.0 + m.right.0
         } else {
-            DEFAULT_PAGE_W
+            default_w
         };
         let page_h = if po.content_height.0 > 0 {
             po.content_height.0 + m.top.0 + m.bottom.0
         } else {
-            DEFAULT_PAGE_H
+            default_h
         };
         // Draw-op coordinates are **printable-relative**: the base is 0,0 (the top-left of the
         // printable area), not the physical margin — the margin is carried once as the page origin

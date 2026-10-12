@@ -172,6 +172,13 @@ LOCALE:
         --locale <tag>     locale for date/number formatting (e.g. en-US, de-DE). Default: the host
                            locale (LC_ALL/LC_NUMERIC/LANG), else en-US.
 
+PAPER:
+        --paper <size>     print on this paper instead of what the report stores: a3, a4, a5, b4, b5,
+                           letter, legal, tabloid, ledger, executive, statement or folio (portrait; a
+                           landscape report keeps its orientation). A report that stores no paper
+                           (the printer's default) uses US Letter under a North American locale
+                           (en-US, en-CA, es-MX …) and A4 under any other.
+
 FONTS (default: the bundled Liberation/DejaVu faces, so the render is reproducible on any machine):
         --system-fonts     lay out and embed the host's installed faces instead. Use it when the
                            report's real fonts are installed and fidelity matters more than
@@ -328,12 +335,67 @@ enum DataMode {
     Db,
 }
 
+/// A `--paper` value: a paper name, case-insensitive, with or without the SDK's `Paper` prefix.
+fn parse_paper(name: &str) -> Result<rpt_reader::model::PaperSize, String> {
+    use rpt_reader::model::PaperSize as P;
+    let key = name.trim().to_ascii_lowercase();
+    let key = key.strip_prefix("paper").unwrap_or(&key);
+    Ok(match key {
+        "a3" => P::PaperA3,
+        "a4" => P::PaperA4,
+        "a5" => P::PaperA5,
+        "b4" => P::PaperB4,
+        "b5" => P::PaperB5,
+        "letter" => P::PaperLetter,
+        "legal" => P::PaperLegal,
+        "tabloid" | "11x17" => P::PaperTabloid,
+        "ledger" => P::PaperLedger,
+        "executive" => P::PaperExecutive,
+        "statement" => P::PaperStatement,
+        "folio" => P::PaperFolio,
+        _ => {
+            return Err(format!(
+            "--paper: unknown size {name:?} (a3, a4, a5, b4, b5, letter, legal, tabloid, ledger, \
+                 executive, statement, folio)"
+        ))
+        }
+    })
+}
+
+/// `report` printed on `paper`: the printable area becomes the paper less the report's own margins, in
+/// the report's orientation. A size without known dimensions leaves the report unchanged.
+fn with_paper(
+    report: &rpt_reader::model::Report,
+    paper: rpt_reader::model::PaperSize,
+) -> rpt_reader::model::Report {
+    let mut report = report.clone();
+    let po = &mut report.print_options;
+    if let Some((short, long)) = paper.std_dims() {
+        let (width, height) =
+            if po.paper_orientation == rpt_reader::model::PaperOrientation::Landscape {
+                (long, short)
+            } else {
+                (short, long)
+            };
+        let m = po.margins;
+        let (content_w, content_h) = (width - m.left.0 - m.right.0, height - m.top.0 - m.bottom.0);
+        if content_w > 0 && content_h > 0 {
+            po.paper_size = paper;
+            po.content_width = rpt_reader::model::Twips(content_w);
+            po.content_height = rpt_reader::model::Twips(content_h);
+        }
+    }
+    report
+}
+
 /// The parsed command line.
 struct Cli {
     input: String,
     mode: DataMode,
     params: Vec<(String, String)>,
     locale: Option<String>,
+    /// `--paper <size>`: override the report's paper size.
+    paper: Option<rpt_reader::model::PaperSize>,
     output: Option<String>,
     level: Level,
 
@@ -558,6 +620,7 @@ fn parse_args(args: impl Iterator<Item = String>) -> Result<Option<Cli>, String>
     let mut list_fonts = false;
     let mut params: Vec<(String, String)> = Vec::new();
     let mut locale: Option<String> = None;
+    let mut paper: Option<rpt_reader::model::PaperSize> = None;
     let mut output: Option<String> = None;
     let mut verbose = false;
     let mut quiet = false;
@@ -595,6 +658,7 @@ fn parse_args(args: impl Iterator<Item = String>) -> Result<Option<Cli>, String>
                 }
             }
             "--locale" => locale = Some(take("--locale")?),
+            "--paper" => paper = Some(parse_paper(&take("--paper")?)?),
             "--system-fonts" => system_fonts = true,
             "--pdfa" => pdfa = Some(parse_pdfa(&take("--pdfa")?)?),
             "--pdfua" => pdfua = true,
@@ -673,6 +737,7 @@ fn parse_args(args: impl Iterator<Item = String>) -> Result<Option<Cli>, String>
         mode,
         params,
         locale,
+        paper,
         output,
         level,
         list_sources,
@@ -690,7 +755,14 @@ fn run(cli: &Cli, log: &Log) -> Result<(), RenderError> {
 
     // Open + decode.
     let rpt = rpt_reader::Rpt::open(&cli.input)?;
-    let report = rpt.report();
+    let paper_report;
+    let report = match cli.paper {
+        Some(paper) => {
+            paper_report = with_paper(rpt.report(), paper);
+            &paper_report
+        }
+        None => rpt.report(),
+    };
 
     // An unrecognized record becomes a default rather than an error, so an incomplete decode would
     // otherwise render as a confident-looking page with content silently missing.
@@ -1145,6 +1217,45 @@ mod tests {
         parse_args(args.iter().map(|s| s.to_string()))
             .expect("parse ok")
             .expect("not --help")
+    }
+
+    /// `--paper` names a size, case-insensitively, with or without the SDK's `Paper` prefix.
+    #[test]
+    fn paper_option_names_a_size() {
+        use rpt_reader::model::PaperSize as P;
+        assert_eq!(cli(&["r.rpt", "--paper", "A4"]).paper, Some(P::PaperA4));
+        assert_eq!(
+            cli(&["r.rpt", "--paper", "PaperLetter"]).paper,
+            Some(P::PaperLetter)
+        );
+        assert_eq!(cli(&["r.rpt"]).paper, None);
+        let err = parse_args(["r.rpt", "--paper", "b99"].iter().map(|s| s.to_string()))
+            .err()
+            .expect("an unknown size is rejected");
+        assert!(err.contains("unknown size"), "{err}");
+    }
+
+    /// `--paper` sets the printable area to the paper less the report's own margins, keeping a
+    /// landscape report landscape.
+    #[test]
+    fn paper_option_sets_the_printable_area() {
+        use rpt_reader::model::{PageMargins, PaperOrientation, PaperSize as P, Report, Twips};
+        let mut report = Report::default();
+        report.print_options.margins = PageMargins {
+            left: Twips(360),
+            right: Twips(360),
+            top: Twips(360),
+            bottom: Twips(360),
+        };
+        let portrait = with_paper(&report, P::PaperA4);
+        assert_eq!(portrait.print_options.paper_size, P::PaperA4);
+        assert_eq!(portrait.print_options.content_width, Twips(11906 - 720));
+        assert_eq!(portrait.print_options.content_height, Twips(16838 - 720));
+
+        report.print_options.paper_orientation = PaperOrientation::Landscape;
+        let landscape = with_paper(&report, P::PaperA4);
+        assert_eq!(landscape.print_options.content_width, Twips(16838 - 720));
+        assert_eq!(landscape.print_options.content_height, Twips(11906 - 720));
     }
 
     /// `--version` reports the version the binary was compiled from, and the `--help` header carries
