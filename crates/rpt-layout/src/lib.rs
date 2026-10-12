@@ -441,6 +441,12 @@ pub(crate) struct Formatter<'a> {
     /// per [`Formatter::emit_object`] call, shared by that object's text runs and its border/fill box;
     /// monotonic across the report, with subreport ids remapped into this space on merge.
     next_instance_id: u32,
+    /// Boxes that start in one section and end in a later one, still waiting for their end section to
+    /// print (see [`place::PendingSpan`]). They always refer to ops on the current page.
+    pending_spans: Vec<place::PendingSpan>,
+    /// Spans that were open at a page break and continue on the next page (the box does not close at
+    /// the break). Re-opened at the top of the next page.
+    carried_spans: Vec<place::CarriedSpan>,
     /// The next subreport-placement id to hand out: one per merged subreport placement, monotonic
     /// across the report. It is what separates two instances of the *same* subreport definition,
     /// which are otherwise indistinguishable in a merged op's identity (see
@@ -607,6 +613,8 @@ impl<'a> Formatter<'a> {
             pending_page_number_reset: false,
             in_report_header: false,
             next_instance_id: 0,
+            pending_spans: Vec::new(),
+            carried_spans: Vec::new(),
             next_subreport_placement: 0,
             page_count_fixups: Vec::new(),
             currency_fixups: Vec::new(),

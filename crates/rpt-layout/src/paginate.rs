@@ -1008,6 +1008,7 @@ impl<'a> Formatter<'a> {
     /// below the report header, so it does not print on any page the header occupies.
     pub(crate) fn begin_page(&mut self) {
         self.open_page();
+        self.resume_spans();
         if !self.in_report_header {
             self.emit_page_header();
         }
@@ -1067,6 +1068,8 @@ impl<'a> Formatter<'a> {
             // reserved at the page bottom).
             self.emit_band_no_paginate(s, page_row, &state, false);
         }
+        // Spans still open end here: the page body is their bottom.
+        self.end_spans_at_page_break();
         let page = std::mem::replace(&mut self.cur, Page::new(0, self.page_size));
         self.pages.push(page);
     }
