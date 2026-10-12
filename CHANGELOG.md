@@ -8,6 +8,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 WIP.
 
+### Added
+
+- `rpt-render --paper <size>` prints on an explicit paper size (`a3`, `a4`, `a5`, `b4`, `b5`, `letter`, `legal`, `tabloid`,
+  `ledger`, `executive`, `statement`, `folio`) instead of the one the report stores.
+
+### Changed
+
+- A report that stores no paper size (the printer's default) is now laid out on the locale's default paper: US Letter
+  under a North American locale (`en-US`, `en-CA`, `es-MX`), A4 under any other. It was always Letter before. A report
+  that stores its paper, and any render under `en-US`, is unchanged.
+
 ## [0.4.0]
 
 More than 340 tracked issues went into this release.

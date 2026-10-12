@@ -1065,6 +1065,60 @@ fn section_box_underlays_and_grows_with_the_band() {
     );
 }
 
+/// The page size layout draws `report` on under `locale_tag`.
+fn paper_under(report: &Report, locale_tag: &str) -> (i32, i32) {
+    let ds = build_dataset(
+        &SavedDataSource::new(&numeric_rows(1)),
+        &report.data_definition,
+    );
+    let formulas = rpt_data::compile_formulas(&report.data_definition);
+    let doc = crate::layout_scoped(
+        report,
+        &ds,
+        &formulas,
+        Box::new(rpt_layout_text()),
+        None,
+        rpt_format_value::Locale::from_tag(locale_tag),
+    );
+    let size = doc.pages[0].size;
+    (size.width.0, size.height.0)
+}
+
+fn rpt_layout_text() -> crate::text::ApproxLayout {
+    crate::text::ApproxLayout
+}
+
+/// A report that stores no paper (the printer's default) prints on the locale's default paper: US Letter
+/// under en-US, A4 under a locale from anywhere else.
+#[test]
+fn a_report_without_stored_paper_uses_the_locales_default_paper() {
+    let mut report = tiny_report(15840);
+    report.print_options.content_width = Twips(0);
+    report.print_options.content_height = Twips(0);
+    assert_eq!(paper_under(&report, "en-US"), (12240, 15840), "Letter");
+    assert_eq!(paper_under(&report, "de-DE"), (11906, 16838), "A4");
+    assert_eq!(paper_under(&report, "fr-FR"), (11906, 16838), "A4");
+    assert_eq!(paper_under(&report, "en-GB"), (11906, 16838), "A4");
+    // An unsupported tag falls back to en-US, and so to Letter.
+    assert_eq!(paper_under(&report, "zz-ZZ"), (12240, 15840));
+}
+
+/// A report that does store its printable area keeps it, whatever the locale.
+#[test]
+fn stored_paper_wins_over_the_locales_default() {
+    let mut report = tiny_report(16118);
+    report.print_options.content_width = Twips(11186);
+    report.print_options.margins = rpt_model::PageMargins {
+        left: Twips(360),
+        right: Twips(360),
+        top: Twips(360),
+        bottom: Twips(360),
+    };
+    // 11186 + 720 = 11906 (A4 width), 16118 + 720 = 16838 (A4 height).
+    assert_eq!(paper_under(&report, "en-US"), (11906, 16838));
+    assert_eq!(paper_under(&report, "de-DE"), (11906, 16838));
+}
+
 /// A box whose stored end-section index names a later section spans down to that section's bottom,
 /// not only its own band.
 #[test]

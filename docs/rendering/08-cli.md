@@ -65,6 +65,15 @@ overrides the host OS locale (`LC_ALL` / `LC_NUMERIC` / `LANG`), which overrides
 warns). This mirrors the native engine, which reads the host locale once at process start to resolve "System Default"
 formats — there is no stored per-report locale.
 
+## Paper
+
+A report prints on the paper it stores. Many reports store none — the paper is "the printer's default" — and the
+engine then takes it from the host's default printer. `rpt-render` does the same through the locale: **US Letter** under
+a North American locale (`en-US`, `en-CA`, `es-MX`), **A4** under any other. `--paper <size>` overrides both with an
+explicit size: `a3`, `a4`, `a5`, `b4`, `b5`, `letter`, `legal`, `tabloid`, `ledger`, `executive`, `statement` or
+`folio` (case-insensitive; a landscape report stays landscape). The printable area is the paper less the report's own
+margins.
+
 ## Fonts
 
 Both halves of the font stack — the metrics the layout engine measures with and the faces the PDF embeds — come from the
