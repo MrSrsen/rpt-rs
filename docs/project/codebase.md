@@ -1,6 +1,6 @@
 # The codebase
 
-`rpt-rs` is a Cargo workspace of 21 members in two layers: the **reader** (the load-bearing crates below) and a
+`rpt-rs` is a Cargo workspace of 22 members in two layers: the **reader** (the load-bearing crates below) and a
 **rendering & data pipeline** built on top of it. The split mirrors the decode-then-render flow and enforces two
 load-bearing boundaries: **stored facts vs. derived values**, and **reader vs. render pipeline**. The latter is
 compiler-enforced: the format-neutral `rpt-model` crate holds the semantic model as pure data, so every pipeline crate
@@ -27,7 +27,7 @@ deployable tools. The tables below group members by *layer*, not by directory; t
 ## Rendering & data pipeline
 
 Built on the reader, this layer turns a decoded report + a data source into paginated, rendered output. Every crate here
-is pure, WASM-safe Rust (the exceptions, `rpt-db-postgres` and `rpt-db-sqlite`, are native-only and isolated behind the
+is pure, WASM-safe Rust (the exceptions, `rpt-db-postgres`, `rpt-db-sqlite` and `rpt-db-mssql`, are native-only and isolated behind the
 `RowSource` trait).
 
 | Crate              | Responsibility                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
@@ -45,8 +45,9 @@ is pure, WASM-safe Rust (the exceptions, `rpt-db-postgres` and `rpt-db-sqlite`, 
 | `rpt-render-pdf`   | The only output backend, consuming the Page IR: PDF via `krilla` with real font-subset embedding. A new output target attaches to the Page IR through `PageBackend`, not as a variation on this crate.                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `rpt-db-postgres`  | A live PostgreSQL `RowSource` (native-only) that executes the `rpt-query` SQL.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `rpt-db-sqlite`    | A live SQLite `RowSource` (native-only); runs in-process, so it needs no server.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `rpt-db-mssql`     | A live SQL Server `RowSource` (native-only); T-SQL over TDS via the pure-Rust `tiberius`, behind the opt-in `db-mssql` feature.                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 
-Two dev-only members round out the workspace to 21. **`rpt-test-support`** is a crate of shared test helpers
+Two dev-only members round out the workspace to 22. **`rpt-test-support`** is a crate of shared test helpers
 (fixture-path resolution, hand-built saved-data batches), pulled in under `[dev-dependencies]` only. **`meridian-seed`**
 (under `apps/`) is a standalone binary that deterministically generates the synthetic "Meridian Global Logistics"
 render-test seed database — emitting portable PostgreSQL/SQLite SQL (DDL + data) from a single fixed PRNG seed, so the

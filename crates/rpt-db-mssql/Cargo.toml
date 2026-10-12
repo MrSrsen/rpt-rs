@@ -1,0 +1,27 @@
+[package]
+name = "rpt-db-mssql"
+description = "Live SQL Server RowSource for the rpt-data pipeline — generates T-SQL from a report's table schema and executes it over TDS (native-only)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+rpt-model = { workspace = true, features = ["serde"] }
+rpt-data = { workspace = true }
+rpt-query = { workspace = true }
+tiberius = { workspace = true }
+tokio = { workspace = true }
+tokio-util = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+rpt-formula = { workspace = true }
+
+[lints]
+workspace = true

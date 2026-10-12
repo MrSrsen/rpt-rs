@@ -100,6 +100,17 @@ impl From<rpt_db_postgres::DbError> for RenderError {
     }
 }
 
+#[cfg(feature = "db-mssql")]
+impl From<rpt_db_mssql::DbError> for RenderError {
+    fn from(e: rpt_db_mssql::DbError) -> RenderError {
+        RenderError::Db {
+            context: "database error".to_string(),
+            hint: e.hint(),
+            source: Box::new(e),
+        }
+    }
+}
+
 #[cfg(feature = "db-sqlite")]
 impl From<rpt_db_sqlite::DbError> for RenderError {
     fn from(e: rpt_db_sqlite::DbError) -> RenderError {

@@ -15,7 +15,13 @@ WIP.
   SQL Server's default conversions do not give), joins as in the other dialects, and the record-selection push-down
   into the `WHERE` with T-SQL literals (`CAST('…' AS date)`, `1`/`0`, `N'…'` for non-ASCII). New
   `push_down_selection_for(…, dialect)`; `push_down_selection_with_params` is unchanged. `rpt sql --dialect mssql`
-  prints it. There is no SQL Server driver yet (`mssql://` is still "not yet implemented" in `rpt-render`).
+  prints it.
+- New crate `rpt-db-mssql`: a live SQL Server `RowSource` over TDS (the pure-Rust `tiberius` client with
+  `rustls`, so no OpenSSL or ODBC driver; SQL logins only). `rpt-render --db` reads `mssql://user:password@host[:port]/db`
+  (or `sqlserver://`), with `?encrypt=required|on|off|none` and `?trust_cert=true`. It is behind the **opt-in**
+  `db-mssql` feature of `rpt-render-cli`, because it adds an async client and a TLS stack to the build; the default
+  build is unchanged. The crate drives `tiberius` from a private single-threaded `tokio` runtime, so its API is
+  synchronous like the PostgreSQL and SQLite drivers. Its live tests run only when `RPT_MSSQL_TEST_URL` is set.
 
 ## [0.4.0]
 

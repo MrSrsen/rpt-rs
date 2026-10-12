@@ -225,9 +225,9 @@ impl Driver {
     /// opposed to implemented-but-not-compiled-in for this build.
     fn recognized_unimplemented(self) -> bool {
         match self {
-            // Postgres + SQLite are implemented (behind the db-postgres / db-sqlite features).
-            Driver::Postgres | Driver::Sqlite => false,
-            Driver::MySql | Driver::MariaDb | Driver::MsSql => true,
+            // Postgres, SQLite and SQL Server are implemented (behind their db-* features).
+            Driver::Postgres | Driver::Sqlite | Driver::MsSql => false,
+            Driver::MySql | Driver::MariaDb => true,
         }
     }
 }
@@ -238,7 +238,7 @@ pub fn not_implemented(driver: Driver) -> String {
     if driver.recognized_unimplemented() {
         format!(
             "the {} driver is recognized but not available in this build; \
-             postgres and sqlite are implemented",
+             postgres, sqlite and mssql are implemented",
             driver.name()
         )
     } else {
@@ -439,6 +439,8 @@ pub fn fetch_scope(
         Driver::Postgres => fetch_scope_postgres(database, inputs, url, log, comment),
         #[cfg(feature = "db-sqlite")]
         Driver::Sqlite => fetch_scope_sqlite(database, inputs, url, log, comment),
+        #[cfg(feature = "db-mssql")]
+        Driver::MsSql => fetch_scope_mssql(database, inputs, url, log, comment),
         // A driver whose backend feature is not compiled in (or has no implementation yet).
         other => Err(RenderError::Datasource(not_implemented(*other))),
     };
@@ -608,6 +610,82 @@ fn fetch_scope_sqlite(
         Comp::Data,
         format!(
             "[query {qid}] executing SQL query ({} column(s) across {} table(s)) — reading rows",
+            query.columns.len(),
+            database.tables.len(),
+        ),
+    );
+    let t1 = Instant::now();
+    let source = conn.run(&query)?;
+    log.info(
+        Comp::Data,
+        format!(
+            "[query {qid}] fetched {} row(s) in {} ms",
+            source.rows().len(),
+            t1.elapsed().as_millis()
+        ),
+    );
+    Ok(Box::new(source))
+}
+
+/// Fetch a scope's rows from SQL Server (`mssql://…`). The T-SQL dialect pushes the translatable part
+/// of the record selection into the `WHERE`; the pipeline applies the rest per row.
+#[cfg(feature = "db-mssql")]
+fn fetch_scope_mssql(
+    database: &rpt_reader::model::Database,
+    inputs: &FetchInputs,
+    url: &str,
+    log: &crate::applog::Log,
+    comment: Option<&str>,
+) -> Result<Box<dyn rpt_data::RowSource>, RenderError> {
+    use rpt_data::RowSource;
+    use rpt_db_mssql::MssqlConn;
+    use rpt_query::{build_query_full, Dialect};
+    use std::time::Instant;
+
+    let selection = inputs.selection;
+    let param_pairs: Vec<(String, rpt_query::Value)> = inputs
+        .params
+        .iter()
+        .map(|(k, v)| (k.clone(), v.clone()))
+        .collect();
+    let mut query = build_query_full(
+        database,
+        inputs.sql_exprs,
+        selection,
+        &param_pairs,
+        Dialect::MsSql,
+    )
+    .map_err(|e| RenderError::Datasource(e.to_string()))?;
+    if let Some(c) = comment {
+        query = query.with_comment(c);
+    }
+    let qid = log.next_query_id();
+    let t0 = Instant::now();
+    log.info(
+        Comp::Data,
+        "connecting to SQL Server (blocks until the server responds)…",
+    );
+    let mut conn = MssqlConn::open(url)?;
+    conn.ping().map_err(|e| RenderError::Db {
+        context: "healthcheck (SELECT 1) failed".to_string(),
+        hint: e.hint(),
+        source: Box::new(e),
+    })?;
+    let version = conn
+        .server_version()
+        .unwrap_or_else(|| "unknown".to_string());
+    log.info(
+        Comp::Data,
+        format!(
+            "healthcheck OK: {version} ({} ms)",
+            t0.elapsed().as_millis()
+        ),
+    );
+    log_query(qid, &query, selection, log);
+    log.info(
+        Comp::Data,
+        format!(
+            "[query {qid}] executing SQL query ({} column(s) across {} table(s)) — waiting for the              server; this blocks until every row is returned",
             query.columns.len(),
             database.tables.len(),
         ),
@@ -855,9 +933,12 @@ mod tests {
     #[cfg(feature = "db")]
     #[test]
     fn unimplemented_drivers_are_recognized_but_unavailable() {
-        // Postgres + SQLite are implemented; the rest are recognized but not yet available.
+        // Postgres, SQLite and SQL Server are implemented; MySQL is recognized but not yet available.
         assert!(not_implemented(Driver::MySql).contains("recognized but not available"));
-        assert!(not_implemented(Driver::MsSql).contains("recognized but not available"));
+        // SQL Server is implemented behind the opt-in `db-mssql` feature, so without it the driver is
+        // "not available in this build" rather than "recognized".
+        assert!(not_implemented(Driver::MsSql).contains("not available in this build"));
+        assert!(!not_implemented(Driver::MsSql).contains("recognized"));
     }
 
     /// Every driver hands the query builder the whole [`FetchInputs`] bundle and lets the dialect

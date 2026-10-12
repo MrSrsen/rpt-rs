@@ -42,7 +42,9 @@
 //!
 //! - `postgres://` (or `postgresql://`) — implemented.
 //! - `sqlite:///path/to/file.db` (or `sqlite::memory:`) — implemented.
-//! - `mysql://`, `mariadb://`, `mssql://`/`sqlserver://` — recognized but not yet implemented.
+//! - `mssql://user:password@host:port/dbname` (or `sqlserver://`) — implemented behind the opt-in `db-mssql`
+//!   feature; `?encrypt=` and `?trust_cert=` options are documented in the `rpt-db-mssql` crate.
+//! - `mysql://`, `mariadb://` — recognized but not yet implemented.
 //!
 //! A single-server report reads `RPT_DB_URL`, falling back to `DATABASE_URL`. A report that spans
 //! multiple servers (via subreports) needs one URL per distinct server in `RPT_DB_URL_<SERVER>`,
@@ -106,11 +108,11 @@
 // `feature = "db"` — under any buildable configuration it implies at least one driver.
 #[cfg(all(
     feature = "db",
-    not(any(feature = "db-postgres", feature = "db-sqlite"))
+    not(any(feature = "db-postgres", feature = "db-sqlite", feature = "db-mssql"))
 ))]
 compile_error!(
     "the `db` feature is the shared live-DB machinery, not a build on its own: enable a driver \
-     (`db-postgres` and/or `db-sqlite`), which turns `db` on, or none of them for a DB-free build"
+     (`db-postgres`, `db-sqlite` and/or `db-mssql`), which turns `db` on, or none of them for a DB-free build"
 );
 
 mod applog;
@@ -268,7 +270,7 @@ DATABASE CONFIGURATION (--db):
         mysql://user:password@host:port/dbname                             [not yet]
         mariadb://user:password@host:port/dbname                           [not yet]
         sqlite:///path/to/file.db  (or sqlite::memory:)                    [implemented]
-        mssql://user:password@host:port/dbname        (or sqlserver://)    [not yet]
+        mssql://user:password@host:port/dbname        (or sqlserver://)    [implemented, --features db-mssql]
 
     Examples (RPT_DB_URL takes precedence; DATABASE_URL is the fallback — use either):
 
@@ -280,8 +282,8 @@ DATABASE CONFIGURATION (--db):
         export DATABASE_URL='postgres://rpt:secret@db.internal:5432/sales'
         rpt-render report.rpt --db -o out.pdf
 
-    postgres and sqlite are implemented; mysql, mariadb, and mssql are recognized (the scheme is
-    understood) but not yet implemented.
+    postgres, sqlite and mssql are implemented (mssql needs a build with --features db-mssql); mysql
+    and mariadb are recognized (the scheme is understood) but not yet implemented.
 
     MULTIPLE CONNECTIONS:
         A report (with its subreports) can read from more than one server. Each distinct SERVER gets
@@ -1068,7 +1070,7 @@ fn resolve_rows(
             {
                 Err(RenderError::Datasource(
                     "--db requested, but this build has no database drivers compiled in \
-                            (rebuild with --features db-postgres and/or db-sqlite)"
+                            (rebuild with --features db-postgres, db-sqlite and/or db-mssql)"
                         .to_string(),
                 ))
             }
