@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 WIP.
 
+### Fixed
+
+- A box that starts in one section and ends in a later one now follows the real layout. It was sized from the design
+  heights of the sections in between, so a frame around growing content (a long memo, one row per record) stopped short.
+  It is now closed where its end section prints, at its stored bottom edge within that section. When a page break comes
+  first it runs to the bottom of the page body and continues at the top of the next page, unless the box is set to close
+  at page breaks.
+
 ## [0.4.0]
 
 More than 340 tracked issues went into this release.
