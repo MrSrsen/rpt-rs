@@ -1118,6 +1118,145 @@ fn box_spans_to_end_section() {
     );
 }
 
+/// A report header holding a frame box that ends in the report footer, with the detail band between
+/// them. `rows` detail rows of `row_height` twips each; `bottom` is the frame's stored bottom edge
+/// within the footer.
+fn framed_report(page_height: i32, row_height: i32, bottom: i32) -> Report {
+    let mut frame = ReportObject::default();
+    frame.name = "Frame".into();
+    frame.bounds = Rect {
+        left: Twips(0),
+        top: Twips(0),
+        width: Twips(6000),
+        height: Twips(200), // its own band only; the span decides the rest
+    };
+    let mut bs = rpt_model::BoxShape::default();
+    bs.shape.end_section_index = 2; // the report footer
+    bs.shape.bottom = Twips(bottom);
+    frame.kind = ReportObjectKind::Box(bs);
+    frame.border.top = LineStyle::SingleLine;
+    frame.border.border_color = Some(Color {
+        a: 255,
+        r: 0,
+        g: 0,
+        b: 0,
+    });
+
+    let mut report = Report::default();
+    report.print_options.content_width = Twips(12240);
+    report.print_options.content_height = Twips(page_height);
+    report.report_definition.areas = vec![
+        area(
+            AreaSectionKind::ReportHeader,
+            vec![section(
+                AreaSectionKind::ReportHeader,
+                "Head",
+                300,
+                vec![frame],
+            )],
+        ),
+        area(
+            AreaSectionKind::Detail,
+            vec![section(
+                AreaSectionKind::Detail,
+                "Details",
+                row_height,
+                vec![text_object("Row", "line", 0)],
+            )],
+        ),
+        area(
+            AreaSectionKind::ReportFooter,
+            vec![section(
+                AreaSectionKind::ReportFooter,
+                "Foot",
+                400,
+                vec![text_object("Foot", "total", 0)],
+            )],
+        ),
+    ];
+    report
+}
+
+fn stroked_rects(page: &rpt_pages::Page) -> Vec<&rpt_pages::RectOp> {
+    page.ops
+        .iter()
+        .filter_map(|op| match op {
+            DrawOp::Rect(r) if r.stroke.is_some() => Some(r),
+            _ => None,
+        })
+        .collect()
+}
+
+/// A spanning box is closed where its end section really prints: the detail rows between the box and
+/// its end section push the footer down, and the frame follows (not the design heights).
+#[test]
+fn box_spans_to_where_the_end_section_prints() {
+    let report = framed_report(15840, 300, 150);
+    let doc = rendered(&report, &numeric_rows(5));
+    let page = &doc.pages[0];
+    let frame = stroked_rects(page)[0];
+    let foot_top = page_text_tops(page, "total")[0];
+    // Five 300-twip rows sit between the 300-twip header and the footer.
+    assert_eq!(foot_top, 300 + 5 * 300, "the footer prints after the rows");
+    assert_eq!(
+        frame.bounds.top.0 + frame.bounds.height.0,
+        foot_top + 150,
+        "the frame ends at the stored bottom edge inside the footer"
+    );
+}
+
+/// A box whose end section is suppressed (it prints nothing and takes no room) ends where that section
+/// would have printed, rather than reserving the section's design height.
+#[test]
+fn box_ending_in_a_suppressed_section_ends_where_it_would_have_printed() {
+    let mut report = framed_report(15840, 300, 150);
+    // Head (300, holds the frame) | Skipped (suppressed, 5000) | Details. The frame ends in Skipped.
+    let mut skipped = section(AreaSectionKind::ReportHeader, "Skipped", 5000, vec![]);
+    skipped.format.base.suppress = true;
+    report.report_definition.areas[0].sections.push(skipped);
+    if let ReportObjectKind::Box(b) =
+        &mut report.report_definition.areas[0].sections[0].objects[0].kind
+    {
+        b.shape.end_section_index = 1;
+    }
+    // The footer index shifts down one; it is not involved.
+    let doc = rendered(&report, &numeric_rows(1));
+    let frame = stroked_rects(&doc.pages[0])[0];
+    assert_eq!(
+        frame.bounds.top.0 + frame.bounds.height.0,
+        300,
+        "the frame stops where the suppressed section would have started, not 5000 twips further down"
+    );
+}
+
+/// When a page break comes before the end section, the frame runs to the bottom of the page body and
+/// continues at the top of the next page, closing at the stored bottom edge in the footer.
+#[test]
+fn box_spanning_a_page_break_continues_on_the_next_page() {
+    // A 1500-twip page body: the header (300) and three 300-twip rows fit, then the rows go on.
+    let report = framed_report(1500, 300, 150);
+    let doc = rendered(&report, &numeric_rows(8));
+    assert!(doc.pages.len() >= 2, "the rows need more than one page");
+    let first = stroked_rects(&doc.pages[0])[0];
+    assert_eq!(
+        first.bounds.top.0 + first.bounds.height.0,
+        1500,
+        "on the first page the frame runs to the bottom of the body"
+    );
+    let last = doc.pages.last().unwrap();
+    let carried = stroked_rects(last)[0];
+    assert_eq!(
+        carried.bounds.top.0, 0,
+        "it continues at the top of the next page"
+    );
+    let foot_top = page_text_tops(last, "total")[0];
+    assert_eq!(
+        carried.bounds.top.0 + carried.bounds.height.0,
+        foot_top + 150,
+        "and closes at its stored bottom edge in the footer"
+    );
+}
+
 /// A line whose stored end-section index names a later section extends its lower endpoint down to
 /// that section's bottom.
 #[test]

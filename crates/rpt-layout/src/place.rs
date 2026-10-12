@@ -103,6 +103,33 @@ struct Placement<'a> {
     instance: u32,
 }
 
+/// A box that starts in one section and ends in a later one, waiting for that section to print.
+///
+/// The design layout only knows the sections' design heights; a section that grows (a long memo, one
+/// row per record) pushes the end section further down. The box is therefore emitted at its design
+/// height and its height is **patched** when the end section is placed (see
+/// [`Formatter::close_spans`]), so the frame follows the real layout.
+#[derive(Debug, Clone)]
+pub(crate) struct PendingSpan {
+    /// Index of the box's rect among the current page's ops.
+    pub op_index: usize,
+    /// Position of the end section in the report's flat section order.
+    pub end_section: usize,
+    /// The bottom edge within the end section, twips from its top. `0` = unknown: the section bottom.
+    pub bottom: i32,
+    /// Whether the box stops at a page break instead of continuing on the next page.
+    pub close_at_page_break: bool,
+}
+
+/// A span that crossed a page break and continues on the next page: the rect to re-draw from the top
+/// of the new page, and where it ends.
+#[derive(Debug, Clone)]
+pub(crate) struct CarriedSpan {
+    pub rect: RectOp,
+    pub end_section: usize,
+    pub bottom: i32,
+}
+
 impl Placement<'_> {
     /// The [`ObjectRef`] naming `obj` within this placement's section, tagged with the shared
     /// instance id — the source stamped on every draw-op an object emits.
@@ -131,6 +158,8 @@ impl Formatter<'_> {
         subs: &[Option<SubreportRender>],
         skip: Option<usize>,
     ) {
+        // Boxes that were waiting for this section end here, wherever it really landed.
+        self.close_spans(section, origin_y, height);
         // A section-level BackgroundColor condition formula (e.g. tinting an under-performer's group
         // header) overrides the static fill, resolved per record; the static color is the fallback.
         let bg = crate::resolve::cond_color_any(
@@ -406,7 +435,8 @@ impl Formatter<'_> {
         // most of the way down the section) grows with the band, so when can-grow content makes
         // the row taller the shading/frame tracks the actual rendered height instead of covering
         // only the top slice, preserving its distance from the band bottom.
-        let rect = if self.spans_sections(b.shape.end_section_index, at.section_name) {
+        let spans = self.spans_sections(b.shape.end_section_index, at.section_name);
+        let rect = if spans {
             self.span_rect(
                 rect,
                 at.section_name,
@@ -424,6 +454,7 @@ impl Formatter<'_> {
         let border_color = crate::resolve::cond_color(conds, cond::FORE_COLOR, ctx)
             .or(obj.border.border_color)
             .unwrap_or_default();
+        let op_index = self.cur.ops.len();
         self.push_op(DrawOp::Rect(RectOp {
             bounds: rect,
             fill: fill.map(Into::into),
@@ -435,6 +466,14 @@ impl Formatter<'_> {
             corner_radius: Twips(b.corner_ellipse_width.0.max(b.corner_ellipse_height.0)),
             source: at.src(obj, ObjectKind::Box),
         }));
+        if spans {
+            self.pending_spans.push(PendingSpan {
+                op_index,
+                end_section: usize::from(b.shape.end_section_index),
+                bottom: b.shape.bottom.0,
+                close_at_page_break: obj.format.close_at_page_break,
+            });
+        }
         // Drop shadow: two filled bars offset to the bottom-right in the border color (the
         // engine draws the shadow as edge rectangles, not a CSS shadow).
         if obj.border.has_drop_shadow {
@@ -1232,6 +1271,88 @@ impl Formatter<'_> {
             top: Twips(origin_y + b.top.0),
             width: b.width,
             height: b.height,
+        }
+    }
+
+    /// Close the open spans whose end section is `section`, printed at `origin_y` with grown height
+    /// `height`: each box now reaches its stored bottom edge within that section (the section bottom when
+    /// the shape stored none), however far the sections in between grew.
+    ///
+    /// A span whose end section comes *before* `section` in the report's section order never saw it
+    /// print — it is suppressed, so it takes no room — and ends where that section would have been: at
+    /// `origin_y`. A page footer prints at the page bottom whatever came before it, so it does not end
+    /// spans it merely follows; the page break does ([`Self::end_spans_at_page_break`]).
+    pub(crate) fn close_spans(&mut self, section: &Section, origin_y: i32, height: i32) {
+        if self.pending_spans.is_empty() {
+            return;
+        }
+        let Some(current) = self
+            .flat_sections()
+            .iter()
+            .position(|(n, _)| *n == section.name)
+        else {
+            return;
+        };
+        let skipped_ends_here = section.kind != rpt_model::AreaSectionKind::PageFooter;
+        let mut i = 0;
+        while i < self.pending_spans.len() {
+            let end = self.pending_spans[i].end_section;
+            let skipped = skipped_ends_here && end < current;
+            if end != current && !skipped {
+                i += 1;
+                continue;
+            }
+            let span = self.pending_spans.remove(i);
+            let edge = if skipped {
+                origin_y
+            } else {
+                origin_y + if span.bottom > 0 { span.bottom } else { height }
+            };
+            if let Some(DrawOp::Rect(r)) = self.cur.ops.get_mut(span.op_index) {
+                let h = edge - r.bounds.top.0;
+                if h > 0 {
+                    r.bounds.height = Twips(h);
+                }
+            }
+        }
+    }
+
+    /// A page is about to be finished with spans still open: the end section has not printed on it. Each
+    /// box runs down to the bottom of the page body here and, unless it closes at a page break, is carried
+    /// to the top of the next page ([`Self::resume_spans`]).
+    pub(crate) fn end_spans_at_page_break(&mut self) {
+        let body_bottom = self.body_bottom;
+        for span in std::mem::take(&mut self.pending_spans) {
+            let Some(DrawOp::Rect(r)) = self.cur.ops.get_mut(span.op_index) else {
+                continue;
+            };
+            let h = body_bottom - r.bounds.top.0;
+            if h > 0 {
+                r.bounds.height = Twips(h);
+            }
+            if !span.close_at_page_break {
+                let mut rect = r.clone();
+                rect.bounds.top = Twips(0);
+                self.carried_spans.push(CarriedSpan {
+                    rect,
+                    end_section: span.end_section,
+                    bottom: span.bottom,
+                });
+            }
+        }
+    }
+
+    /// Re-open the carried spans at the top of the page that has just begun.
+    pub(crate) fn resume_spans(&mut self) {
+        for carried in std::mem::take(&mut self.carried_spans) {
+            let op_index = self.cur.ops.len();
+            self.push_op(DrawOp::Rect(carried.rect));
+            self.pending_spans.push(PendingSpan {
+                op_index,
+                end_section: carried.end_section,
+                bottom: carried.bottom,
+                close_at_page_break: false,
+            });
         }
     }
 
