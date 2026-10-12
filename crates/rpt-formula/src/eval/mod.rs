@@ -22,7 +22,8 @@ pub mod vm;
 
 pub use builtins::{is_print_state_special, is_record_nav};
 pub use context::{
-    EmptyContext, EvalContext, EvalError, MapContext, NullTreatment, SpannedEvalError,
+    EmptyContext, EvalContext, EvalError, MapContext, NullTreatment, NumberSeparators,
+    SpannedEvalError,
 };
 #[cfg(any(test, feature = "differential"))]
 pub use tree::Evaluator;

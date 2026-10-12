@@ -547,17 +547,22 @@ pub(super) fn dispatch(
             if !builtin.accepts_null() && args.iter().any(Value::is_null) {
                 Ok(Value::Null)
             } else {
-                call(builtin, name, args)
+                call(builtin, name, args, ctx)
             }
         }
     })
 }
 
 /// Route a resolved [`Builtin`] to the family module named by its variant.
-fn call(builtin: Builtin, name: &str, args: &[Value]) -> Result<Value, EvalError> {
+fn call(
+    builtin: Builtin,
+    name: &str,
+    args: &[Value],
+    ctx: &dyn EvalContext,
+) -> Result<Value, EvalError> {
     match builtin {
         Builtin::String(f) => string::call(f, name, args),
-        Builtin::Conversion(f) => conversion::call(f, name, args),
+        Builtin::Conversion(f) => conversion::call(f, name, args, ctx),
         Builtin::Math(f) => math::call(f, name, args),
         Builtin::Financial(f) => financial::call(f, name, args),
         Builtin::Statistical(f) => statistical::call(f, name, args),

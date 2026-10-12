@@ -124,6 +124,26 @@ pub enum NullTreatment {
     DefaultValue,
 }
 
+/// The decimal and thousands separators a numeric `ToText`/`CStr` prints with when the formula names
+/// none — the host's regional settings in the native engine, the render locale's here.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct NumberSeparators {
+    /// Decimal separator (`.` in en-US, `,` in nb-NO).
+    pub decimal: char,
+    /// Thousands (grouping) separator (`,` in en-US, a no-break space in nb-NO).
+    pub thousands: char,
+}
+
+impl Default for NumberSeparators {
+    /// The en-US pair, which is what a context that supplies none gets.
+    fn default() -> NumberSeparators {
+        NumberSeparators {
+            decimal: '.',
+            thousands: ',',
+        }
+    }
+}
+
 /// Resolves the names a formula pulls from its surroundings: `{...}` references and the 0-ary
 /// print-state specials (`PageNumber`, `CurrentDate`, …).
 ///
@@ -145,6 +165,11 @@ pub trait EvalContext {
     fn special(&self, name: &str) -> Option<Value> {
         let _ = name;
         None
+    }
+    /// The separators a numeric `ToText`/`CStr` uses when the call does not name its own. The default
+    /// is the en-US pair; a render context overrides it with the render locale's.
+    fn number_separators(&self) -> NumberSeparators {
+        NumberSeparators::default()
     }
 
     /// Read a persistent (`Global`/`Shared`) variable's current value, or `None` if it is unset or
