@@ -566,7 +566,13 @@ impl<'a> Formatter<'a> {
         // not threaded as a field. The margin is carried once as the page origin (above).
         let bands = Bands::collect(report);
         let group_levels = bands.group_formats.len();
-        let page_footer_height: i32 = bands.page_footer.iter().map(|s| s.height.0).sum();
+        // A suppressed page footer prints nothing and takes no room, so it reserves none of the body.
+        let page_footer_height: i32 = bands
+            .page_footer
+            .iter()
+            .filter(|s| !s.format.base.suppress)
+            .map(|s| s.height.0)
+            .sum();
         let page_size = PageSize {
             width: Twips(page_w),
             height: Twips(page_h),
