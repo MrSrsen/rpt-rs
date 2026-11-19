@@ -155,14 +155,18 @@ fn decode_packed_record(
 /// Decode a UTF-16LE run up to the first NUL word (the rest of the on-disk slot is zero padding).
 pub(super) fn decode_utf16z(slot: &[u8]) -> String {
     let end = slot
-        .chunks_exact(2)
-        .position(|c| c == [0, 0])
+        .as_chunks::<2>()
+        .0
+        .iter()
+        .position(|c| *c == [0, 0])
         .map(|w| w * 2)
         .unwrap_or(slot.len());
     char::decode_utf16(
         slot.get(..end)
             .unwrap_or(&[])
-            .chunks_exact(2)
+            .as_chunks::<2>()
+            .0
+            .iter()
             .map(|c| u16::from_le_bytes([c[0], c[1]])),
     )
     .map(|r| r.unwrap_or('\u{FFFD}'))
@@ -207,7 +211,9 @@ fn packed_index_layouts(catalog: &SavedCatalog) -> Vec<PackedBatchLayout> {
             item_size: b.desc.item_size,
             next_offsets: b
                 .columns
-                .chunks_exact(COLUMN_TABLE_STRIDE)
+                .as_chunks::<COLUMN_TABLE_STRIDE>()
+                .0
+                .iter()
                 .map(|triple| triple[COLUMN_NEXT_FIELD_OFFSET] as usize)
                 .collect(),
         })

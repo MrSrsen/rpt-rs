@@ -45,7 +45,9 @@ pub(crate) fn deserialize<'de, D: Deserializer<'de>>(deserializer: D) -> Result<
         )));
     }
     hex.as_bytes()
-        .chunks_exact(2)
+        .as_chunks::<2>()
+        .0
+        .iter()
         .enumerate()
         .map(|(i, pair)| match (nibble(pair[0]), nibble(pair[1])) {
             (Some(hi), Some(lo)) => Ok((hi << 4) | lo),

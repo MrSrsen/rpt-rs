@@ -50,7 +50,9 @@ sdk_enum!(
         ReportFooter,
         /// The page footer area (printed at the bottom of each page).
         PageFooter,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `LineStyle` (`CrystalDecisions.Shared.LineStyle`).
@@ -69,7 +71,9 @@ sdk_enum!(
         FirstInvalidLineStyle,
         /// A blank (invisible) line that still reserves space.
         BlankLine,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `Alignment` (`CrystalDecisions.Shared.Alignment`; horizontal + vertical members).
@@ -92,7 +96,9 @@ sdk_enum!(
         VerticalCenterAlign,
         /// Vertically bottom-aligned.
         BottomAlign,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// Vertical text alignment of an object within its box (SDK `crAlignmentVerticalAlignment`;
@@ -106,7 +112,9 @@ sdk_enum!(
         VerticalCenter,
         /// Bottom-aligned.
         Bottom,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `FieldValueType` — a field's data type.
@@ -139,7 +147,9 @@ sdk_enum!(
         Blob,
         /// Persistent (stored) memo text.
         PersistentMemo,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// A persisted formula-language variable's declared scope: the reach of a `Global`/`Shared`
@@ -152,7 +162,9 @@ sdk_enum!(
         Global,
         /// `Local` scope — confined to one formula (not persisted).
         Local,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `SortDirection`. `TopNOrder`/`BottomNOrder` are group Top N / Bottom N sort directions.
@@ -167,16 +179,19 @@ sdk_enum!(
         TopNOrder,
         /// Group Bottom N ordering.
         BottomNOrder,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
-/// Which collection a sort came from.
-SortKind {
-    /// A record-level sort field.
-    RecordSortField,
-    /// A group-level sort field.
-    GroupSortField,
-});
+    /// Which collection a sort came from.
+    SortKind {
+        /// A record-level sort field.
+        RecordSortField,
+        /// A group-level sort field.
+        GroupSortField,
+    }
+);
 
 sdk_enum!(
     /// SDK: `SummaryOperation` (`CrystalDecisions.Shared.SummaryOperation`, full table).
@@ -219,7 +234,9 @@ sdk_enum!(
         Mode,
         /// Nth most frequently occurring value.
         NthMostFrequent,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `EvaluationConditionType`.
@@ -232,7 +249,9 @@ sdk_enum!(
         OnChangeOfField,
         /// Evaluate on change of a group.
         OnChangeOfGroup,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `ResetConditionType`.
@@ -245,7 +264,9 @@ sdk_enum!(
         OnChangeOfGroup,
         /// Reset when a boolean formula becomes true.
         OnFormula,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `TableJoinType` — the engine's single, lossy join descriptor, which folds a link's
@@ -265,7 +286,9 @@ sdk_enum!(
         GreaterThan,
         /// Less-than join (`<`).
         LessThan,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// A table link's **outer-ness** — the `Join Type` half of the designer's Link Options dialog,
@@ -279,7 +302,9 @@ sdk_enum!(
         RightOuter,
         /// Full outer join.
         FullOuter,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// A table link's **comparison operator** — the other half of the designer's Link Options
@@ -298,7 +323,9 @@ sdk_enum!(
         GreaterThan,
         /// `>=`.
         GreaterOrEqual,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `ParameterFieldType`.
@@ -307,7 +334,9 @@ sdk_enum!(
         ReportParameter,
         /// A stored-procedure input parameter.
         StoreProcedureParameter,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `ParameterValueRangeKind`.
@@ -326,7 +355,9 @@ sdk_enum!(
         TimeParameter,
         /// DateTime-valued parameter.
         DateTimeParameter,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `RoundingType` (`CrystalDecisions.Shared.RoundingType`). The stored rounding also encodes
@@ -353,7 +384,9 @@ sdk_enum!(
         RoundToHundred,
         /// Round to the nearest thousand.
         RoundToThousand,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `NegativeType` (`CrystalDecisions.Shared.NegativeType`). Byte value = ordinal.
@@ -366,7 +399,9 @@ sdk_enum!(
         TrailingMinus,
         /// Parenthesized (`(123)`).
         Bracketed,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `CurrencySymbolType` (`CrystalDecisions.Shared.CurrencySymbolType`). Byte value = ordinal.
@@ -377,7 +412,9 @@ sdk_enum!(
         FixedSymbol,
         /// Floating symbol adjacent to the first significant digit.
         FloatingSymbol,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `CurrencyPositionType` (`CrystalDecisions.Shared.CurrencyPositionType`). Byte value =
@@ -392,7 +429,9 @@ sdk_enum!(
         TrailingCurrencyInsideNegative,
         /// Trailing currency symbol, outside the negative sign/brackets.
         TrailingCurrencyOutsideNegative,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `BooleanOutputType` (`CrystalDecisions.Shared.BooleanOutputType`). Byte value = ordinal.
@@ -407,7 +446,9 @@ sdk_enum!(
         YOrN,
         /// `1` / `0`.
         OneOrZero,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `DayFormat` (`<DateFieldFormat DayFormat>`).
@@ -418,7 +459,9 @@ sdk_enum!(
         LeadingZeroNumericDay,
         /// Day not shown.
         NoDay,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `MonthFormat` (`<DateFieldFormat MonthFormat>`).
@@ -433,7 +476,9 @@ sdk_enum!(
         LongMonth,
         /// Month not shown.
         NoMonth,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `YearFormat` (`<DateFieldFormat YearFormat>`).
@@ -444,7 +489,9 @@ sdk_enum!(
         LongYear,
         /// Year not shown.
         NoYear,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `DateSystemDefaultType` (`DateFieldFormat.SystemDefaultType`). When not
@@ -457,7 +504,9 @@ sdk_enum!(
         UseWindowsShortDate,
         /// Use the field's stored day/month/year format instead of a Windows default.
         NotUsingWindowsDefaults,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `DayOfWeekType` (`DateFieldFormat.DayOfWeekType`). Disk codes: `0` = `ShortDayOfWeek`,
@@ -470,7 +519,9 @@ sdk_enum!(
         LongDayOfWeek,
         /// Weekday not shown.
         NoDayOfWeek,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `DateOrder` (`DateFieldFormat.DateOrder`). The relative order of the day/month/year
@@ -486,7 +537,9 @@ sdk_enum!(
         DayMonthYear,
         /// Month, then day, then year (`03/05/2024`).
         MonthDayYear,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `TimeBase` (`TimeFieldFormat.TimeBase`). Whether the hour runs 1-12 with an AM/PM
@@ -499,7 +552,9 @@ sdk_enum!(
         TwelveHour,
         /// Hours 0-23, with no AM/PM designator.
         TwentyFourHour,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `AMPMFormat` (`TimeFieldFormat.AMPMFormat`). Where the AM/PM designator sits relative to
@@ -511,7 +566,9 @@ sdk_enum!(
         AMPMBefore,
         /// The designator follows the time (`12:00 am`).
         AMPMAfter,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `HourFormat` (`TimeFieldFormat.HourFormat`). Decoded from the `0x00f6` time leaf
@@ -526,7 +583,9 @@ sdk_enum!(
         NoLeadingZeroNumericHour,
         /// Hour not shown.
         NoHour,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `MinuteFormat` (`TimeFieldFormat.MinuteFormat`). Decoded from the `0x00f6` time leaf
@@ -540,7 +599,9 @@ sdk_enum!(
         NoLeadingZeroNumericMinute,
         /// Minute not shown.
         NoMinute,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `SecondFormat` (`TimeFieldFormat.SecondFormat`). Decoded from the `0x00f6` time leaf
@@ -554,7 +615,9 @@ sdk_enum!(
         NoLeadingZeroNumericSecond,
         /// Second not shown.
         NoSecond,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `DateTimeOrder` (`DateTimeFieldFormat.DateTimeOrder`). Which of the date/time parts is
@@ -571,7 +634,9 @@ sdk_enum!(
         DateOnly,
         /// Only the time part is shown.
         TimeOnly,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `TextFormat` (`StringFieldFormat.TextFormat`). How a string field's text is interpreted
@@ -585,7 +650,9 @@ sdk_enum!(
         RTFText,
         /// HTML markup.
         HTMLText,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `CrChartTypeEnum` — a chart's **data-layout** axis (how the chart is bound to data),
@@ -614,7 +681,9 @@ sdk_enum!(
         /// so [`from_code`](Self::from_code) never yields it (an unknown byte 2
         /// round-trips through [`Other`](Self::Other)); the variant mirrors the SDK enum surface.
         OLAP,
-    }, Other);
+    },
+    Other
+);
 
 impl ChartLayoutType {
     /// Decode the chart layout from the `0x011c` analytic-header **leaf byte 2**. The disk codes are
@@ -705,7 +774,9 @@ sdk_enum!(
         LongEra,
         /// No era designator (the stored default).
         NoEra,
-    }, Other);
+    },
+    Other
+);
 
 impl EraFormat {
     /// Decode the `eraType` byte. The engine bounds it at `0..=2`.
@@ -753,7 +824,9 @@ sdk_enum!(
         GregorianXlitEnglishCalendar,
         /// Gregorian calendar, transliterated French (`CAL_GREGORIAN_XLIT_FRENCH`).
         GregorianXlitFrenchCalendar,
-    }, Other);
+    },
+    Other
+);
 
 impl CalendarType {
     /// Decode the `calendarType` byte. The codes are 1-based, so `0` is not a calendar.
@@ -785,7 +858,9 @@ sdk_enum!(
         LeadingPosition,
         /// The weekday follows the date.
         TrailingPosition,
-    }, Other);
+    },
+    Other
+);
 
 impl DayOfWeekPosition {
     /// Decode the `dayOfWeekPosition` byte. The engine bounds it at `0..=1`.
@@ -814,7 +889,9 @@ sdk_enum!(
         InSquareBrackets,
         /// Full-width square brackets (`U+FF3B`/`U+FF3D`), the CJK forms.
         InFWSquareBrackets,
-    }, Other);
+    },
+    Other
+);
 
 impl DayOfWeekEnclosure {
     /// Decode the `dayOfWeekEnclosure` byte, the last byte of the `0x00f2` date leaf. The engine
@@ -1069,7 +1146,9 @@ sdk_enum!(
         LabelReport,
         /// A multi-column report; its column geometry is in the multi-column format record.
         MultiColumnReport,
-    }, Other);
+    },
+    Other
+);
 
 impl ReportKind {
     /// Decode the page-setup report-kind byte (`0x66` byte 0). The engine asserts the value is in
@@ -1109,7 +1188,9 @@ sdk_enum!(
         RedBlueBorder,
         /// A maroon and teal boxed layout.
         MaroonTealBox,
-    }, Other);
+    },
+    Other
+);
 
 impl ReportStyle {
     /// Decode the page-setup report-style enum. The engine's layout switch names `0..=9`; anything
@@ -1141,7 +1222,9 @@ sdk_enum!(
         Portrait,
         /// Landscape (wide) orientation.
         Landscape,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `PrinterDuplex`.
@@ -1154,7 +1237,9 @@ sdk_enum!(
         Vertical,
         /// Double-sided, flipped on the short (horizontal) edge.
         Horizontal,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `HyperlinkType`.
@@ -1175,7 +1260,9 @@ sdk_enum!(
         ReportPartDrilldown,
         /// A link to another report object.
         AnotherReportObject,
-    }, Other);
+    },
+    Other
+);
 
 impl HyperlinkType {
     /// Decode the stored hyperlink-type byte — the RAS `CrHyperlinkTypeEnum` ordinal held in the
@@ -1206,7 +1293,9 @@ sdk_enum!(
         Multiple,
         /// The value is an exact line pitch in twips, independent of the font's size.
         Exact,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `TextRotationAngle`.
@@ -1217,7 +1306,9 @@ sdk_enum!(
         Rotate90,
         /// Rotated 270° counter-clockwise.
         Rotate270,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `ReadingOrder`.
@@ -1226,7 +1317,9 @@ sdk_enum!(
         LeftToRight,
         /// Right-to-left reading order.
         RightToLeft,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `PictureType`.
@@ -1240,7 +1333,9 @@ sdk_enum!(
         /// A named SDK picture kind other than bitmap/metafile/OLE (distinct from the `Other(i32)`
         /// catch-all that preserves an unmapped engine code).
         OtherKnown,
-    }, Other);
+    },
+    Other
+);
 
 /// The concrete media/container format of an embedded picture's bytes, sniffed from the leading
 /// magic of [`PictureObject::data`](crate::PictureObject::data).
@@ -1460,7 +1555,9 @@ sdk_enum!(
         File,
         /// A stored-procedure data source.
         StoreProcedure,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `SpecialVarType` (special-field kind).
@@ -1501,7 +1598,9 @@ sdk_enum!(
         FilePath,
         /// The report file's creation date.
         FileCreationDate,
-    }, Other);
+    },
+    Other
+);
 
 /// SDK: `PaperSize` (`CrystalDecisions.Shared.PaperSize`). The enum's integer values equal the
 /// Windows `DMPAPER_*` codes stored in the record, so the code maps straight onto the variant.
@@ -1756,7 +1855,9 @@ sdk_enum!(
         Description,
         /// Show each pick-list entry's value only.
         Value,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `@DefaultValueSortOrder` — sort applied to the parameter's default-value pick list:
@@ -1768,7 +1869,9 @@ sdk_enum!(
         AlphabeticalAscending,
         /// Sort the pick list alphabetically descending.
         AlphabeticalDescending,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// SDK: `CrDiscreteOrRangeKindEnum` — whether a parameter accepts
@@ -1780,18 +1883,21 @@ sdk_enum!(
         RangeValue,
         /// Accepts both discrete and range values.
         DiscreteAndRangeValue,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
-/// SDK: `CrFormulaNullTreatmentEnum` — how a formula treats a null database-field value. The
-/// per-formula editor setting ("If any field value is null" / "default value for its type" vs.
-/// exception). Stored in the `0x76` formula record's trailer.
-FormulaNullTreatment {
-    /// `crTreatNullAsException` (the engine default) — a null operand propagates.
-    Exception,
-    /// `crTreatNullAsDefaultValue` — a null operand is replaced by its type's default value.
-    DefaultValue,
-});
+    /// SDK: `CrFormulaNullTreatmentEnum` — how a formula treats a null database-field value. The
+    /// per-formula editor setting ("If any field value is null" / "default value for its type" vs.
+    /// exception). Stored in the `0x76` formula record's trailer.
+    FormulaNullTreatment {
+        /// `crTreatNullAsException` (the engine default) — a null operand propagates.
+        Exception,
+        /// `crTreatNullAsDefaultValue` — a null operand is replaced by its type's default value.
+        DefaultValue,
+    }
+);
 
 sdk_enum!(
     /// SDK: `RangeBoundType` (`CrystalDecisions.Shared`) — the inclusivity of one end of a range
@@ -1804,7 +1910,9 @@ sdk_enum!(
         BoundInclusive,
         /// The bound value is excluded.
         BoundExclusive,
-    }, Other);
+    },
+    Other
+);
 
 sdk_enum!(
     /// The kind of database object a dynamic (list-of-values) parameter's pick list is sourced from.
@@ -1819,7 +1927,9 @@ sdk_enum!(
         StoredProcedure,
         /// Sourced from a Crystal SQL command.
         Command,
-    }, Other);
+    },
+    Other
+);
 
 #[cfg(test)]
 mod tests {

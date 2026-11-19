@@ -433,7 +433,9 @@ fn read_string_property(sect: &[u8], off: usize) -> Option<String> {
         VT_LPWSTR => {
             let raw = body.get(..len * 2)?;
             let units: Vec<u16> = raw
-                .chunks_exact(2)
+                .as_chunks::<2>()
+                .0
+                .iter()
                 .map(|c| u16::from_le_bytes([c[0], c[1]]))
                 .take_while(|&u| u != 0)
                 .collect();
